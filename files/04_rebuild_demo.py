@@ -1104,6 +1104,159 @@ def inject_founder(html):
     return html
 
 
+# ── Pro subscription: pricing modal + soft paywall (Stripe Checkout) ─────────
+PAYWALL_STYLE = r"""<style>
+.go-pro-btn{margin-left:auto;align-self:center;display:inline-flex;align-items:center;gap:6px;background:linear-gradient(180deg,var(--accent),#d4881f);color:#000;font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:7px 15px;border-radius:7px;cursor:pointer;border:none}
+.go-pro-btn.is-pro{background:transparent;color:var(--accent);border:1px solid var(--accent);cursor:default}
+.go-pro-btn:hover{opacity:.9}
+.pp-overlay{position:fixed;inset:0;background:rgba(0,0,0,.74);display:none;align-items:flex-start;justify-content:center;z-index:200;overflow-y:auto;padding:40px 16px}
+.pp-overlay.open{display:flex}
+.pp-modal{background:#121214;border:1px solid var(--border);border-radius:16px;max-width:760px;width:100%;padding:28px 26px 22px;position:relative}
+.pp-close{position:absolute;top:12px;right:16px;color:var(--faint);font-size:22px;cursor:pointer;line-height:1}
+.pp-h{font-family:'Anton',sans-serif;font-size:30px;text-align:center;margin:2px 0 4px}
+.pp-sub{text-align:center;color:var(--dim);font-size:13px;margin-bottom:22px}
+.pp-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:560px){.pp-cols{grid-template-columns:1fr}}
+.pp-col{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px}
+.pp-col.pro{border-color:var(--accent)}
+.pp-col h3{margin:0 0 4px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.pp-col.pro h3{color:var(--accent)}
+.pp-price{font-size:14px;color:var(--dim);margin-bottom:12px}
+.pp-list{list-style:none;padding:0;margin:0}
+.pp-list li{font-size:13px;color:var(--dim);padding:5px 0 5px 22px;position:relative;line-height:1.4}
+.pp-list li:before{content:'\2713';position:absolute;left:0;color:var(--green)}
+.pp-list.pro li:before{color:var(--accent)}
+.pp-btns{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+.pp-btn{display:block;width:100%;text-align:center;border:none;border-radius:9px;padding:13px;font-weight:800;font-size:14px;cursor:pointer;text-decoration:none;position:relative}
+.pp-btn.annual{background:linear-gradient(180deg,var(--accent),#d4881f);color:#000}
+.pp-btn.monthly{background:var(--p2,#111);color:var(--text);border:1px solid var(--border)}
+.pp-btn:hover{opacity:.93}
+.pp-badge{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--green);color:#000;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 9px;border-radius:10px;white-space:nowrap}
+.pp-reassure{text-align:center;color:var(--faint);font-size:12px;margin-top:16px;line-height:1.5}
+.pp-restore{text-align:center;font-size:12px;margin-top:10px;color:var(--faint)}
+.pp-restore input{background:var(--p2,#111);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:7px 10px;font-size:12px;width:190px;max-width:55%}
+.pp-restore a{color:var(--accent);cursor:pointer;text-decoration:underline}
+.pp-promo{display:flex;gap:8px;justify-content:center;margin-top:18px}
+.pp-promo input{background:var(--p2,#111);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;font-size:13px;width:220px;max-width:58%}
+.pp-promo-btn{background:var(--accent);color:#000;border:none;border-radius:8px;padding:10px 18px;font-weight:700;font-size:13px;cursor:pointer}
+.pp-promo-btn:hover{opacity:.9}
+.pp-note{text-align:center;color:var(--amber,#e0a23b);font-size:12px;min-height:16px;margin-top:8px}
+.pro-fade{position:relative;max-height:175px;overflow:hidden;-webkit-mask-image:linear-gradient(180deg,#000 52%,transparent 100%);mask-image:linear-gradient(180deg,#000 52%,transparent 100%)}
+.pro-unlock{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;background:var(--panel);border:1px dashed var(--accent);border-radius:10px;padding:16px;margin-top:10px}
+.pro-unlock .lk{font-size:13px;font-weight:700;color:var(--text)}
+.pro-unlock .sm{font-size:12px;color:var(--dim);line-height:1.4}
+.pro-cta{background:var(--accent);color:#000;border:none;border-radius:8px;padding:9px 18px;font-weight:700;font-size:13px;cursor:pointer}
+.pro-cta:hover{opacity:.9}
+.yt-card.pro-locked .yt-thumb:after{content:'\1F512 Pro';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(13,13,15,.5);color:#fff;font-weight:700;font-size:13px}
+.kyr-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#000;font-weight:700;font-size:14px;padding:13px 22px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.5);opacity:0;transition:.4s;z-index:300}
+.kyr-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+"""
+
+PAYWALL_JS = r"""/*WRENCH_PAYWALL*/
+function kyrPro(){try{if(localStorage.getItem('kyr_pro')!=='1')return false;var u=parseInt(localStorage.getItem('kyr_pro_until')||'0',10);if(u&&Date.now()/1000>u){localStorage.removeItem('kyr_pro');localStorage.removeItem('kyr_pro_until');return false;}return true;}catch(e){return false;}}
+function kyrSetPro(){try{localStorage.setItem('kyr_pro','1');}catch(e){}}
+function kyrFreeUsed(k){try{return parseInt(localStorage.getItem('kyr_free_'+k)||'0',10)||0;}catch(e){return 0;}}
+function kyrUseFree(k){try{localStorage.setItem('kyr_free_'+k,String(kyrFreeUsed(k)+1));}catch(e){}}
+function openPricing(){var o=document.getElementById('pp-overlay');if(o){o.classList.add('open');document.body.style.overflow='hidden';}}
+function closePricing(){var o=document.getElementById('pp-overlay');if(o){o.classList.remove('open');document.body.style.overflow='';}}
+function proUnlock(label,sub){return '<div class="pro-unlock"><div class="lk">&#128274; '+label+'</div>'+(sub?'<div class="sm">'+sub+'</div>':'')+'<button class="pro-cta" onclick="openPricing()">Unlock with Pro</button></div>';}
+function restorePro(){var em=(document.getElementById('pp-restore-email').value||'').trim().toLowerCase();var note=document.getElementById('pp-note');if(!em){note.textContent='Enter the email you subscribed with.';return;}note.textContent='Checking...';fetch('/api/verify-subscription?email='+encodeURIComponent(em)).then(function(r){return r.json();}).then(function(d){if(d&&d.subscribed){kyrSetPro();note.style.color='var(--green)';note.textContent='Pro restored. Reloading...';setTimeout(function(){location.reload();},700);}else{note.textContent='No active subscription found for that email.';}}).catch(function(){note.textContent='Could not verify right now. Please try again.';});}
+function kyrPromoToken(){try{var t=localStorage.getItem('kyr_token');if(!t){t=Date.now().toString(36)+Math.random().toString(36).slice(2);localStorage.setItem('kyr_token',t);}return t;}catch(e){return '';}}
+function applyPromo(){var code=(document.getElementById('pp-promo-input').value||'').trim();var note=document.getElementById('pp-promo-note');if(!code){note.textContent='Enter a promo code.';return;}note.style.color='';note.textContent='Checking...';fetch('/api/promo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,token:kyrPromoToken()})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){kyrSetPro();try{localStorage.setItem('kyr_pro_until',String(d.until));}catch(e){}note.style.color='var(--green)';note.textContent=d.message||'Pro access unlocked for 30 days!';setTimeout(function(){location.reload();},1100);}else{note.style.color='';note.textContent=(d&&d.error)||'Invalid promo code.';}}).catch(function(){note.textContent='Could not check the code right now.';});}
+function kyrToast(msg){var t=document.createElement('div');t.className='kyr-toast';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.classList.add('show');},40);setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},450);},5000);}
+function renderMaintGated(v){if(kyrPro()||!v.maint||v.maint.length<=3)return renderMaint(v);var clone={};for(var k in v)clone[k]=v[k];clone.maint=v.maint.slice(0,3);return renderMaint(clone)+proUnlock('Unlock the full maintenance schedule','Showing 3 of '+v.maint.length+' service intervals. Pro unlocks the rest plus regional service costs.');}
+function kyrInitPaywall(){var p=new URLSearchParams(location.search);if(p.get('success')==='true'){kyrSetPro();kyrToast('Welcome to Pro. All features unlocked.');history.replaceState({},'',location.pathname);}else if(p.get('canceled')==='true'){history.replaceState({},'',location.pathname);}var b=document.getElementById('go-pro-btn');if(b&&kyrPro()){b.classList.add('is-pro');b.innerHTML='&#9733; Pro';b.onclick=null;}}
+document.addEventListener('DOMContentLoaded',kyrInitPaywall);
+"""
+
+PRICING_HTML = """
+<div class="pp-overlay" id="pp-overlay">
+  <div class="pp-modal">
+    <div class="pp-close" onclick="closePricing()">&#10005;</div>
+    <div class="pp-h">Know Your Ride <span style="color:var(--accent)">Pro</span></div>
+    <div class="pp-sub">Dealership-level vehicle knowledge for every driver.</div>
+    <div class="pp-cols">
+      <div class="pp-col">
+        <h3>Free</h3>
+        <div class="pp-price">$0 - always free</div>
+        <ul class="pp-list">
+          <li>Vehicle lookup &amp; basic specs</li>
+          <li>Oil specs &amp; basic parts</li>
+          <li>DTC code lookup + fix rates</li>
+          <li>Recalls &amp; safety ratings</li>
+          <li>Fuel economy</li>
+          <li>Amazon parts links &amp; KBB value</li>
+        </ul>
+      </div>
+      <div class="pp-col pro">
+        <h3>Pro</h3>
+        <div class="pp-price">Everything in Free, plus:</div>
+        <ul class="pp-list pro">
+          <li>AI repair guides (step-by-step)</li>
+          <li>DIY YouTube videos</li>
+          <li>Unlimited VIN decode</li>
+          <li>Know Your Part photo scanning</li>
+          <li>Full maintenance schedules</li>
+          <li>Regional service costs</li>
+        </ul>
+        <div class="pp-btns">
+          <a class="pp-btn annual" href="/api/subscribe?plan=annual"><span class="pp-badge">Most Popular - Save 33%</span>Annual - $23.99/year</a>
+          <a class="pp-btn monthly" href="/api/subscribe?plan=monthly">Monthly - $2.99/month</a>
+        </div>
+      </div>
+    </div>
+    <div class="pp-promo">
+      <input id="pp-promo-input" type="text" placeholder="Have a promo code?" autocomplete="off">
+      <button class="pp-promo-btn" onclick="applyPromo()">Apply</button>
+    </div>
+    <div class="pp-note" id="pp-promo-note"></div>
+    <div class="pp-reassure">&#128274; Secure checkout by Stripe &middot; Cancel anytime &middot; No card data touches our servers</div>
+    <div class="pp-restore">Already subscribed? <input id="pp-restore-email" type="email" placeholder="you@email.com"> <a onclick="restorePro()">Restore access</a></div>
+    <div class="pp-note" id="pp-note"></div>
+  </div>
+</div>
+"""
+
+
+def inject_paywall(html):
+    """Pricing modal + 'Go Pro' nav button + soft paywall gates (Stripe Checkout).
+    Free teasers stay functional; Pro unlocks the rest. Idempotent. Runs after
+    inject_affiliate / inject_guides / inject_youtube / inject_vin / inject_identify."""
+    if "/*WRENCH_PAYWALL*/" in html:
+        return html
+    if "</head>" in html:
+        html = html.replace("</head>", PAYWALL_STYLE + "</head>", 1)
+    html = html.replace("function switchTab(name){", PAYWALL_JS + "\nfunction switchTab(name){", 1)
+    html = html.replace("</body>", PRICING_HTML + "\n</body>", 1)
+    # "Go Pro" button in the nav bar
+    html = html.replace(
+        "<div class=\"tab-btn\" data-tab=\"about\" onclick=\"switchTab('about')\">&#9881; &nbsp;About</div>",
+        "<div class=\"tab-btn\" data-tab=\"about\" onclick=\"switchTab('about')\">&#9881; &nbsp;About</div>\n  <div class=\"go-pro-btn\" id=\"go-pro-btn\" onclick=\"openPricing()\">&#9889; Go Pro</div>", 1)
+    # gate 1: AI guides -> first part free, fade the rest
+    html = html.replace(
+        "'<div class=\"gh-guide\">'+ghMd(d.guide)+'</div>'+affGuideParts(vid,svc)",
+        "(kyrPro()?('<div class=\"gh-guide\">'+ghMd(d.guide)+'</div>'+affGuideParts(vid,svc)):('<div class=\"gh-guide pro-fade\">'+ghMd(d.guide)+'</div>'+proUnlock('Unlock the full step-by-step guide','Preview shown - Pro unlocks the complete guide.')))", 1)
+    # gate 2: YouTube -> thumbnails free, clicking prompts upgrade for non-Pro
+    html = html.replace(
+        "'<a class=\"yt-card\" href=\"https://www.youtube.com/watch?v='+encodeURIComponent(vd.id)+'\" target=\"_blank\" rel=\"noopener\">'",
+        "'<a class=\"yt-card'+(kyrPro()?'':' pro-locked')+'\" href=\"'+(kyrPro()?('https://www.youtube.com/watch?v='+encodeURIComponent(vd.id)):'javascript:void(0)')+'\"'+(kyrPro()?' target=\"_blank\" rel=\"noopener\"':' onclick=\"openPricing();return false;\"')+'>'", 1)
+    # gate 3: VIN decode -> one free, then Pro
+    html = html.replace(
+        "function decodeVIN(){",
+        "function decodeVIN(){if(!kyrPro()&&kyrFreeUsed('vin')>=1){var _o=document.getElementById('vin-result');if(_o){_o.className='vin-result';_o.innerHTML=proUnlock('VIN decode is a Pro feature','You have used your free VIN decode.');}return;}", 1)
+    html = html.replace(
+        "var disp=titleCase(d.make)+' '+d.model;",
+        "if(!kyrPro())kyrUseFree('vin');var disp=titleCase(d.make)+' '+d.model;", 1)
+    # gate 4: Know Your Part -> one free scan, then Pro
+    html = html.replace(
+        "function kypScan(){",
+        "function kypScan(){if(!kyrPro()){if(kyrFreeUsed('scan')>=1){openPricing();return;}kyrUseFree('scan');}", 1)
+    # gate 6: maintenance schedule -> first 3 free, rest gated (+ regional costs teaser)
+    html = html.replace("maint:renderMaint,", "maint:renderMaintGated,", 1)
+    return html
+
+
 def main():
     if not os.path.exists(OUT_FILE):
         print(f"ERROR: {OUT_FILE} not found.")
@@ -1152,6 +1305,7 @@ def main():
     html = inject_fixrates(html)
     html = inject_affiliate(html)
     html = inject_founder(html)
+    html = inject_paywall(html)
     html = inject_branding(html)
     html = fix_js_quotes(html)
 

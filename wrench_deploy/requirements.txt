@@ -1,3 +1,4 @@
 upstash-redis
 anthropic
 requests
+stripe

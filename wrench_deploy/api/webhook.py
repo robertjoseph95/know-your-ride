@@ -1,0 +1,96 @@
+from http.server import BaseHTTPRequestHandler
+import json
+import os
+
+try:
+    from upstash_redis import Redis
+except Exception:
+    Redis = None
+
+# Subscription state lives in Redis keyed by email (sub:<email> = active|inactive),
+# kept long enough for the feature endpoints to read. Stripe is the source of truth;
+# verify-subscription re-checks Stripe directly when needed.
+ACTIVE_EVENTS = {
+    "checkout.session.completed",
+    "customer.subscription.created",
+    "customer.subscription.updated",
+    "invoice.paid",
+    "invoice.payment_succeeded",
+}
+INACTIVE_EVENTS = {
+    "customer.subscription.deleted",
+    "customer.subscription.canceled",
+    "invoice.payment_failed",
+}
+
+
+def _redis():
+    if Redis is None:
+        return None
+    url = os.environ.get("UPSTASH_REDIS_REST_URL") or os.environ.get("KV_REST_API_URL")
+    token = os.environ.get("UPSTASH_REDIS_REST_TOKEN") or os.environ.get("KV_REST_API_TOKEN")
+    if not (url and token):
+        return None
+    try:
+        return Redis(url=url, token=token)
+    except Exception:
+        return None
+
+
+class handler(BaseHTTPRequestHandler):
+    def do_POST(self):
+        key = os.environ.get("STRIPE_SECRET_KEY", "")
+        secret = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+        if not (key and secret):
+            return self._send(503, {"error": "server not configured (STRIPE_SECRET_KEY / STRIPE_WEBHOOK_SECRET)"})
+        length = int(self.headers.get("Content-Length", 0) or 0)
+        payload = self.rfile.read(length) if length > 0 else b""
+        sig = self.headers.get("Stripe-Signature", "")
+        try:
+            import stripe
+            stripe.api_key = key
+            event = stripe.Webhook.construct_event(payload, sig, secret)
+        except Exception as e:
+            return self._send(400, {"error": f"signature verification failed: {e}"})
+
+        etype = event["type"]
+        obj = event["data"]["object"]
+        r = _redis()
+        try:
+            email = self._email_for(stripe, obj)
+            if email and r:
+                if etype in INACTIVE_EVENTS:
+                    r.set("sub:" + email, "inactive", ex=60 * 60 * 24 * 40)
+                elif etype in ACTIVE_EVENTS:
+                    active = True
+                    if etype.startswith("customer.subscription"):
+                        active = obj.get("status") in ("active", "trialing")
+                    r.set("sub:" + email, "active" if active else "inactive", ex=60 * 60 * 24 * 40)
+        except Exception:
+            pass
+        # Always 200 so Stripe doesn't retry on our bookkeeping hiccups.
+        return self._send(200, {"received": True})
+
+    def _email_for(self, stripe, obj):
+        det = obj.get("customer_details") or {}
+        if det.get("email"):
+            return det["email"].strip().lower()
+        if obj.get("email"):
+            return obj["email"].strip().lower()
+        cust = obj.get("customer")
+        if cust:
+            try:
+                c = stripe.Customer.retrieve(cust)
+                if c and c.get("email"):
+                    return c["email"].strip().lower()
+            except Exception:
+                pass
+        return None
+
+    def _send(self, code, obj):
+        body = json.dumps(obj).encode()
+        self.send_response(code)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
