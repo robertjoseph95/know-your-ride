@@ -1330,6 +1330,114 @@ def inject_back(html):
     return html
 
 
+# ── Google Analytics 4 (gtag.js) ─────────────────────────────────────────────
+GA_SCRIPT = """<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-7RE1GC9S5Q"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-7RE1GC9S5Q');
+</script>
+"""
+
+
+def inject_ga(html):
+    """Add the GA4 gtag.js snippet to the head (measurement ID G-7RE1GC9S5Q). Idempotent."""
+    if "gtag/js?id=G-7RE1GC9S5Q" in html:
+        return html
+    if "</head>" in html:
+        html = html.replace("</head>", GA_SCRIPT + "</head>", 1)
+    return html
+
+
+# ── PWA: manifest link, install meta tags, service-worker registration ───────
+PWA_HEAD = """<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#f97316">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Know Your Ride">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+"""
+
+PWA_SW_REG = """<script>/*WRENCH_PWA*/if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
+"""
+
+
+def inject_pwa(html):
+    """Make the app installable: manifest link + PWA/apple meta tags in the head and
+    a service-worker registration before </body>. Idempotent."""
+    if "/*WRENCH_PWA*/" in html:
+        return html
+    if "</head>" in html:
+        html = html.replace("</head>", PWA_HEAD + "</head>", 1)
+    if "</body>" in html:
+        html = html.replace("</body>", PWA_SW_REG + "</body>", 1)
+    return html
+
+
+# ── VIN-based recall status (free NHTSA API) shown inside the VIN decode flow ─
+RECALL_STYLE = """<style>
+.rcl-panel{margin-top:12px;border-top:1px solid var(--border);padding-top:12px}
+.rcl-head{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:10px;flex-wrap:wrap}
+.rcl-head.ok{color:var(--green)}
+.rcl-head.warn{color:var(--amber,#e0a23b)}
+.rcl-head.park{color:var(--red)}
+.rcl-ic{font-size:16px}
+.rcl-parkit{background:var(--red);color:#fff;font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:5px;margin-left:4px}
+.rcl-item{background:var(--p2,#111);border:1px solid var(--border);border-left:3px solid var(--amber,#e0a23b);border-radius:8px;padding:11px 13px;margin-bottom:8px}
+.rcl-camp{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);letter-spacing:.08em;margin-bottom:3px}
+.rcl-comp{font-weight:700;font-size:13px;margin-bottom:5px}
+.rcl-sum{font-size:12px;color:var(--dim);line-height:1.5;margin-bottom:5px}
+.rcl-rem{font-size:12px;color:var(--text);line-height:1.5}
+.rcl-status{font-size:11px;color:var(--accent);margin-top:5px}
+</style>
+"""
+
+RECALL_JS = r"""/*WRENCH_RECALL*/
+function rclEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function loadRecalls(dec){
+  var out=document.getElementById('vin-result'); if(!out||!dec||!dec.make)return;
+  var qs='make='+encodeURIComponent(dec.make)+'&model='+encodeURIComponent(dec.model||'')+'&year='+encodeURIComponent(dec.year||'');
+  fetch('/api/recalls?'+qs).then(function(r){return r.json();}).then(function(d){
+    var recs=(d&&(d.recalls||d.results||d.Results))||[];
+    var n=recs.length, h='<div class="rcl-panel">';
+    if(!n){h+='<div class="rcl-head ok"><span class="rcl-ic">&#10004;</span> Your Recall Status: <strong>No open recalls</strong></div>';}
+    else{
+      var park=recs.some(function(x){return x.ParkIt||x.parkIt||x.park||x.ParkOutSide||x.parkOutSide;});
+      h+='<div class="rcl-head '+(park?'park':'warn')+'"><span class="rcl-ic">&#9888;</span> Your Recall Status: <strong>'+n+' open recall'+(n>1?'s':'')+'</strong>'+(park?'<span class="rcl-parkit">PARK IT</span>':'')+'</div>';
+      h+=recs.map(function(x){
+        var camp=x.NHTSACampaignNumber||x.campaignNumber||x.Campaign||x.campaign||'';
+        var comp=x.Component||x.component||'';
+        var sum=x.Summary||x.summary||x.Consequence||x.consequence||'';
+        var rem=x.Remedy||x.remedy||'';
+        var done=x.completion||x.Completion||x.recallStatus||x.status||'';
+        return '<div class="rcl-item">'+(camp?'<div class="rcl-camp">CAMPAIGN '+rclEsc(camp)+'</div>':'')+(comp?'<div class="rcl-comp">'+rclEsc(comp)+'</div>':'')+(sum?'<div class="rcl-sum">'+rclEsc(sum)+'</div>':'')+(rem?'<div class="rcl-rem"><strong>Remedy:</strong> '+rclEsc(rem)+'</div>':'')+(done?'<div class="rcl-status">Status: '+rclEsc(done)+'</div>':'')+'</div>';
+      }).join('');
+    }
+    out.innerHTML+=h+'</div>';
+  }).catch(function(){});
+}
+"""
+
+
+def inject_recall(html):
+    """During VIN decode, also fetch NHTSA recalls-by-VIN and render a 'Your Recall
+    Status' panel (green=clear, orange=open recalls, red PARK IT). Runs after
+    inject_paywall (which adds the free-VIN line we anchor on). Idempotent."""
+    if "/*WRENCH_RECALL*/" in html:
+        return html
+    if "</head>" in html:
+        html = html.replace("</head>", RECALL_STYLE + "</head>", 1)
+    html = html.replace("function switchTab(name){", RECALL_JS + "\nfunction switchTab(name){", 1)
+    html = html.replace(
+        "if(!kyrPro())kyrUseFree('vin');var disp=titleCase(d.make)+' '+d.model;",
+        "if(!kyrPro())kyrUseFree('vin');loadRecalls(d);var disp=titleCase(d.make)+' '+d.model;", 1)
+    return html
+
+
 def main():
     if not os.path.exists(OUT_FILE):
         print(f"ERROR: {OUT_FILE} not found.")
@@ -1381,6 +1489,9 @@ def main():
     html = inject_paywall(html)
     html = inject_search(html)
     html = inject_back(html)
+    html = inject_recall(html)
+    html = inject_ga(html)
+    html = inject_pwa(html)
     html = inject_branding(html)
     html = fix_js_quotes(html)
 

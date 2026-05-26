@@ -340,6 +340,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith("/api/vin/"):
             return self._decode_vin(self.path[len("/api/vin/"):])
+        if self.path.startswith("/api/recalls"):
+            q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+            return self._recalls((q.get("make") or [""])[0], (q.get("model") or [""])[0],
+                                 (q.get("year") or q.get("modelYear") or [""])[0])
         if self.path.startswith("/api/youtube/"):
             parsed = urllib.parse.urlparse(self.path)
             parts = [urllib.parse.unquote(p) for p in parsed.path[len("/api/youtube/"):].split("/") if p != ""]
@@ -658,6 +662,21 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             return self._json(e.code, {"error": msg})
         except Exception as e:
             return self._json(502, {"error": f"Could not reach decode service: {e}"})
+
+    def _recalls(self, make, model, year):
+        make, model, year = (make or "").strip(), (model or "").strip(), (year or "").strip()
+        if not (make and model and year):
+            return self._json(400, {"error": "make, model and year are required", "recalls": []})
+        try:
+            url = "https://api.nhtsa.gov/recalls/recallsByVehicle?" + urllib.parse.urlencode(
+                {"make": make, "model": model, "modelYear": year})
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (compatible; KnowYourRide/1.0)", "Accept": "application/json"})
+            with urllib.request.urlopen(req, timeout=15) as r:
+                data = json.loads(r.read().decode("utf-8", "ignore"))
+            items = data.get("results") or data.get("Results") or data.get("recalls") or []
+            return self._json(200, {"count": len(items), "recalls": items})
+        except Exception as e:
+            return self._json(502, {"error": f"recall lookup failed: {e}", "recalls": []})
 
     def _json(self, code, obj):
         body = json.dumps(obj).encode("utf-8")

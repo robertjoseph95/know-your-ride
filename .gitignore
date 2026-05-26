@@ -38,6 +38,10 @@ __pycache__/
 *_cache.json
 complaints_api_cache.json
 
+# ── Node deps (never commit) ─────────────────────────────────────
+node_modules/
+**/node_modules/
+
 # ── Claude Code local state (machine-specific) ───────────────────
 .claude/settings.local.json
 .claude/*.lock
