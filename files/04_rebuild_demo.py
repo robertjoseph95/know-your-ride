@@ -1047,6 +1047,63 @@ def inject_affiliate(html):
     return html
 
 
+# ── Founder / mission / contact block on the About pane ──────────────────────
+FOUNDER_STYLE = """<style>
+.founder{max-width:720px;margin:6px auto 0;padding:0 6px}
+.founder-mission{text-align:center;font-size:15px;line-height:1.75;color:var(--dim);border-top:1px solid var(--border);padding-top:36px;margin-bottom:34px}
+.founder-mission strong{color:var(--text)}
+.founder-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px 24px 22px}
+.vet-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(255,122,26,.12);border:1px solid var(--accent);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 13px;border-radius:20px;margin-bottom:15px}
+.vet-badge .star{font-size:13px;line-height:1}
+.founder-name{font-size:22px;font-weight:800;color:var(--text);margin-bottom:3px}
+.founder-tag{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);letter-spacing:.03em;margin-bottom:16px}
+.founder-bio{font-size:14px;line-height:1.75;color:var(--dim);margin-bottom:18px}
+.founder-bg{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:9px}
+.founder-bg li{font-size:13px;color:var(--dim);padding-left:18px;position:relative;line-height:1.5}
+.founder-bg li:before{content:'\\25B8';color:var(--accent);position:absolute;left:0;top:2px;font-size:10px}
+.founder-contact{text-align:center;color:var(--faint);font-size:13px;margin-top:30px;line-height:1.7}
+.founder-contact a{color:var(--accent);text-decoration:none}
+.founder-contact a:hover{text-decoration:underline}
+</style>
+"""
+
+FOUNDER_BLOCK = """
+  <div class="founder">
+    <p class="founder-mission">Know Your Ride exists to put dealership-level vehicle knowledge in every driver's pocket &mdash; <strong>completely free</strong>. No subscriptions, no paywalls, just the specs you need to maintain your vehicle with confidence.</p>
+    <div class="founder-card">
+      <div class="vet-badge"><span class="star">&#9733;</span> Built by a Veteran</div>
+      <div class="founder-name">Robert Joseph</div>
+      <div class="founder-tag">Built by a veteran mechanic, for every driver</div>
+      <p class="founder-bio">I built Know Your Ride because I got tired of watching people get overcharged for information that should be free. After years working on everything from diesel generators and agricultural equipment to military fuel systems and high-voltage electric vehicles, I know what it takes to keep machines running. Every spec in this app is the same data the pros use &mdash; now it's yours.</p>
+      <ul class="founder-bg">
+        <li>US Military Veteran</li>
+        <li>Professional EV diagnostics technician (high-voltage electric vehicles)</li>
+        <li>Diesel engine and heavy equipment experience</li>
+        <li>Off-road and agricultural equipment expertise</li>
+        <li>Military fuel systems &mdash; helicopter refueling operations</li>
+        <li>Years of hands-on experience across gas, diesel, and electric powertrains</li>
+      </ul>
+    </div>
+    <div class="founder-contact">Have feedback or a vehicle request? <a href="mailto:hello@knowyourride.net">hello@knowyourride.net</a></div>
+  </div>
+"""
+
+
+def inject_founder(html):
+    """Add the founder bio, mission, 'Built by a Veteran' badge, and contact to the
+    About pane (after the feature grid). Idempotent."""
+    if 'class="founder"' in html:
+        return html
+    if "</head>" in html:
+        html = html.replace("</head>", FOUNDER_STYLE + "</head>", 1)
+    # CRLF/LF-agnostic: insert before the pane-about closing </div> that precedes the overlay
+    html = re.sub(
+        r'</div>\s*<div class="overlay" id="overlay">',
+        lambda m: FOUNDER_BLOCK + '</div>\n\n<div class="overlay" id="overlay">',
+        html, count=1)
+    return html
+
+
 def main():
     if not os.path.exists(OUT_FILE):
         print(f"ERROR: {OUT_FILE} not found.")
@@ -1094,6 +1151,7 @@ def main():
     html = inject_kbb(html)
     html = inject_fixrates(html)
     html = inject_affiliate(html)
+    html = inject_founder(html)
     html = inject_branding(html)
     html = fix_js_quotes(html)
 
