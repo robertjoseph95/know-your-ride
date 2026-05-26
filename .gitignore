@@ -38,6 +38,10 @@ __pycache__/
 *_cache.json
 complaints_api_cache.json
 
+# ── Claude Code local state (machine-specific) ───────────────────
+.claude/settings.local.json
+.claude/*.lock
+
 # ── OS cruft ─────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
