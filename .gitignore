@@ -1,0 +1,44 @@
+# ── Secrets / config (NEVER commit) ──────────────────────────────
+wrench_config.json
+.env
+.env.*
+**/.env
+**/.env.*
+wrench_deploy/.env*
+*.flag
+
+# ── Databases & backups (large / regenerable) ────────────────────
+*.db
+*.db-shm
+*.db-wal
+*.db.*
+*.bak
+*.bak*
+
+# ── Logs ─────────────────────────────────────────────────────────
+*.log
+
+# ── Tooling / build artifacts ────────────────────────────────────
+wrench-repomix.xml
+.vercel
+.vercel/
+__pycache__/
+*.pyc
+*.pyo
+
+# ── Installers / binaries (not source) ───────────────────────────
+*.exe
+*.msi
+*.msix
+*.zip
+*.7z
+*.dmg
+
+# ── API response caches (large, regenerable) ─────────────────────
+*_cache.json
+complaints_api_cache.json
+
+# ── OS cruft ─────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini

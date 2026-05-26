@@ -1,0 +1,908 @@
+2026-05-24 18:10:43,421 Wrench Batch 5 - 342 target vehicles
+2026-05-24 18:10:43,424 [1/342] 2004 Toyota Camry
+2026-05-24 18:10:44,393   -> ID 11120 | None
+2026-05-24 18:10:48,368   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:10:54,987 [2/342] 2003 Toyota Camry
+2026-05-24 18:10:55,533   -> ID 11069 | None
+2026-05-24 18:10:59,256   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:11:05,750 [3/342] 2004 Toyota Corolla
+2026-05-24 18:11:06,293   -> ID 11121 | None
+2026-05-24 18:11:09,887   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:11:16,436 [4/342] 2003 Toyota Corolla
+2026-05-24 18:11:17,162   -> ID 11070 | None
+2026-05-24 18:11:20,834   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:11:27,252 [5/342] 2004 Toyota RAV4
+2026-05-24 18:11:27,985   -> ID 11123 | None
+2026-05-24 18:11:31,818   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:11:38,359 [6/342] 2003 Toyota RAV4
+2026-05-24 18:11:38,916   -> ID 11072 | None
+2026-05-24 18:11:42,724   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:11:49,242 [7/342] 2004 Toyota Tacoma
+2026-05-24 18:11:49,800   -> ID 16878 | None
+2026-05-24 18:11:53,442   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:11:59,895 [8/342] 2003 Toyota Tacoma
+2026-05-24 18:12:00,440   -> ID 15911 | None
+2026-05-24 18:12:03,790   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:12:10,255 [9/342] 2004 Toyota Tundra
+2026-05-24 18:12:10,803   -> ID 11125 | None
+2026-05-24 18:12:14,330   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:12:20,887 [10/342] 2003 Toyota Tundra
+2026-05-24 18:12:21,430   -> ID 11073 | None
+2026-05-24 18:12:24,878   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:12:31,436 [11/342] 2004 Toyota Highlander
+2026-05-24 18:12:31,977   -> ID 11122 | None
+2026-05-24 18:12:35,659   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:12:42,227 [12/342] 2003 Toyota Highlander
+2026-05-24 18:12:42,766   -> ID 11071 | None
+2026-05-24 18:12:46,426   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:12:52,835 [13/342] 2004 Toyota Prius
+2026-05-24 18:12:53,390   -> ID 16875 | None
+2026-05-24 18:12:56,774   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:13:03,341 [14/342] 2003 Toyota Prius
+2026-05-24 18:13:03,886   -> ID 15909 | None
+2026-05-24 18:13:07,441   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:13:13,929 [15/342] 2004 Toyota Sienna
+2026-05-24 18:13:14,476   -> ID 11124 | None
+2026-05-24 18:13:17,992   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:13:24,466 [16/342] 2003 Toyota Sienna
+2026-05-24 18:13:25,194   -> ID 15913 | None
+2026-05-24 18:13:28,907   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:13:35,285 [17/342] 2004 Toyota 4Runner
+2026-05-24 18:13:35,838   -> ID 11118 | None
+2026-05-24 18:13:39,623   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:13:46,077 [18/342] 2003 Toyota 4Runner
+2026-05-24 18:13:46,643   -> ID 11067 | None
+2026-05-24 18:13:50,305   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:13:56,879 [19/342] 2004 Toyota Sequoia
+2026-05-24 18:13:57,426   -> ID 16881 | None
+2026-05-24 18:14:00,634   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:14:06,446 [20/342] 2003 Toyota Sequoia
+2026-05-24 18:14:06,992   -> ID 15915 | None
+2026-05-24 18:14:10,192   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:14:16,017 [21/342] 2004 Honda Civic
+2026-05-24 18:14:16,568   -> ID 11093 | None
+2026-05-24 18:14:19,955   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:14:25,807 [22/342] 2003 Honda Civic
+2026-05-24 18:14:26,356   -> ID 11045 | None
+2026-05-24 18:14:29,733   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:14:35,626 [23/342] 2004 Honda Accord
+2026-05-24 18:14:36,178   -> ID 11091 | None
+2026-05-24 18:14:39,564   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:14:45,480 [24/342] 2003 Honda Accord
+2026-05-24 18:14:46,027   -> ID 11043 | None
+2026-05-24 18:14:49,813   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:14:55,693 [25/342] 2004 Honda CR-V
+2026-05-24 18:14:56,243   -> ID 11092 | None
+2026-05-24 18:14:59,671   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:15:05,586 --- 25/25 ok | 350 reqs | 886 total in DB ---
+2026-05-24 18:15:05,586 [26/342] 2003 Honda CR-V
+2026-05-24 18:15:06,135   -> ID 11044 | None
+2026-05-24 18:15:09,996   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:15:15,896 [27/342] 2004 Honda Pilot
+2026-05-24 18:15:16,442   -> ID 11095 | None
+2026-05-24 18:15:20,259   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:15:26,137 [28/342] 2003 Honda Pilot
+2026-05-24 18:15:26,688   -> ID 11047 | None
+2026-05-24 18:15:30,511   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:15:36,398 [29/342] 2004 Honda Odyssey
+2026-05-24 18:15:36,948   -> ID 17127 | None
+2026-05-24 18:15:40,620   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:15:46,487 [30/342] 2003 Honda Odyssey
+2026-05-24 18:15:47,035   -> ID 16152 | None
+2026-05-24 18:15:50,742   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:15:56,717 [31/342] 2004 Honda Element
+2026-05-24 18:15:57,266   -> ID 17126 | None
+2026-05-24 18:16:00,947   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:16:06,803 [32/342] 2003 Honda Element
+2026-05-24 18:16:07,350   -> ID 16151 | None
+2026-05-24 18:16:10,999   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:16:16,871 [33/342] 2004 Ford F-150
+2026-05-24 18:16:17,419   -> ID 11087 | None
+2026-05-24 18:16:21,211   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:16:27,081 [34/342] 2003 Ford F-150
+2026-05-24 18:16:27,632   -> ID 16028 | None
+2026-05-24 18:16:31,255   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:16:37,126 [35/342] 2004 Ford Explorer
+2026-05-24 18:16:37,674   -> ID 11086 | None
+2026-05-24 18:16:41,481   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:16:47,410 [36/342] 2003 Ford Explorer
+2026-05-24 18:16:47,958   -> ID 11039 | None
+2026-05-24 18:16:51,774   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:16:57,683 [37/342] 2004 Ford Expedition
+2026-05-24 18:16:58,236   -> ID 16992 | None
+2026-05-24 18:17:01,897   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:17:07,741 [38/342] 2003 Ford Expedition
+2026-05-24 18:17:08,288   -> ID 16027 | None
+2026-05-24 18:17:11,908   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:17:17,820 [39/342] 2004 Ford Escape
+2026-05-24 18:17:18,366   -> ID 11085 | None
+2026-05-24 18:17:22,158   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:17:28,053 [40/342] 2003 Ford Escape
+2026-05-24 18:17:28,601   -> ID 11038 | None
+2026-05-24 18:17:32,433   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:17:38,277 [41/342] 2004 Ford Mustang
+2026-05-24 18:17:38,826   -> ID 16987 | None
+2026-05-24 18:17:42,470   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:17:48,355 [42/342] 2003 Ford Mustang
+2026-05-24 18:17:48,907   -> ID 16022 | None
+2026-05-24 18:17:52,532   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:17:58,468 [43/342] 2004 Ford Focus
+2026-05-24 18:17:59,106   -> ID 11088 | None
+2026-05-24 18:18:02,777   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:18:08,556 [44/342] 2003 Ford Focus
+2026-05-24 18:18:09,096   -> ID 11040 | None
+2026-05-24 18:18:12,792   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:18:18,564 [45/342] 2004 Ford Ranger
+2026-05-24 18:18:19,110   -> ID 11089 | None
+2026-05-24 18:18:22,773   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:18:28,577 [46/342] 2003 Ford Ranger
+2026-05-24 18:18:29,113   -> ID 11041 | None
+2026-05-24 18:18:32,795   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:18:38,575 [47/342] 2004 Chevrolet Silverado 1500
+2026-05-24 18:18:39,115   -> ID 11081 | None
+2026-05-24 18:18:42,793   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:18:48,600 [48/342] 2003 Chevrolet Silverado 1500
+2026-05-24 18:18:49,142   -> ID 11035 | None
+2026-05-24 18:18:52,819   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:18:58,642 [49/342] 2004 Chevrolet Tahoe
+2026-05-24 18:18:59,182   -> ID 11083 | None
+2026-05-24 18:19:02,947   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:19:08,808 [50/342] 2003 Chevrolet Tahoe
+2026-05-24 18:19:09,352   -> ID 11037 | None
+2026-05-24 18:19:13,145   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:19:18,962 --- 50/50 ok | 700 reqs | 911 total in DB ---
+2026-05-24 18:19:18,963 [51/342] 2004 Chevrolet Suburban
+2026-05-24 18:19:19,500   -> ID 11082 | None
+2026-05-24 18:19:23,290   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:19:29,123 [52/342] 2003 Chevrolet Suburban
+2026-05-24 18:19:29,670   -> ID 11036 | None
+2026-05-24 18:19:33,433   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:19:39,276 [53/342] 2004 Chevrolet Avalanche
+2026-05-24 18:19:39,812   -> ID 17052 | None
+2026-05-24 18:19:43,413   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:19:49,281 [54/342] 2003 Chevrolet Avalanche
+2026-05-24 18:19:49,826   -> ID 16086 | None
+2026-05-24 18:19:53,420   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:19:59,250 [55/342] 2004 Chevrolet Colorado
+2026-05-24 18:19:59,787   -> ID 11079 | None
+2026-05-24 18:20:03,474   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:20:09,298 [56/342] 2003 Chevrolet Colorado
+2026-05-24 18:20:09,841   No results
+2026-05-24 18:20:09,842 [57/342] 2004 Chevrolet Impala
+2026-05-24 18:20:10,384   -> ID 17043 | None
+2026-05-24 18:20:13,963   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:20:19,759 [58/342] 2003 Chevrolet Impala
+2026-05-24 18:20:20,295   -> ID 16076 | None
+2026-05-24 18:20:23,867   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:20:29,697 [59/342] 2004 Chevrolet Malibu
+2026-05-24 18:20:30,234   -> ID 11080 | None
+2026-05-24 18:20:33,985   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:20:39,805 [60/342] 2003 Chevrolet Malibu
+2026-05-24 18:20:40,346   -> ID 16077 | None
+2026-05-24 18:20:43,956   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:20:49,733 [61/342] 2004 Chevrolet TrailBlazer
+2026-05-24 18:20:50,270   -> ID 17055 | None
+2026-05-24 18:20:53,850   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:20:59,686 [62/342] 2003 Chevrolet TrailBlazer
+2026-05-24 18:21:00,237   -> ID 16087 | None
+2026-05-24 18:21:03,819   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:21:09,673 [63/342] 2004 GMC Sierra 1500
+2026-05-24 18:21:10,212   -> ID 11090 | None
+2026-05-24 18:21:14,015   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:21:19,806 [64/342] 2003 GMC Sierra 1500
+2026-05-24 18:21:20,351   -> ID 11042 | None
+2026-05-24 18:21:24,026   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:21:29,820 [65/342] 2004 GMC Envoy
+2026-05-24 18:21:30,361   -> ID 17103 | None
+2026-05-24 18:21:33,936   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:21:39,737 [66/342] 2003 GMC Envoy
+2026-05-24 18:21:40,280   -> ID 16131 | None
+2026-05-24 18:21:43,874   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:21:49,732 [67/342] 2004 GMC Yukon
+2026-05-24 18:21:50,275   -> ID 17101 | None
+2026-05-24 18:21:53,854   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:21:59,668 [68/342] 2003 GMC Yukon
+2026-05-24 18:22:00,203   -> ID 16130 | None
+2026-05-24 18:22:03,777   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:22:09,614 [69/342] 2004 Nissan Altima
+2026-05-24 18:22:10,153   -> ID 11108 | None
+2026-05-24 18:22:13,897   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:22:19,686 [70/342] 2003 Nissan Altima
+2026-05-24 18:22:20,222   -> ID 11058 | None
+2026-05-24 18:22:23,954   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:22:29,747 [71/342] 2004 Nissan Sentra
+2026-05-24 18:22:30,287   -> ID 11109 | None
+2026-05-24 18:22:34,013   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:22:39,792 [72/342] 2003 Nissan Sentra
+2026-05-24 18:22:40,331   -> ID 11059 | None
+2026-05-24 18:22:44,072   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:22:49,858 [73/342] 2004 Nissan Maxima
+2026-05-24 18:22:50,394   -> ID 17246 | None
+2026-05-24 18:22:54,055   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:23:00,188 [74/342] 2003 Nissan Maxima
+2026-05-24 18:23:00,822   -> ID 16276 | None
+2026-05-24 18:23:04,546   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:23:10,356 [75/342] 2004 Nissan Pathfinder
+2026-05-24 18:23:10,896   -> ID 17234 | None
+2026-05-24 18:23:14,519   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:23:20,324 --- 74/75 ok | 1037 reqs | 935 total in DB ---
+2026-05-24 18:23:20,324 [76/342] 2003 Nissan Pathfinder
+2026-05-24 18:23:20,863   -> ID 16262 | None
+2026-05-24 18:23:24,503   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:23:30,366 [77/342] 2004 Nissan Xterra
+2026-05-24 18:23:30,904   -> ID 17240 | None
+2026-05-24 18:23:34,557   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:23:40,358 [78/342] 2003 Nissan Xterra
+2026-05-24 18:23:40,898   -> ID 16268 | None
+2026-05-24 18:23:44,685   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:23:50,510 [79/342] 2004 Nissan Frontier
+2026-05-24 18:23:51,050   -> ID 17244 | None
+2026-05-24 18:23:54,679   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:24:00,470 [80/342] 2003 Nissan Frontier
+2026-05-24 18:24:01,006   -> ID 16272 | None
+2026-05-24 18:24:04,246   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:24:10,053 [81/342] 2004 Nissan Murano
+2026-05-24 18:24:10,597   -> ID 17236 | None
+2026-05-24 18:24:13,850   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:24:19,634 [82/342] 2003 Nissan Murano
+2026-05-24 18:24:20,173   -> ID 16264 | None
+2026-05-24 18:24:23,394   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:24:29,291 [83/342] 2004 Dodge Ram 1500
+2026-05-24 18:24:29,824   No results
+2026-05-24 18:24:29,824 [84/342] 2003 Dodge Ram 1500
+2026-05-24 18:24:30,363   No results
+2026-05-24 18:24:30,363 [85/342] 2004 Dodge Durango
+2026-05-24 18:24:30,909   -> ID 11084 | None
+2026-05-24 18:24:34,640   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:24:40,446 [86/342] 2003 Dodge Durango
+2026-05-24 18:24:40,987   -> ID 16233 | None
+2026-05-24 18:24:44,516   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:24:50,313 [87/342] 2004 Dodge Caravan
+2026-05-24 18:24:50,860   -> ID 17220 | None
+2026-05-24 18:24:54,542   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:25:00,381 [88/342] 2003 Dodge Caravan
+2026-05-24 18:25:00,924   No results
+2026-05-24 18:25:00,924 [89/342] 2004 Dodge Neon
+2026-05-24 18:25:01,463   -> ID 17219 | None
+2026-05-24 18:25:04,650   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:25:10,426 [90/342] 2003 Dodge Neon
+2026-05-24 18:25:10,974   -> ID 16236 | None
+2026-05-24 18:25:14,238   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:25:20,036 [91/342] 2004 Dodge Stratus
+2026-05-24 18:25:20,580   -> ID 17218 | None
+2026-05-24 18:25:24,160   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:25:29,980 [92/342] 2003 Dodge Stratus
+2026-05-24 18:25:30,523   -> ID 16235 | None
+2026-05-24 18:25:34,246   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:25:40,058 [93/342] 2004 Jeep Grand Cherokee
+2026-05-24 18:25:40,605   -> ID 11099 | None
+2026-05-24 18:25:44,354   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:25:50,161 [94/342] 2003 Jeep Grand Cherokee
+2026-05-24 18:25:50,709   -> ID 11051 | None
+2026-05-24 18:25:54,405   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:26:00,197 [95/342] 2004 Jeep Wrangler
+2026-05-24 18:26:00,735   -> ID 11100 | None
+2026-05-24 18:26:04,400   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:26:10,163 [96/342] 2003 Jeep Wrangler
+2026-05-24 18:26:10,712   -> ID 11052 | None
+2026-05-24 18:26:14,050   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:26:19,821 [97/342] 2004 Jeep Liberty
+2026-05-24 18:26:20,364   No results
+2026-05-24 18:26:20,365 [98/342] 2003 Jeep Liberty
+2026-05-24 18:26:20,904   No results
+2026-05-24 18:26:20,904 [99/342] 2004 BMW 325i
+2026-05-24 18:26:21,447   -> ID 16948 | None
+2026-05-24 18:26:24,613   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:26:30,413 [100/342] 2003 BMW 325i
+2026-05-24 18:26:30,963   -> ID 15982 | None
+2026-05-24 18:26:34,132   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:26:39,929 --- 94/100 ok | 1322 reqs | 955 total in DB ---
+2026-05-24 18:26:39,929 [101/342] 2004 BMW 330i
+2026-05-24 18:26:40,467   -> ID 16950 | None
+2026-05-24 18:26:43,660   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:26:49,445 [102/342] 2003 BMW 330i
+2026-05-24 18:26:49,988   -> ID 15984 | None
+2026-05-24 18:26:53,161   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:26:58,955 [103/342] 2004 BMW X5
+2026-05-24 18:26:59,505   -> ID 11078 | None
+2026-05-24 18:27:02,859   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:27:08,644 [104/342] 2003 BMW X5
+2026-05-24 18:27:09,184   -> ID 11034 | None
+2026-05-24 18:27:12,556   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:27:18,348 [105/342] 2004 Subaru Outback
+2026-05-24 18:27:18,896   -> ID 11116 | None
+2026-05-24 18:27:22,271   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:27:28,111 [106/342] 2003 Subaru Outback
+2026-05-24 18:27:28,662   -> ID 11065 | None
+2026-05-24 18:27:32,035   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:27:37,866 [107/342] 2004 Subaru Forester
+2026-05-24 18:27:38,627   -> ID 11113 | None
+2026-05-24 18:27:42,004   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:27:47,790 [108/342] 2003 Subaru Forester
+2026-05-24 18:27:48,335   -> ID 11062 | None
+2026-05-24 18:27:51,714   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:27:57,502 [109/342] 2004 Subaru Impreza
+2026-05-24 18:27:58,066   -> ID 11114 | None
+2026-05-24 18:28:02,061   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:28:07,823 [110/342] 2003 Subaru Impreza
+2026-05-24 18:28:08,363   -> ID 11063 | None
+2026-05-24 18:28:12,049   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:28:17,852 [111/342] 2004 Hyundai Elantra
+2026-05-24 18:28:18,393   -> ID 11096 | None
+2026-05-24 18:28:22,061   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:28:27,864 [112/342] 2003 Hyundai Elantra
+2026-05-24 18:28:28,403   -> ID 11048 | None
+2026-05-24 18:28:32,067   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:28:37,865 [113/342] 2004 Hyundai Sonata
+2026-05-24 18:28:38,405   -> ID 11098 | None
+2026-05-24 18:28:42,075   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:28:47,834 [114/342] 2003 Hyundai Sonata
+2026-05-24 18:28:48,377   -> ID 11050 | None
+2026-05-24 18:28:52,117   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:28:57,896 [115/342] 2004 Hyundai Santa Fe
+2026-05-24 18:28:58,432   -> ID 11097 | None
+2026-05-24 18:29:02,154   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:29:07,927 [116/342] 2003 Hyundai Santa Fe
+2026-05-24 18:29:08,466   -> ID 11049 | None
+2026-05-24 18:29:12,201   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:29:17,999 [117/342] 2004 Kia Sorento
+2026-05-24 18:29:18,550   -> ID 11101 | None
+2026-05-24 18:29:22,242   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:29:28,020 [118/342] 2003 Kia Sorento
+2026-05-24 18:29:28,556   -> ID 11053 | None
+2026-05-24 18:29:32,271   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:29:38,018 [119/342] 2004 Kia Optima
+2026-05-24 18:29:38,558   -> ID 17390 | None
+2026-05-24 18:29:42,152   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:29:47,891 [120/342] 2003 Kia Optima
+2026-05-24 18:29:48,430   -> ID 16415 | None
+2026-05-24 18:29:52,000   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:29:57,755 [121/342] 2004 Volkswagen Jetta
+2026-05-24 18:29:58,291   -> ID 17303 | None
+2026-05-24 18:30:01,920   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:30:07,775 [122/342] 2003 Volkswagen Jetta
+2026-05-24 18:30:08,318   -> ID 16327 | None
+2026-05-24 18:30:11,909   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:30:17,687 [123/342] 2004 Volkswagen Passat
+2026-05-24 18:30:18,225   -> ID 17297 | None
+2026-05-24 18:30:21,832   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:30:27,638 [124/342] 2003 Volkswagen Passat
+2026-05-24 18:30:28,172   -> ID 16324 | None
+2026-05-24 18:30:31,810   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:30:37,609 [125/342] 2004 Volkswagen Golf
+2026-05-24 18:30:38,147   -> ID 17295 | None
+2026-05-24 18:30:41,747   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:30:47,533 --- 119/125 ok | 1672 reqs | 980 total in DB ---
+2026-05-24 18:30:47,533 [126/342] 2003 Volkswagen Golf
+2026-05-24 18:30:48,073   -> ID 16321 | None
+2026-05-24 18:30:51,645   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:30:57,468 [127/342] 2004 Mazda Mazda6
+2026-05-24 18:30:58,004   -> ID 11106 | None
+2026-05-24 18:31:01,666   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:31:07,439 [128/342] 2003 Mazda Mazda6
+2026-05-24 18:31:07,979   -> ID 11056 | None
+2026-05-24 18:31:11,632   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:31:17,396 [129/342] 2004 Mazda Mazda3
+2026-05-24 18:31:17,936   -> ID 11105 | None
+2026-05-24 18:31:21,591   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:31:27,337 [130/342] 2003 Mazda Mazda3
+2026-05-24 18:31:27,873   No results
+2026-05-24 18:31:27,873 [131/342] 2004 Mazda MPV
+2026-05-24 18:31:28,415   -> ID 17123 | None
+2026-05-24 18:31:31,951   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:31:37,703 [132/342] 2003 Mazda MPV
+2026-05-24 18:31:38,246   -> ID 16148 | None
+2026-05-24 18:31:41,796   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:31:47,552 [133/342] 2007 Saturn Vue
+2026-05-24 18:31:48,097   -> ID 20673 | None
+2026-05-24 18:31:51,642   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:31:57,396 [134/342] 2008 Saturn Vue
+2026-05-24 18:31:57,944   -> ID 21761 | None
+2026-05-24 18:32:01,489   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:32:07,260 [135/342] 2009 Saturn Vue
+2026-05-24 18:32:07,803   -> ID 22857 | None
+2026-05-24 18:32:11,333   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:32:17,117 [136/342] 2007 Saturn Outlook
+2026-05-24 18:32:17,656   -> ID 20674 | None
+2026-05-24 18:32:21,196   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:32:26,976 [137/342] 2008 Saturn Outlook
+2026-05-24 18:32:27,518   -> ID 21762 | None
+2026-05-24 18:32:31,041   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:32:36,821 [138/342] 2009 Saturn Outlook
+2026-05-24 18:32:37,361   -> ID 22858 | None
+2026-05-24 18:32:40,886   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:32:46,672 [139/342] 2007 Saturn Aura
+2026-05-24 18:32:47,213   -> ID 20672 | None
+2026-05-24 18:32:50,776   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:32:56,557 [140/342] 2008 Saturn Aura
+2026-05-24 18:32:57,222   -> ID 21760 | None
+2026-05-24 18:33:00,864   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:33:06,937 [141/342] 2009 Saturn Aura
+2026-05-24 18:33:07,476   -> ID 22856 | None
+2026-05-24 18:33:11,015   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:33:16,808 [142/342] 2005 Saturn Ion
+2026-05-24 18:33:17,345   -> ID 18638 | None
+2026-05-24 18:33:20,900   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:33:26,725 [143/342] 2006 Saturn Ion
+2026-05-24 18:33:27,269   -> ID 19643 | None
+2026-05-24 18:33:30,810   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:33:36,628 [144/342] 2007 Saturn Ion
+2026-05-24 18:33:37,168   -> ID 20675 | None
+2026-05-24 18:33:40,702   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:33:46,471 [145/342] 2005 Saturn Vue
+2026-05-24 18:33:47,008   -> ID 18637 | None
+2026-05-24 18:33:50,555   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:33:56,304 [146/342] 2006 Saturn Vue
+2026-05-24 18:33:56,845   -> ID 19642 | None
+2026-05-24 18:34:00,383   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:34:06,120 [147/342] 2007 Pontiac G6
+2026-05-24 18:34:06,657   -> ID 20588 | None
+2026-05-24 18:34:10,182   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:34:15,976 [148/342] 2008 Pontiac G6
+2026-05-24 18:34:16,512   -> ID 21666 | None
+2026-05-24 18:34:20,127   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:34:25,949 [149/342] 2009 Pontiac G6
+2026-05-24 18:34:26,495   -> ID 22764 | None
+2026-05-24 18:34:30,037   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:34:35,806 [150/342] 2007 Pontiac Torrent
+2026-05-24 18:34:36,345   -> ID 20590 | None
+2026-05-24 18:34:39,975   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:34:45,714 --- 143/150 ok | 2009 reqs | 1004 total in DB ---
+2026-05-24 18:34:45,714 [151/342] 2008 Pontiac Torrent
+2026-05-24 18:34:46,257   -> ID 21670 | None
+2026-05-24 18:34:49,906   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:34:55,661 [152/342] 2007 Pontiac Vibe
+2026-05-24 18:34:56,199   -> ID 20583 | None
+2026-05-24 18:34:59,731   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:35:05,509 [153/342] 2008 Pontiac Vibe
+2026-05-24 18:35:06,049   -> ID 21661 | None
+2026-05-24 18:35:09,568   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:35:15,360 [154/342] 2009 Pontiac Vibe
+2026-05-24 18:35:15,898   -> ID 22761 | None
+2026-05-24 18:35:19,425   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:35:25,188 [155/342] 2007 Pontiac Grand Prix
+2026-05-24 18:35:25,728   -> ID 20587 | None
+2026-05-24 18:35:29,268   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:35:35,010 [156/342] 2008 Pontiac Grand Prix
+2026-05-24 18:35:35,548   -> ID 21665 | None
+2026-05-24 18:35:39,075   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:35:44,815 [157/342] 2005 Pontiac G6
+2026-05-24 18:35:45,354   -> ID 18563 | None
+2026-05-24 18:35:48,919   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:35:54,683 [158/342] 2006 Pontiac G6
+2026-05-24 18:35:55,225   -> ID 19570 | None
+2026-05-24 18:35:58,754   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:36:04,519 [159/342] 2008 Pontiac Solstice
+2026-05-24 18:36:05,058   -> ID 21663 | None
+2026-05-24 18:36:08,595   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:36:14,386 [160/342] 2009 Pontiac Solstice
+2026-05-24 18:36:14,923   -> ID 22763 | None
+2026-05-24 18:36:18,476   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:36:24,227 [161/342] 2010 Scion tC
+2026-05-24 18:36:24,766   No results
+2026-05-24 18:36:24,766 [162/342] 2011 Scion tC
+2026-05-24 18:36:25,304   No results
+2026-05-24 18:36:25,304 [163/342] 2012 Scion tC
+2026-05-24 18:36:25,844   No results
+2026-05-24 18:36:25,845 [164/342] 2013 Scion tC
+2026-05-24 18:36:26,390   No results
+2026-05-24 18:36:26,390 [165/342] 2014 Scion tC
+2026-05-24 18:36:26,928   No results
+2026-05-24 18:36:26,929 [166/342] 2015 Scion tC
+2026-05-24 18:36:27,474   No results
+2026-05-24 18:36:27,474 [167/342] 2010 Scion xB
+2026-05-24 18:36:28,020   No results
+2026-05-24 18:36:28,020 [168/342] 2011 Scion xB
+2026-05-24 18:36:28,558   No results
+2026-05-24 18:36:28,559 [169/342] 2012 Scion xB
+2026-05-24 18:36:29,102   No results
+2026-05-24 18:36:29,102 [170/342] 2008 Scion xB
+2026-05-24 18:36:29,637   No results
+2026-05-24 18:36:29,637 [171/342] 2009 Scion xB
+2026-05-24 18:36:30,171   No results
+2026-05-24 18:36:30,171 [172/342] 2012 Scion FR-S
+2026-05-24 18:36:30,703   No results
+2026-05-24 18:36:30,703 [173/342] 2013 Scion FR-S
+2026-05-24 18:36:31,242   No results
+2026-05-24 18:36:31,243 [174/342] 2014 Scion FR-S
+2026-05-24 18:36:31,779   No results
+2026-05-24 18:36:31,780 [175/342] 2015 Scion FR-S
+2026-05-24 18:36:32,318   No results
+2026-05-24 18:36:32,318 --- 153/175 ok | 2164 reqs | 1014 total in DB ---
+2026-05-24 18:36:32,319 [176/342] 2016 Scion FR-S
+2026-05-24 18:36:32,863   No results
+2026-05-24 18:36:32,864 [177/342] 2010 Scion xD
+2026-05-24 18:36:33,398   No results
+2026-05-24 18:36:33,398 [178/342] 2011 Scion xD
+2026-05-24 18:36:33,933   No results
+2026-05-24 18:36:33,933 [179/342] 2012 Scion xD
+2026-05-24 18:36:34,469   No results
+2026-05-24 18:36:34,469 [180/342] 2008 Mercury Mountaineer
+2026-05-24 18:36:35,006   -> ID 21113 | None
+2026-05-24 18:36:38,535   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:36:44,235 [181/342] 2009 Mercury Mountaineer
+2026-05-24 18:36:44,782   -> ID 22218 | None
+2026-05-24 18:36:48,339   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:36:54,065 [182/342] 2010 Mercury Mountaineer
+2026-05-24 18:36:54,605   -> ID 23337 | None
+2026-05-24 18:36:58,156   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:37:03,873 [183/342] 2008 Mercury Milan
+2026-05-24 18:37:04,415   -> ID 21111 | None
+2026-05-24 18:37:07,963   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:37:13,714 [184/342] 2009 Mercury Milan
+2026-05-24 18:37:14,260   -> ID 22216 | None
+2026-05-24 18:37:17,795   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:37:23,536 [185/342] 2010 Mercury Milan
+2026-05-24 18:37:24,082   -> ID 23335 | None
+2026-05-24 18:37:27,639   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:37:33,432 [186/342] 2007 Mercury Mariner
+2026-05-24 18:37:33,971   -> ID 20044 | None
+2026-05-24 18:37:37,525   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:37:43,271 [187/342] 2008 Mercury Mariner
+2026-05-24 18:37:43,815   -> ID 21112 | None
+2026-05-24 18:37:47,383   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:37:53,127 [188/342] 2009 Mercury Mariner
+2026-05-24 18:37:53,673   -> ID 22217 | None
+2026-05-24 18:37:57,233   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:38:03,459 [189/342] 2010 Mercury Mariner
+2026-05-24 18:38:04,011   -> ID 23336 | None
+2026-05-24 18:38:07,639   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:38:13,508 [190/342] 2011 Mercury Mariner
+2026-05-24 18:38:14,066   -> ID 24440 | None
+2026-05-24 18:38:17,717   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:38:23,596 [191/342] 2005 Hummer H2
+2026-05-24 18:38:24,143   No results
+2026-05-24 18:38:24,143 [192/342] 2006 Hummer H2
+2026-05-24 18:38:24,692   No results
+2026-05-24 18:38:24,692 [193/342] 2007 Hummer H2
+2026-05-24 18:38:25,237   No results
+2026-05-24 18:38:25,237 [194/342] 2008 Hummer H2
+2026-05-24 18:38:25,786   No results
+2026-05-24 18:38:25,786 [195/342] 2006 Hummer H3
+2026-05-24 18:38:26,339   No results
+2026-05-24 18:38:26,339 [196/342] 2007 Hummer H3
+2026-05-24 18:38:26,887   No results
+2026-05-24 18:38:26,887 [197/342] 2008 Hummer H3
+2026-05-24 18:38:27,438   No results
+2026-05-24 18:38:27,438 [198/342] 2009 Hummer H3
+2026-05-24 18:38:27,984   No results
+2026-05-24 18:38:27,985 [199/342] 2007 Saab 9-3
+2026-05-24 18:38:28,537   -> ID 20629 | None
+2026-05-24 18:38:32,185   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:38:38,054 [200/342] 2008 Saab 9-3
+2026-05-24 18:38:38,604   -> ID 21708 | None
+2026-05-24 18:38:42,238   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:38:48,090 --- 166/200 ok | 2358 reqs | 1027 total in DB ---
+2026-05-24 18:38:48,091 [201/342] 2009 Saab 9-3
+2026-05-24 18:38:48,638   -> ID 22802 | None
+2026-05-24 18:38:52,277   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:38:58,148 [202/342] 2010 Saab 9-3
+2026-05-24 18:38:58,707   -> ID 23875 | None
+2026-05-24 18:39:02,353   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:39:08,251 [203/342] 2007 Saab 9-5
+2026-05-24 18:39:08,803   -> ID 20630 | None
+2026-05-24 18:39:12,446   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:39:18,300 [204/342] 2008 Saab 9-5
+2026-05-24 18:39:18,851   -> ID 21709 | None
+2026-05-24 18:39:22,481   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:39:28,318 [205/342] 2009 Saab 9-5
+2026-05-24 18:39:28,871   -> ID 22803 | None
+2026-05-24 18:39:32,513   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:39:38,360 [206/342] 2015 Ford E-Series
+2026-05-24 18:39:38,913   No results
+2026-05-24 18:39:38,913 [207/342] 2016 Ford E-Series
+2026-05-24 18:39:39,460   No results
+2026-05-24 18:39:39,460 [208/342] 2014 Ford E-Series
+2026-05-24 18:39:40,009   No results
+2026-05-24 18:39:40,010 [209/342] 2018 Chevrolet Express 1500
+2026-05-24 18:39:40,614   No results
+2026-05-24 18:39:40,615 [210/342] 2019 Chevrolet Express 1500
+2026-05-24 18:39:41,176   No results
+2026-05-24 18:39:41,176 [211/342] 2020 Chevrolet Express 1500
+2026-05-24 18:39:41,724   No results
+2026-05-24 18:39:41,724 [212/342] 2018 GMC Savana 1500
+2026-05-24 18:39:42,270   No results
+2026-05-24 18:39:42,270 [213/342] 2019 GMC Savana 1500
+2026-05-24 18:39:42,825   No results
+2026-05-24 18:39:42,825 [214/342] 2020 GMC Savana 1500
+2026-05-24 18:39:43,371   No results
+2026-05-24 18:39:43,372 [215/342] 2018 Ford Transit-150
+2026-05-24 18:39:43,919   No results
+2026-05-24 18:39:43,919 [216/342] 2019 Ford Transit-150
+2026-05-24 18:39:44,469   No results
+2026-05-24 18:39:44,469 [217/342] 2020 Ford Transit-150
+2026-05-24 18:39:45,014   No results
+2026-05-24 18:39:45,015 [218/342] 2021 Ford Transit-150
+2026-05-24 18:39:45,563   No results
+2026-05-24 18:39:45,564 [219/342] 2022 Ford Transit-150
+2026-05-24 18:39:46,111   No results
+2026-05-24 18:39:46,111 [220/342] 2021 Ford F-150 Raptor
+2026-05-24 18:39:46,658   No results
+2026-05-24 18:39:46,659 [221/342] 2022 Ford F-150 Raptor
+2026-05-24 18:39:47,207   No results
+2026-05-24 18:39:47,207 [222/342] 2023 Ford F-150 Raptor
+2026-05-24 18:39:47,759   No results
+2026-05-24 18:39:47,759 [223/342] 2021 Jeep Wrangler Rubicon
+2026-05-24 18:39:48,310   No results
+2026-05-24 18:39:48,310 [224/342] 2022 Jeep Wrangler Rubicon
+2026-05-24 18:39:48,857   No results
+2026-05-24 18:39:48,857 [225/342] 2021 Chevrolet Silverado 1500 LTZ
+2026-05-24 18:39:49,405   No results
+2026-05-24 18:39:49,405 --- 171/225 ok | 2448 reqs | 1032 total in DB ---
+2026-05-24 18:39:49,405 [226/342] 2022 Chevrolet Silverado 1500 LTZ
+2026-05-24 18:39:49,958   No results
+2026-05-24 18:39:49,958 [227/342] 2020 Lexus IS 300
+2026-05-24 18:39:50,509   No results
+2026-05-24 18:39:50,509 [228/342] 2021 Lexus IS 300
+2026-05-24 18:39:51,057   No results
+2026-05-24 18:39:51,058 [229/342] 2022 Lexus IS 300
+2026-05-24 18:39:51,604   No results
+2026-05-24 18:39:51,604 [230/342] 2020 Lexus ES 300h
+2026-05-24 18:39:52,150   No results
+2026-05-24 18:39:52,150 [231/342] 2021 Lexus ES 300h
+2026-05-24 18:39:52,696   No results
+2026-05-24 18:39:52,696 [232/342] 2020 Lexus UX 200
+2026-05-24 18:39:53,243   No results
+2026-05-24 18:39:53,244 [233/342] 2021 Lexus UX 200
+2026-05-24 18:39:53,795   No results
+2026-05-24 18:39:53,796 [234/342] 2022 Lexus UX 200
+2026-05-24 18:39:54,343   No results
+2026-05-24 18:39:54,343 [235/342] 2020 Lexus LX 570
+2026-05-24 18:39:54,891   No results
+2026-05-24 18:39:54,891 [236/342] 2021 Lexus LX 570
+2026-05-24 18:39:55,437   No results
+2026-05-24 18:39:55,437 [237/342] 2020 Lexus RX 450h
+2026-05-24 18:39:55,986   No results
+2026-05-24 18:39:55,986 [238/342] 2021 Lexus RX 450h
+2026-05-24 18:39:56,534   No results
+2026-05-24 18:39:56,534 [239/342] 2020 Acura MDX Sport Hybrid
+2026-05-24 18:39:57,080   No results
+2026-05-24 18:39:57,080 [240/342] 2021 Acura MDX Sport Hybrid
+2026-05-24 18:39:57,626   No results
+2026-05-24 18:39:57,626 [241/342] 2020 Acura RDX A-Spec
+2026-05-24 18:39:58,196   No results
+2026-05-24 18:39:58,196 [242/342] 2022 Acura Integra
+2026-05-24 18:39:58,744   No results
+2026-05-24 18:39:58,744 [243/342] 2023 Acura Integra
+2026-05-24 18:39:59,301   -> ID 4999 | None
+2026-05-24 18:40:03,032   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:40:08,904 [244/342] 2020 Infiniti QX80
+2026-05-24 18:40:08,905   SKIP (already complete)
+2026-05-24 18:40:08,905 [245/342] 2021 Infiniti QX80
+2026-05-24 18:40:08,905   SKIP (already complete)
+2026-05-24 18:40:08,905 [246/342] 2022 Infiniti QX80
+2026-05-24 18:40:09,458   -> ID 3516 | None
+2026-05-24 18:40:13,161   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:40:19,100 [247/342] 2020 Infiniti Q60
+2026-05-24 18:40:19,652   -> ID 488 | None
+2026-05-24 18:40:23,372   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:40:29,295 [248/342] 2021 Infiniti Q60
+2026-05-24 18:40:29,848   -> ID 1986 | None
+2026-05-24 18:40:33,542   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:40:39,477 [249/342] 2022 Cadillac CT4
+2026-05-24 18:40:40,030   -> ID 3309 | None
+2026-05-24 18:40:43,744   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:40:49,772 [250/342] 2023 Cadillac CT4
+2026-05-24 18:40:50,329   -> ID 4851 | None
+2026-05-24 18:40:54,050   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:41:00,047 --- 179/250 ok | 2549 reqs | 1038 total in DB ---
+2026-05-24 18:41:00,048 [251/342] 2022 Cadillac CT5
+2026-05-24 18:41:00,600   -> ID 3310 | None
+2026-05-24 18:41:04,310   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:41:10,263 [252/342] 2023 Cadillac CT5
+2026-05-24 18:41:10,815   -> ID 4852 | None
+2026-05-24 18:41:14,489   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:41:20,422 [253/342] 2023 Cadillac LYRIQ
+2026-05-24 18:41:20,422   SKIP (already complete)
+2026-05-24 18:41:20,422 [254/342] 2024 Cadillac LYRIQ
+2026-05-24 18:41:20,980   -> ID 6446 | None
+2026-05-24 18:41:24,665   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:41:30,637 [255/342] 2022 Lincoln Nautilus
+2026-05-24 18:41:31,187   -> ID 3240 | None
+2026-05-24 18:41:34,874   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:41:40,782 [256/342] 2023 Lincoln Nautilus
+2026-05-24 18:41:41,334   -> ID 4782 | None
+2026-05-24 18:41:45,015   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:41:50,907 [257/342] 2024 Lincoln Nautilus
+2026-05-24 18:41:51,460   -> ID 6371 | None
+2026-05-24 18:41:55,145   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:42:01,061 [258/342] 2022 Lincoln Navigator
+2026-05-24 18:42:01,061   SKIP (already complete)
+2026-05-24 18:42:01,061 [259/342] 2023 Lincoln Navigator
+2026-05-24 18:42:01,612   -> ID 4779 | None
+2026-05-24 18:42:05,277   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:42:11,249 [260/342] 2022 Buick Encore GX
+2026-05-24 18:42:11,800   -> ID 3297 | None
+2026-05-24 18:42:15,517   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:42:21,494 [261/342] 2023 Buick Encore GX
+2026-05-24 18:42:22,044   -> ID 4839 | None
+2026-05-24 18:42:25,741   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:42:31,711 [262/342] 2024 Buick Encore GX
+2026-05-24 18:42:32,264   -> ID 6431 | None
+2026-05-24 18:42:36,013   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:42:41,946 [263/342] 2022 Buick Envista
+2026-05-24 18:42:42,499   No results
+2026-05-24 18:42:42,499 [264/342] 2023 Buick Envista
+2026-05-24 18:42:43,048   No results
+2026-05-24 18:42:43,049 [265/342] 2024 Genesis G80
+2026-05-24 18:42:43,049   SKIP (already complete)
+2026-05-24 18:42:43,049 [266/342] 2024 Genesis GV80
+2026-05-24 18:42:43,049   SKIP (already complete)
+2026-05-24 18:42:43,049 [267/342] 2024 Genesis GV70
+2026-05-24 18:42:43,050   SKIP (already complete)
+2026-05-24 18:42:43,050 [268/342] 2024 Genesis GV60
+2026-05-24 18:42:43,602   -> ID 7414 | None
+2026-05-24 18:42:47,295   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:42:53,204 [269/342] 2023 Genesis G70
+2026-05-24 18:42:53,758   -> ID 5833 | None
+2026-05-24 18:42:57,452   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:43:03,699 [270/342] 2024 Volvo XC90
+2026-05-24 18:43:03,699   SKIP (already complete)
+2026-05-24 18:43:03,699 [271/342] 2024 Volvo XC60
+2026-05-24 18:43:03,699   SKIP (already complete)
+2026-05-24 18:43:03,699 [272/342] 2024 Volvo XC40
+2026-05-24 18:43:03,700   SKIP (already complete)
+2026-05-24 18:43:03,700 [273/342] 2023 Volvo C40 Recharge
+2026-05-24 18:43:04,257   No results
+2026-05-24 18:43:04,257 [274/342] 2024 Volvo C40 Recharge
+2026-05-24 18:43:04,790   No results
+2026-05-24 18:43:04,790 [275/342] 2024 Porsche 911
+2026-05-24 18:43:05,330   -> ID 7103 | None
+2026-05-24 18:43:08,915   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:43:14,721 --- 200/275 ok | 2735 reqs | 1051 total in DB ---
+2026-05-24 18:43:14,722 [276/342] 2024 Porsche Panamera
+2026-05-24 18:43:15,264   -> ID 7105 | None
+2026-05-24 18:43:18,842   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:43:24,635 [277/342] 2023 Porsche Cayenne Coupe
+2026-05-24 18:43:25,171   No results
+2026-05-24 18:43:25,171 [278/342] 2024 Porsche Cayenne Coupe
+2026-05-24 18:43:25,707   No results
+2026-05-24 18:43:25,707 [279/342] 2024 Land Rover Discovery Sport
+2026-05-24 18:43:26,242   No results
+2026-05-24 18:43:26,242 [280/342] 2023 Land Rover Discovery Sport
+2026-05-24 18:43:26,782   No results
+2026-05-24 18:43:26,782 [281/342] 2024 Land Rover Range Rover Evoque
+2026-05-24 18:43:27,316   No results
+2026-05-24 18:43:27,316 [282/342] 2024 Alfa Romeo Tonale
+2026-05-24 18:43:27,857   -> ID 6780 | None
+2026-05-24 18:43:31,474   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:43:37,264 [283/342] 2023 Alfa Romeo Tonale
+2026-05-24 18:43:37,800   No results
+2026-05-24 18:43:37,800 [284/342] 2024 Mazda CX-90
+2026-05-24 18:43:38,340   -> ID 6474 | None
+2026-05-24 18:43:41,974   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:43:47,851 [285/342] 2023 Mazda CX-90
+2026-05-24 18:43:48,390   No results
+2026-05-24 18:43:48,390 [286/342] 2024 Mazda CX-70
+2026-05-24 18:43:48,928   No results
+2026-05-24 18:43:48,929 [287/342] 2023 Mazda CX-70
+2026-05-24 18:43:49,464   No results
+2026-05-24 18:43:49,464 [288/342] 2024 Volkswagen ID.4
+2026-05-24 18:43:49,465   SKIP (already complete)
+2026-05-24 18:43:49,465 [289/342] 2024 Volkswagen Atlas
+2026-05-24 18:43:49,465   SKIP (already complete)
+2026-05-24 18:43:49,465 [290/342] 2023 Volkswagen ID Buzz
+2026-05-24 18:43:49,997   No results
+2026-05-24 18:43:49,997 [291/342] 2024 Volkswagen ID Buzz
+2026-05-24 18:43:50,532   No results
+2026-05-24 18:43:50,532 [292/342] 2024 BMW iX
+2026-05-24 18:43:51,073   -> ID 6262 | None
+2026-05-24 18:43:54,755   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:44:00,507 [293/342] 2023 BMW iX
+2026-05-24 18:44:01,045   -> ID 4690 | None
+2026-05-24 18:44:04,705   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:44:10,496 [294/342] 2024 BMW i4
+2026-05-24 18:44:11,037   -> ID 6263 | None
+2026-05-24 18:44:14,696   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:44:20,411 [295/342] 2023 BMW i4
+2026-05-24 18:44:20,951   -> ID 4691 | None
+2026-05-24 18:44:24,599   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:44:30,380 [296/342] 2024 BMW X5 PHEV
+2026-05-24 18:44:30,915   No results
+2026-05-24 18:44:30,915 [297/342] 2023 BMW X5 PHEV
+2026-05-24 18:44:31,451   No results
+2026-05-24 18:44:31,451 [298/342] 2024 Mercedes-Benz EQS
+2026-05-24 18:44:31,987   No results
+2026-05-24 18:44:31,988 [299/342] 2023 Mercedes-Benz EQS
+2026-05-24 18:44:32,522   No results
+2026-05-24 18:44:32,523 [300/342] 2024 Mercedes-Benz EQE
+2026-05-24 18:44:33,065   No results
+2026-05-24 18:44:33,066 --- 209/300 ok | 2849 reqs | 1058 total in DB ---
+2026-05-24 18:44:33,066 [301/342] 2023 Mercedes-Benz EQE
+2026-05-24 18:44:33,601   No results
+2026-05-24 18:44:33,601 [302/342] 2024 Mercedes-Benz GLS 450
+2026-05-24 18:44:34,137   No results
+2026-05-24 18:44:34,137 [303/342] 2023 Mercedes-Benz GLS 450
+2026-05-24 18:44:34,678   No results
+2026-05-24 18:44:34,678 [304/342] 2024 Audi e-tron GT
+2026-05-24 18:44:35,217   -> ID 7095 | None
+2026-05-24 18:44:38,849   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:44:44,679 [305/342] 2023 Audi e-tron GT
+2026-05-24 18:44:45,215   -> ID 5529 | None
+2026-05-24 18:44:48,824   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:44:54,660 [306/342] 2024 Audi Q8 e-tron
+2026-05-24 18:44:55,198   No results
+2026-05-24 18:44:55,198 [307/342] 2023 Audi Q8 e-tron
+2026-05-24 18:44:55,734   No results
+2026-05-24 18:44:55,734 [308/342] 2024 Audi Q8
+2026-05-24 18:44:56,275   -> ID 7086 | None
+2026-05-24 18:44:59,853   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:45:05,676 [309/342] 2023 Audi Q8
+2026-05-24 18:45:06,218   -> ID 5519 | None
+2026-05-24 18:45:09,860   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:45:15,702 [310/342] 2024 Hyundai Ioniq 5 N
+2026-05-24 18:45:16,239   No results
+2026-05-24 18:45:16,239 [311/342] 2023 Hyundai Ioniq 5 N
+2026-05-24 18:45:16,786   No results
+2026-05-24 18:45:16,786 [312/342] 2024 Kia EV9
+2026-05-24 18:45:16,787   SKIP (already complete)
+2026-05-24 18:45:16,787 [313/342] 2023 Kia EV9
+2026-05-24 18:45:17,326   No results
+2026-05-24 18:45:17,326 [314/342] 2024 Kia Carnival
+2026-05-24 18:45:17,867   -> ID 6808 | None
+2026-05-24 18:45:21,562   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:45:27,319 [315/342] 2023 Kia Carnival
+2026-05-24 18:45:27,860   -> ID 5237 | None
+2026-05-24 18:45:31,577   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:45:37,355 [316/342] 2024 Tesla Cybertruck
+2026-05-24 18:45:37,356   SKIP (already complete)
+2026-05-24 18:45:37,356 [317/342] 2023 Tesla Cybertruck
+2026-05-24 18:45:37,891   No results
+2026-05-24 18:45:37,892 [318/342] 2024 Tesla Model 3
+2026-05-24 18:45:37,892   SKIP (already complete)
+2026-05-24 18:45:37,892 [319/342] 2024 Tesla Model Y
+2026-05-24 18:45:37,892   SKIP (already complete)
+2026-05-24 18:45:37,892 [320/342] 2024 Rivian R1T
+2026-05-24 18:45:38,431   No results
+2026-05-24 18:45:38,431 [321/342] 2024 Rivian R1S
+2026-05-24 18:45:38,969   No results
+2026-05-24 18:45:38,969 [322/342] 2024 Lucid Air
+2026-05-24 18:45:38,970   SKIP (already complete)
+2026-05-24 18:45:38,970 [323/342] 2024 Polestar 2
+2026-05-24 18:45:39,536   No results
+2026-05-24 18:45:39,536 [324/342] 2024 Polestar 3
+2026-05-24 18:45:40,070   No results
+2026-05-24 18:45:40,070 [325/342] 2023 Polestar 3
+2026-05-24 18:45:40,609   No results
+2026-05-24 18:45:40,609 --- 220/325 ok | 2947 reqs | 1064 total in DB ---
+2026-05-24 18:45:40,609 [326/342] 2024 Chevrolet Trax
+2026-05-24 18:45:40,610   SKIP (already complete)
+2026-05-24 18:45:40,610 [327/342] 2024 Chevrolet Equinox EV
+2026-05-24 18:45:41,146   No results
+2026-05-24 18:45:41,146 [328/342] 2023 Chevrolet Equinox EV
+2026-05-24 18:45:41,681   No results
+2026-05-24 18:45:41,681 [329/342] 2024 Honda Prologue
+2026-05-24 18:45:42,224   -> ID 6534 | None
+2026-05-24 18:45:45,889   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:45:51,615 [330/342] 2023 Honda Prologue
+2026-05-24 18:45:52,155   No results
+2026-05-24 18:45:52,155 [331/342] 2024 Honda Passport
+2026-05-24 18:45:52,694   -> ID 6500 | None
+2026-05-24 18:45:56,387   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:46:02,138 [332/342] 2024 Honda Ridgeline
+2026-05-24 18:46:02,138   SKIP (already complete)
+2026-05-24 18:46:02,138 [333/342] 2024 Subaru Solterra
+2026-05-24 18:46:02,679   -> ID 7043 | None
+2026-05-24 18:46:06,253   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:46:12,005 [334/342] 2023 Subaru Solterra
+2026-05-24 18:46:12,543   -> ID 5468 | None
+2026-05-24 18:46:16,149   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:46:21,924 [335/342] 2024 Nissan Ariya
+2026-05-24 18:46:22,461   No results
+2026-05-24 18:46:22,461 [336/342] 2023 Nissan Ariya
+2026-05-24 18:46:22,997   No results
+2026-05-24 18:46:22,997 [337/342] 2024 Nissan Frontier
+2026-05-24 18:46:23,540   -> ID 6613 | None
+2026-05-24 18:46:27,215   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:46:32,945 [338/342] 2024 Nissan Titan
+2026-05-24 18:46:33,482   -> ID 6614 | None
+2026-05-24 18:46:37,144   Save error [maintenance]: table maintenance_parts has no column named maintenance_id
+2026-05-24 18:46:42,882 [339/342] 2024 RAM TRX
+2026-05-24 18:46:43,416   No results
+2026-05-24 18:46:43,416 [340/342] 2023 RAM TRX
+2026-05-24 18:46:43,953   No results
+2026-05-24 18:46:43,953 [341/342] 2024 RAM ProMaster
+2026-05-24 18:46:44,488   No results
+2026-05-24 18:46:44,488 [342/342] 2024 RAM 2500
+2026-05-24 18:46:45,026   -> ID 38584 | 6.4L V8
+2026-05-24 18:46:53,692 DONE! Added 229. Total: 1071. Requests: 3053

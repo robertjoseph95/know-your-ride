@@ -1,0 +1,182 @@
+127.0.0.1 - - [24/May/2026 22:54:52] "GET /api/vin/4T1BF1FK5GU260429 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 63155)
+Traceback (most recent call last):
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 791, in send_head
+    f = open(path, 'rb')
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\Robert\\OneDrive\\Desktop\\Wrench App Data\\api\\youtube\\2018\\Honda\\Accord\\oil change'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\Robert\OneDrive\Desktop\Wrench App Data\wrench_serve.py", line 128, in do_GET
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 736, in do_GET
+    f = self.send_head()
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 793, in send_head
+    self.send_error(HTTPStatus.NOT_FOUND, "File not found")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 526, in send_error
+    self.log_error("code %d, message %s", code, message)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 628, in log_error
+    self.log_message(format, *args)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\OneDrive\Desktop\Wrench App Data\wrench_serve.py", line 234, in log_message
+    return self._json(200, {"videos": videos, "cached": False})
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: argument of type 'HTTPStatus' is not a container or iterable
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 56203)
+Traceback (most recent call last):
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 791, in send_head
+    f = open(path, 'rb')
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\Robert\\OneDrive\\Desktop\\Wrench App Data\\api\\youtube\\2018\\Honda\\Accord\\oil change'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\Robert\OneDrive\Desktop\Wrench App Data\wrench_serve.py", line 128, in do_GET
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 736, in do_GET
+    f = self.send_head()
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 793, in send_head
+    self.send_error(HTTPStatus.NOT_FOUND, "File not found")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 526, in send_error
+    self.log_error("code %d, message %s", code, message)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 628, in log_error
+    self.log_message(format, *args)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\OneDrive\Desktop\Wrench App Data\wrench_serve.py", line 234, in log_message
+    return self._json(200, {"videos": videos, "cached": False})
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: argument of type 'HTTPStatus' is not a container or iterable
+----------------------------------------
+127.0.0.1 - - [25/May/2026 09:58:09] "GET /api/vin/4T1BF1FK5GU260429 HTTP/1.1" 200 -
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 58331)
+Traceback (most recent call last):
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 791, in send_head
+    f = open(path, 'rb')
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\Robert\\OneDrive\\Desktop\\Wrench App Data\\api\\youtube\\2018\\Honda\\Accord\\oil'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\Robert\OneDrive\Desktop\Wrench App Data\wrench_serve.py", line 128, in do_GET
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 736, in do_GET
+    f = self.send_head()
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 793, in send_head
+    self.send_error(HTTPStatus.NOT_FOUND, "File not found")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 526, in send_error
+    self.log_error("code %d, message %s", code, message)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 628, in log_error
+    self.log_message(format, *args)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\OneDrive\Desktop\Wrench App Data\wrench_serve.py", line 234, in log_message
+    return self._json(200, {"videos": videos, "cached": False})
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: argument of type 'HTTPStatus' is not a container or iterable
+----------------------------------------
+----------------------------------------
+Exception occurred during processing of request from ('127.0.0.1', 58333)
+Traceback (most recent call last):
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 791, in send_head
+    f = open(path, 'rb')
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\Robert\\OneDrive\\Desktop\\Wrench App Data\\api\\youtube\\2018\\Honda\\Accord\\oil change'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\socketserver.py", line 697, in process_request_thread
+    self.finish_request(request, client_address)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\socketserver.py", line 362, in finish_request
+    self.RequestHandlerClass(request, client_address, self)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 732, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\socketserver.py", line 766, in __init__
+    self.handle()
+    ~~~~~~~~~~~^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 496, in handle
+    self.handle_one_request()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 484, in handle_one_request
+    method()
+    ~~~~~~^^
+  File "C:\Users\Robert\OneDrive\Desktop\Wrench App Data\wrench_serve.py", line 128, in do_GET
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 736, in do_GET
+    f = self.send_head()
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 793, in send_head
+    self.send_error(HTTPStatus.NOT_FOUND, "File not found")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 526, in send_error
+    self.log_error("code %d, message %s", code, message)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\AppData\Local\Programs\Python\Python314\Lib\http\server.py", line 628, in log_error
+    self.log_message(format, *args)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\Robert\OneDrive\Desktop\Wrench App Data\wrench_serve.py", line 234, in log_message
+    return self._json(200, {"videos": videos, "cached": False})
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: argument of type 'HTTPStatus' is not a container or iterable
+----------------------------------------

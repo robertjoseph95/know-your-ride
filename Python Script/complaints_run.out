@@ -1,0 +1,1080 @@
+Vehicles to enrich with complaints: 1071
+
+[1/1071] 2018 Acura MDX  ->  153 complaints, 153 new
+[2/1071] 2018 Acura RDX  ->  72 complaints, 72 new
+[3/1071] 2019 Acura MDX  ->  175 complaints, 175 new
+[4/1071] 2020 Acura ILX  ->  9 complaints, 9 new
+[5/1071] 2020 Acura MDX  ->  201 complaints, 201 new
+[6/1071] 2020 Acura NSX  ->  0 complaints, 0 new
+[7/1071] 2020 Acura RDX  ->  331 complaints, 331 new
+[8/1071] 2020 Acura TLX  ->  61 complaints, 61 new
+[9/1071] 2021 Acura ILX  ->  11 complaints, 11 new
+[10/1071] 2021 Acura MDX  ->  0 complaints, 0 new
+[11/1071] 2021 Acura NSX  ->  1 complaints, 1 new
+[12/1071] 2021 Acura RDX  ->  100 complaints, 100 new
+[13/1071] 2021 Acura TLX  ->  57 complaints, 57 new
+[14/1071] 2022 Acura MDX  ->  112 complaints, 112 new
+[15/1071] 2022 Acura RDX  ->  29 complaints, 29 new
+[16/1071] 2023 Acura Integra  ->  206 complaints, 206 new
+[17/1071] 2024 Acura MDX  ->  35 complaints, 35 new
+[18/1071] 2024 Acura RDX  ->  10 complaints, 10 new
+[19/1071] 2020 Alfa Romeo Stelvio  ->  7 complaints, 7 new
+[20/1071] 2021 Alfa Romeo Stelvio  ->  4 complaints, 4 new
+[21/1071] 2022 Alfa Romeo Stelvio  ->  4 complaints, 4 new
+[22/1071] 2023 Alfa Romeo Stelvio  ->  API error
+[23/1071] 2024 Alfa Romeo Stelvio  ->  API error
+[24/1071] 2024 Alfa Romeo Tonale  ->  9 complaints, 9 new
+[25/1071] 2018 Audi A4  ->  26 complaints, 26 new
+[26/1071] 2018 Audi Q5  ->  194 complaints, 194 new
+[27/1071] 2019 Audi A4  ->  5 complaints, 5 new
+[28/1071] 2019 Audi Q5  ->  46 complaints, 46 new
+[29/1071] 2020 Audi A3  ->  15 complaints, 15 new
+[30/1071] 2020 Audi A4  ->  124 complaints, 124 new
+[31/1071] 2020 Audi A6  ->  24 complaints, 24 new
+[32/1071] 2020 Audi Q3  ->  63 complaints, 63 new
+[33/1071] 2020 Audi Q5  ->  22 complaints, 22 new
+[34/1071] 2020 Audi Q7  ->  25 complaints, 25 new
+[35/1071] 2021 Audi A4  ->  11 complaints, 11 new
+[36/1071] 2021 Audi A6  ->  15 complaints, 15 new
+[37/1071] 2021 Audi Q3  ->  13 complaints, 13 new
+[38/1071] 2021 Audi Q5  ->  64 complaints, 64 new
+[39/1071] 2021 Audi Q7  ->  64 complaints, 64 new
+[40/1071] 2022 Audi Q7  ->  API error
+[41/1071] 2023 Audi Q8  ->  API error
+[42/1071] 2023 Audi e-tron GT  ->  API error
+[43/1071] 2024 Audi A4  ->  2 complaints, 2 new
+[44/1071] 2024 Audi Q5  ->  17 complaints, 17 new
+[45/1071] 2024 Audi Q7  ->  1 complaints, 1 new
+[46/1071] 2024 Audi Q8  ->  18 complaints, 18 new
+[47/1071] 2024 Audi e-tron GT  ->  0 complaints, 0 new
+[48/1071] 2003 BMW 325i  ->  API error
+[49/1071] 2003 BMW 330i  ->  API error
+[50/1071] 2003 BMW X5  ->  114 complaints, 114 new
+[51/1071] 2004 BMW 325i  ->  API error
+[52/1071] 2004 BMW 330i  ->  API error
+[53/1071] 2004 BMW X5  ->  127 complaints, 127 new
+[54/1071] 2005 BMW 325i  ->  API error
+[55/1071] 2005 BMW 330i  ->  API error
+[56/1071] 2006 BMW 325i  ->  API error
+[57/1071] 2006 BMW 330i  ->  API error
+[58/1071] 2008 BMW 328i  ->  API error
+[59/1071] 2009 BMW 328i  ->  API error
+[60/1071] 2017 BMW 330i  ->  API error
+[61/1071] 2017 BMW 530i  ->  17 complaints, 17 new
+[62/1071] 2018 BMW 330i  ->  API error
+[63/1071] 2018 BMW 530i  ->  API error
+[64/1071] 2018 BMW X3  ->  72 complaints, 72 new
+[65/1071] 2018 BMW X5  ->  66 complaints, 66 new
+[66/1071] 2019 BMW 530i  ->  API error
+[67/1071] 2019 BMW X3  ->  159 complaints, 159 new
+[68/1071] 2019 BMW X5  ->  170 complaints, 170 new
+[69/1071] 2020 BMW 330i  ->  API error
+[70/1071] 2020 BMW 430i  ->  API error
+[71/1071] 2020 BMW 530i  ->  API error
+[72/1071] 2020 BMW X1  ->  12 complaints, 12 new
+[73/1071] 2020 BMW X3  ->  102 complaints, 102 new
+[74/1071] 2020 BMW X5  ->  93 complaints, 93 new
+[75/1071] 2020 BMW X7  ->  47 complaints, 47 new
+[76/1071] 2021 BMW 330i  ->  API error
+[77/1071] 2021 BMW 430i  ->  API error
+[78/1071] 2021 BMW 530i  ->  API error
+[79/1071] 2021 BMW M3  ->  3 complaints, 3 new
+[80/1071] 2021 BMW X1  ->  6 complaints, 6 new
+[81/1071] 2021 BMW X3  ->  93 complaints, 93 new
+[82/1071] 2021 BMW X5  ->  93 complaints, 93 new
+[83/1071] 2021 BMW X7  ->  31 complaints, 31 new
+[84/1071] 2022 BMW 330i  ->  API error
+[85/1071] 2022 BMW 530i  ->  API error
+[86/1071] 2022 BMW X1  ->  1 complaints, 1 new
+[87/1071] 2023 BMW 330i  ->  API error
+[88/1071] 2023 BMW X3  ->  10 complaints, 10 new
+[89/1071] 2023 BMW X5  ->  28 complaints, 28 new
+[90/1071] 2023 BMW i4  ->  API error
+[91/1071] 2023 BMW iX  ->  37 complaints, 37 new
+[92/1071] 2024 BMW 330i  ->  API error
+[93/1071] 2024 BMW 530i  ->  13 complaints, 13 new
+[94/1071] 2024 BMW X1  ->  30 complaints, 30 new
+[95/1071] 2024 BMW X3  ->  30 complaints, 30 new
+[96/1071] 2024 BMW X5  ->  139 complaints, 139 new
+[97/1071] 2024 BMW i4  ->  API error
+[98/1071] 2024 BMW iX  ->  31 complaints, 31 new
+[99/1071] 2021 Bentley Bentayga  ->  API error
+[100/1071] 2022 Bentley Bentayga  ->  API error
+[101/1071] 2020 Buick Enclave  ->  49 complaints, 49 new
+[102/1071] 2020 Buick Encore  ->  18 complaints, 18 new
+[103/1071] 2020 Buick Envision  ->  10 complaints, 10 new
+[104/1071] 2021 Buick Enclave  ->  21 complaints, 21 new
+[105/1071] 2021 Buick Encore  ->  8 complaints, 8 new
+[106/1071] 2021 Buick Envision  ->  23 complaints, 23 new
+[107/1071] 2022 Buick Enclave  ->  12 complaints, 12 new
+[108/1071] 2022 Buick Encore GX  ->  25 complaints, 25 new
+[109/1071] 2023 Buick Encore GX  ->  22 complaints, 22 new
+[110/1071] 2024 Buick Enclave  ->  7 complaints, 7 new
+[111/1071] 2024 Buick Encore GX  ->  24 complaints, 24 new
+[112/1071] 2024 Buick Envision  ->  9 complaints, 9 new
+[113/1071] 2018 Cadillac Escalade  ->  20 complaints, 20 new
+[114/1071] 2019 Cadillac Escalade  ->  23 complaints, 23 new
+[115/1071] 2020 Cadillac CT5  ->  32 complaints, 32 new
+[116/1071] 2020 Cadillac Escalade  ->  13 complaints, 13 new
+[117/1071] 2020 Cadillac XT4  ->  16 complaints, 16 new
+[118/1071] 2020 Cadillac XT5  ->  20 complaints, 20 new
+[119/1071] 2020 Cadillac XT6  ->  35 complaints, 35 new
+[120/1071] 2021 Cadillac CT5  ->  19 complaints, 19 new
+[121/1071] 2021 Cadillac Escalade  ->  71 complaints, 71 new
+[122/1071] 2021 Cadillac Escalade ESV  ->  78 complaints, 78 new
+[123/1071] 2021 Cadillac XT4  ->  11 complaints, 11 new
+[124/1071] 2021 Cadillac XT5  ->  11 complaints, 11 new
+[125/1071] 2021 Cadillac XT6  ->  17 complaints, 17 new
+[126/1071] 2022 Cadillac CT4  ->  6 complaints, 6 new
+[127/1071] 2022 Cadillac CT5  ->  7 complaints, 7 new
+[128/1071] 2022 Cadillac Escalade  ->  67 complaints, 67 new
+[129/1071] 2022 Cadillac Escalade ESV  ->  51 complaints, 51 new
+[130/1071] 2023 Cadillac CT4  ->  3 complaints, 3 new
+[131/1071] 2023 Cadillac CT5  ->  11 complaints, 11 new
+[132/1071] 2023 Cadillac LYRIQ  ->  24 complaints, 24 new
+[133/1071] 2024 Cadillac Escalade  ->  38 complaints, 38 new
+[134/1071] 2024 Cadillac LYRIQ  ->  106 complaints, 106 new
+[135/1071] 2024 Cadillac XT5  ->  10 complaints, 10 new
+[136/1071] 2003 Chevrolet Avalanche  ->  422 complaints, 422 new
+[137/1071] 2003 Chevrolet Impala  ->  721 complaints, 721 new
+[138/1071] 2003 Chevrolet Malibu  ->  610 complaints, 610 new
+[139/1071] 2003 Chevrolet Silverado 1500  ->  API error
+[140/1071] 2003 Chevrolet Suburban  ->  328 complaints, 328 new
+[141/1071] 2003 Chevrolet Tahoe  ->  534 complaints, 534 new
+[142/1071] 2003 Chevrolet TrailBlazer  ->  1266 complaints, 1266 new
+[143/1071] 2004 Chevrolet Avalanche  ->  318 complaints, 318 new
+[144/1071] 2004 Chevrolet Colorado  ->  361 complaints, 361 new
+[145/1071] 2004 Chevrolet Impala  ->  1071 complaints, 1071 new
+[146/1071] 2004 Chevrolet Malibu  ->  1697 complaints, 1697 new
+[147/1071] 2004 Chevrolet Silverado 1500  ->  API error
+[148/1071] 2004 Chevrolet Suburban  ->  406 complaints, 406 new
+[149/1071] 2004 Chevrolet Tahoe  ->  466 complaints, 466 new
+[150/1071] 2004 Chevrolet TrailBlazer  ->  1368 complaints, 1368 new
+[151/1071] 2005 Chevrolet Colorado  ->  356 complaints, 356 new
+[152/1071] 2005 Chevrolet Equinox  ->  638 complaints, 638 new
+[153/1071] 2005 Chevrolet Silverado 1500  ->  API error
+[154/1071] 2005 Chevrolet Suburban  ->  229 complaints, 229 new
+[155/1071] 2005 Chevrolet Tahoe  ->  291 complaints, 291 new
+[156/1071] 2006 Chevrolet Colorado  ->  236 complaints, 236 new
+[157/1071] 2006 Chevrolet Equinox  ->  695 complaints, 695 new
+[158/1071] 2006 Chevrolet Silverado 1500  ->  API error
+[159/1071] 2006 Chevrolet Suburban  ->  56 complaints, 56 new
+[160/1071] 2006 Chevrolet Tahoe  ->  114 complaints, 114 new
+[161/1071] 2008 Chevrolet Silverado 1500  ->  API error
+[162/1071] 2009 Chevrolet Silverado 1500  ->  520 complaints, 520 new
+[163/1071] 2012 Chevrolet Silverado 1500  ->  281 complaints, 281 new
+[164/1071] 2016 Chevrolet Silverado 1500  ->  789 complaints, 789 new
+[165/1071] 2017 Chevrolet Silverado 1500  ->  831 complaints, 831 new
+[166/1071] 2018 Chevrolet Silverado 1500  ->  501 complaints, 501 new
+[167/1071] 2020 Chevrolet Blazer  ->  195 complaints, 195 new
+[168/1071] 2020 Chevrolet Colorado  ->  78 complaints, 78 new
+[169/1071] 2020 Chevrolet Equinox  ->  274 complaints, 274 new
+[170/1071] 2020 Chevrolet Malibu  ->  188 complaints, 188 new
+[171/1071] 2020 Chevrolet Silverado 1500  ->  660 complaints, 660 new
+[172/1071] 2020 Chevrolet Suburban  ->  API error
+[173/1071] 2020 Chevrolet Tahoe  ->  50 complaints, 50 new
+[174/1071] 2020 Chevrolet Traverse  ->  206 complaints, 206 new
+[175/1071] 2020 Chevrolet Trax  ->  86 complaints, 86 new
+[176/1071] 2021 Chevrolet Blazer  ->  118 complaints, 118 new
+[177/1071] 2021 Chevrolet Colorado  ->  64 complaints, 64 new
+[178/1071] 2021 Chevrolet Equinox  ->  80 complaints, 80 new
+[179/1071] 2021 Chevrolet Malibu  ->  74 complaints, 74 new
+[180/1071] 2021 Chevrolet Silverado 1500  ->  721 complaints, 721 new
+[181/1071] 2021 Chevrolet Suburban  ->  168 complaints, 168 new
+[182/1071] 2021 Chevrolet Tahoe  ->  406 complaints, 406 new
+[183/1071] 2021 Chevrolet Trailblazer  ->  172 complaints, 172 new
+[184/1071] 2021 Chevrolet Traverse  ->  84 complaints, 84 new
+[185/1071] 2021 Chevrolet Trax  ->  21 complaints, 21 new
+[186/1071] 2022 Chevrolet Blazer  ->  38 complaints, 38 new
+[187/1071] 2022 Chevrolet Bolt EUV  ->  21 complaints, 21 new
+[188/1071] 2022 Chevrolet Bolt EV  ->  58 complaints, 58 new
+[189/1071] 2022 Chevrolet Equinox  ->  147 complaints, 147 new
+[190/1071] 2022 Chevrolet Silverado 1500  ->  531 complaints, 531 new
+[191/1071] 2022 Chevrolet Suburban  ->  100 complaints, 100 new
+[192/1071] 2022 Chevrolet Tahoe  ->  169 complaints, 169 new
+[193/1071] 2023 Chevrolet Bolt EUV  ->  101 complaints, 101 new
+[194/1071] 2023 Chevrolet Bolt EV  ->  51 complaints, 51 new
+[195/1071] 2023 Chevrolet Equinox  ->  80 complaints, 80 new
+[196/1071] 2023 Chevrolet Silverado 1500  ->  319 complaints, 319 new
+[197/1071] 2024 Chevrolet Blazer  ->  35 complaints, 35 new
+[198/1071] 2024 Chevrolet Colorado  ->  109 complaints, 109 new
+[199/1071] 2024 Chevrolet Equinox  ->  56 complaints, 56 new
+[200/1071] 2024 Chevrolet Silverado 1500  ->  258 complaints, 258 new
+[201/1071] 2024 Chevrolet Suburban  ->  35 complaints, 35 new
+[202/1071] 2024 Chevrolet Tahoe  ->  57 complaints, 57 new
+[203/1071] 2024 Chevrolet Traverse  ->  120 complaints, 120 new
+[204/1071] 2024 Chevrolet Trax  ->  151 complaints, 151 new
+[205/1071] 2018 Chrysler Pacifica  ->  793 complaints, 793 new
+[206/1071] 2019 Chrysler Pacifica  ->  326 complaints, 326 new
+[207/1071] 2020 Chrysler 300  ->  10 complaints, 10 new
+[208/1071] 2020 Chrysler Pacifica  ->  157 complaints, 157 new
+[209/1071] 2021 Chrysler 300  ->  19 complaints, 19 new
+[210/1071] 2021 Chrysler Pacifica  ->  340 complaints, 340 new
+[211/1071] 2022 Chrysler 300  ->  5 complaints, 5 new
+[212/1071] 2024 Chrysler Pacifica  ->  33 complaints, 33 new
+[213/1071] 2003 Dodge Durango  ->  338 complaints, 338 new
+[214/1071] 2003 Dodge Neon  ->  202 complaints, 202 new
+[215/1071] 2003 Dodge Stratus  ->  91 complaints, 91 new
+[216/1071] 2004 Dodge Caravan  ->  64 complaints, 64 new
+[217/1071] 2004 Dodge Durango  ->  1114 complaints, 1114 new
+[218/1071] 2004 Dodge Neon  ->  94 complaints, 94 new
+[219/1071] 2004 Dodge Stratus  ->  144 complaints, 144 new
+[220/1071] 2005 Dodge Durango  ->  1567 complaints, 1567 new
+[221/1071] 2006 Dodge Charger  ->  1293 complaints, 1293 new
+[222/1071] 2006 Dodge Durango  ->  850 complaints, 850 new
+[223/1071] 2018 Dodge Challenger  ->  73 complaints, 73 new
+[224/1071] 2018 Dodge Charger  ->  122 complaints, 122 new
+[225/1071] 2018 Dodge Durango  ->  225 complaints, 225 new
+[226/1071] 2019 Dodge Challenger  ->  55 complaints, 55 new
+[227/1071] 2019 Dodge Charger  ->  118 complaints, 118 new
+[228/1071] 2019 Dodge Durango  ->  136 complaints, 136 new
+[229/1071] 2020 Dodge Challenger  ->  20 complaints, 20 new
+[230/1071] 2020 Dodge Charger  ->  54 complaints, 54 new
+[231/1071] 2020 Dodge Durango  ->  53 complaints, 53 new
+[232/1071] 2020 Dodge Journey  ->  60 complaints, 60 new
+[233/1071] 2021 Dodge Challenger  ->  17 complaints, 17 new
+[234/1071] 2021 Dodge Charger  ->  29 complaints, 29 new
+[235/1071] 2021 Dodge Durango  ->  177 complaints, 177 new
+[236/1071] 2022 Dodge Durango  ->  50 complaints, 50 new
+[237/1071] 2024 Dodge Charger  ->  5 complaints, 5 new
+[238/1071] 2024 Dodge Durango  ->  8 complaints, 8 new
+[239/1071] 2021 Ferrari Roma  ->  0 complaints, 0 new
+[240/1071] 2022 Ferrari Roma  ->  0 complaints, 0 new
+[241/1071] 2003 Ford Escape  ->  598 complaints, 598 new
+[242/1071] 2003 Ford Expedition  ->  655 complaints, 655 new
+[243/1071] 2003 Ford Explorer  ->  1313 complaints, 1313 new
+[244/1071] 2003 Ford F-150  ->  461 complaints, 461 new
+[245/1071] 2003 Ford Focus  ->  1017 complaints, 1017 new
+[246/1071] 2003 Ford Mustang  ->  269 complaints, 269 new
+[247/1071] 2003 Ford Ranger  ->  243 complaints, 243 new
+[248/1071] 2004 Ford Escape  ->  499 complaints, 499 new
+[249/1071] 2004 Ford Expedition  ->  296 complaints, 296 new
+[250/1071] 2004 Ford Explorer  ->  1408 complaints, 1408 new
+[251/1071] 2004 Ford F-150  ->  2034 complaints, 2034 new
+[252/1071] 2004 Ford Focus  ->  387 complaints, 387 new
+[253/1071] 2004 Ford Mustang  ->  129 complaints, 129 new
+[254/1071] 2004 Ford Ranger  ->  404 complaints, 404 new
+[255/1071] 2005 Ford Escape  ->  1584 complaints, 1584 new
+[256/1071] 2005 Ford Explorer  ->  568 complaints, 568 new
+[257/1071] 2005 Ford F-150  ->  1120 complaints, 1120 new
+[258/1071] 2005 Ford Mustang  ->  868 complaints, 868 new
+[259/1071] 2006 Ford Escape  ->  720 complaints, 720 new
+[260/1071] 2006 Ford Explorer  ->  635 complaints, 635 new
+[261/1071] 2006 Ford F-150  ->  587 complaints, 587 new
+[262/1071] 2006 Ford Mustang  ->  573 complaints, 573 new
+[263/1071] 2007 Ford F-150  ->  491 complaints, 491 new
+[264/1071] 2008 Ford Escape  ->  2413 complaints, 2413 new
+[265/1071] 2008 Ford F-150  ->  368 complaints, 368 new
+[266/1071] 2009 Ford Escape  ->  1690 complaints, 1690 new
+[267/1071] 2009 Ford F-150  ->  323 complaints, 323 new
+[268/1071] 2010 Ford F-150  ->  API error
+[269/1071] 2013 Ford F-150  ->  API error
+[270/1071] 2014 Ford F-150  ->  API error
+[271/1071] 2015 Ford F-150  ->  API error
+[272/1071] 2016 Ford F-150  ->  API error
+[273/1071] 2017 Ford F-150  ->  API error
+[274/1071] 2018 Ford F-150  ->  API error
+[275/1071] 2019 Ford F-150  ->  API error
+[276/1071] 2020 Ford Edge  ->  275 complaints, 275 new
+[277/1071] 2020 Ford Escape  ->  1429 complaints, 1429 new
+[278/1071] 2020 Ford Expedition  ->  343 complaints, 343 new
+[279/1071] 2020 Ford Explorer  ->  1132 complaints, 1132 new
+[280/1071] 2020 Ford F-150  ->  API error
+[281/1071] 2020 Ford Mustang  ->  113 complaints, 113 new
+[282/1071] 2020 Ford Ranger  ->  116 complaints, 116 new
+[283/1071] 2020 Ford Transit  ->  79 complaints, 79 new
+[284/1071] 2021 Ford Bronco  ->  210 complaints, 210 new
+[285/1071] 2021 Ford Edge  ->  93 complaints, 93 new
+[286/1071] 2021 Ford Escape  ->  298 complaints, 298 new
+[287/1071] 2021 Ford Expedition  ->  195 complaints, 195 new
+[288/1071] 2021 Ford Explorer  ->  381 complaints, 381 new
+[289/1071] 2021 Ford F-150  ->  API error
+[290/1071] 2021 Ford Mustang  ->  54 complaints, 54 new
+[291/1071] 2021 Ford Mustang Mach-E  ->  331 complaints, 331 new
+[292/1071] 2021 Ford Ranger  ->  API error
+[293/1071] 2021 Ford Transit  ->  API error
+[294/1071] 2022 Ford Bronco  ->  324 complaints, 324 new
+[295/1071] 2022 Ford Edge  ->  114 complaints, 114 new
+[296/1071] 2022 Ford Escape  ->  204 complaints, 204 new
+[297/1071] 2022 Ford Expedition  ->  102 complaints, 102 new
+[298/1071] 2022 Ford Explorer  ->  230 complaints, 230 new
+[299/1071] 2022 Ford F-150  ->  API error
+[300/1071] 2022 Ford Maverick  ->  140 complaints, 140 new
+[301/1071] 2022 Ford Mustang  ->  44 complaints, 44 new
+[302/1071] 2022 Ford Mustang Mach-E  ->  122 complaints, 122 new
+[303/1071] 2022 Ford Ranger  ->  API error
+[304/1071] 2022 Ford Transit  ->  API error
+[305/1071] 2022 Ford Transit Connect  ->  API error
+[306/1071] 2023 Ford Bronco  ->  208 complaints, 208 new
+[307/1071] 2023 Ford Escape  ->  87 complaints, 87 new
+[308/1071] 2023 Ford Explorer  ->  92 complaints, 92 new
+[309/1071] 2023 Ford F-150  ->  API error
+[310/1071] 2023 Ford Maverick  ->  265 complaints, 265 new
+[311/1071] 2023 Ford Mustang Mach-E  ->  API error
+[312/1071] 2023 Ford Transit Connect  ->  API error
+[313/1071] 2024 Ford Expedition  ->  63 complaints, 63 new
+[314/1071] 2024 Ford Explorer  ->  15 complaints, 15 new
+[315/1071] 2024 Ford F-150  ->  API error
+[316/1071] 2024 Ford Maverick  ->  64 complaints, 64 new
+[317/1071] 2003 GMC Envoy  ->  640 complaints, 640 new
+[318/1071] 2003 GMC Sierra 1500  ->  API error
+[319/1071] 2003 GMC Yukon  ->  517 complaints, 517 new
+[320/1071] 2004 GMC Envoy  ->  374 complaints, 374 new
+[321/1071] 2004 GMC Sierra 1500  ->  API error
+[322/1071] 2004 GMC Yukon  ->  445 complaints, 445 new
+[323/1071] 2017 GMC Sierra 1500  ->  425 complaints, 425 new
+[324/1071] 2018 GMC Acadia  ->  380 complaints, 380 new
+[325/1071] 2018 GMC Sierra 1500  ->  290 complaints, 290 new
+[326/1071] 2018 GMC Terrain  ->  209 complaints, 209 new
+[327/1071] 2019 GMC Acadia  ->  360 complaints, 360 new
+[328/1071] 2019 GMC Sierra 1500  ->  582 complaints, 582 new
+[329/1071] 2019 GMC Terrain  ->  174 complaints, 174 new
+[330/1071] 2020 GMC Acadia  ->  91 complaints, 91 new
+[331/1071] 2020 GMC Canyon  ->  13 complaints, 13 new
+[332/1071] 2020 GMC Sierra 1500  ->  421 complaints, 421 new
+[333/1071] 2020 GMC Terrain  ->  171 complaints, 171 new
+[334/1071] 2020 GMC Yukon  ->  29 complaints, 29 new
+[335/1071] 2021 GMC Acadia  ->  139 complaints, 139 new
+[336/1071] 2021 GMC Canyon  ->  10 complaints, 10 new
+[337/1071] 2021 GMC Sierra 1500  ->  479 complaints, 479 new
+[338/1071] 2021 GMC Terrain  ->  31 complaints, 31 new
+[339/1071] 2021 GMC Yukon  ->  273 complaints, 273 new
+[340/1071] 2022 GMC Canyon  ->  22 complaints, 22 new
+[341/1071] 2022 GMC Sierra 1500  ->  513 complaints, 513 new
+[342/1071] 2022 GMC Yukon  ->  147 complaints, 147 new
+[343/1071] 2023 GMC Sierra 1500  ->  380 complaints, 380 new
+[344/1071] 2024 GMC Acadia  ->  52 complaints, 52 new
+[345/1071] 2024 GMC Canyon  ->  204 complaints, 204 new
+[346/1071] 2024 GMC Sierra 1500  ->  291 complaints, 291 new
+[347/1071] 2024 GMC Terrain  ->  42 complaints, 42 new
+[348/1071] 2024 GMC Yukon  ->  133 complaints, 133 new
+[349/1071] 2020 Genesis G80  ->  0 complaints, 0 new
+[350/1071] 2021 Genesis G80  ->  9 complaints, 9 new
+[351/1071] 2021 Genesis GV80  ->  53 complaints, 53 new
+[352/1071] 2022 Genesis G80  ->  6 complaints, 6 new
+[353/1071] 2022 Genesis GV70  ->  83 complaints, 83 new
+[354/1071] 2022 Genesis GV80  ->  40 complaints, 40 new
+[355/1071] 2023 Genesis G70  ->  18 complaints, 18 new
+[356/1071] 2023 Genesis G80  ->  8 complaints, 8 new
+[357/1071] 2023 Genesis GV60  ->  55 complaints, 55 new
+[358/1071] 2023 Genesis GV70  ->  53 complaints, 53 new
+[359/1071] 2023 Genesis GV80  ->  34 complaints, 34 new
+[360/1071] 2024 Genesis G80  ->  1 complaints, 1 new
+[361/1071] 2024 Genesis GV60  ->  14 complaints, 14 new
+[362/1071] 2024 Genesis GV70  ->  17 complaints, 17 new
+[363/1071] 2024 Genesis GV80  ->  16 complaints, 16 new
+[364/1071] 2003 Honda Accord  ->  2011 complaints, 2011 new
+[365/1071] 2003 Honda CR-V  ->  493 complaints, 493 new
+[366/1071] 2003 Honda Civic  ->  524 complaints, 524 new
+[367/1071] 2003 Honda Element  ->  449 complaints, 449 new
+[368/1071] 2003 Honda Odyssey  ->  939 complaints, 939 new
+[369/1071] 2003 Honda Pilot  ->  746 complaints, 746 new
+[370/1071] 2004 Honda Accord  ->  1016 complaints, 1016 new
+[371/1071] 2004 Honda CR-V  ->  501 complaints, 501 new
+[372/1071] 2004 Honda Civic  ->  350 complaints, 350 new
+[373/1071] 2004 Honda Element  ->  281 complaints, 281 new
+[374/1071] 2004 Honda Odyssey  ->  584 complaints, 584 new
+[375/1071] 2004 Honda Pilot  ->  544 complaints, 544 new
+[376/1071] 2005 Honda Accord  ->  686 complaints, 686 new
+[377/1071] 2005 Honda CR-V  ->  477 complaints, 477 new
+[378/1071] 2005 Honda Civic  ->  314 complaints, 314 new
+[379/1071] 2005 Honda Odyssey  ->  829 complaints, 829 new
+[380/1071] 2005 Honda Pilot  ->  678 complaints, 678 new
+[381/1071] 2006 Honda Accord  ->  430 complaints, 430 new
+[382/1071] 2006 Honda CR-V  ->  398 complaints, 398 new
+[383/1071] 2006 Honda Civic  ->  1402 complaints, 1402 new
+[384/1071] 2006 Honda Odyssey  ->  703 complaints, 703 new
+[385/1071] 2006 Honda Pilot  ->  266 complaints, 266 new
+[386/1071] 2007 Honda Accord  ->  524 complaints, 524 new
+[387/1071] 2007 Honda CR-V  ->  884 complaints, 884 new
+[388/1071] 2007 Honda Civic  ->  1203 complaints, 1203 new
+[389/1071] 2008 Honda Accord  ->  1519 complaints, 1519 new
+[390/1071] 2008 Honda CR-V  ->  958 complaints, 958 new
+[391/1071] 2008 Honda Civic  ->  913 complaints, 913 new
+[392/1071] 2009 Honda Accord  ->  720 complaints, 720 new
+[393/1071] 2009 Honda CR-V  ->  386 complaints, 386 new
+[394/1071] 2009 Honda Civic  ->  393 complaints, 393 new
+[395/1071] 2010 Honda Accord  ->  579 complaints, 579 new
+[396/1071] 2010 Honda Civic  ->  396 complaints, 396 new
+[397/1071] 2012 Honda Accord  ->  377 complaints, 377 new
+[398/1071] 2012 Honda Civic  ->  452 complaints, 452 new
+[399/1071] 2015 Honda Accord  ->  588 complaints, 588 new
+[400/1071] 2015 Honda Civic  ->  376 complaints, 376 new
+[401/1071] 2016 Honda Accord  ->  577 complaints, 577 new
+[402/1071] 2016 Honda CR-V  ->  386 complaints, 386 new
+[403/1071] 2016 Honda Civic  ->  1042 complaints, 1042 new
+[404/1071] 2017 Honda Accord  ->  516 complaints, 516 new
+[405/1071] 2017 Honda CR-V  ->  1718 complaints, 1718 new
+[406/1071] 2017 Honda Civic  ->  567 complaints, 567 new
+[407/1071] 2018 Honda Accord  ->  1736 complaints, 1736 new
+[408/1071] 2018 Honda CR-V  ->  2026 complaints, 2026 new
+[409/1071] 2018 Honda Civic  ->  603 complaints, 603 new
+[410/1071] 2020 Honda Accord  ->  324 complaints, 324 new
+[411/1071] 2020 Honda CR-V  ->  319 complaints, 319 new
+[412/1071] 2020 Honda Civic  ->  211 complaints, 211 new
+[413/1071] 2020 Honda Clarity  ->  API error
+[414/1071] 2020 Honda Fit  ->  32 complaints, 32 new
+[415/1071] 2020 Honda HR-V  ->  79 complaints, 79 new
+[416/1071] 2020 Honda Insight  ->  29 complaints, 29 new
+[417/1071] 2020 Honda Odyssey  ->  390 complaints, 390 new
+[418/1071] 2020 Honda Passport  ->  86 complaints, 86 new
+[419/1071] 2020 Honda Pilot  ->  453 complaints, 453 new
+[420/1071] 2020 Honda Ridgeline  ->  159 complaints, 159 new
+[421/1071] 2021 Honda Accord  ->  190 complaints, 190 new
+[422/1071] 2021 Honda CR-V  ->  284 complaints, 284 new
+[423/1071] 2021 Honda Civic  ->  128 complaints, 128 new
+[424/1071] 2021 Honda Clarity  ->  API error
+[425/1071] 2021 Honda HR-V  ->  58 complaints, 58 new
+[426/1071] 2021 Honda Insight  ->  23 complaints, 23 new
+[427/1071] 2021 Honda Odyssey  ->  115 complaints, 115 new
+[428/1071] 2021 Honda Passport  ->  127 complaints, 127 new
+[429/1071] 2021 Honda Pilot  ->  386 complaints, 386 new
+[430/1071] 2021 Honda Ridgeline  ->  93 complaints, 93 new
+[431/1071] 2022 Honda Accord  ->  180 complaints, 180 new
+[432/1071] 2022 Honda CR-V  ->  203 complaints, 203 new
+[433/1071] 2022 Honda Civic  ->  872 complaints, 872 new
+[434/1071] 2022 Honda HR-V  ->  74 complaints, 74 new
+[435/1071] 2022 Honda Passport  ->  51 complaints, 51 new
+[436/1071] 2022 Honda Pilot  ->  121 complaints, 121 new
+[437/1071] 2022 Honda Ridgeline  ->  109 complaints, 109 new
+[438/1071] 2023 Honda Accord  ->  API error
+[439/1071] 2023 Honda CR-V  ->  497 complaints, 497 new
+[440/1071] 2023 Honda Civic  ->  API error
+[441/1071] 2023 Honda Ridgeline  ->  116 complaints, 116 new
+[442/1071] 2024 Honda Accord  ->  API error
+[443/1071] 2024 Honda CR-V  ->  363 complaints, 363 new
+[444/1071] 2024 Honda Civic  ->  API error
+[445/1071] 2024 Honda HR-V  ->  102 complaints, 102 new
+[446/1071] 2024 Honda Odyssey  ->  57 complaints, 57 new
+[447/1071] 2024 Honda Passport  ->  15 complaints, 15 new
+[448/1071] 2024 Honda Pilot  ->  90 complaints, 90 new
+[449/1071] 2024 Honda Prologue  ->  769 complaints, 769 new
+[450/1071] 2024 Honda Ridgeline  ->  45 complaints, 45 new
+[451/1071] 2003 Hyundai Elantra  ->  234 complaints, 234 new
+[452/1071] 2003 Hyundai Santa Fe  ->  308 complaints, 308 new
+[453/1071] 2003 Hyundai Sonata  ->  198 complaints, 198 new
+[454/1071] 2004 Hyundai Elantra  ->  182 complaints, 182 new
+[455/1071] 2004 Hyundai Santa Fe  ->  303 complaints, 303 new
+[456/1071] 2004 Hyundai Sonata  ->  202 complaints, 202 new
+[457/1071] 2005 Hyundai Santa Fe  ->  216 complaints, 216 new
+[458/1071] 2005 Hyundai Sonata  ->  165 complaints, 165 new
+[459/1071] 2006 Hyundai Santa Fe  ->  106 complaints, 106 new
+[460/1071] 2006 Hyundai Sonata  ->  1047 complaints, 1047 new
+[461/1071] 2017 Hyundai Elantra  ->  753 complaints, 753 new
+[462/1071] 2017 Hyundai Tucson  ->  1064 complaints, 1064 new
+[463/1071] 2018 Hyundai Elantra  ->  270 complaints, 270 new
+[464/1071] 2018 Hyundai Santa Fe  ->  107 complaints, 107 new
+[465/1071] 2018 Hyundai Sonata  ->  357 complaints, 357 new
+[466/1071] 2018 Hyundai Tucson  ->  376 complaints, 376 new
+[467/1071] 2019 Hyundai Santa Fe  ->  187 complaints, 187 new
+[468/1071] 2019 Hyundai Sonata  ->  149 complaints, 149 new
+[469/1071] 2019 Hyundai Tucson  ->  366 complaints, 366 new
+[470/1071] 2020 Hyundai Elantra  ->  232 complaints, 232 new
+[471/1071] 2020 Hyundai Kona  ->  148 complaints, 148 new
+[472/1071] 2020 Hyundai Palisade  ->  496 complaints, 496 new
+[473/1071] 2020 Hyundai Santa Fe  ->  183 complaints, 183 new
+[474/1071] 2020 Hyundai Sonata  ->  156 complaints, 156 new
+[475/1071] 2020 Hyundai Tucson  ->  161 complaints, 161 new
+[476/1071] 2020 Hyundai Venue  ->  41 complaints, 41 new
+[477/1071] 2021 Hyundai Elantra  ->  126 complaints, 126 new
+[478/1071] 2021 Hyundai Kona  ->  108 complaints, 108 new
+[479/1071] 2021 Hyundai Palisade  ->  396 complaints, 396 new
+[480/1071] 2021 Hyundai Santa Fe  ->  157 complaints, 157 new
+[481/1071] 2021 Hyundai Sonata  ->  114 complaints, 114 new
+[482/1071] 2021 Hyundai Tucson  ->  67 complaints, 67 new
+[483/1071] 2021 Hyundai Venue  ->  28 complaints, 28 new
+[484/1071] 2022 Hyundai Elantra  ->  92 complaints, 92 new
+[485/1071] 2022 Hyundai Ioniq 5  ->  395 complaints, 395 new
+[486/1071] 2022 Hyundai Kona  ->  91 complaints, 91 new
+[487/1071] 2022 Hyundai Palisade  ->  280 complaints, 280 new
+[488/1071] 2022 Hyundai Tucson  ->  350 complaints, 350 new
+[489/1071] 2023 Hyundai Ioniq 5  ->  372 complaints, 372 new
+[490/1071] 2023 Hyundai Ioniq 6  ->  54 complaints, 54 new
+[491/1071] 2023 Hyundai Santa Fe  ->  188 complaints, 188 new
+[492/1071] 2023 Hyundai Tucson  ->  115 complaints, 115 new
+[493/1071] 2024 Hyundai Elantra  ->  50 complaints, 50 new
+[494/1071] 2024 Hyundai Ioniq 5  ->  207 complaints, 207 new
+[495/1071] 2024 Hyundai Ioniq 6  ->  34 complaints, 34 new
+[496/1071] 2024 Hyundai Kona  ->  38 complaints, 38 new
+[497/1071] 2024 Hyundai Palisade  ->  353 complaints, 353 new
+[498/1071] 2024 Hyundai Sonata  ->  38 complaints, 38 new
+[499/1071] 2024 Hyundai Tucson  ->  80 complaints, 80 new
+[500/1071] 2018 Infiniti QX60  ->  36 complaints, 36 new
+[501/1071] 2019 Infiniti QX60  ->  35 complaints, 35 new
+[502/1071] 2020 Infiniti Q50  ->  3 complaints, 3 new
+[503/1071] 2020 Infiniti Q60  ->  2 complaints, 2 new
+[504/1071] 2020 Infiniti QX50  ->  30 complaints, 30 new
+[505/1071] 2020 Infiniti QX60  ->  23 complaints, 23 new
+[506/1071] 2020 Infiniti QX80  ->  6 complaints, 6 new
+[507/1071] 2021 Infiniti Q50  ->  4 complaints, 4 new
+[508/1071] 2021 Infiniti Q60  ->  3 complaints, 3 new
+[509/1071] 2021 Infiniti QX50  ->  35 complaints, 35 new
+[510/1071] 2021 Infiniti QX60  ->  0 complaints, 0 new
+[511/1071] 2021 Infiniti QX80  ->  6 complaints, 6 new
+[512/1071] 2022 Infiniti QX60  ->  21 complaints, 21 new
+[513/1071] 2022 Infiniti QX80  ->  1 complaints, 1 new
+[514/1071] 2024 Infiniti QX50  ->  2 complaints, 2 new
+[515/1071] 2024 Infiniti QX60  ->  15 complaints, 15 new
+[516/1071] 2003 Jeep Grand Cherokee  ->  760 complaints, 760 new
+[517/1071] 2003 Jeep Wrangler  ->  102 complaints, 102 new
+[518/1071] 2004 Jeep Grand Cherokee  ->  1294 complaints, 1294 new
+[519/1071] 2004 Jeep Wrangler  ->  192 complaints, 192 new
+[520/1071] 2005 Jeep Grand Cherokee  ->  2051 complaints, 2051 new
+[521/1071] 2005 Jeep Wrangler  ->  649 complaints, 649 new
+[522/1071] 2006 Jeep Grand Cherokee  ->  1297 complaints, 1297 new
+[523/1071] 2006 Jeep Wrangler  ->  730 complaints, 730 new
+[524/1071] 2008 Jeep Wrangler  ->  1253 complaints, 1253 new
+[525/1071] 2009 Jeep Wrangler  ->  455 complaints, 455 new
+[526/1071] 2017 Jeep Grand Cherokee  ->  360 complaints, 360 new
+[527/1071] 2017 Jeep Wrangler  ->  302 complaints, 302 new
+[528/1071] 2018 Jeep Grand Cherokee  ->  826 complaints, 826 new
+[529/1071] 2018 Jeep Wrangler  ->  1779 complaints, 1779 new
+[530/1071] 2020 Jeep Cherokee  ->  240 complaints, 240 new
+[531/1071] 2020 Jeep Gladiator  ->  471 complaints, 471 new
+[532/1071] 2020 Jeep Grand Cherokee  ->  219 complaints, 219 new
+[533/1071] 2020 Jeep Wrangler  ->  582 complaints, 582 new
+[534/1071] 2021 Jeep Cherokee  ->  127 complaints, 127 new
+[535/1071] 2021 Jeep Gladiator  ->  267 complaints, 267 new
+[536/1071] 2021 Jeep Grand Cherokee  ->  395 complaints, 395 new
+[537/1071] 2021 Jeep Wrangler  ->  859 complaints, 859 new
+[538/1071] 2022 Jeep Gladiator  ->  110 complaints, 110 new
+[539/1071] 2022 Jeep Grand Cherokee  ->  346 complaints, 346 new
+[540/1071] 2022 Jeep Wrangler  ->  347 complaints, 347 new
+[541/1071] 2023 Jeep Grand Cherokee  ->  357 complaints, 357 new
+[542/1071] 2023 Jeep Wrangler  ->  309 complaints, 309 new
+[543/1071] 2024 Jeep Gladiator  ->  13 complaints, 13 new
+[544/1071] 2024 Jeep Grand Cherokee  ->  219 complaints, 219 new
+[545/1071] 2024 Jeep Wrangler  ->  API error
+[546/1071] 2003 Kia Optima  ->  144 complaints, 144 new
+[547/1071] 2003 Kia Sorento  ->  308 complaints, 308 new
+[548/1071] 2004 Kia Optima  ->  225 complaints, 225 new
+[549/1071] 2004 Kia Sorento  ->  220 complaints, 220 new
+[550/1071] 2005 Kia Sorento  ->  307 complaints, 307 new
+[551/1071] 2006 Kia Sorento  ->  242 complaints, 242 new
+[552/1071] 2017 Kia Sorento  ->  777 complaints, 777 new
+[553/1071] 2018 Kia Sorento  ->  245 complaints, 245 new
+[554/1071] 2018 Kia Sportage  ->  154 complaints, 154 new
+[555/1071] 2018 Kia Stinger  ->  64 complaints, 64 new
+[556/1071] 2019 Kia Sorento  ->  407 complaints, 407 new
+[557/1071] 2019 Kia Sportage  ->  65 complaints, 65 new
+[558/1071] 2019 Kia Stinger  ->  41 complaints, 41 new
+[559/1071] 2020 Kia Forte  ->  67 complaints, 67 new
+[560/1071] 2020 Kia Seltos  ->  API error
+[561/1071] 2020 Kia Sorento  ->  127 complaints, 127 new
+[562/1071] 2020 Kia Soul  ->  347 complaints, 347 new
+[563/1071] 2020 Kia Sportage  ->  148 complaints, 148 new
+[564/1071] 2020 Kia Stinger  ->  16 complaints, 16 new
+[565/1071] 2020 Kia Telluride  ->  705 complaints, 705 new
+[566/1071] 2021 Kia Forte  ->  67 complaints, 67 new
+[567/1071] 2021 Kia Seltos  ->  323 complaints, 323 new
+[568/1071] 2021 Kia Sorento  ->  0 complaints, 0 new
+[569/1071] 2021 Kia Soul  ->  204 complaints, 204 new
+[570/1071] 2021 Kia Sportage  ->  42 complaints, 42 new
+[571/1071] 2021 Kia Telluride  ->  314 complaints, 314 new
+[572/1071] 2022 Kia Carnival  ->  128 complaints, 128 new
+[573/1071] 2022 Kia EV6  ->  263 complaints, 263 new
+[574/1071] 2022 Kia Forte  ->  22 complaints, 22 new
+[575/1071] 2022 Kia Seltos  ->  65 complaints, 65 new
+[576/1071] 2022 Kia Sorento  ->  176 complaints, 176 new
+[577/1071] 2022 Kia Sportage  ->  41 complaints, 41 new
+[578/1071] 2023 Kia Carnival  ->  44 complaints, 44 new
+[579/1071] 2023 Kia EV6  ->  129 complaints, 129 new
+[580/1071] 2023 Kia Sorento  ->  98 complaints, 98 new
+[581/1071] 2023 Kia Telluride  ->  181 complaints, 181 new
+[582/1071] 2024 Kia Carnival  ->  63 complaints, 63 new
+[583/1071] 2024 Kia EV6  ->  66 complaints, 66 new
+[584/1071] 2024 Kia EV9  ->  198 complaints, 198 new
+[585/1071] 2024 Kia Forte  ->  21 complaints, 21 new
+[586/1071] 2024 Kia Sorento  ->  33 complaints, 33 new
+[587/1071] 2024 Kia Soul  ->  25 complaints, 25 new
+[588/1071] 2024 Kia Sportage  ->  62 complaints, 62 new
+[589/1071] 2021 Lamborghini Urus  ->  0 complaints, 0 new
+[590/1071] 2022 Lamborghini Urus  ->  1 complaints, 1 new
+[591/1071] 2020 Lincoln Aviator  ->  95 complaints, 95 new
+[592/1071] 2020 Lincoln Corsair  ->  58 complaints, 58 new
+[593/1071] 2020 Lincoln MKZ  ->  2 complaints, 2 new
+[594/1071] 2020 Lincoln Navigator  ->  28 complaints, 28 new
+[595/1071] 2020 Lincoln Navigator L  ->  API error
+[596/1071] 2021 Lincoln Aviator  ->  32 complaints, 32 new
+[597/1071] 2021 Lincoln Corsair  ->  31 complaints, 31 new
+[598/1071] 2021 Lincoln Navigator  ->  26 complaints, 26 new
+[599/1071] 2021 Lincoln Navigator L  ->  API error
+[600/1071] 2022 Lincoln Aviator  ->  42 complaints, 42 new
+[601/1071] 2022 Lincoln Corsair  ->  28 complaints, 28 new
+[602/1071] 2022 Lincoln Nautilus  ->  6 complaints, 6 new
+[603/1071] 2022 Lincoln Navigator  ->  17 complaints, 17 new
+[604/1071] 2023 Lincoln Aviator  ->  19 complaints, 19 new
+[605/1071] 2023 Lincoln Corsair  ->  11 complaints, 11 new
+[606/1071] 2023 Lincoln Nautilus  ->  6 complaints, 6 new
+[607/1071] 2023 Lincoln Navigator  ->  6 complaints, 6 new
+[608/1071] 2024 Lincoln Aviator  ->  5 complaints, 5 new
+[609/1071] 2024 Lincoln Corsair  ->  15 complaints, 15 new
+[610/1071] 2024 Lincoln Nautilus  ->  19 complaints, 19 new
+[611/1071] 2024 Lincoln Navigator  ->  14 complaints, 14 new
+[612/1071] 2022 Lucid Air  ->  23 complaints, 23 new
+[613/1071] 2023 Lucid Air  ->  23 complaints, 23 new
+[614/1071] 2024 Lucid Air  ->  7 complaints, 7 new
+[615/1071] 2020 MINI Countryman  ->  6 complaints, 6 new
+[616/1071] 2021 MINI Countryman  ->  2 complaints, 2 new
+[617/1071] 2022 MINI Countryman  ->  2 complaints, 2 new
+[618/1071] 2021 Maserati Ghibli  ->  0 complaints, 0 new
+[619/1071] 2021 Maserati Levante  ->  0 complaints, 0 new
+[620/1071] 2022 Maserati Ghibli  ->  0 complaints, 0 new
+[621/1071] 2022 Maserati Levante  ->  1 complaints, 1 new
+[622/1071] 2023 Maserati Grecale  ->  4 complaints, 4 new
+[623/1071] 2003 Mazda MPV  ->  114 complaints, 114 new
+[624/1071] 2003 Mazda Mazda6  ->  175 complaints, 175 new
+[625/1071] 2004 Mazda MPV  ->  96 complaints, 96 new
+[626/1071] 2004 Mazda Mazda3  ->  170 complaints, 170 new
+[627/1071] 2004 Mazda Mazda6  ->  184 complaints, 184 new
+[628/1071] 2017 Mazda CX-5  ->  144 complaints, 144 new
+[629/1071] 2018 Mazda CX-5  ->  105 complaints, 105 new
+[630/1071] 2018 Mazda Mazda3  ->  106 complaints, 106 new
+[631/1071] 2019 Mazda CX-5  ->  251 complaints, 251 new
+[632/1071] 2019 Mazda Mazda3  ->  72 complaints, 72 new
+[633/1071] 2020 Mazda CX-30  ->  31 complaints, 31 new
+[634/1071] 2020 Mazda CX-5  ->  102 complaints, 102 new
+[635/1071] 2020 Mazda CX-9  ->  16 complaints, 16 new
+[636/1071] 2020 Mazda MX-5 Miata  ->  API error
+[637/1071] 2020 Mazda Mazda3  ->  31 complaints, 31 new
+[638/1071] 2021 Mazda CX-30  ->  95 complaints, 95 new
+[639/1071] 2021 Mazda CX-5  ->  135 complaints, 135 new
+[640/1071] 2021 Mazda CX-9  ->  33 complaints, 33 new
+[641/1071] 2021 Mazda MX-5 Miata  ->  API error
+[642/1071] 2021 Mazda Mazda3  ->  49 complaints, 49 new
+[643/1071] 2022 Mazda CX-30  ->  31 complaints, 31 new
+[644/1071] 2022 Mazda CX-5  ->  60 complaints, 60 new
+[645/1071] 2022 Mazda CX-9  ->  9 complaints, 9 new
+[646/1071] 2023 Mazda CX-5  ->  55 complaints, 55 new
+[647/1071] 2023 Mazda CX-50  ->  56 complaints, 56 new
+[648/1071] 2023 Mazda Mazda3  ->  12 complaints, 12 new
+[649/1071] 2024 Mazda CX-5  ->  35 complaints, 35 new
+[650/1071] 2024 Mazda CX-50  ->  29 complaints, 29 new
+[651/1071] 2024 Mazda CX-90  ->  API error
+[652/1071] 2024 Mazda Mazda3  ->  10 complaints, 10 new
+[653/1071] 2018 Mercedes-Benz C-Class  ->  122 complaints, 122 new
+[654/1071] 2019 Mercedes-Benz C-Class  ->  71 complaints, 71 new
+[655/1071] 2020 Mercedes-Benz A-Class  ->  18 complaints, 18 new
+[656/1071] 2020 Mercedes-Benz C-Class  ->  44 complaints, 44 new
+[657/1071] 2020 Mercedes-Benz E-Class  ->  20 complaints, 20 new
+[658/1071] 2021 Mercedes-Benz A-Class  ->  9 complaints, 9 new
+[659/1071] 2021 Mercedes-Benz C-Class  ->  14 complaints, 14 new
+[660/1071] 2021 Mercedes-Benz E-Class  ->  19 complaints, 19 new
+[661/1071] 2024 Mercedes-Benz C-Class  ->  10 complaints, 10 new
+[662/1071] 2007 Mercury Mariner  ->  33 complaints, 33 new
+[663/1071] 2008 Mercury Mariner  ->  461 complaints, 461 new
+[664/1071] 2008 Mercury Milan  ->  451 complaints, 451 new
+[665/1071] 2008 Mercury Mountaineer  ->  96 complaints, 96 new
+[666/1071] 2009 Mercury Mariner  ->  315 complaints, 315 new
+[667/1071] 2009 Mercury Milan  ->  226 complaints, 226 new
+[668/1071] 2009 Mercury Mountaineer  ->  6 complaints, 6 new
+[669/1071] 2010 Mercury Mariner  ->  278 complaints, 278 new
+[670/1071] 2010 Mercury Milan  ->  1060 complaints, 1060 new
+[671/1071] 2010 Mercury Mountaineer  ->  13 complaints, 13 new
+[672/1071] 2011 Mercury Mariner  ->  87 complaints, 87 new
+[673/1071] 2018 Mitsubishi Outlander  ->  55 complaints, 55 new
+[674/1071] 2019 Mitsubishi Outlander  ->  29 complaints, 29 new
+[675/1071] 2020 Mitsubishi Eclipse Cross  ->  5 complaints, 5 new
+[676/1071] 2020 Mitsubishi Outlander  ->  28 complaints, 28 new
+[677/1071] 2020 Mitsubishi Outlander Sport  ->  26 complaints, 26 new
+[678/1071] 2021 Mitsubishi Eclipse Cross  ->  0 complaints, 0 new
+[679/1071] 2021 Mitsubishi Outlander  ->  0 complaints, 0 new
+[680/1071] 2021 Mitsubishi Outlander Sport  ->  17 complaints, 17 new
+[681/1071] 2022 Mitsubishi Eclipse Cross  ->  5 complaints, 5 new
+[682/1071] 2022 Mitsubishi Outlander  ->  205 complaints, 205 new
+[683/1071] 2024 Mitsubishi Outlander  ->  18 complaints, 18 new
+[684/1071] 2003 Nissan Altima  ->  883 complaints, 883 new
+[685/1071] 2003 Nissan Frontier  ->  77 complaints, 77 new
+[686/1071] 2003 Nissan Maxima  ->  206 complaints, 206 new
+[687/1071] 2003 Nissan Murano  ->  799 complaints, 799 new
+[688/1071] 2003 Nissan Pathfinder  ->  110 complaints, 110 new
+[689/1071] 2003 Nissan Sentra  ->  180 complaints, 180 new
+[690/1071] 2003 Nissan Xterra  ->  72 complaints, 72 new
+[691/1071] 2004 Nissan Altima  ->  276 complaints, 276 new
+[692/1071] 2004 Nissan Frontier  ->  66 complaints, 66 new
+[693/1071] 2004 Nissan Maxima  ->  1425 complaints, 1425 new
+[694/1071] 2004 Nissan Murano  ->  678 complaints, 678 new
+[695/1071] 2004 Nissan Pathfinder  ->  67 complaints, 67 new
+[696/1071] 2004 Nissan Sentra  ->  197 complaints, 197 new
+[697/1071] 2004 Nissan Xterra  ->  84 complaints, 84 new
+[698/1071] 2005 Nissan Altima  ->  1091 complaints, 1091 new
+[699/1071] 2005 Nissan Pathfinder  ->  1050 complaints, 1050 new
+[700/1071] 2005 Nissan Sentra  ->  170 complaints, 170 new
+[701/1071] 2005 Nissan Titan  ->  891 complaints, 891 new
+[702/1071] 2006 Nissan Altima  ->  824 complaints, 824 new
+[703/1071] 2006 Nissan Pathfinder  ->  837 complaints, 837 new
+[704/1071] 2006 Nissan Sentra  ->  116 complaints, 116 new
+[705/1071] 2006 Nissan Titan  ->  430 complaints, 430 new
+[706/1071] 2007 Nissan Altima  ->  497 complaints, 497 new
+[707/1071] 2008 Nissan Altima  ->  1028 complaints, 1028 new
+[708/1071] 2008 Nissan Rogue  ->  428 complaints, 428 new
+[709/1071] 2009 Nissan Altima  ->  1547 complaints, 1547 new
+[710/1071] 2009 Nissan Rogue  ->  319 complaints, 319 new
+[711/1071] 2015 Nissan Altima  ->  938 complaints, 938 new
+[712/1071] 2015 Nissan Rogue  ->  542 complaints, 542 new
+[713/1071] 2015 Nissan Sentra  ->  345 complaints, 345 new
+[714/1071] 2016 Nissan Altima  ->  543 complaints, 543 new
+[715/1071] 2016 Nissan Rogue  ->  534 complaints, 534 new
+[716/1071] 2017 Nissan Altima  ->  380 complaints, 380 new
+[717/1071] 2017 Nissan Rogue  ->  581 complaints, 581 new
+[718/1071] 2018 Nissan Altima  ->  220 complaints, 220 new
+[719/1071] 2018 Nissan Murano  ->  14 complaints, 14 new
+[720/1071] 2018 Nissan Rogue  ->  612 complaints, 612 new
+[721/1071] 2018 Nissan Sentra  ->  183 complaints, 183 new
+[722/1071] 2019 Nissan Altima  ->  218 complaints, 218 new
+[723/1071] 2019 Nissan Murano  ->  40 complaints, 40 new
+[724/1071] 2019 Nissan Rogue  ->  326 complaints, 326 new
+[725/1071] 2019 Nissan Sentra  ->  219 complaints, 219 new
+[726/1071] 2020 Nissan Altima  ->  170 complaints, 170 new
+[727/1071] 2020 Nissan Armada  ->  6 complaints, 6 new
+[728/1071] 2020 Nissan Frontier  ->  API error
+[729/1071] 2020 Nissan Kicks  ->  88 complaints, 88 new
+[730/1071] 2020 Nissan Leaf  ->  152 complaints, 152 new
+[731/1071] 2020 Nissan Maxima  ->  20 complaints, 20 new
+[732/1071] 2020 Nissan Murano  ->  42 complaints, 42 new
+[733/1071] 2020 Nissan Pathfinder  ->  48 complaints, 48 new
+[734/1071] 2020 Nissan Rogue  ->  147 complaints, 147 new
+[735/1071] 2020 Nissan Sentra  ->  198 complaints, 198 new
+[736/1071] 2020 Nissan Titan  ->  18 complaints, 18 new
+[737/1071] 2021 Nissan Altima  ->  61 complaints, 61 new
+[738/1071] 2021 Nissan Armada  ->  12 complaints, 12 new
+[739/1071] 2021 Nissan Frontier  ->  17 complaints, 17 new
+[740/1071] 2021 Nissan Kicks  ->  68 complaints, 68 new
+[741/1071] 2021 Nissan Leaf  ->  49 complaints, 49 new
+[742/1071] 2021 Nissan Maxima  ->  3 complaints, 3 new
+[743/1071] 2021 Nissan Murano  ->  14 complaints, 14 new
+[744/1071] 2021 Nissan Pathfinder  ->  0 complaints, 0 new
+[745/1071] 2021 Nissan Rogue  ->  261 complaints, 261 new
+[746/1071] 2021 Nissan Sentra  ->  124 complaints, 124 new
+[747/1071] 2021 Nissan Titan  ->  API error
+[748/1071] 2022 Nissan Altima  ->  20 complaints, 20 new
+[749/1071] 2022 Nissan Armada  ->  7 complaints, 7 new
+[750/1071] 2022 Nissan Frontier  ->  107 complaints, 107 new
+[751/1071] 2022 Nissan Leaf  ->  API error
+[752/1071] 2022 Nissan Pathfinder  ->  128 complaints, 128 new
+[753/1071] 2022 Nissan Rogue  ->  234 complaints, 234 new
+[754/1071] 2023 Nissan Altima  ->  27 complaints, 27 new
+[755/1071] 2023 Nissan Rogue  ->  614 complaints, 614 new
+[756/1071] 2024 Nissan Altima  ->  37 complaints, 37 new
+[757/1071] 2024 Nissan Frontier  ->  API error
+[758/1071] 2024 Nissan Rogue  ->  158 complaints, 158 new
+[759/1071] 2024 Nissan Titan  ->  API error
+[760/1071] 2005 Pontiac G6  ->  679 complaints, 679 new
+[761/1071] 2006 Pontiac G6  ->  1907 complaints, 1907 new
+[762/1071] 2007 Pontiac G6  ->  1230 complaints, 1230 new
+[763/1071] 2007 Pontiac Grand Prix  ->  220 complaints, 220 new
+[764/1071] 2007 Pontiac Torrent  ->  243 complaints, 243 new
+[765/1071] 2007 Pontiac Vibe  ->  170 complaints, 170 new
+[766/1071] 2008 Pontiac G6  ->  1077 complaints, 1077 new
+[767/1071] 2008 Pontiac Grand Prix  ->  142 complaints, 142 new
+[768/1071] 2008 Pontiac Solstice  ->  159 complaints, 159 new
+[769/1071] 2008 Pontiac Torrent  ->  125 complaints, 125 new
+[770/1071] 2008 Pontiac Vibe  ->  63 complaints, 63 new
+[771/1071] 2009 Pontiac G6  ->  710 complaints, 710 new
+[772/1071] 2009 Pontiac Solstice  ->  36 complaints, 36 new
+[773/1071] 2009 Pontiac Vibe  ->  527 complaints, 527 new
+[774/1071] 2020 Porsche 911  ->  API error
+[775/1071] 2020 Porsche Cayenne  ->  18 complaints, 18 new
+[776/1071] 2020 Porsche Macan  ->  23 complaints, 23 new
+[777/1071] 2020 Porsche Panamera  ->  5 complaints, 5 new
+[778/1071] 2020 Porsche Taycan  ->  86 complaints, 86 new
+[779/1071] 2021 Porsche 911  ->  API error
+[780/1071] 2021 Porsche Cayenne  ->  16 complaints, 16 new
+[781/1071] 2021 Porsche Macan  ->  9 complaints, 9 new
+[782/1071] 2021 Porsche Panamera  ->  2 complaints, 2 new
+[783/1071] 2021 Porsche Taycan  ->  69 complaints, 69 new
+[784/1071] 2022 Porsche 911  ->  API error
+[785/1071] 2022 Porsche Cayenne  ->  1 complaints, 1 new
+[786/1071] 2022 Porsche Macan  ->  4 complaints, 4 new
+[787/1071] 2022 Porsche Taycan  ->  78 complaints, 78 new
+[788/1071] 2023 Porsche 911  ->  API error
+[789/1071] 2023 Porsche Cayenne  ->  4 complaints, 4 new
+[790/1071] 2023 Porsche Macan  ->  6 complaints, 6 new
+[791/1071] 2023 Porsche Taycan  ->  19 complaints, 19 new
+[792/1071] 2024 Porsche 911  ->  API error
+[793/1071] 2024 Porsche Cayenne  ->  5 complaints, 5 new
+[794/1071] 2024 Porsche Macan  ->  7 complaints, 7 new
+[795/1071] 2024 Porsche Panamera  ->  2 complaints, 2 new
+[796/1071] 2024 Porsche Taycan  ->  9 complaints, 9 new
+[797/1071] 2005 RAM 1500  ->  0 complaints, 0 new
+[798/1071] 2006 RAM 1500  ->  0 complaints, 0 new
+[799/1071] 2016 RAM 1500  ->  1486 complaints, 1486 new
+[800/1071] 2017 RAM 1500  ->  842 complaints, 842 new
+[801/1071] 2018 RAM 1500  ->  634 complaints, 634 new
+[802/1071] 2020 RAM 1500  ->  594 complaints, 594 new
+[803/1071] 2020 RAM 2500  ->  158 complaints, 158 new
+[804/1071] 2021 RAM 1500  ->  642 complaints, 642 new
+[805/1071] 2021 RAM 2500  ->  101 complaints, 101 new
+[806/1071] 2022 RAM 1500  ->  API error
+[807/1071] 2022 RAM 2500  ->  API error
+[808/1071] 2023 RAM 1500  ->  API error
+[809/1071] 2024 RAM 1500  ->  API error
+[810/1071] 2024 RAM 2500  ->  API error
+[811/1071] 2007 Saab 9-3  ->  155 complaints, 155 new
+[812/1071] 2007 Saab 9-5  ->  17 complaints, 17 new
+[813/1071] 2008 Saab 9-3  ->  183 complaints, 183 new
+[814/1071] 2008 Saab 9-5  ->  20 complaints, 20 new
+[815/1071] 2009 Saab 9-3  ->  43 complaints, 43 new
+[816/1071] 2009 Saab 9-5  ->  2 complaints, 2 new
+[817/1071] 2010 Saab 9-3  ->  30 complaints, 30 new
+[818/1071] 2005 Saturn Ion  ->  573 complaints, 573 new
+[819/1071] 2005 Saturn Vue  ->  169 complaints, 169 new
+[820/1071] 2006 Saturn Ion  ->  1235 complaints, 1235 new
+[821/1071] 2006 Saturn Vue  ->  300 complaints, 300 new
+[822/1071] 2007 Saturn Aura  ->  607 complaints, 607 new
+[823/1071] 2007 Saturn Ion  ->  876 complaints, 876 new
+[824/1071] 2007 Saturn Outlook  ->  511 complaints, 511 new
+[825/1071] 2007 Saturn Vue  ->  312 complaints, 312 new
+[826/1071] 2008 Saturn Aura  ->  432 complaints, 432 new
+[827/1071] 2008 Saturn Outlook  ->  633 complaints, 633 new
+[828/1071] 2008 Saturn Vue  ->  406 complaints, 406 new
+[829/1071] 2009 Saturn Aura  ->  389 complaints, 389 new
+[830/1071] 2009 Saturn Outlook  ->  192 complaints, 192 new
+[831/1071] 2009 Saturn Vue  ->  125 complaints, 125 new
+[832/1071] 2003 Subaru Forester  ->  191 complaints, 191 new
+[833/1071] 2003 Subaru Impreza  ->  64 complaints, 64 new
+[834/1071] 2003 Subaru Outback  ->  95 complaints, 95 new
+[835/1071] 2004 Subaru Forester  ->  219 complaints, 219 new
+[836/1071] 2004 Subaru Impreza  ->  96 complaints, 96 new
+[837/1071] 2004 Subaru Outback  ->  90 complaints, 90 new
+[838/1071] 2005 Subaru Forester  ->  93 complaints, 93 new
+[839/1071] 2005 Subaru Outback  ->  273 complaints, 273 new
+[840/1071] 2006 Subaru Forester  ->  88 complaints, 88 new
+[841/1071] 2006 Subaru Outback  ->  280 complaints, 280 new
+[842/1071] 2008 Subaru Outback  ->  228 complaints, 228 new
+[843/1071] 2009 Subaru Outback  ->  110 complaints, 110 new
+[844/1071] 2016 Subaru Outback  ->  633 complaints, 633 new
+[845/1071] 2017 Subaru Forester  ->  568 complaints, 568 new
+[846/1071] 2017 Subaru Outback  ->  914 complaints, 914 new
+[847/1071] 2018 Subaru Crosstrek  ->  193 complaints, 193 new
+[848/1071] 2018 Subaru Forester  ->  482 complaints, 482 new
+[849/1071] 2018 Subaru Outback  ->  795 complaints, 795 new
+[850/1071] 2019 Subaru Crosstrek  ->  276 complaints, 276 new
+[851/1071] 2019 Subaru Forester  ->  831 complaints, 831 new
+[852/1071] 2019 Subaru Impreza  ->  188 complaints, 188 new
+[853/1071] 2019 Subaru Outback  ->  1025 complaints, 1025 new
+[854/1071] 2020 Subaru Ascent  ->  314 complaints, 314 new
+[855/1071] 2020 Subaru BRZ  ->  2 complaints, 2 new
+[856/1071] 2020 Subaru Crosstrek  ->  68 complaints, 68 new
+[857/1071] 2020 Subaru Forester  ->  589 complaints, 589 new
+[858/1071] 2020 Subaru Impreza  ->  84 complaints, 84 new
+[859/1071] 2020 Subaru Legacy  ->  120 complaints, 120 new
+[860/1071] 2020 Subaru Outback  ->  889 complaints, 889 new
+[861/1071] 2020 Subaru WRX  ->  17 complaints, 17 new
+[862/1071] 2021 Subaru Ascent  ->  96 complaints, 96 new
+[863/1071] 2021 Subaru BRZ  ->  0 complaints, 0 new
+[864/1071] 2021 Subaru Crosstrek  ->  106 complaints, 106 new
+[865/1071] 2021 Subaru Forester  ->  202 complaints, 202 new
+[866/1071] 2021 Subaru Impreza  ->  14 complaints, 14 new
+[867/1071] 2021 Subaru Legacy  ->  30 complaints, 30 new
+[868/1071] 2021 Subaru Outback  ->  288 complaints, 288 new
+[869/1071] 2021 Subaru WRX  ->  12 complaints, 12 new
+[870/1071] 2022 Subaru Ascent  ->  53 complaints, 53 new
+[871/1071] 2022 Subaru BRZ  ->  10 complaints, 10 new
+[872/1071] 2022 Subaru Forester  ->  92 complaints, 92 new
+[873/1071] 2022 Subaru Outback  ->  445 complaints, 445 new
+[874/1071] 2022 Subaru WRX  ->  24 complaints, 24 new
+[875/1071] 2023 Subaru Forester  ->  68 complaints, 68 new
+[876/1071] 2023 Subaru Outback  ->  84 complaints, 84 new
+[877/1071] 2023 Subaru Solterra  ->  25 complaints, 25 new
+[878/1071] 2024 Subaru Crosstrek  ->  101 complaints, 101 new
+[879/1071] 2024 Subaru Forester  ->  28 complaints, 28 new
+[880/1071] 2024 Subaru Impreza  ->  28 complaints, 28 new
+[881/1071] 2024 Subaru Outback  ->  2 complaints, 2 new
+[882/1071] 2024 Subaru Solterra  ->  13 complaints, 13 new
+[883/1071] 2020 Tesla Model 3  ->  427 complaints, 427 new
+[884/1071] 2020 Tesla Model S  ->  API error
+[885/1071] 2020 Tesla Model X  ->  API error
+[886/1071] 2021 Tesla Model 3  ->  639 complaints, 639 new
+[887/1071] 2021 Tesla Model S  ->  174 complaints, 174 new
+[888/1071] 2021 Tesla Model X  ->  API error
+[889/1071] 2021 Tesla Model Y  ->  API error
+[890/1071] 2022 Tesla Model 3  ->  741 complaints, 741 new
+[891/1071] 2022 Tesla Model S  ->  131 complaints, 131 new
+[892/1071] 2022 Tesla Model X  ->  119 complaints, 119 new
+[893/1071] 2022 Tesla Model Y  ->  API error
+[894/1071] 2023 Tesla Model S  ->  API error
+[895/1071] 2023 Tesla Model X  ->  API error
+[896/1071] 2024 Tesla Cybertruck  ->  141 complaints, 141 new
+[897/1071] 2024 Tesla Model 3  ->  191 complaints, 191 new
+[898/1071] 2024 Tesla Model S  ->  API error
+[899/1071] 2024 Tesla Model X  ->  API error
+[900/1071] 2024 Tesla Model Y  ->  API error
+[901/1071] 2003 Toyota 4Runner  ->  707 complaints, 707 new
+[902/1071] 2003 Toyota Camry  ->  816 complaints, 816 new
+[903/1071] 2003 Toyota Corolla  ->  767 complaints, 767 new
+[904/1071] 2003 Toyota Highlander  ->  270 complaints, 270 new
+[905/1071] 2003 Toyota Prius  ->  111 complaints, 111 new
+[906/1071] 2003 Toyota RAV4  ->  326 complaints, 326 new
+[907/1071] 2003 Toyota Sequoia  ->  682 complaints, 682 new
+[908/1071] 2003 Toyota Sienna  ->  116 complaints, 116 new
+[909/1071] 2003 Toyota Tacoma  ->  371 complaints, 371 new
+[910/1071] 2003 Toyota Tundra  ->  411 complaints, 411 new
+[911/1071] 2004 Toyota 4Runner  ->  677 complaints, 677 new
+[912/1071] 2004 Toyota Camry  ->  798 complaints, 798 new
+[913/1071] 2004 Toyota Corolla  ->  505 complaints, 505 new
+[914/1071] 2004 Toyota Highlander  ->  285 complaints, 285 new
+[915/1071] 2004 Toyota Prius  ->  610 complaints, 610 new
+[916/1071] 2004 Toyota RAV4  ->  152 complaints, 152 new
+[917/1071] 2004 Toyota Sequoia  ->  378 complaints, 378 new
+[918/1071] 2004 Toyota Sienna  ->  2062 complaints, 2062 new
+[919/1071] 2004 Toyota Tacoma  ->  414 complaints, 414 new
+[920/1071] 2004 Toyota Tundra  ->  465 complaints, 465 new
+[921/1071] 2005 Toyota Camry  ->  721 complaints, 721 new
+[922/1071] 2005 Toyota Corolla  ->  939 complaints, 939 new
+[923/1071] 2005 Toyota Highlander  ->  225 complaints, 225 new
+[924/1071] 2005 Toyota Prius  ->  1051 complaints, 1051 new
+[925/1071] 2005 Toyota RAV4  ->  141 complaints, 141 new
+[926/1071] 2005 Toyota Sienna  ->  1130 complaints, 1130 new
+[927/1071] 2005 Toyota Tacoma  ->  706 complaints, 706 new
+[928/1071] 2005 Toyota Tundra  ->  374 complaints, 374 new
+[929/1071] 2006 Toyota Camry  ->  428 complaints, 428 new
+[930/1071] 2006 Toyota Corolla  ->  903 complaints, 903 new
+[931/1071] 2006 Toyota Highlander  ->  273 complaints, 273 new
+[932/1071] 2006 Toyota Prius  ->  1439 complaints, 1439 new
+[933/1071] 2006 Toyota RAV4  ->  703 complaints, 703 new
+[934/1071] 2006 Toyota Sienna  ->  1016 complaints, 1016 new
+[935/1071] 2006 Toyota Tacoma  ->  782 complaints, 782 new
+[936/1071] 2006 Toyota Tundra  ->  544 complaints, 544 new
+[937/1071] 2007 Toyota Camry  ->  3613 complaints, 3613 new
+[938/1071] 2007 Toyota Corolla  ->  882 complaints, 882 new
+[939/1071] 2007 Toyota Prius  ->  2003 complaints, 2003 new
+[940/1071] 2007 Toyota RAV4  ->  1002 complaints, 1002 new
+[941/1071] 2007 Toyota Tacoma  ->  540 complaints, 540 new
+[942/1071] 2008 Toyota Camry  ->  1176 complaints, 1176 new
+[943/1071] 2008 Toyota Corolla  ->  344 complaints, 344 new
+[944/1071] 2008 Toyota Highlander  ->  403 complaints, 403 new
+[945/1071] 2008 Toyota Prius  ->  1497 complaints, 1497 new
+[946/1071] 2008 Toyota RAV4  ->  575 complaints, 575 new
+[947/1071] 2008 Toyota Tacoma  ->  444 complaints, 444 new
+[948/1071] 2009 Toyota Camry  ->  1407 complaints, 1407 new
+[949/1071] 2009 Toyota Corolla  ->  1533 complaints, 1533 new
+[950/1071] 2009 Toyota Highlander  ->  134 complaints, 134 new
+[951/1071] 2009 Toyota Prius  ->  501 complaints, 501 new
+[952/1071] 2009 Toyota RAV4  ->  326 complaints, 326 new
+[953/1071] 2009 Toyota Tacoma  ->  515 complaints, 515 new
+[954/1071] 2010 Toyota Camry  ->  610 complaints, 610 new
+[955/1071] 2010 Toyota Corolla  ->  1258 complaints, 1258 new
+[956/1071] 2012 Toyota Camry  ->  642 complaints, 642 new
+[957/1071] 2012 Toyota Corolla  ->  445 complaints, 445 new
+[958/1071] 2015 Toyota Camry  ->  266 complaints, 266 new
+[959/1071] 2015 Toyota Corolla  ->  216 complaints, 216 new
+[960/1071] 2015 Toyota RAV4  ->  300 complaints, 300 new
+[961/1071] 2016 Toyota Camry  ->  180 complaints, 180 new
+[962/1071] 2016 Toyota RAV4  ->  231 complaints, 231 new
+[963/1071] 2017 Toyota Camry  ->  145 complaints, 145 new
+[964/1071] 2017 Toyota Corolla  ->  186 complaints, 186 new
+[965/1071] 2017 Toyota Highlander  ->  254 complaints, 254 new
+[966/1071] 2017 Toyota RAV4  ->  300 complaints, 300 new
+[967/1071] 2018 Toyota Camry  ->  708 complaints, 708 new
+[968/1071] 2018 Toyota Corolla  ->  132 complaints, 132 new
+[969/1071] 2018 Toyota Highlander  ->  249 complaints, 249 new
+[970/1071] 2018 Toyota RAV4  ->  322 complaints, 322 new
+[971/1071] 2019 Toyota Camry  ->  369 complaints, 369 new
+[972/1071] 2020 Toyota 4Runner  ->  31 complaints, 31 new
+[973/1071] 2020 Toyota C-HR  ->  48 complaints, 48 new
+[974/1071] 2020 Toyota Camry  ->  259 complaints, 259 new
+[975/1071] 2020 Toyota Corolla  ->  300 complaints, 300 new
+[976/1071] 2020 Toyota Highlander  ->  282 complaints, 282 new
+[977/1071] 2020 Toyota Land Cruiser  ->  0 complaints, 0 new
+[978/1071] 2020 Toyota Prius  ->  14 complaints, 14 new
+[979/1071] 2020 Toyota RAV4  ->  614 complaints, 614 new
+[980/1071] 2020 Toyota Sequoia  ->  4 complaints, 4 new
+[981/1071] 2020 Toyota Sienna  ->  35 complaints, 35 new
+[982/1071] 2020 Toyota Tacoma  ->  84 complaints, 84 new
+[983/1071] 2020 Toyota Tundra  ->  44 complaints, 44 new
+[984/1071] 2020 Toyota Venza  ->  API error
+[985/1071] 2021 Toyota 4Runner  ->  32 complaints, 32 new
+[986/1071] 2021 Toyota C-HR  ->  29 complaints, 29 new
+[987/1071] 2021 Toyota Camry  ->  150 complaints, 150 new
+[988/1071] 2021 Toyota Corolla  ->  175 complaints, 175 new
+[989/1071] 2021 Toyota Highlander  ->  438 complaints, 438 new
+[990/1071] 2021 Toyota Land Cruiser  ->  1 complaints, 1 new
+[991/1071] 2021 Toyota Prius  ->  6 complaints, 6 new
+[992/1071] 2021 Toyota RAV4  ->  366 complaints, 366 new
+[993/1071] 2021 Toyota Sequoia  ->  4 complaints, 4 new
+[994/1071] 2021 Toyota Sienna  ->  API error
+[995/1071] 2021 Toyota Tacoma  ->  72 complaints, 72 new
+[996/1071] 2021 Toyota Tundra  ->  23 complaints, 23 new
+[997/1071] 2021 Toyota Venza  ->  179 complaints, 179 new
+[998/1071] 2022 Toyota 4Runner  ->  39 complaints, 39 new
+[999/1071] 2022 Toyota C-HR  ->  2 complaints, 2 new
+[1000/1071] 2022 Toyota Camry  ->  54 complaints, 54 new
+[1001/1071] 2022 Toyota Corolla  ->  89 complaints, 89 new
+[1002/1071] 2022 Toyota Corolla Cross  ->  42 complaints, 42 new
+[1003/1071] 2022 Toyota GR86  ->  21 complaints, 21 new
+[1004/1071] 2022 Toyota Highlander  ->  204 complaints, 204 new
+[1005/1071] 2022 Toyota Prius  ->  22 complaints, 22 new
+[1006/1071] 2022 Toyota RAV4  ->  124 complaints, 124 new
+[1007/1071] 2022 Toyota Sequoia  ->  1 complaints, 1 new
+[1008/1071] 2022 Toyota Tacoma  ->  53 complaints, 53 new
+[1009/1071] 2022 Toyota Tundra  ->  403 complaints, 403 new
+[1010/1071] 2022 Toyota Venza  ->  39 complaints, 39 new
+[1011/1071] 2023 Toyota Camry  ->  54 complaints, 54 new
+[1012/1071] 2023 Toyota Corolla  ->  71 complaints, 71 new
+[1013/1071] 2023 Toyota Corolla Cross  ->  171 complaints, 171 new
+[1014/1071] 2023 Toyota Crown  ->  18 complaints, 18 new
+[1015/1071] 2023 Toyota GR86  ->  9 complaints, 9 new
+[1016/1071] 2023 Toyota RAV4  ->  130 complaints, 130 new
+[1017/1071] 2023 Toyota Tacoma  ->  46 complaints, 46 new
+[1018/1071] 2023 Toyota bZ4X  ->  5 complaints, 5 new
+[1019/1071] 2024 Toyota 4Runner  ->  8 complaints, 8 new
+[1020/1071] 2024 Toyota Camry  ->  43 complaints, 43 new
+[1021/1071] 2024 Toyota Crown  ->  13 complaints, 13 new
+[1022/1071] 2024 Toyota Highlander  ->  37 complaints, 37 new
+[1023/1071] 2024 Toyota RAV4  ->  154 complaints, 154 new
+[1024/1071] 2024 Toyota Sienna  ->  API error
+[1025/1071] 2024 Toyota Tacoma  ->  134 complaints, 134 new
+[1026/1071] 2024 Toyota Tundra  ->  272 complaints, 272 new
+[1027/1071] 2024 Toyota bZ4X  ->  21 complaints, 21 new
+[1028/1071] 2003 Volkswagen Golf  ->  31 complaints, 31 new
+[1029/1071] 2003 Volkswagen Jetta  ->  462 complaints, 462 new
+[1030/1071] 2003 Volkswagen Passat  ->  641 complaints, 641 new
+[1031/1071] 2004 Volkswagen Golf  ->  28 complaints, 28 new
+[1032/1071] 2004 Volkswagen Jetta  ->  233 complaints, 233 new
+[1033/1071] 2004 Volkswagen Passat  ->  283 complaints, 283 new
+[1034/1071] 2005 Volkswagen Jetta  ->  248 complaints, 248 new
+[1035/1071] 2006 Volkswagen Jetta  ->  580 complaints, 580 new
+[1036/1071] 2017 Volkswagen Jetta  ->  158 complaints, 158 new
+[1037/1071] 2018 Volkswagen Jetta  ->  28 complaints, 28 new
+[1038/1071] 2020 Volkswagen Atlas  ->  25 complaints, 25 new
+[1039/1071] 2020 Volkswagen Jetta  ->  51 complaints, 51 new
+[1040/1071] 2020 Volkswagen Passat  ->  15 complaints, 15 new
+[1041/1071] 2020 Volkswagen Tiguan  ->  124 complaints, 124 new
+[1042/1071] 2021 Volkswagen Atlas  ->  428 complaints, 428 new
+[1043/1071] 2021 Volkswagen ID.4  ->  317 complaints, 317 new
+[1044/1071] 2021 Volkswagen Jetta  ->  63 complaints, 63 new
+[1045/1071] 2021 Volkswagen Passat  ->  0 complaints, 0 new
+[1046/1071] 2021 Volkswagen Tiguan  ->  119 complaints, 119 new
+[1047/1071] 2022 Volkswagen Atlas  ->  161 complaints, 161 new
+[1048/1071] 2022 Volkswagen ID.4  ->  129 complaints, 129 new
+[1049/1071] 2022 Volkswagen Jetta  ->  34 complaints, 34 new
+[1050/1071] 2023 Volkswagen Atlas Cross Sport  ->  16 complaints, 16 new
+[1051/1071] 2023 Volkswagen ID.4  ->  430 complaints, 430 new
+[1052/1071] 2023 Volkswagen Jetta  ->  40 complaints, 40 new
+[1053/1071] 2023 Volkswagen Tiguan  ->  56 complaints, 56 new
+[1054/1071] 2024 Volkswagen Atlas  ->  147 complaints, 147 new
+[1055/1071] 2024 Volkswagen ID.4  ->  46 complaints, 46 new
+[1056/1071] 2024 Volkswagen Tiguan  ->  46 complaints, 46 new
+[1057/1071] 2020 Volvo XC40  ->  API error
+[1058/1071] 2020 Volvo XC60  ->  API error
+[1059/1071] 2020 Volvo XC90  ->  API error
+[1060/1071] 2021 Volvo XC40  ->  API error
+[1061/1071] 2021 Volvo XC60  ->  API error
+[1062/1071] 2021 Volvo XC90  ->  API error
+[1063/1071] 2022 Volvo S60  ->  API error
+[1064/1071] 2022 Volvo XC40  ->  API error
+[1065/1071] 2022 Volvo XC60  ->  API error
+[1066/1071] 2022 Volvo XC90  ->  API error
+[1067/1071] 2023 Volvo S60  ->  API error
+[1068/1071] 2023 Volvo XC40  ->  API error
+[1069/1071] 2024 Volvo XC40  ->  9 complaints, 9 new
+[1070/1071] 2024 Volvo XC60  ->  API error
+[1071/1071] 2024 Volvo XC90  ->  API error
+
+--- Done ---------------------------
+New complaint rows : 268071
+Total in table     : 268071
+API calls (live)   : 955
+API failures       : 116
+Log                : C:\Users\Robert\OneDrive\Desktop\Wrench App Data\complaints_enrichment.log

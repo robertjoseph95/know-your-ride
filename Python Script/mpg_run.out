@@ -1,0 +1,76 @@
+  Added column: range_miles
+  Added column: mpge
+  Added column: fuel_type
+Pass 1: 42 vehicles missing MPG data
+
+[1/42] 2021 Acura MDX... ✗  model not in EPA
+[2/42] 2021 Cadillac Escalade ESV... ✓  3 variants inserted
+[3/42] 2022 Cadillac Escalade ESV... ✓  3 variants inserted
+[4/42] 2008 Chevrolet Silverado 1500... ✓  5 variants inserted
+[5/42] 2012 Chevrolet Silverado 1500... ✓  1 variants inserted
+[6/42] 2016 Chevrolet Silverado 1500... ✓  1 variants inserted
+[7/42] 2017 Chevrolet Silverado 1500... ✓  1 variants inserted
+[8/42] 2010 Ford F-150... ✗  model not in EPA
+[9/42] 2017 GMC Sierra 1500... ✓  1 variants inserted
+[10/42] 2018 GMC Sierra 1500... ✓  1 variants inserted
+[11/42] 2019 GMC Sierra 1500... ✓  6 variants inserted
+[12/42] 2023 Hyundai Ioniq 5... ✓  1 variants inserted
+[13/42] 2021 Infiniti QX60... ✗  model not in EPA
+[14/42] 2020 Kia Seltos... ✗  model not in EPA
+[15/42] 2018 Mazda Mazda3... ✗  model not in EPA
+[16/42] 2019 Mazda Mazda3... ✗  model not in EPA
+[17/42] 2020 Mazda MX-5 Miata... ✗  model not in EPA
+[18/42] 2020 Mazda Mazda3... ✗  model not in EPA
+[19/42] 2021 Mazda MX-5 Miata... ✗  model not in EPA
+[20/42] 2021 Mazda Mazda3... ✗  model not in EPA
+[21/42] 2023 Mazda Mazda3... ✗  model not in EPA
+[22/42] 2024 Mazda Mazda3... ✗  model not in EPA
+[23/42] 2018 Mercedes-Benz C-Class... ✗  model not in EPA
+[24/42] 2019 Mercedes-Benz C-Class... ✗  model not in EPA
+[25/42] 2020 Mercedes-Benz A-Class... ✗  model not in EPA
+[26/42] 2020 Mercedes-Benz C-Class... ✗  model not in EPA
+[27/42] 2020 Mercedes-Benz E-Class... ✗  model not in EPA
+[28/42] 2021 Mercedes-Benz A-Class... ✗  model not in EPA
+[29/42] 2021 Mercedes-Benz C-Class... ✗  model not in EPA
+[30/42] 2021 Mercedes-Benz E-Class... ✗  model not in EPA
+[31/42] 2024 Mercedes-Benz C-Class... ✗  model not in EPA
+[32/42] 2021 Mitsubishi Eclipse Cross... ✗  model not in EPA
+[33/42] 2021 Nissan Pathfinder... ✗  model not in EPA
+[34/42] 2005 RAM 1500... ✗  make not in EPA
+[35/42] 2006 RAM 1500... ✗  make not in EPA
+[36/42] 2020 RAM 2500... ✗  model not in EPA
+[37/42] 2021 RAM 2500... ✗  model not in EPA
+[38/42] 2022 RAM 2500... ✗  model not in EPA
+[39/42] 2024 RAM 2500... ✗  model not in EPA
+[40/42] 2021 Subaru BRZ... ✗  model not in EPA
+[41/42] 2024 Tesla Cybertruck... ✗  model not in EPA
+[42/42] 2020 Toyota Venza... ✗  model not in EPA
+
+Pass 2: Enriching EVs with range + MPGe data...
+Found 20 EVs to enrich
+
+  2022 Lucid Air... range=471 mpge=None
+  2023 Lucid Air... range=516 mpge=None
+  2024 Lucid Air... range=485 mpge=None
+  2020 Tesla Model 3... range=330 mpge=None
+  2020 Tesla Model S... range=330 mpge=None
+  2020 Tesla Model X... range=330 mpge=None
+  2021 Tesla Model 3... range=353 mpge=None
+  2021 Tesla Model S... range=353 mpge=None
+  2021 Tesla Model X... range=353 mpge=None
+  2021 Tesla Model Y... range=353 mpge=None
+  2022 Tesla Model 3... range=358 mpge=None
+  2022 Tesla Model S... range=405 mpge=None
+  2022 Tesla Model X... range=348 mpge=None
+  2022 Tesla Model Y... range=358 mpge=None
+  2023 Tesla Model S... range=405 mpge=None
+  2023 Tesla Model X... range=348 mpge=None
+  2024 Tesla Model 3... range=342 mpge=None
+  2024 Tesla Model S... range=402 mpge=None
+  2024 Tesla Model X... range=335 mpge=None
+  2024 Tesla Model Y... range=342 mpge=None
+
+── Done ──────────────────────────────────
+MPG backfill  : 10/42 vehicles
+EV enriched   : 20 records
+Log           : epa_backfill.log
