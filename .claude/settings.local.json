@@ -57,7 +57,10 @@
       "Bash(git push *)",
       "Bash(python files/04_rebuild_demo.py)",
       "Bash(python wrench_seo.py)",
-      "Bash(git commit -q -m 'Add pre-2003 vehicles \\(vPIC\\), KBB value button, and DTC fix-rates *)"
+      "Bash(git commit -q -m 'Add pre-2003 vehicles \\(vPIC\\), KBB value button, and DTC fix-rates *)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('files/04_rebuild_demo.py',encoding='utf-8'\\).read\\(\\)\\); print\\('syntax OK'\\)\")",
+      "Bash(python -c \"import re;print\\(len\\(re.findall\\(r'sk-ant-[A-Za-z0-9_-]{12}|AIzaSy[A-Za-z0-9_-]{20}|vda_[0-9a-f]{8}',open\\('wrench_deploy/index.html',encoding='utf-8'\\).read\\(\\)\\)\\)\\)\")",
+      "Bash(echo \"deploy leak check: $\\(python -c \"import re;print\\(len\\(re.findall\\(r'sk-ant-[A-Za-z0-9_-]{12}|AIzaSy[A-Za-z0-9_-]{20}|vda_[0-9a-f]{8}',open\\('wrench_deploy/index.html',encoding='utf-8'\\).read\\(\\)\\)\\)\\)\"\\)\")"
     ]
   }
 }

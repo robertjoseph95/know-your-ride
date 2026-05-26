@@ -932,6 +932,121 @@ def inject_fixrates(html):
     return html
 
 
+# ── Affiliate shopping links (Amazon-only affiliate; others = convenience) ────
+# Amazon is the affiliate CTA (wrenchapp20-20). RockAuto / AutoZone are small,
+# de-emphasized, NON-affiliate convenience links. One FTC note per section.
+AFF_STYLE = """<style>
+.aff-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
+.aff-az{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(180deg,#ff9b30,#e07b12);color:#000;font-size:11px;font-weight:700;padding:6px 12px;border-radius:7px;text-decoration:none;border:1px solid #ff9900}
+.aff-az:hover{filter:brightness(1.07)}
+.aff-az.aff-mini{padding:3px 9px;font-size:10px;border-radius:6px}
+.aff-more{display:inline-flex;gap:10px;font-size:10px}
+.aff-more a{color:var(--faint);text-decoration:none;border-bottom:1px dotted var(--border)}
+.aff-more a:hover{color:var(--dim)}
+.aff-ftc{font-size:10px;color:var(--faint);margin:6px 0 4px;font-style:italic;line-height:1.4}
+.sp-wrap{margin:2px 0 16px}
+.sp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.sp-item{background:var(--p2,#111);border:1px solid var(--border);border-radius:8px;padding:9px 11px}
+.sp-name{font-size:12px;font-weight:700;margin-bottom:2px}
+.aff-guide{margin-top:14px;border-top:1px solid var(--border);padding-top:10px}
+</style>
+"""
+
+AFF_JS = r"""/*WRENCH_AFF*/
+function affEnc(s){return encodeURIComponent(String(s==null?'':s).replace(/\s+/g,' ').trim());}
+function affAmz(term){return 'https://www.amazon.com/s?k='+affEnc(term)+'&tag=wrenchapp20-20';}
+function affRock(v){return v?('https://www.rockauto.com/en/catalog/'+affEnc(v.make)+','+affEnc(v.model)+','+affEnc(v.year)):'';}
+function affAz(pn){return 'https://www.autozone.com/searchresult?searchtext='+affEnc(pn);}
+function affFtc(){return '<div class="aff-ftc">Amazon links are affiliate links (we may earn a commission at no extra cost to you). Other retailer links are for convenience only.</div>';}
+// Amazon = affiliate CTA; RockAuto/AutoZone = small NON-affiliate convenience links.
+function affRow(v,term,pn,compact){
+  pn=pn||term;
+  var amz='<a class="aff-az'+(compact?' aff-mini':'')+'" href="'+affAmz(term)+'" target="_blank" rel="nofollow sponsored noopener">Shop on Amazon'+(compact?'':' &#9656;')+'</a>';
+  var more='<span class="aff-more">'
+    +(v?'<a href="'+affRock(v)+'" target="_blank" rel="noopener">RockAuto</a>':'')
+    +'<a href="'+affAz(pn)+'" target="_blank" rel="noopener">AutoZone</a></span>';
+  return '<div class="aff-row">'+amz+more+'</div>';
+}
+// Garage overview: compact "Shop Parts" quick-links for the common wear items.
+function affShopParts(v){
+  if(!v||!v.make||v.id<0)return '';
+  var ymm=v.year+' '+v.make+' '+v.model+' ';
+  var items=['Oil Filter','Engine Air Filter','Cabin Air Filter','Wiper Blades'];
+  var blocks=items.map(function(name){
+    return '<div class="sp-item"><div class="sp-name">'+name+'</div>'+affRow(v,ymm+name,ymm+name,true)+'</div>';
+  }).join('');
+  return '<div class="sp-wrap"><div class="sec-head">Shop Parts</div>'+affFtc()+'<div class="sp-grid">'+blocks+'</div></div>';
+}
+function renderOilShop(v){return affShopParts(v)+renderOil(v);}
+// Maintenance: per-item Amazon "Buy Parts" button.
+function affMaintBtn(v,desc){
+  if(!v||!v.make)return '';
+  var term=(v.year+' '+v.make+' '+v.model+' '+String(desc||'')).replace(/replacement|service|inspect(ion)?|rotate|rotation|flush|check|adjust/gi,'').replace(/\s+/g,' ').trim()+' parts';
+  return ' <a class="aff-az aff-mini" href="'+affAmz(term)+'" target="_blank" rel="nofollow sponsored noopener">Buy Parts</a>';
+}
+// AI guide: "Parts You'll Need" using the exact service + any known part number.
+function affGuideParts(vid,svc){
+  var v=(DB.v||[]).find(function(x){return x.id==vid;}); if(!v)return '';
+  var ymm=v.year+' '+v.make+' '+v.model+' ';
+  var term=ymm+svc, pn=ymm+svc, p=v.parts||{};
+  var s=String(svc||'').toLowerCase();
+  if(s.indexOf('oil')>=0){term=ymm+'oil filter and motor oil';pn=ymm+'oil filter';}
+  else if(s.indexOf('air filter')>=0){pn=(p.air&&p.air[0]&&p.air[0].part_number)||ymm+'air filter';}
+  else if(s.indexOf('cabin')>=0){pn=(p.cabin&&p.cabin[0]&&p.cabin[0].part_number)||ymm+'cabin filter';}
+  else if(s.indexOf('spark')>=0){pn=(p.plugs&&p.plugs[0]&&p.plugs[0].part_number)||ymm+'spark plugs';}
+  else if(s.indexOf('wiper')>=0){pn=ymm+'wiper blades';}
+  else if(s.indexOf('battery')>=0){pn=ymm+'battery';}
+  return '<div class="aff-guide"><div class="gh-h">Parts You&#39;ll Need</div>'+affFtc()+affRow(v,term,pn)+'</div>';
+}
+// DTC lookup: shop the component named in a likely fix (no vehicle context).
+function affDtcShop(fixText){
+  var comp=String(fixText||'').replace(/replacement|replace|repair|cleaning|clean|service|\bof\b|\bthe\b/gi,'').replace(/\s+/g,' ').trim();
+  if(!comp)return '';
+  return '<div class="aff-row"><a class="aff-az aff-mini" href="'+affAmz(comp)+'" target="_blank" rel="nofollow sponsored noopener">Shop '+comp+'</a>'
+    +'<span class="aff-more"><a href="'+affAz(comp)+'" target="_blank" rel="noopener">AutoZone</a></span></div>';
+}
+"""
+
+
+def inject_affiliate(html):
+    """Amazon-affiliate shopping links across the app: garage 'Shop Parts' quick-links,
+    parts-tier cards, maintenance 'Buy Parts', AI-guide 'Parts You'll Need', and DTC
+    fix shopping. Amazon is the affiliate CTA; other retailers are convenience links.
+    Idempotent. Must run after inject_parttiers / inject_guides / inject_fixrates."""
+    if "/*WRENCH_AFF*/" in html:
+        return html
+    if "</head>" in html:
+        html = html.replace("</head>", AFF_STYLE + "</head>", 1)
+    html = html.replace("function switchTab(name){", AFF_JS + "\nfunction switchTab(name){", 1)
+    # 1) garage overview Shop Parts -> prepend to the default (oil) tab
+    html = html.replace("oil:renderOil,", "oil:renderOilShop,", 1)
+    # 3) maintenance: Buy Parts button beside each scheduled item
+    html = html.replace(
+        '\'<tr><td style="font-weight:700">\'+s.desc+\'</td>',
+        '\'<tr><td style="font-weight:700">\'+s.desc+affMaintBtn(v,s.desc)+\'</td>', 1)
+    # 4) AI guide: append Parts You'll Need under each generated guide
+    html = html.replace(
+        "box.innerHTML='<div class=\"gh-guide\">'+ghMd(d.guide)+'</div>'+(d.cached?",
+        "box.innerHTML='<div class=\"gh-guide\">'+ghMd(d.guide)+'</div>'+affGuideParts(vid,svc)+(d.cached?", 1)
+    # 2) parts-tier cards: replace the single (broken) affiliate_url 'Shop' link with the
+    #    Amazon CTA + convenience links. ptCard never had the vehicle/part-type, so add them.
+    html = html.replace("function ptCard(tier,it,copy){",
+                        "function ptCard(tier,it,copy,v,ptype){", 1)
+    html = html.replace(
+        "var shop=(it&&it.affiliate_url)?('<a class=\"pt-shop\" href=\"'+it.affiliate_url+'\" target=\"_blank\" rel=\"nofollow sponsored noopener\">Shop &#9656;</a>'):'';",
+        "var term=(it&&it.part_number)?((it.brand?it.brand+' ':'')+it.part_number+' '+(ptype||'')):((v?(v.year+' '+v.make+' '+v.model+' '):'')+(ptype||''));var pn=(it&&it.part_number)?it.part_number:term;var shop=(typeof affRow==='function')?affRow(v,term,pn):'';", 1)
+    html = html.replace("return ptCard(t,byTier[t]||null,u[t]);",
+                        "return ptCard(t,byTier[t]||null,u[t],v,u.t);", 1)
+    # 5) DTC fixes: shop the named component + one FTC note at the top of the block
+    html = html.replace(
+        "+'<div class=\"dtc-fix-meta\">avg '+cost+(sev?' &middot; '+sev:'')+'</div>'",
+        "+'<div class=\"dtc-fix-meta\">avg '+cost+(sev?' &middot; '+sev:'')+'</div>'+(typeof affDtcShop==='function'?affDtcShop(f.fix):'')", 1)
+    html = html.replace(
+        "<span class=\"dtc-fix-src\">(ranked by reported success)</span></div>'+rows",
+        "<span class=\"dtc-fix-src\">(ranked by reported success)</span></div>'+(typeof affFtc==='function'?affFtc():'')+rows", 1)
+    return html
+
+
 def main():
     if not os.path.exists(OUT_FILE):
         print(f"ERROR: {OUT_FILE} not found.")
@@ -978,6 +1093,7 @@ def main():
     html = inject_partial(html)
     html = inject_kbb(html)
     html = inject_fixrates(html)
+    html = inject_affiliate(html)
     html = inject_branding(html)
     html = fix_js_quotes(html)
 
