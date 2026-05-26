@@ -1257,6 +1257,79 @@ def inject_paywall(html):
     return html
 
 
+# ── Smart vehicle search: token match (any order/partial/case-insensitive) +
+#    live suggestion dropdown + search filters the make/year selects ───────────
+SEARCH_STYLE = """<style>
+.g-suggest{position:absolute;top:100%;left:0;right:0;margin-top:4px;background:var(--panel);border:1px solid var(--border);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.5);z-index:60;max-height:330px;overflow-y:auto;display:none}
+.g-suggest.open{display:block}
+.g-sg-item{padding:10px 14px;font-size:13px;color:var(--text);cursor:pointer;border-bottom:1px solid var(--border)}
+.g-sg-item:last-child{border-bottom:none}
+.g-sg-item:hover{background:var(--p2,#111);color:var(--accent)}
+.g-sg-sub{color:var(--faint);font-size:11px}
+.g-sg-none{padding:10px 14px;font-size:12px;color:var(--faint)}
+</style>
+"""
+
+SEARCH_JS = r"""/*WRENCH_SEARCH*/
+function gTokens(){return (document.getElementById('g-search').value||'').toLowerCase().trim().split(/\s+/).filter(Boolean);}
+function gMatch(v,tokens){var h=(v.year+' '+v.make+' '+v.model+' '+(v.engine||'')+' '+(v.trim||'')).toLowerCase();return tokens.every(function(t){return h.indexOf(t)>=0;});}
+function gFilterDropdowns(tokens){var base=tokens.length?DB.v.filter(function(v){return gMatch(v,tokens);}):DB.v;var ms=document.getElementById('sel-make'),ys=document.getElementById('sel-year');var curM=ms.value,curY=ys.value;var makes=Array.from(new Set(base.map(function(v){return v.make;}))).sort();var years=Array.from(new Set(base.map(function(v){return String(v.year);}))).sort(function(a,b){return b-a;});ms.innerHTML='<option value="">All Makes</option>'+makes.map(function(m){return '<option'+(m===curM?' selected':'')+'>'+m+'</option>';}).join('');ys.innerHTML='<option value="">All Years</option>'+years.map(function(y){return '<option'+(y===curY?' selected':'')+'>'+y+'</option>';}).join('');}
+function gSearchInput(){var tokens=gTokens();var sug=document.getElementById('g-suggest');if(tokens.length){var matches=DB.v.filter(function(v){return gMatch(v,tokens);});if(matches.length){sug.innerHTML=matches.slice(0,8).map(function(v){return '<div class="g-sg-item" onmousedown="gPick('+v.id+')">'+v.year+' '+v.make+' '+v.model+(v.engine?' <span class="g-sg-sub">'+v.engine+'</span>':'')+'</div>';}).join('')+(matches.length>8?'<div class="g-sg-none">+'+(matches.length-8)+' more - keep typing to narrow</div>':'');sug.classList.add('open');}else{sug.innerHTML='<div class="g-sg-none">No matching vehicles</div>';sug.classList.add('open');}}else{sug.classList.remove('open');sug.innerHTML='';}gFilterDropdowns(tokens);renderGarage();}
+function gPick(id){var v=VEH[id];var inp=document.getElementById('g-search');if(v)inp.value=v.year+' '+v.make+' '+v.model;var s=document.getElementById('g-suggest');if(s)s.classList.remove('open');openModal(id);}
+"""
+
+
+def inject_search(html):
+    """Token-based vehicle search (any order, partial, case-insensitive) across
+    year/make/model + a click-to-load suggestion dropdown + search-driven filtering
+    of the make/year selects. Idempotent."""
+    if "/*WRENCH_SEARCH*/" in html:
+        return html
+    if "</head>" in html:
+        html = html.replace("</head>", SEARCH_STYLE + "</head>", 1)
+    html = html.replace("function switchTab(name){", SEARCH_JS + "\nfunction switchTab(name){", 1)
+    # suggestion box + token-driven input handler (close suggestions on blur)
+    html = html.replace(
+        "<input type=\"text\" id=\"g-search\" placeholder=\"Search year, make, model...\" oninput=\"renderGarage()\">",
+        "<input type=\"text\" id=\"g-search\" placeholder=\"Search year, make, model...\" autocomplete=\"off\" oninput=\"gSearchInput()\" onblur=\"setTimeout(function(){var s=document.getElementById('g-suggest');if(s)s.classList.remove('open');},200)\">\n      <div id=\"g-suggest\" class=\"g-suggest\"></div>", 1)
+    # order-independent, partial, case-insensitive token match in the grid filter
+    html = html.replace(
+        "if(q){const s=(v.year+' '+v.make+' '+v.model+' '+(v.engine||'')).toLowerCase();if(!s.includes(q))return false;}",
+        "if(q){var _t=q.split(/\\s+/).filter(Boolean);var _h=(v.year+' '+v.make+' '+v.model+' '+(v.engine||'')+' '+(v.trim||'')).toLowerCase();if(!_t.every(function(x){return _h.indexOf(x)>=0;}))return false;}", 1)
+    return html
+
+
+# ── "Change Vehicle" back button in the spec modal + Garage-tab reset ────────
+BACK_STYLE = """<style>
+.m-back{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:#000;border:none;border-radius:8px;padding:8px 14px;font-weight:700;font-size:12px;letter-spacing:.03em;cursor:pointer;white-space:nowrap}
+.m-back:hover{opacity:.9}
+</style>
+"""
+
+BACK_JS = r"""/*WRENCH_BACK*/
+function gResetSelector(){var s=document.getElementById('g-search');if(s)s.value='';var sm=document.getElementById('sel-make');if(sm)sm.value='';var sy=document.getElementById('sel-year');if(sy)sy.value='';var sg=document.getElementById('g-suggest');if(sg){sg.classList.remove('open');sg.innerHTML='';}if(typeof gFilterDropdowns==='function')gFilterDropdowns([]);if(typeof renderGarage==='function')renderGarage();}
+function backToSearch(){if(typeof closeModal==='function')closeModal();if(typeof switchTab==='function')switchTab('garage');gResetSelector();window.scrollTo(0,0);}
+"""
+
+
+def inject_back(html):
+    """Prominent 'Change Vehicle' button at the top-left of the spec modal that closes it
+    and resets the make/year/model selector; clicking the Garage tab also clears the
+    current selection. No page refresh. Idempotent."""
+    if "/*WRENCH_BACK*/" in html:
+        return html
+    if "</head>" in html:
+        html = html.replace("</head>", BACK_STYLE + "</head>", 1)
+    html = html.replace("function switchTab(name){", BACK_JS + "\nfunction switchTab(name){", 1)
+    html = html.replace(
+        "<div class=\"m-title\" id=\"m-title\">-</div>",
+        "<button class=\"m-back\" onclick=\"backToSearch()\">&#8592; Change Vehicle</button>\n      <div class=\"m-title\" id=\"m-title\">-</div>", 1)
+    html = html.replace(
+        "data-tab=\"garage\" onclick=\"switchTab('garage')\"",
+        "data-tab=\"garage\" onclick=\"switchTab('garage');gResetSelector()\"", 1)
+    return html
+
+
 def main():
     if not os.path.exists(OUT_FILE):
         print(f"ERROR: {OUT_FILE} not found.")
@@ -1306,6 +1379,8 @@ def main():
     html = inject_affiliate(html)
     html = inject_founder(html)
     html = inject_paywall(html)
+    html = inject_search(html)
+    html = inject_back(html)
     html = inject_branding(html)
     html = fix_js_quotes(html)
 

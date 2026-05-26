@@ -6,7 +6,7 @@ import urllib.parse
 # Live-mode Stripe Price IDs (provided). Monthly $2.99/mo, Annual $23.99/yr.
 PRICES = {
     "monthly": "price_1TbBqzEO4bP64F3bjFk52ek8",
-    "annual": "price_1TbBr3EO4bP64F3bZZYHfux8",
+    "annual": "price_1TbT7aEO4bP64F3br8pSws4v",
 }
 SITE = "https://knowyourride.net"
 
