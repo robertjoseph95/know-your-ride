@@ -9,6 +9,10 @@ except Exception:
     Redis = None
 
 
+# Owner / comp accounts that always have Pro access, regardless of Redis/Stripe.
+WHITELIST = {"robert.joseph95@yahoo.com"}
+
+
 def _redis():
     if Redis is None:
         return None
@@ -48,6 +52,8 @@ class handler(BaseHTTPRequestHandler):
         email = (q.get("email") or [""])[0].strip().lower()
         if not email:
             return self._send(400, {"subscribed": False, "error": "email parameter required"})
+        if email in WHITELIST:
+            return self._send(200, {"subscribed": True, "email": email, "whitelisted": True})
         r = _redis()
         if r is not None:
             try:
