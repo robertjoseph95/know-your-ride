@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#09090b"/>
+  <!-- wrench tip peeking out the top (single bold orange) -->
+  <g transform="rotate(-20 320 150)">
+    <rect x="300" y="92" width="54" height="150" rx="27" fill="#f97316"/>
+    <rect x="270" y="44" width="112" height="108" rx="32" fill="#f97316"/>
+    <rect x="312" y="34" width="38" height="74" rx="18" fill="#09090b"/>
+  </g>
+  <!-- book silhouette (single bold orange) -->
+  <rect x="124" y="160" width="264" height="300" rx="28" fill="#f97316"/>
+</svg>

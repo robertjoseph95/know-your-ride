@@ -1440,28 +1440,25 @@ def inject_recall(html):
 
 # ── Branded nav logo lockup (inline SVG icon + wordmark) ─────────────────────
 LOGO_STYLE = """<style>
-.brand-lockup{display:flex;align-items:center;gap:12px}
-.brand-ico{width:42px;height:42px;flex-shrink:0;display:block;border-radius:10px}
-.brand-lockup .brand{font-size:27px}
-.brand-lockup + .tagline{margin-left:54px}
-@media(max-width:560px){.brand-lockup + .tagline{display:none}.brand-lockup .brand{font-size:21px}.brand-ico{width:38px;height:38px}}
+.brand-lockup{display:flex;align-items:center;gap:14px}
+.brand-ico{width:52px;height:52px;flex-shrink:0;display:block;border-radius:12px}
+.brand-lockup .brand{font-size:22px;background:none;-webkit-text-fill-color:#fff;color:#fff;letter-spacing:.06em}
+.brand-lockup + .tagline{margin-left:66px}
+@media(max-width:560px){.brand-lockup + .tagline{display:none}.brand-lockup .brand{font-size:18px}.brand-ico{width:44px;height:44px}}
 </style>
 """
 
+# Nav icon: bold/wide book + thick wrench bookmark only (no cover text/code chip)
 LOGO_LOCKUP = ('<div class="brand-lockup"><svg class="brand-ico" viewBox="0 0 512 512" '
     'role="img" aria-label="Know Your Ride">'
     '<rect width="512" height="512" rx="96" fill="#09090b"/>'
-    '<g transform="rotate(-20 332 150)">'
-    '<rect x="312" y="104" width="42" height="190" rx="21" fill="#fdba74"/>'
-    '<rect x="286" y="58" width="94" height="96" rx="26" fill="#fdba74"/>'
-    '<rect x="318" y="48" width="30" height="62" rx="13" fill="#09090b"/></g>'
-    '<rect x="150" y="166" width="232" height="290" rx="14" fill="#f5e6d3"/>'
-    '<rect x="130" y="146" width="232" height="290" rx="18" fill="#f97316"/>'
-    '<rect x="130" y="146" width="32" height="290" rx="16" fill="#c2560a"/>'
-    '<rect x="190" y="196" width="150" height="20" rx="10" fill="#09090b"/>'
-    '<rect x="176" y="298" width="182" height="88" rx="16" fill="#09090b"/>'
-    '<text x="267" y="362" text-anchor="middle" font-family="monospace" font-weight="bold" '
-    'font-size="56" fill="#f97316">P0420</text></svg>'
+    '<g transform="rotate(-20 320 150)">'
+    '<rect x="306" y="96" width="48" height="200" rx="24" fill="#fdba74"/>'
+    '<rect x="278" y="48" width="106" height="106" rx="30" fill="#fdba74"/>'
+    '<rect x="314" y="38" width="34" height="72" rx="16" fill="#09090b"/></g>'
+    '<rect x="146" y="160" width="244" height="300" rx="18" fill="#f5e6d3"/>'
+    '<rect x="126" y="144" width="244" height="300" rx="22" fill="#f97316"/>'
+    '<rect x="126" y="144" width="34" height="300" rx="17" fill="#c2560a"/></svg>'
     '<div class="brand">KNOW YOUR RIDE<em>.</em></div></div>')
 
 
