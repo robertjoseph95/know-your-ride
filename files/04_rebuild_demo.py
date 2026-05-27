@@ -676,7 +676,7 @@ def inject_branding(html):
                   "<title>Know Your Ride — Vehicle Maintenance Reference</title>",
                   html, count=1, flags=re.S)
     if "<!--KYR_META-->" not in html:
-        desc = "Free vehicle maintenance specs for 1,669 vehicles. Oil specs, parts, torque, DTC codes, recalls and more."
+        desc = "Free vehicle maintenance specs for 3,360 vehicles. Oil specs, parts, torque, DTC codes, recalls and more."
         meta = ("<!--KYR_META-->\n"
                 f'<meta name="description" content="{desc}">\n'
                 '<link rel="canonical" href="https://knowyourride.net/">\n'
