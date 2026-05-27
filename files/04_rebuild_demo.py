@@ -1366,6 +1366,19 @@ PWA_SW_REG = """<script>/*WRENCH_PWA*/if('serviceWorker' in navigator){window.ad
 """
 
 
+FAVLINK = '<link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">\n'
+
+
+def inject_favlink(html):
+    """Link the simple favicon.ico for the browser tab so small sizes use the clean
+    silhouette (not the detailed 192px icon shrunk down). Idempotent."""
+    if 'href="/favicon.ico"' in html:
+        return html
+    if "</head>" in html:
+        html = html.replace("</head>", FAVLINK + "</head>", 1)
+    return html
+
+
 def inject_pwa(html):
     """Make the app installable: manifest link + PWA/apple meta tags in the head and
     a service-worker registration before </body>. Idempotent."""
@@ -1529,6 +1542,7 @@ def main():
     html = inject_recall(html)
     html = inject_ga(html)
     html = inject_pwa(html)
+    html = inject_favlink(html)
     html = inject_branding(html)
     html = inject_logo(html)
     html = fix_js_quotes(html)
