@@ -77,7 +77,7 @@ python wrench_serve.py
 # 3. open http://localhost:8000/
 ```
 
-## Build & deploy
+## Build
 
 ```bash
 # rebuild the demo from the database (re-embeds data, re-injects features)
@@ -86,10 +86,29 @@ python files/04_rebuild_demo.py
 # regenerate SEO pages + sitemap
 python wrench_seo.py
 
-# copy the built demo into the deploy folder and ship
+# copy the built demo into the deploy folder
 cp wrench_demo.html wrench_deploy/index.html
-npx vercel deploy wrench_deploy --prod
 ```
+
+## Deploy
+
+**To deploy: commit your changes and `git push` to `main`.** That's it.
+
+```bash
+git add -A
+git commit -m "your message"
+git push origin main
+```
+
+The Vercel project is connected to this GitHub repo with its **Root Directory set to
+`wrench_deploy`**, so every push to `main` automatically builds and deploys production
+(knowyourride.net) from that folder.
+
+> ⚠️ **Do not use `npx vercel --prod` or `vercel deploy wrench_deploy`.** Because the
+> project's Root Directory is already `wrench_deploy`, passing that path doubles it
+> (`wrench_deploy/wrench_deploy`) and the command fails. Git push is the only supported
+> deploy path. (If you ever must deploy via CLI, run `vercel deploy --prod` from the repo
+> root with no path argument.)
 
 ## Data sources
 
