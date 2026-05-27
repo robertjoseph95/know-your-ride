@@ -1438,6 +1438,45 @@ def inject_recall(html):
     return html
 
 
+# ── Branded nav logo lockup (inline SVG icon + wordmark) ─────────────────────
+LOGO_STYLE = """<style>
+.brand-lockup{display:flex;align-items:center;gap:11px}
+.brand-ico{width:40px;height:40px;flex-shrink:0;display:block;border-radius:9px}
+.brand-lockup .brand{font-size:24px}
+.brand-lockup + .tagline{margin-left:51px}
+@media(max-width:560px){.brand-lockup + .tagline{display:none}.brand-lockup .brand{font-size:19px}.brand-ico{width:34px;height:34px}}
+</style>
+"""
+
+LOGO_LOCKUP = ('<div class="brand-lockup"><svg class="brand-ico" viewBox="0 0 512 512" '
+    'role="img" aria-label="Know Your Ride">'
+    '<rect width="512" height="512" rx="96" fill="#09090b"/>'
+    '<g transform="rotate(-18 322 150)">'
+    '<rect x="311" y="118" width="24" height="156" rx="12" fill="#fdba74"/>'
+    '<rect x="292" y="82" width="62" height="72" rx="18" fill="#fdba74"/>'
+    '<rect x="313" y="74" width="20" height="44" rx="9" fill="#09090b"/></g>'
+    '<rect x="172" y="174" width="196" height="234" rx="10" fill="#f5e6d3"/>'
+    '<rect x="158" y="158" width="196" height="234" rx="14" fill="#f97316"/>'
+    '<rect x="158" y="158" width="24" height="234" rx="12" fill="#c2560a"/>'
+    '<rect x="206" y="202" width="116" height="13" rx="6" fill="#09090b"/>'
+    '<rect x="206" y="228" width="84" height="13" rx="6" fill="#09090b"/>'
+    '<rect x="200" y="300" width="134" height="58" rx="10" fill="#09090b"/>'
+    '<text x="267" y="340" text-anchor="middle" font-family="monospace" font-weight="bold" '
+    'font-size="34" fill="#f97316">P0420</text></svg>'
+    '<div class="brand">KNOW YOUR RIDE<em>.</em></div></div>')
+
+
+def inject_logo(html):
+    """Replace the text-only nav wordmark with a branded lockup (inline SVG logo +
+    'KNOW YOUR RIDE'). Idempotent. Runs after inject_branding."""
+    if "brand-lockup" in html:
+        return html
+    if "</head>" in html:
+        html = html.replace("</head>", LOGO_STYLE + "</head>", 1)
+    html = html.replace('<div class="brand">KNOW YOUR RIDE<em>.</em></div>', LOGO_LOCKUP, 1)
+    return html
+
+
 def main():
     if not os.path.exists(OUT_FILE):
         print(f"ERROR: {OUT_FILE} not found.")
@@ -1493,6 +1532,7 @@ def main():
     html = inject_ga(html)
     html = inject_pwa(html)
     html = inject_branding(html)
+    html = inject_logo(html)
     html = fix_js_quotes(html)
 
     # 3) refresh the badge
