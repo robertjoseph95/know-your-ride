@@ -1440,29 +1440,28 @@ def inject_recall(html):
 
 # ── Branded nav logo lockup (inline SVG icon + wordmark) ─────────────────────
 LOGO_STYLE = """<style>
-.brand-lockup{display:flex;align-items:center;gap:11px}
-.brand-ico{width:40px;height:40px;flex-shrink:0;display:block;border-radius:9px}
-.brand-lockup .brand{font-size:24px}
-.brand-lockup + .tagline{margin-left:51px}
-@media(max-width:560px){.brand-lockup + .tagline{display:none}.brand-lockup .brand{font-size:19px}.brand-ico{width:34px;height:34px}}
+.brand-lockup{display:flex;align-items:center;gap:12px}
+.brand-ico{width:42px;height:42px;flex-shrink:0;display:block;border-radius:10px}
+.brand-lockup .brand{font-size:27px}
+.brand-lockup + .tagline{margin-left:54px}
+@media(max-width:560px){.brand-lockup + .tagline{display:none}.brand-lockup .brand{font-size:21px}.brand-ico{width:38px;height:38px}}
 </style>
 """
 
 LOGO_LOCKUP = ('<div class="brand-lockup"><svg class="brand-ico" viewBox="0 0 512 512" '
     'role="img" aria-label="Know Your Ride">'
     '<rect width="512" height="512" rx="96" fill="#09090b"/>'
-    '<g transform="rotate(-18 322 150)">'
-    '<rect x="311" y="118" width="24" height="156" rx="12" fill="#fdba74"/>'
-    '<rect x="292" y="82" width="62" height="72" rx="18" fill="#fdba74"/>'
-    '<rect x="313" y="74" width="20" height="44" rx="9" fill="#09090b"/></g>'
-    '<rect x="172" y="174" width="196" height="234" rx="10" fill="#f5e6d3"/>'
-    '<rect x="158" y="158" width="196" height="234" rx="14" fill="#f97316"/>'
-    '<rect x="158" y="158" width="24" height="234" rx="12" fill="#c2560a"/>'
-    '<rect x="206" y="202" width="116" height="13" rx="6" fill="#09090b"/>'
-    '<rect x="206" y="228" width="84" height="13" rx="6" fill="#09090b"/>'
-    '<rect x="200" y="300" width="134" height="58" rx="10" fill="#09090b"/>'
-    '<text x="267" y="340" text-anchor="middle" font-family="monospace" font-weight="bold" '
-    'font-size="34" fill="#f97316">P0420</text></svg>'
+    '<g transform="rotate(-20 332 150)">'
+    '<rect x="312" y="104" width="42" height="190" rx="21" fill="#fdba74"/>'
+    '<rect x="286" y="58" width="94" height="96" rx="26" fill="#fdba74"/>'
+    '<rect x="318" y="48" width="30" height="62" rx="13" fill="#09090b"/></g>'
+    '<rect x="150" y="166" width="232" height="290" rx="14" fill="#f5e6d3"/>'
+    '<rect x="130" y="146" width="232" height="290" rx="18" fill="#f97316"/>'
+    '<rect x="130" y="146" width="32" height="290" rx="16" fill="#c2560a"/>'
+    '<rect x="190" y="196" width="150" height="20" rx="10" fill="#09090b"/>'
+    '<rect x="176" y="298" width="182" height="88" rx="16" fill="#09090b"/>'
+    '<text x="267" y="362" text-anchor="middle" font-family="monospace" font-weight="bold" '
+    'font-size="56" fill="#f97316">P0420</text></svg>'
     '<div class="brand">KNOW YOUR RIDE<em>.</em></div></div>')
 
 
