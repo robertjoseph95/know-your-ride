@@ -1488,6 +1488,39 @@ def inject_logo(html):
     return html
 
 
+# ── Garage onboarding CTA + clearer search placeholder ───────────────────────
+ONBOARD_STYLE = """<style>
+.g-onboard{display:flex;align-items:center;gap:16px;background:linear-gradient(180deg,rgba(255,122,26,.13),rgba(255,122,26,.04));border:1px dashed var(--accent);border-radius:12px;padding:16px 20px;margin-bottom:20px}
+.g-onboard-arrow{font-size:30px;line-height:1;color:var(--accent);animation:gob 1.4s ease-in-out infinite}
+@keyframes gob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.g-onboard-h{font-size:16px;font-weight:700;color:var(--text)}
+.g-onboard-sub{font-size:13px;color:var(--dim);margin-top:3px}
+</style>
+"""
+
+ONBOARD_HTML = ('<div id="g-onboard" class="g-onboard"><div class="g-onboard-arrow">&#8593;</div>'
+    '<div><div class="g-onboard-h">Search for your car above to get started</div>'
+    '<div class="g-onboard-sub">Type a year, make, or model &mdash; or pick from the dropdowns above</div>'
+    '</div></div>')
+
+
+def inject_onboard(html):
+    """Garage onboarding: a prominent 'search above' CTA (shown only when nothing is
+    searched/filtered) + a clearer search placeholder. Idempotent."""
+    if 'id="g-onboard"' in html:
+        return html
+    if "</head>" in html:
+        html = html.replace("</head>", ONBOARD_STYLE + "</head>", 1)
+    html = html.replace('placeholder="Search year, make, model..."',
+                        'placeholder="Type your car &mdash; e.g. 2020 Toyota Camry"', 1)
+    html = html.replace('<div class="vgrid" id="vgrid"></div>',
+                        ONBOARD_HTML + '\n  <div class="vgrid" id="vgrid"></div>', 1)
+    html = html.replace(
+        "const sort=document.getElementById('sel-sort').value;",
+        "const sort=document.getElementById('sel-sort').value;var _ob=document.getElementById('g-onboard');if(_ob)_ob.style.display=(q||make||year)?'none':'';", 1)
+    return html
+
+
 def main():
     if not os.path.exists(OUT_FILE):
         print(f"ERROR: {OUT_FILE} not found.")
@@ -1543,6 +1576,7 @@ def main():
     html = inject_ga(html)
     html = inject_pwa(html)
     html = inject_favlink(html)
+    html = inject_onboard(html)
     html = inject_branding(html)
     html = inject_logo(html)
     html = fix_js_quotes(html)
