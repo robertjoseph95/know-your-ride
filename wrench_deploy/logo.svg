@@ -1,20 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#09090b"/>
-  <!-- wrench bookmark: thick, tilted, poking out the top -->
-  <g transform="rotate(-20 332 150)">
-    <rect x="312" y="104" width="42" height="190" rx="21" fill="#fdba74"/>
-    <rect x="286" y="58" width="94" height="96" rx="26" fill="#fdba74"/>
-    <rect x="318" y="48" width="30" height="62" rx="13" fill="#09090b"/>
+  <rect width="512" height="512" rx="96" fill="#09090b"/>
+  <!-- thick wrench bookmark (matches nav) -->
+  <g transform="rotate(-20 330 140)">
+    <rect x="316" y="80" width="46" height="190" rx="23" fill="#fdba74"/>
+    <rect x="290" y="36" width="100" height="100" rx="28" fill="#fdba74"/>
+    <rect x="324" y="28" width="32" height="66" rx="14" fill="#09090b"/>
   </g>
   <!-- pages -->
-  <rect x="150" y="166" width="232" height="290" rx="14" fill="#f5e6d3"/>
+  <rect x="134" y="172" width="268" height="290" rx="18" fill="#f5e6d3"/>
   <!-- cover -->
-  <rect x="130" y="146" width="232" height="290" rx="18" fill="#f97316"/>
-  <!-- spine -->
-  <rect x="130" y="146" width="32" height="290" rx="16" fill="#c2560a"/>
-  <!-- title line (single, bold) -->
-  <rect x="190" y="196" width="150" height="20" rx="10" fill="#09090b"/>
-  <!-- P0420 code chip (large) -->
-  <rect x="176" y="298" width="182" height="88" rx="16" fill="#09090b"/>
-  <text x="267" y="362" text-anchor="middle" font-family="Courier" font-weight="bold" font-size="56" fill="#f97316">P0420</text>
+  <rect x="116" y="156" width="268" height="290" rx="22" fill="#f97316"/>
+  <!-- spine line -->
+  <rect x="116" y="156" width="32" height="290" rx="16" fill="#c2560a"/>
+  <!-- page lines -->
+  <rect x="176" y="212" width="184" height="16" rx="8" fill="#fff7ed"/>
+  <rect x="176" y="242" width="128" height="16" rx="8" fill="#fff7ed"/>
+  <!-- P0420 prominently on cover -->
+  <text x="266" y="374" text-anchor="middle" font-family="Courier" font-weight="bold" font-size="74" fill="#fff7ed">P0420</text>
 </svg>
