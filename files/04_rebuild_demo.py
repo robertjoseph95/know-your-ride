@@ -1448,17 +1448,19 @@ LOGO_STYLE = """<style>
 </style>
 """
 
-# Nav icon: bold/wide book + thick wrench bookmark only (no cover text/code chip)
+# Nav icon: bold/wide book with readable "P0420" on the cover + thick wrench bookmark
 LOGO_LOCKUP = ('<div class="brand-lockup"><svg class="brand-ico" viewBox="0 0 512 512" '
     'role="img" aria-label="Know Your Ride">'
     '<rect width="512" height="512" rx="96" fill="#09090b"/>'
-    '<g transform="rotate(-20 320 150)">'
-    '<rect x="306" y="96" width="48" height="200" rx="24" fill="#fdba74"/>'
-    '<rect x="278" y="48" width="106" height="106" rx="30" fill="#fdba74"/>'
-    '<rect x="314" y="38" width="34" height="72" rx="16" fill="#09090b"/></g>'
-    '<rect x="146" y="160" width="244" height="300" rx="18" fill="#f5e6d3"/>'
-    '<rect x="126" y="144" width="244" height="300" rx="22" fill="#f97316"/>'
-    '<rect x="126" y="144" width="34" height="300" rx="17" fill="#c2560a"/></svg>'
+    '<g transform="rotate(-20 330 140)">'
+    '<rect x="316" y="80" width="46" height="190" rx="23" fill="#fdba74"/>'
+    '<rect x="290" y="36" width="100" height="100" rx="28" fill="#fdba74"/>'
+    '<rect x="324" y="28" width="32" height="66" rx="14" fill="#09090b"/></g>'
+    '<rect x="134" y="172" width="268" height="290" rx="18" fill="#f5e6d3"/>'
+    '<rect x="116" y="156" width="268" height="290" rx="22" fill="#f97316"/>'
+    '<rect x="116" y="156" width="32" height="290" rx="16" fill="#c2560a"/>'
+    '<text x="274" y="330" text-anchor="middle" font-family="monospace" font-weight="bold" '
+    'font-size="76" fill="#fff7ed">P0420</text></svg>'
     '<div class="brand">KNOW YOUR RIDE<em>.</em></div></div>')
 
 
