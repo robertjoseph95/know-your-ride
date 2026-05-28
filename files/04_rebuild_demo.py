@@ -176,7 +176,75 @@ def build_data(cur):
                 "fix": r["fix_description"], "prob": r["probability_pct"],
                 "cost": r["avg_cost_usd"], "sev": r["severity"]})
 
-    return list(veh.values()), dtc, fixes, with_comps
+    # Fuse panel locations (populated by wrench_fuse_locations.py via Claude API).
+    if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='fuse_locations'").fetchone():
+        cur.execute("SELECT vehicle_id, primary_location, secondary_location FROM fuse_locations")
+        for r in cur.fetchall():
+            if r["vehicle_id"] in veh:
+                veh[r["vehicle_id"]]["fuse_loc"] = {
+                    "primary": r["primary_location"],
+                    "secondary": r["secondary_location"],
+                }
+
+    # Fuse / relay / junction-box mentions: NHTSA TSBs and complaints, attached per vehicle (cap 5).
+    # The user asked us to search the TSB table, but in the shipping DB only complaints have
+    # populated summary text — both sources are unioned so the feature works today and grows
+    # automatically once TSB text is enriched.
+    FUSE_LIKE = "(summary LIKE '%fuse%' OR summary LIKE '%relay%' OR summary LIKE '%junction box%' OR summary LIKE '%fuse box%' OR summary LIKE '%fuse panel%')"
+    FUSE_LIKE_T = "(title LIKE '%fuse%' OR title LIKE '%relay%' OR title LIKE '%junction box%' OR component LIKE '%fuse%' OR component LIKE '%relay%' OR component LIKE '%junction box%' OR summary LIKE '%fuse%' OR summary LIKE '%relay%' OR summary LIKE '%junction box%')"
+
+    fuse_hits = {}
+    cur.execute(f"SELECT vehicle_id, tsb_number, title, summary FROM tsb WHERE {FUSE_LIKE_T}")
+    for r in cur.fetchall():
+        if r["vehicle_id"] in veh:
+            fuse_hits.setdefault(r["vehicle_id"], []).append({
+                "num": r["tsb_number"], "title": r["title"] or "", "sum": (r["summary"] or "")[:240]
+            })
+
+    if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='complaints'").fetchone():
+        cur.execute(f"SELECT vehicle_id, complaint_number, component, summary FROM complaints WHERE {FUSE_LIKE}")
+        for r in cur.fetchall():
+            if r["vehicle_id"] in veh and len(fuse_hits.get(r["vehicle_id"], [])) < 8:
+                fuse_hits.setdefault(r["vehicle_id"], []).append({
+                    "num": r["complaint_number"], "title": r["component"] or "",
+                    "sum": (r["summary"] or "")[:240]
+                })
+
+    for vid, rows in fuse_hits.items():
+        veh[vid]["fuse_tsbs"] = rows[:5]
+
+    # DTC-code → fuse-related TSBs/complaints map: look for codes mentioned alongside fuse/relay text.
+    fuseTsbsByCode = {}
+    import re as _re
+    code_re = _re.compile(r"\b([BU]\d{4}|P0340|P0335|P0500)\b", _re.I)
+    seen = {}
+    cur.execute(f"SELECT tsb_number, title, summary FROM tsb WHERE {FUSE_LIKE_T}")
+    for r in cur.fetchall():
+        blob = " ".join([r["title"] or "", r["summary"] or ""])
+        for m in code_re.findall(blob):
+            c = m.upper()
+            key = (c, r["tsb_number"])
+            if key in seen: continue
+            seen[key] = 1
+            fuseTsbsByCode.setdefault(c, []).append({
+                "num": r["tsb_number"], "title": r["title"] or "", "sum": (r["summary"] or "")[:240]
+            })
+    if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='complaints'").fetchone():
+        cur.execute(f"SELECT complaint_number, component, summary FROM complaints WHERE {FUSE_LIKE}")
+        for r in cur.fetchall():
+            blob = " ".join([r["component"] or "", r["summary"] or ""])
+            for m in code_re.findall(blob):
+                c = m.upper()
+                key = (c, r["complaint_number"])
+                if key in seen: continue
+                seen[key] = 1
+                if len(fuseTsbsByCode.get(c, [])) >= 6: continue
+                fuseTsbsByCode.setdefault(c, []).append({
+                    "num": r["complaint_number"], "title": r["component"] or "",
+                    "sum": (r["summary"] or "")[:240]
+                })
+
+    return list(veh.values()), dtc, fixes, with_comps, fuseTsbsByCode
 
 
 # ── JS injected for the Complaints tab (reuses existing CSS classes) ──────────
@@ -1531,10 +1599,10 @@ def main():
     cur = conn.cursor()
 
     print("Building data from DB...")
-    vlist, dtc, fixes, with_comps = build_data(cur)
+    vlist, dtc, fixes, with_comps, fuseTsbsByCode = build_data(cur)
     conn.close()
 
-    data_json = json.dumps({"v": vlist, "dtc": dtc, "fixes": fixes}, separators=(",", ":"))
+    data_json = json.dumps({"v": vlist, "dtc": dtc, "fixes": fixes, "fuseTsbsByCode": fuseTsbsByCode}, separators=(",", ":"))
     data_json = data_json.replace("</", "<\\/")        # can't break out of <script>
     print(f"Data JSON: {len(data_json)/1024/1024:.2f} MB  | vehicles={len(vlist)}  with complaints={with_comps}")
 
