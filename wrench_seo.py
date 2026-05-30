@@ -172,7 +172,7 @@ def main():
                 links.append(f"<li><a href=\"{BASE}/dtc/{c.lower()}/\">{c}</a> - {esc(d)}</li>")
         if links:
             inner.append("<h2>Common Trouble Codes</h2><ul>" + "".join(links) + "</ul>")
-        inner.append(f"<a class=\"cta\" href=\"https://knowyourride.net/\">See full specs, parts &amp; AI repair guides &rarr;</a>")
+        inner.append(f"<a class=\"cta\" href=\"https://knowyourride.net/\">See full specs, parts &amp; repair guides &rarr;</a>")
         inner.append("<p class=\"muted\">Part of the free Know Your Ride vehicle maintenance reference.</p>")
 
         write_page(os.path.join(OUT, "vehicles", slug, "index.html"),
