@@ -1627,6 +1627,26 @@ def inject_footer(html):
     return html
 
 
+# ── DTC diagnostic disclaimer (amber caution banner in Code Lookup) ───────────
+DTC_DISC_STYLE = """<style>
+.dtc-disclaimer{margin:0 0 12px;padding:10px 13px;background:#3a2e00;border:1px solid #e0a23b;border-radius:8px;color:#ffd97a;font-size:12px;line-height:1.5}
+</style>
+"""
+DTC_DISC_HTML = ('<!--WRENCH_DTC_DISC--><div class="dtc-disclaimer">&#9888; Diagnostic codes indicate '
+                 'possible causes, not definitive diagnoses. Always verify with additional testing before '
+                 'replacing parts. Consult a qualified mechanic for complex issues.</div>')
+
+
+def inject_dtc_disclaimer(html):
+    """Add a caution disclaimer above the DTC code-lookup results (idempotent)."""
+    if "<!--WRENCH_DTC_DISC-->" in html:
+        return html
+    if "</head>" in html:
+        html = html.replace("</head>", DTC_DISC_STYLE + "</head>", 1)
+    html = html.replace('<div id="cl-results">', DTC_DISC_HTML + '<div id="cl-results">', 1)
+    return html
+
+
 def main():
     if not os.path.exists(OUT_FILE):
         print(f"ERROR: {OUT_FILE} not found.")
@@ -1686,6 +1706,7 @@ def main():
     html = inject_branding(html)
     html = inject_logo(html)
     html = inject_footer(html)
+    html = inject_dtc_disclaimer(html)
     html = fix_js_quotes(html)
 
     # 3) refresh the badge

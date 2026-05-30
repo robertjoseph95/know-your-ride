@@ -1,6 +1,7 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import os
+import sys
 import base64
 import datetime
 
@@ -99,7 +100,8 @@ class handler(BaseHTTPRequestHandler):
             text = "".join(b.text for b in msg.content if b.type == "text").strip()
             in_tok, out_tok = msg.usage.input_tokens, msg.usage.output_tokens
         except Exception as e:
-            return self._send(200, {"identification": None, "error": f"vision failed: {e}"})
+            print(f"[identify-part] vision failed: {e}", file=sys.stderr)  # server-side only
+            return self._send(200, {"identification": None, "error": "Part identification temporarily unavailable. Please try again."})
 
         cost = in_tok * IN_RATE + out_tok * OUT_RATE
         daily_total = monthly_total = None

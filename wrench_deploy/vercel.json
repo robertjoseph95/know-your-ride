@@ -1,6 +1,8 @@
 {
   "functions": {
-    "api/guide.py": { "includeFiles": "api/specs.json" }
+    "api/guide.py": { "includeFiles": "api/specs.json", "maxDuration": 30 },
+    "api/youtube.py": { "maxDuration": 30 },
+    "api/identify-part.py": { "maxDuration": 30 }
   },
   "rewrites": [
     { "source": "/api/youtube/:year/:make/:model/:service", "destination": "/api/youtube?year=:year&make=:make&model=:model&service=:service" },

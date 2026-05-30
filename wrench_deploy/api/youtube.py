@@ -2,6 +2,7 @@ from http.server import BaseHTTPRequestHandler
 import json
 import os
 import re
+import sys
 import urllib.parse
 import requests
 
@@ -59,7 +60,8 @@ class handler(BaseHTTPRequestHandler):
         try:
             videos = self._search(year, make, model, service, key)
         except Exception as e:
-            return self._send(200, {"videos": [], "error": f"youtube error: {e}"})
+            print(f"[youtube] search failed: {e}", file=sys.stderr)  # server-side only
+            return self._send(200, {"videos": [], "error": "Video search temporarily unavailable."})
         if r:
             try:
                 r.set(cache_key, json.dumps(videos), ex=CACHE_TTL)
@@ -68,22 +70,31 @@ class handler(BaseHTTPRequestHandler):
         self._send(200, {"videos": videos, "cached": False})
 
     def _search(self, year, make, model, service, key):
+        # NOTE: the two YouTube calls are DEPENDENT (search returns video IDs, then the
+        # videos.list call fetches stats for those IDs), so they cannot run concurrently.
+        # Instead we cap each at timeout=12 and make the second (stats) call best-effort:
+        # if it times out/fails we return the search results WITHOUT view counts/durations
+        # (partial results) rather than failing the whole request. vercel.json sets
+        # maxDuration=30 for this function so 2x12s can't be hard-killed mid-request.
         q = f"{year} {make} {model} {service} DIY how to"
         sr = requests.get("https://www.googleapis.com/youtube/v3/search",
                           params={"part": "snippet", "type": "video", "maxResults": 3, "q": q, "key": key},
-                          timeout=15).json()
+                          timeout=12).json()
         items = sr.get("items", [])
         ids = [i["id"]["videoId"] for i in items if i.get("id", {}).get("videoId")]
         stats = {}
         if ids:
-            dv = requests.get("https://www.googleapis.com/youtube/v3/videos",
-                              params={"part": "statistics,contentDetails", "id": ",".join(ids), "key": key},
-                              timeout=15).json()
-            for it in dv.get("items", []):
-                stats[it["id"]] = {
-                    "views": int(it.get("statistics", {}).get("viewCount", 0) or 0),
-                    "duration": _fmt_dur(it.get("contentDetails", {}).get("duration", "")),
-                }
+            try:
+                dv = requests.get("https://www.googleapis.com/youtube/v3/videos",
+                                  params={"part": "statistics,contentDetails", "id": ",".join(ids), "key": key},
+                                  timeout=12).json()
+                for it in dv.get("items", []):
+                    stats[it["id"]] = {
+                        "views": int(it.get("statistics", {}).get("viewCount", 0) or 0),
+                        "duration": _fmt_dur(it.get("contentDetails", {}).get("duration", "")),
+                    }
+            except Exception as e:
+                print(f"[youtube] stats fetch failed, returning partial results: {e}", file=sys.stderr)
         out = []
         for it in items:
             vid = it["id"].get("videoId")

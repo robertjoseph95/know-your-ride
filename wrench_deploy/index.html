@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-05-30-audit-fixes-v1">
+<meta name="kyr-version" content="2026-05-30-medium-fixes-v1">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -463,6 +463,9 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
 .kyr-footer-sep{color:var(--faint)}
 .kyr-footer-note{max-width:760px;margin:0 auto;text-align:center;font-size:11px;line-height:1.6;color:var(--faint)}
 </style>
+<style>
+.dtc-disclaimer{margin:0 0 12px;padding:10px 13px;background:#3a2e00;border:1px solid #e0a23b;border-radius:8px;color:#ffd97a;font-size:12px;line-height:1.5}
+</style>
 </head>
 <body>
 
@@ -540,7 +543,7 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
         <span class="cl-q">B0001</span><span class="cl-q">C0035</span><span class="cl-q">U0100</span>
       </div>
     </div>
-    <div id="cl-results"><div class="cl-empty">// ENTER A DTC CODE ABOVE<br>// e.g. P0420, P0300, B0001</div></div>
+    <!--WRENCH_DTC_DISC--><div class="dtc-disclaimer">&#9888; Diagnostic codes indicate possible causes, not definitive diagnoses. Always verify with additional testing before replacing parts. Consult a qualified mechanic for complex issues.</div><div id="cl-results"><div class="cl-empty">// ENTER A DTC CODE ABOVE<br>// e.g. P0420, P0300, B0001</div></div>
   </div>
 </div>
 
@@ -622,7 +625,7 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
   </div>
 </div>
 
-<script src="/data.d13c7f1d.js"></script>
+<script src="/data.972a430e.js"></script>
 <script>
 
 const DB=__D__;

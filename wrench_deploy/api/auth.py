@@ -34,6 +34,8 @@ except Exception:
     Redis = None
 
 SESSION_TTL = 60 * 60 * 24 * 30   # 30 days
+LOGIN_MAX_FAILS = 5               # per IP per window
+LOGIN_WINDOW = 900                # 15 minutes (seconds)
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 # scrypt cost params — n=2**14 is the standard "interactive" target; ~50ms on a serverless cold start.
 SCRYPT_N = 2 ** 14
@@ -43,6 +45,10 @@ SCRYPT_DKLEN = 32
 
 
 def _redis():
+    # DATA REGION (GDPR/CCPA): user data lives in the Upstash Redis instance
+    # configured via KV_REST_API_URL (host possible-katydid-136124.upstash.io).
+    # The region is NOT encoded in the hostname — CONFIRM it is US-based in the
+    # Upstash console (Database > Details > Region). Privacy policy states US-based.
     if Redis is None:
         return None
     url = os.environ.get("UPSTASH_REDIS_REST_URL") or os.environ.get("KV_REST_API_URL")
@@ -163,22 +169,55 @@ class handler(BaseHTTPRequestHandler):
         password = str(body.get("password") or "")
         if not email or not password:
             return self._send(400, {"ok": False, "error": "Email and password required."})
+        # Brute-force throttle: max LOGIN_MAX_FAILS failed attempts per IP per window.
+        ip = self._client_ip()
+        fail_key = "login_fail:" + ip
+        try:
+            fails = int(r.get(fail_key) or 0)
+        except Exception:
+            fails = 0
+        if fails >= LOGIN_MAX_FAILS:
+            return self._send(429, {"ok": False, "error": "Too many login attempts. Please try again in 15 minutes."})
         try:
             raw = r.get("user:" + email)
         except Exception:
             return self._send(503, {"ok": False, "error": "Auth backend unavailable."})
         if not raw:
+            self._register_fail(r, fail_key)
             return self._send(401, {"ok": False, "error": "No account found for that email."})
         try:
             rec = json.loads(raw)
         except Exception:
             return self._send(500, {"ok": False, "error": "Account record corrupt — contact support."})
         if not _verify_pw(password, rec.get("salt", ""), rec.get("pw", "")):
+            self._register_fail(r, fail_key)
             return self._send(401, {"ok": False, "error": "Incorrect password."})
+        # Success — clear the failed-attempt counter for this IP.
+        try:
+            r.delete(fail_key)
+        except Exception:
+            pass
         # Refresh tier in case a whitelist change promoted this user.
         tier = _tier_for(email) if _tier_for(email) == "pro" else rec.get("tier", "free")
         token = self._new_session(r, email)
         return self._send(200, {"ok": True, "token": token, "email": email, "tier": tier})
+
+    def _client_ip(self):
+        xff = self.headers.get("X-Forwarded-For") or self.headers.get("x-forwarded-for") or ""
+        if xff:
+            return xff.split(",")[0].strip()
+        try:
+            return self.client_address[0]
+        except Exception:
+            return "unknown"
+
+    def _register_fail(self, r, key):
+        try:
+            n = r.incr(key)
+            if n == 1:
+                r.expire(key, LOGIN_WINDOW)
+        except Exception:
+            pass
 
     def _logout(self, body, r):
         token = (str(body.get("token") or "").strip() or _bearer(self.headers))

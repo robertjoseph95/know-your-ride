@@ -1,4 +1,5 @@
-upstash-redis
-anthropic
-requests
-stripe
+# Pinned on 2026-05-30 — update quarterly and test
+anthropic==0.105.2
+requests==2.34.2
+stripe==15.2.0
+upstash-redis==1.7.0

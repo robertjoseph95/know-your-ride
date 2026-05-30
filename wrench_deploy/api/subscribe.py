@@ -1,6 +1,7 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import os
+import sys
 import urllib.parse
 
 # Live-mode Stripe Price IDs (provided). Monthly $2.99/mo, Annual $23.99/yr.
@@ -35,7 +36,8 @@ class handler(BaseHTTPRequestHandler):
                 cancel_url=SITE + "/?canceled=true",
             )
         except Exception as e:
-            return self._send(502, {"error": f"stripe error: {e}"})
+            print(f"[subscribe] stripe error: {e}", file=sys.stderr)  # server-side only
+            return self._send(502, {"error": "Checkout is temporarily unavailable. Please try again."})
         self.send_response(303)
         self.send_header("Location", session.url)
         self.send_header("Content-Length", "0")

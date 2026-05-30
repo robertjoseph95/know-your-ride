@@ -1,6 +1,8 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import os
+import sys
+import datetime
 import urllib.parse
 
 try:
@@ -12,6 +14,10 @@ SAFETY = ("brake", "suspension", "fuel pump", "fuel system", "airbag",
           "timing belt", "timing chain", "steering", "clutch")
 CACHE_TTL = 60 * 60 * 24 * 90  # 90 days
 MODEL = "claude-sonnet-4-6"
+GUIDE_MONTHLY_BUDGET = 30.0          # hard cap on Claude spend per month (USD)
+IN_RATE = 3.0 / 1_000_000            # claude-sonnet input  $/token
+OUT_RATE = 15.0 / 1_000_000          # claude-sonnet output $/token
+BUDGET_MSG = "Guide temporarily unavailable. Please try again later."
 
 GUIDE_SYSTEM = (
     "You are an expert auto mechanic writing a concise DIY guide for a home mechanic. "
@@ -144,14 +150,32 @@ class handler(BaseHTTPRequestHandler):
         user = (f"Vehicle: {label}\nService: {service}\n\n"
                 f"Known specs (use these EXACT values; invent nothing else):\n{speclines}\n\n"
                 "Write the DIY guide.")
+        # Budget cap: stop paid generation once monthly Claude spend hits the limit.
+        month = datetime.datetime.utcnow().strftime("%Y_%m")
+        spend_key = f"guide_api_spend_{month}"
+        if r:
+            try:
+                if float(r.get(spend_key) or 0) >= GUIDE_MONTHLY_BUDGET:
+                    return self._send(200, {"guide": None, "budget_exceeded": True, "label": label, "message": BUDGET_MSG})
+            except Exception:
+                pass
         try:
             from anthropic import Anthropic
             client = Anthropic(api_key=key)
             msg = client.messages.create(model=MODEL, max_tokens=1400, system=GUIDE_SYSTEM,
                                          messages=[{"role": "user", "content": user}])
             guide = "".join(b.text for b in msg.content if b.type == "text").strip()
+            in_tok, out_tok = msg.usage.input_tokens, msg.usage.output_tokens
         except Exception as e:
-            return self._send(200, {"guide": None, "error": f"guide generation failed: {e}"})
+            print(f"[guide] generation failed: {e}", file=sys.stderr)  # server-side only
+            return self._send(200, {"guide": None, "error": BUDGET_MSG})
+        # Track spend against the monthly budget.
+        if r:
+            try:
+                cost = in_tok * IN_RATE + out_tok * OUT_RATE
+                r.set(spend_key, float(r.get(spend_key) or 0) + cost, ex=60 * 60 * 24 * 40)
+            except Exception:
+                pass
         payload = {"guide": guide, "label": label, "specs": sp, "safety_blocked": False}
         if r:
             try:

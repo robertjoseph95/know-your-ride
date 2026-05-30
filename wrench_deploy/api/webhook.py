@@ -1,6 +1,7 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import os
+import sys
 
 try:
     from upstash_redis import Redis
@@ -51,7 +52,8 @@ class handler(BaseHTTPRequestHandler):
             stripe.api_key = key
             event = stripe.Webhook.construct_event(payload, sig, secret)
         except Exception as e:
-            return self._send(400, {"error": f"signature verification failed: {e}"})
+            print(f"[webhook] signature verification failed: {e}", file=sys.stderr)  # server-side only
+            return self._send(400, {"error": "signature verification failed"})
 
         etype = event["type"]
         obj = event["data"]["object"]

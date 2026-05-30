@@ -62,13 +62,16 @@ ul{padding-left:22px;margin:8px 0 14px}
 <p>We use a small set of providers to operate the Service:</p>
 <ul>
   <li><strong>Stripe</strong> &mdash; payment processing and subscription management.</li>
-  <li><strong>Upstash Redis</strong> &mdash; encrypted at-rest storage for accounts, sessions, garage data, and service logs.</li>
+  <li><strong>Upstash Redis (United States)</strong> &mdash; encrypted at-rest storage, hosted in a U.S. region, for accounts, sessions, garage data, and service logs.</li>
   <li><strong>Vercel</strong> &mdash; hosting and serverless functions.</li>
   <li><strong>Google Analytics 4</strong> &mdash; aggregated, pseudonymous usage analytics.</li>
   <li><strong>Anthropic Claude API</strong> &mdash; powers repair guides and the Know Your Part image scanner. We do not send your email or account identifiers to Anthropic.</li>
   <li><strong>NHTSA, EPA, and OEM data sources</strong> &mdash; queried server-side; no personal data is sent.</li>
 </ul>
 <p>Each provider has its own privacy practices governing how it handles the limited data we share for that specific purpose.</p>
+
+<h2>Where Your Data Is Stored</h2>
+<p>User account data (email, password hash, saved vehicles, mileage, and service logs) is stored in a <strong>United States&ndash;based</strong> Upstash Redis instance, and the Service is hosted on Vercel&rsquo;s infrastructure. If you access the Service from outside the United States, your data will be transferred to and processed in the U.S.</p>
 
 <h2>Cookies and Local Storage</h2>
 <p>We use cookies and browser <code>localStorage</code> for the following purposes:</p>

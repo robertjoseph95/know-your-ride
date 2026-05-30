@@ -1,5 +1,6 @@
 from http.server import BaseHTTPRequestHandler
 import json
+import sys
 import urllib.parse
 import urllib.request
 
@@ -26,7 +27,8 @@ class handler(BaseHTTPRequestHandler):
             items = data.get("results") or data.get("Results") or []
             return self._send(200, {"count": len(items), "recalls": items})
         except Exception as e:
-            return self._send(502, {"error": f"recall lookup failed: {e}", "recalls": []})
+            print(f"[recalls] lookup failed: {e}", file=sys.stderr)  # server-side only
+            return self._send(502, {"error": "Recall lookup temporarily unavailable.", "recalls": []})
 
     def _send(self, code, obj):
         body = json.dumps(obj).encode()

@@ -13,12 +13,33 @@ client shows "No decode result for that VIN."
 
 from http.server import BaseHTTPRequestHandler
 import json
+import os
 import re
+import sys
 import urllib.parse
 import requests
 
+try:
+    from upstash_redis import Redis
+except Exception:
+    Redis = None
+
 VIN_RE = re.compile(r"^[A-HJ-NPR-Z0-9]{17}$")  # real VINs exclude I/O/Q
 VPIC_URL = "https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/{vin}?format=json"
+VIN_CACHE_TTL = 60 * 60 * 24 * 30  # 30 days — a VIN's decode never changes
+
+
+def _redis():
+    if Redis is None:
+        return None
+    url = os.environ.get("UPSTASH_REDIS_REST_URL") or os.environ.get("KV_REST_API_URL")
+    token = os.environ.get("UPSTASH_REDIS_REST_TOKEN") or os.environ.get("KV_REST_API_TOKEN")
+    if not (url and token):
+        return None
+    try:
+        return Redis(url=url, token=token)
+    except Exception:
+        return None
 
 
 def fetch_vpic(vin):
@@ -76,13 +97,29 @@ class handler(BaseHTTPRequestHandler):
         vin = urllib.parse.unquote(path.rstrip("/").split("/")[-1]).strip().upper()
         if not VIN_RE.match(vin):
             return self._send(400, {"error": "VIN must be 17 characters (A-Z except I/O/Q, 0-9)."})
+        # Cache: a decoded VIN never changes, so cache 30 days in Redis.
+        r = _redis()
+        cache_key = "vin_decode_" + vin
+        if r:
+            try:
+                cached = r.get(cache_key)
+                if cached:
+                    return self._send(200, {**json.loads(cached), "cached": True})
+            except Exception:
+                pass
         try:
             vals = fetch_vpic(vin)
         except Exception as e:
-            return self._send(502, {"error": f"decode failed: {e}"})
+            print(f"[vin] decode failed: {e}", file=sys.stderr)  # server-side only
+            return self._send(502, {"error": "VIN decode service temporarily unavailable. Please try again."})
         decoded = map_vpic(vals)
         if not decoded.get("make"):
             return self._send(200, {"error": "VIN not found"})
+        if r:
+            try:
+                r.set(cache_key, json.dumps(decoded), ex=VIN_CACHE_TTL)
+            except Exception:
+                pass
         return self._send(200, decoded)
 
     def _send(self, code, obj):
