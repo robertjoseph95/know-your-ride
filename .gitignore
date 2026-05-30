@@ -53,3 +53,8 @@ desktop.ini
 
 # Cloned OSS datasets (third-party, regenerable)
 oss_import/
+
+# transient caches / test scripts
+nhtsa_safety_cache.json
+_drainbolt_verify.py
+_vf_raw.json
