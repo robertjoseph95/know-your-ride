@@ -1,0 +1,589 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║           KNOW YOUR RIDE — FULL SYSTEM AUDIT                               ║
+║           Date: 2026-05-30   |   Audit type: READ-ONLY (no fixes applied)  ║
+║           DB: wrench_vehicles.db (3,540 vehicles, 48 makes, ~232 MB)       ║
+║           Live: knowyourride.net  |  Deploy root: wrench_deploy/           ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+────────────────────────────────────────────────────────────────────────────
+EXECUTIVE SUMMARY  (issues by severity)
+────────────────────────────────────────────────────────────────────────────
+  CRITICAL : 0
+  HIGH     : 6   — EV "gas-spec contamination"; MPGe mislabeled as MPG;
+                   exotic/truck generic tire fallback; Terms/Privacy not
+                   linked from app; no account-deletion path; 29.6 MB inline
+                   data blob.
+  MEDIUM   : 12  — see sections.
+  LOW      : 11  — see sections.
+
+THE THREE THEMES THAT MATTER MOST
+  1. DATA: A single root cause — gas-vehicle templated specs were applied to
+     EVs — produces 4 overlapping wrong-data issues on ~70 electric vehicles
+     (engine oil, spark plugs, drain plug, oil-change maintenance). Plus EV
+     fuel economy is stored as "MPG" when the values are actually MPGe.
+  2. LEGAL: The Terms & Privacy pages are well-written but NOT linked anywhere
+     in the app, and there is no self-service account-deletion (GDPR/CCPA).
+  3. PERF: 99.65% of the 29.6 MB page is one inline JSON data blob parsed on
+     every load.
+
+Security fundamentals are strong (scrypt hashing, CSPRNG tokens, server-side
+token validation, Stripe signature verification, parameterized SQL, fail-
+closed budget caps on the paid vision endpoint). No CRITICAL issues found.
+
+
+╔══════════════════════════════════════════════════════════════════════════╗
+SECTION 1: DATA ACCURACY & COMPLETENESS
+╚═══════════════════════════════════════════════════════════════════════════╝
+Method: queried wrench_vehicles.db directly. EVs identified (135 vehicles) via
+combined_mpg>=90 (MPGe), fuel_economy.fuel_type='Electric', the ev_specs table,
+and known EV model names.
+
+─── 1.1 OIL CHANGE ─────────────────────────────────────────────────────────
+Coverage: 1,847 vehicles have an oil_change row (1,783 with a viscosity value);
+1,693 vehicles have NO oil row (mostly older/discontinued nameplates never
+given a full spec pull — expected coverage gap, not an error).
+Distinct viscosities (all standard passenger grades, no diesel/odd values):
+  0W-20:800  5W-30:512  5W-20:301  5W-40:79  0W-40:77  0W-16:13  0W-30:1
+Capacity sanity: 0 rows <3 qt, 0 rows >12 qt. CLEAN.
+
+> ISSUE 1.1-A
+- SEVERITY: HIGH
+- DESCRIPTION: 69 EVs carry a real engine-oil viscosity (EVs have no engine
+  oil). Examples: Porsche Taycan (0W-40), BMW iX & i4 (0W-20), Cadillac LYRIQ,
+  Lucid Air, Tesla Cybertruck, Kia EV9, Audi e-tron GT, Genesis GV60. This is
+  the gas-spec-template-applied-to-EVs root cause (see also 1.2, 1.3, 1.9).
+- AFFECTED: oil_change rows for ~69 EV vehicle_ids (e.g. 982, 4690, 4691,
+  4853, 6130, 6810, 5529, 5836).
+- RECOMMENDED FIX: For all detected EVs, null out oil_change (viscosity,
+  oil_type, capacities, drain bolt) and suppress the Oil tab for EVs in the
+  UI renderer.
+
+─── 1.2 DRAIN PLUG (oil_change.socket / thread / gasket) ───────────────────
+NOTE: prompt referenced socket_size_mm/thread_size/torque_ft_lbs; actual
+columns are socket, thread, gasket (+ drain_bolt_json). Drain-plug torque
+lives in torque_specs (component LIKE '%drain%').
+Coverage: socket 1,609 | thread 1,617 | gasket 750 | drain_bolt_json 1,681 |
+torque_specs drain rows 1,785.
+Socket values — ALL standard, none out of range:
+  17mm:549 15mm:331 14mm:315 13mm:210 19mm:141 16mm:36 8mm:22 10mm:5
+  Non-standard socket values: NONE.
+
+> ISSUE 1.2-A
+- SEVERITY: HIGH
+- DESCRIPTION: 58 EVs have drain-plug data (socket/thread). EVs have no engine
+  oil drain plug. Examples: Nissan Leaf, Porsche Taycan, Ford Mustang Mach-E,
+  VW ID.4, Chevy Bolt EV/EUV, Hyundai Kona Electric.
+- AFFECTED: oil_change socket/thread/gasket/drain_bolt_json for ~58 EV ids.
+- RECOMMENDED FIX: Null drain-plug columns for EVs (same cleanup pass as 1.1).
+
+─── 1.3 MAINTENANCE SCHEDULES ──────────────────────────────────────────────
+Coverage: 1,847 vehicles have >=1 maintenance item; 1,693 have ZERO (same
+coverage gap as oil — these never got a spec pull).
+Sources: ai-haiku-4.5 (22,769 items) | scraped (3,542) | engine_classifier_v1
+(38). The bulk of schedules are AI-generated.
+
+> ISSUE 1.3-A
+- SEVERITY: HIGH
+- DESCRIPTION: 52 EVs have an "oil change" / "engine oil" maintenance item.
+  Examples: Honda Prologue, Porsche Macan (EV), Genesis G80/GV70 (Electrified),
+  Chevy Blazer EV, Volvo XC40 Recharge, Hyundai Kona Electric.
+- AFFECTED: maintenance rows for ~52 EV ids where description references oil.
+- RECOMMENDED FIX: Delete oil-related maintenance items for EVs; regenerate
+  EV schedules with an EV-aware prompt (tire rotation, cabin filter, brake
+  fluid, coolant, battery coolant, reduction-gear fluid — no engine oil/plugs).
+
+> ISSUE 1.3-B
+- SEVERITY: MEDIUM
+- DESCRIPTION: Many maintenance descriptions are generic and repeat verbatim
+  across hundreds of vehicles (AI-generated boilerplate), e.g. "Cabin air
+  filter replacement" (974 vehicles), "Engine air filter replacement" (721),
+  "Tire rotation and balance" (614), "Engine oil and filter change (0W-20 Full
+  Synthetic)" (264), "Spark plug replacement (Iridium x4)" (249). Intervals
+  vary, but the wording/parts are templated and not VIN-verified.
+- AFFECTED: maintenance table broadly (source='ai-haiku-4.5').
+- RECOMMENDED FIX: Accept as "general guidance" but ensure the UI's existing
+  AI/verify disclaimer is shown on the Maintenance tab; do not present as OEM-
+  exact. (Cross-ref legal 3.3.)
+
+─── 1.4 FLUIDS ────────────────────────────────────────────────────────────
+Coverage: 1,849 fluids rows; all 135 EVs have a fluids row (correct — EVs do
+use coolant/brake fluid). No duplicate fluid rows per vehicle. CLEAN on dupes.
+Power-steering-fluid on EVs: only 1 (2018 "Fiat 500" — borderline detection;
+500e). Effectively a non-issue.
+
+> ISSUE 1.4-A
+- SEVERITY: MEDIUM
+- DESCRIPTION: 509 fluids rows have null/blank coolant_type and 513 have
+  null/blank brake_fluid (~28% of fluids rows incomplete).
+- AFFECTED: fluids table (~510 vehicles).
+- RECOMMENDED FIX: Backfill coolant/brake from engine_specs/OEM defaults or
+  hide blank fluid fields rather than rendering empty rows.
+
+─── 1.5 TIRE SIZE ───────────────────────────────────────────────────────────
+Coverage: 1,284 with a real tire_size, 565 null. The generic fallback size
+'215/55R17' appears on 415 vehicles (a real Camry/Civic size, but applied as a
+template to vehicles that cannot use it).
+
+> ISSUE 1.5-A
+- SEVERITY: HIGH
+- DESCRIPTION: Exotics carry the generic 215/55R17 fallback — physically wrong
+  (these use 285+ mm / 21-23" wheels). Found on: Aston Martin Vantage & DBX,
+  Rolls-Royce Ghost & Cullinan, Lamborghini Urus, Bentley Bentayga, Ferrari
+  Roma (all 2026, from the recent pull).
+- AFFECTED: parts.tire_size for the listed exotics.
+- RECOMMENDED FIX: Null the fallback tire size for exotics/trucks rather than
+  show 215/55R17; only display tire_size when it is VIN/trim-verified.
+
+> ISSUE 1.5-B
+- SEVERITY: HIGH
+- DESCRIPTION: Full-size trucks carry 215/55R17 (trucks use ~265+/17-20").
+  Found on RAM 1500 (2005-2026, ~12 model years) and RAM 2500 (2025, 2026).
+- AFFECTED: parts.tire_size for RAM 1500/2500 rows.
+- RECOMMENDED FIX: Same as 1.5-A — null the templated size for trucks.
+
+─── 1.6 SAFETY RATINGS ──────────────────────────────────────────────────────
+Coverage: 1,475 safety rows, but only 658 have an overall_rating (817 rows have
+NULL overall). 2,065 vehicles have NO safety row at all. No rating is outside
+the 1-5 range. CLEAN on range.
+
+> ISSUE 1.6-A
+- SEVERITY: MEDIUM
+- DESCRIPTION: 61 of 135 EVs have no safety data; overall safety coverage is
+  thin (only 658/3,540 vehicles have an overall star rating). New 2026 models
+  and many EVs are simply not yet NHTSA-rated, but coverage gaps should be
+  handled gracefully in the UI.
+- AFFECTED: safety_ratings (coverage), 61 EV ids + 2,065 vehicles with no row.
+- RECOMMENDED FIX: Show "Not yet rated by NHTSA" rather than an empty Safety
+  panel; backfill where NHTSA data now exists.
+
+─── 1.7 FUEL ECONOMY ────────────────────────────────────────────────────────
+> ISSUE 1.7-A  (data-accuracy, user-facing)
+- SEVERITY: HIGH
+- DESCRIPTION: EV electric efficiency is stored in the MPG columns
+  (city_mpg/highway_mpg/combined_mpg) but the values are MPGe, not MPG. 394
+  fuel_economy rows have combined_mpg>=90 (impossible for gas; these are MPGe);
+  116 distinct EV vehicles affected. The dedicated mpge column is populated on
+  only 2 rows, and range_ev/comb_ev are unused (0 rows). The demo therefore
+  shows e.g. "134 MPG" for a Tesla Model Y instead of "134 MPGe", and EVs
+  appear in MPG sorts/filters as absurd gas-MPG outliers.
+- AFFECTED: fuel_economy (city/highway/combined_mpg) for ~116 EVs; mpge column
+  largely unused.
+- RECOMMENDED FIX: Migrate EV values into the mpge / comb_ev columns (or tag
+  rows fuel_type='Electric') and render the unit as "MPGe" + electric range
+  for EVs. Until then, the high-MPG sort is misleading.
+- NOTE: No gas vehicle has MPGe set; no gas vehicle exceeds 60 mpg except EVs;
+  0 rows have combined_mpg<10. So the ONLY fuel-economy defect is the EV
+  MPGe-as-MPG mislabeling — gas data looks clean.
+
+─── 1.8 TSBs & RECALLS ──────────────────────────────────────────────────────
+EXCELLENT data quality (the 2026-05-29 ingestion fix held):
+  TSB: 268,634 rows, 0 null/blank titles.
+  Recalls: 8,123 rows, 0 null/blank summaries, 0 null campaign numbers.
+
+> ISSUE 1.8-A
+- SEVERITY: MEDIUM
+- DESCRIPTION: Some vehicles have an implausibly high TSB count — 2013 Chevy
+  Camaro 1,614 TSBs; 2012 Camaro 1,505; multiple GM/Audi vehicles 1,000-1,500.
+  This suggests TSBs are over-attached (matched too broadly by make/platform
+  rather than the specific year/model), inflating per-vehicle counts.
+- AFFECTED: tsb table — high-volume GM (Camaro, Silverado/Sierra, Tahoe) and
+  Audi (A6, Q7) rows.
+- RECOMMENDED FIX: Audit the TSB→vehicle matching key; de-duplicate and tighten
+  matching so a single year/model isn't assigned 1,600 bulletins. Consider
+  capping displayed TSBs and showing "showing N of M".
+
+─── 1.9 PARTS ───────────────────────────────────────────────────────────────
+Coverage: 1,691 vehicles have NO parts row (same coverage gap). No placeholder
+part numbers (TBD/N/A/Unknown) found in maintenance_parts. CLEAN on placeholders.
+
+> ISSUE 1.9-A
+- SEVERITY: HIGH
+- DESCRIPTION: 71 EVs have spark-plug data ("Iridium", qty 4). EVs have no
+  spark plugs. Examples: Porsche Taycan, BMW iX/i4, Cadillac LYRIQ, Lucid Air,
+  Audi e-tron GT, Genesis G80/GV60. Same gas-template root cause as 1.1/1.2/1.3.
+- AFFECTED: parts.spark_plug_type/spark_plug_qty for ~71 EV ids.
+- RECOMMENDED FIX: Null spark-plug fields for EVs; hide the spark-plug section
+  in the Parts tab when the vehicle is electric.
+
+─── 1.10 WARRANTY ───────────────────────────────────────────────────────────
+CLEAN on structure: 7,472 rows, 0 with months=0 or null, no duplicate
+(vehicle_id, warranty_type) rows. Types: basic 1,593 | roadside 1,593 |
+powertrain 1,565 | corrosion 1,565 | ev_battery 820 | hybrid_battery 336.
+
+> ISSUE 1.10-A
+- SEVERITY: MEDIUM
+- DESCRIPTION: 31 of 135 EVs have NO battery/EV-warranty row (EVs should carry
+  an 8yr/100k-mi style battery warranty).
+- AFFECTED: warranty table — 31 EV ids missing an ev_battery row.
+- RECOMMENDED FIX: Backfill ev_battery warranty for the 31 EVs.
+
+SECTION 1 ROLL-UP
+  HIGH (5): EV oil (1.1-A), EV drain plug (1.2-A), EV oil-maintenance (1.3-A),
+            exotic tire (1.5-A) + truck tire (1.5-B), EV spark plugs (1.9-A),
+            MPGe-as-MPG (1.7-A).  [The four EV-spec issues share ONE root cause
+            and one cleanup pass fixes all of them for ~70 EVs.]
+  MEDIUM (5): generic AI maintenance wording (1.3-B), incomplete fluids
+            (1.4-A), thin safety coverage (1.6-A), TSB over-attachment (1.8-A),
+            EV battery-warranty gaps (1.10-A).
+  CLEAN: viscosity values, oil capacities, socket sizes, placeholder part #s,
+            recall/TSB titles & campaigns, warranty structure, fluid dupes.
+
+
+╔══════════════════════════════════════════════════════════════════════════╗
+SECTION 2: APPLICATION SECURITY
+╚═══════════════════════════════════════════════════════════════════════════╝
+Overall: STRONG fundamentals. No CRITICAL/HIGH issues. No secret has ever been
+committed to git (verified). Scrypt password hashing, CSPRNG session tokens,
+server-side token validation, Stripe webhook signature verification,
+parameterized SQL, and a fail-closed budget guard on the paid vision endpoint
+are all in place.
+
+─── 2.1 API KEYS & SECRETS ─────────────────────────────────────────────────
+CORRECT: .gitignore covers wrench_config.json, .env, .env.*, **/.env*,
+wrench_deploy/.env*; git check-ignore confirms all are ignored; git history
+contains no secrets. README contains only masked placeholders. PRO_WHITELIST is
+read from os.environ everywhere (auth.py:56, garage.py:53,
+verify-subscription.py:15) — never hardcoded. No api/*.py has a hardcoded
+credential.
+
+> ISSUE 2.1-A
+- SEVERITY: LOW
+- DESCRIPTION: Live plaintext keys exist on disk (correctly gitignored) inside
+  a OneDrive-synced folder: wrench_config.json (YouTube, Vehicle Finder,
+  Anthropic keys) and wrench_deploy/.env.local (Upstash tokens, OIDC token).
+  Not a git exposure, but they sync to OneDrive's cloud.
+- AFFECTED: wrench_config.json:2-4; wrench_deploy/.env.local
+- RECOMMENDED FIX: Acceptable if OneDrive sync is trusted. Restrict the YouTube
+  key by referrer/IP in Google Cloud. The Vehicle Finder key can be deleted
+  once the subscription is cancelled.
+
+─── 2.2 AUTHENTICATION (api/auth.py) ───────────────────────────────────────
+CORRECT: scrypt KDF (n=2^14,r=8,p=1,dklen=32) with per-user 16-byte CSPRNG salt
+(auth.py:59-64); constant-time hmac.compare_digest (auth.py:70); session tokens
+= secrets.token_urlsafe(32) (auth.py:203); tokens validated server-side on every
+protected request (garage.py:130-132, garage-logs.py:89-91); 30-day session TTL;
+email regex + 8-char min password on signup.
+
+> ISSUE 2.2-A
+- SEVERITY: MEDIUM
+- DESCRIPTION: No brute-force / rate-limiting on login. _login (auth.py:156-176)
+  has no per-email/per-IP attempt counter or lockout — unlimited password
+  guessing / credential stuffing (scrypt cost only slows it).
+- AFFECTED: wrench_deploy/api/auth.py:156-176
+- RECOMMENDED FIX: Add Redis counters login_fail:{email} / login_fail_ip:{ip}
+  with TTL; 429 after N failures. (Or Vercel WAF rate limit on /api/auth.)
+
+─── 2.3 API ENDPOINTS ──────────────────────────────────────────────────────
+CORRECT: No SQL injection — serverless functions use Redis/HTTP, not SQL; the
+local wrench_serve.py uses fully parameterized (?) SQLite queries. Stripe
+webhook signature IS verified (webhook.py:49-54, stripe.Webhook.construct_event,
+400 on failure) before processing.
+
+> ISSUE 2.3-A
+- SEVERITY: LOW
+- DESCRIPTION: verify-subscription.py (GET ?email=) returns subscription/
+  whitelist status for ANY email with no auth (CORS *). Leaks only a boolean,
+  but allows subscriber/whitelist enumeration.
+- AFFECTED: wrench_deploy/api/verify-subscription.py:52-77
+- RECOMMENDED FIX: Require the session bearer token; derive email from session.
+
+> ISSUE 2.3-B
+- SEVERITY: LOW
+- DESCRIPTION: All endpoints set Access-Control-Allow-Origin: *. Mitigated by
+  bearer-token (not cookie) auth, but lets any origin invoke the paid AI
+  endpoints from a browser.
+- AFFECTED: all api/*.py _send()/_json() (e.g. guide.py:166, identify-part.py:143)
+- RECOMMENDED FIX: Restrict CORS to https://knowyourride.net for AI/garage.
+
+─── 2.4 INPUT VALIDATION ───────────────────────────────────────────────────
+CORRECT: VIN validated ^[A-HJ-NPR-Z0-9]{17}$ and URL-quoted (vin/[vin].py:20,77;
+garage.py:36,160). Garage inputs bounded (mileage 0-1.5M, cost 0-100k, notes 600
+chars, log cap 500). identify-part.py caps image at 2 MB (413 + socket drain on
+oversize) and whitelists jpeg/png/gif/webp. DTC lookup is not in the serverless
+layer (static dtc/ files; recalls.py uses urlencode) — no unsanitized DTC path.
+
+─── 2.5 RATE LIMITING ──────────────────────────────────────────────────────
+CORRECT (excellent): identify-part.py (Claude Vision) — DAILY_CAP=100/day,
+PER_IP=3/day, MONTHLY_BUDGET=$50 with auto-disable (idp:disabled), $1.50 daily
+alert; all gates run BEFORE the paid call and FAIL CLOSED if Redis is down.
+youtube.py cached 30 days; guide.py cached 90 days + safety-service block.
+
+> ISSUE 2.5-A
+- SEVERITY: MEDIUM
+- DESCRIPTION: guide.py has NO rate-limit/budget cap on cache misses. Each
+  unique vehicle_id|service triggers a paid Claude call (max_tokens=1400) with
+  no daily/IP/budget gate and no kill switch — an attacker iterating ids/
+  services bypasses the cache and runs up unbounded Anthropic cost.
+- AFFECTED: wrench_deploy/api/guide.py:113-161 (no gate before messages.create)
+- RECOMMENDED FIX: Add identify-part.py-style Redis daily/IP/budget gates.
+
+> ISSUE 2.5-B
+- SEVERITY: LOW
+- DESCRIPTION: youtube.py has no per-IP/daily cap on cache misses; distinct
+  query permutations each consume YouTube API quota.
+- AFFECTED: wrench_deploy/api/youtube.py:38-68
+- RECOMMENDED FIX: Add a per-IP daily counter before _search.
+
+─── 2.6 DEPENDENCIES ───────────────────────────────────────────────────────
+> ISSUE 2.6-A
+- SEVERITY: MEDIUM
+- DESCRIPTION: wrench_deploy/requirements.txt pins NOTHING — upstash-redis,
+  anthropic, requests, stripe are all unversioned; no lockfile. Builds are
+  non-reproducible; a bad upstream release auto-pulls on next deploy. Can't
+  assert requests/urllib3 are above known CVEs.
+- AFFECTED: wrench_deploy/requirements.txt
+- RECOMMENDED FIX: Pin exact versions (e.g. requests==2.32.3, urllib3>=2.2.2,
+  current stripe/anthropic/upstash-redis) or commit a lockfile. Runtime is
+  python-3.11 (runtime.txt) — fine.
+
+SECTION 2 ROLL-UP: MEDIUM(3): login throttling, guide.py budget cap, unpinned
+deps. LOW(4): keys in OneDrive folder, verify-subscription no-auth status,
+wildcard CORS, youtube per-IP cap. No CRITICAL/HIGH.
+
+
+╔══════════════════════════════════════════════════════════════════════════╗
+SECTION 3: LEGAL & COMPLIANCE
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+─── 3.1 DATA SOURCES ───────────────────────────────────────────────────────
+Sources: NHTSA (vPIC VIN, recalls, complaints, safety), EPA (fuel economy),
+Vehicle Finder (maintenance specs — being retired), OSS DTC datasets (MIT),
+Dorman drain plugs, Anthropic Claude (guides + part ID), KBB (linked out).
+Root LICENSE files are all MIT. Affiliate tag is EXCLUSIVELY wrenchapp20-20
+(verified) — no other tag, no eBay/O'Reilly/etc.
+
+> ISSUE 3.1-A
+- SEVERITY: LOW
+- DESCRIPTION: NHTSA/EPA data is not attributed as public-domain anywhere
+  user-visible, and the "not affiliated with NHTSA/EPA/manufacturers" notice
+  exists only in the repo README, not on the live site. (Not legally required
+  for public-domain gov data, but good practice and reduces brand confusion.)
+- AFFECTED: wrench_deploy/index.html (no footer attribution)
+- RECOMMENDED FIX: Add a footer line crediting NHTSA/EPA (public domain) and
+  stating non-affiliation (text already drafted in terms.html §8).
+
+NOTE: RockAuto/AutoZone outbound links exist but are explicitly NON-affiliate
+convenience links (no tag, rel="noopener"), correctly disclosed via the FTC
+note. Compliant.
+
+─── 3.2 TERMS OF SERVICE & PRIVACY ─────────────────────────────────────────
+EXISTS & THOROUGH: wrench_deploy/terms.html (7,046 B) and privacy.html (6,924 B),
+cross-linked to each other. Privacy covers data collection, cookies/localStorage,
+GA4, Stripe, processors (Upstash/Vercel/Anthropic), 30-day retention, user
+rights. Terms cover "as is", DIY risk, AI-guide reference-only, liability limit,
+parts fitment, Pro terms, accuracy disclaimer, affiliate (names the tag).
+
+> ISSUE 3.2-A
+- SEVERITY: HIGH
+- DESCRIPTION: Neither terms.html nor privacy.html is LINKED from the main app.
+  Grep of index.html for terms/privacy hrefs = 0 matches; the pages are
+  reachable only by typing the URL. Stripe, Amazon Associates, and FTC/GDPR all
+  expect conspicuous, accessible Terms/Privacy links — and Pro subscribers
+  agree to Terms they're never shown a path to.
+- AFFECTED: wrench_deploy/index.html (no footer links); files/04_rebuild_demo.py
+  (build doesn't inject them)
+- RECOMMENDED FIX: Add a persistent footer linking /terms.html and /privacy.html
+  (add to the build script so rebuilds keep it); at minimum link them in the
+  signup/paywall block before the Stripe redirect.
+
+─── 3.3 LEGAL DISCLAIMERS ──────────────────────────────────────────────────
+COMPLIANT: AI guides carry a banner — "AI-generated guide - always verify specs
+before use. Consult a professional for safety-critical work." Parts tiers carry
+a fitment caveat. (Both injected by 04_rebuild_demo.py.)
+
+> ISSUE 3.3-A
+- SEVERITY: MEDIUM
+- DESCRIPTION: The DTC / Code Lookup area has NO disclaimer that trouble codes
+  are diagnostic/indicative, not a confirmed root cause. It renders ranked
+  "most likely fixes" with success % and cost estimates that could read as
+  authoritative; only the affiliate FTC note is attached.
+- AFFECTED: wrench_deploy/index.html DTC results (renderFixes/dtc-fixes block)
+- RECOMMENDED FIX: Add a caveat: "Trouble codes indicate a symptom area, not a
+  confirmed cause. Ranked fixes are community-reported probabilities — diagnose
+  before replacing parts."
+
+> ISSUE 3.3-B
+- SEVERITY: LOW
+- DESCRIPTION: The live AI-guide banner says "verify specs" but does not tell
+  users to verify against the owner's/factory service manual (Terms §3 does,
+  but it's not surfaced at point of use).
+- AFFECTED: wrench_deploy/index.html (gh-banner)
+- RECOMMENDED FIX: Expand to "...verify specs against your owner's/factory
+  service manual before use."
+
+─── 3.4 AFFILIATE COMPLIANCE ───────────────────────────────────────────────
+COMPLIANT: Clear, conspicuous disclosure at each affiliate surface —
+"As an Amazon Associate, qualifying purchases may earn a commission at no extra
+cost to you." plus a per-section FTC note distinguishing affiliate vs
+convenience links. Amazon links use rel="nofollow sponsored noopener".
+(Enhancement: a site-wide footer disclosure + Terms link would strengthen it.)
+
+─── 3.5 USER DATA ──────────────────────────────────────────────────────────
+Stored (Upstash Redis): email, salted scrypt password hash (never plaintext),
+session tokens (30-day TTL), tier flag, saved vehicles (incl. VIN), mileage,
+maintenance logs (date/mileage/service/notes/cost). Stripe handles all card
+data; no PAN stored. Pro entitlement currently derives from PRO_WHITELIST env +
+Stripe lookups (subscribe.py stores no customer id).
+
+> ISSUE 3.5-A
+- SEVERITY: HIGH
+- DESCRIPTION: No programmatic account-deletion / right-to-erasure endpoint.
+  auth.py has signup/login/logout/me only; garage has per-item remove but no
+  "delete all my data"; nothing deletes user:{email}, user_vehicles:{email},
+  user_logs:*, user_mileage:*. Privacy policy promises deletion "within 30 days
+  of request" via email to hello@knowyourride.net — a manual human process with
+  no reliable/complete code path (GDPR/CCPA erasure risk).
+- AFFECTED: wrench_deploy/api/ (no delete-account function)
+- RECOMMENDED FIX: Add an authenticated delete-account action that purges the
+  user record, all sessions, and all user_* namespaces; expose a "Delete my
+  account" UI control. Until then, document an internal runbook that deletes
+  every key namespace.
+
+> ISSUE 3.5-B
+- SEVERITY: MEDIUM
+- DESCRIPTION: User-data region is not determinable from code (Upstash region
+  is baked into the REST URL in Vercel env, not the repo) and privacy.html
+  makes no data-residency / cross-border-transfer statement.
+- AFFECTED: Upstash Redis instance — VERIFY IN UPSTASH CONSOLE
+- RECOMMENDED FIX: Confirm region in the Upstash console; if serving EU users,
+  document data location + add a transfer clause to privacy.html.
+
+> ISSUE 3.5-C
+- SEVERITY: LOW
+- DESCRIPTION: Email, VIN, and free-text log notes are stored plaintext in Redis
+  (only passwords hashed). Normal for app data (Upstash encrypts at rest, and
+  privacy policy discloses it), but VIN is a quasi-identifier and notes may hold
+  arbitrary PII.
+- AFFECTED: api/auth.py, garage.py, garage-logs.py
+- RECOMMENDED FIX: None strictly required; confirm Upstash encryption-at-rest
+  tier and advise users not to put sensitive data in notes.
+
+SECTION 3 ROLL-UP: HIGH(2): Terms/Privacy not linked, no account-deletion path.
+MEDIUM(2): DTC disclaimer, data-residency. LOW(3): public-domain attribution,
+owner's-manual wording, plaintext PII. COMPLIANT: affiliate tag/disclosure,
+AI-guide & fitment disclaimers, scrypt hashing, thorough Terms/Privacy docs.
+
+
+╔══════════════════════════════════════════════════════════════════════════╗
+SECTION 4: PERFORMANCE & RELIABILITY
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+─── 4.1 PAGE SIZE ──────────────────────────────────────────────────────────
+Measured: index.html = 31,137,348 bytes (29.69 MiB). The inline const __D__=
+JSON blob = 31,025,672 bytes = 29.59 MB = 99.65% of the file. Everything else
+(HTML+CSS+all JS) ≈ 110 KB (0.35%). Dataset is 100% inline, parsed synchronously
+on load, NOT lazy-loaded. External resources: Google Fonts (3 families/11
+weights), GA gtag (G-7RE1GC9S5Q). No Stripe.js/CDN libs (client is dependency-
+light — good).
+
+> ISSUE 4.1-A
+- SEVERITY: HIGH
+- DESCRIPTION: The entire 29.59 MB dataset is embedded inline and parsed on the
+  main thread every cold load. Even with gzip/brotli on the wire, the browser
+  downloads/decompresses/parses ~29.6 MB before interactive — punishing on
+  mobile, and re-fetched whenever the hash changes (served max-age=0,
+  must-revalidate, so revalidated every navigation).
+- AFFECTED: wrench_deploy/index.html (__D__ blob); files/04_rebuild_demo.py
+- RECOMMENDED FIX: Split the dataset out of the HTML. (a) ship a small index +
+  lazy-fetch per-vehicle JSON from the existing vehicles/ & dtc/ dirs; or (b)
+  at minimum move __D__ to a separate hashed .json with Cache-Control:
+  immutable so it caches across visits. Either cuts initial HTML ~30 MB -> ~110 KB.
+
+> ISSUE 4.1-B
+- SEVERITY: LOW
+- DESCRIPTION: Google Fonts loads 3 families / 11 weights (render-blocking).
+- AFFECTED: index.html font <link>
+- RECOMMENDED FIX: Trim to weights actually used / self-host (display=swap
+  already set).
+
+─── 4.2 CACHING ────────────────────────────────────────────────────────────
+DONE WELL: youtube.py cached in Redis 30 days; guide.py cached in Redis 90 days
+(+ safety-service short-circuit). identify-part.py intentionally uncached (every
+image unique) but budget-gated.
+
+> ISSUE 4.2-A
+- SEVERITY: MEDIUM
+- DESCRIPTION: vin/[vin].py makes a live NHTSA vPIC call on EVERY request with
+  NO caching (doesn't import Redis), despite VIN decodes being perfectly
+  deterministic — repeated work + per-request dependency on NHTSA uptime.
+- AFFECTED: wrench_deploy/api/vin/[vin].py
+- RECOMMENDED FIX: Cache decoded VIN in Redis keyed by VIN, long/no TTL (reuse
+  the _redis() helper from youtube.py).
+
+> ISSUE 4.2-B
+- SEVERITY: LOW
+- DESCRIPTION: recalls.py makes a live NHTSA recalls call per request, uncached.
+- AFFECTED: wrench_deploy/api/recalls.py
+- RECOMMENDED FIX: Add a ~24h Redis cache keyed by make|model|year.
+
+─── 4.3 ERROR HANDLING ─────────────────────────────────────────────────────
+DONE WELL: every handler uses a private _send/_json with explicit status codes;
+Redis-down is handled gracefully everywhere (503, no crash; identify-part fails
+closed); Anthropic-down returns a graceful 200 {error:...} (no 500); Stripe
+webhook always returns 200 after signature check.
+
+> ISSUE 4.3-A
+- SEVERITY: MEDIUM
+- DESCRIPTION: 7 endpoints echo the raw exception text to the client
+  (info leak — library/vendor internals): youtube.py:62, guide.py:154,
+  identify-part.py:102, vin/[vin].py:82, recalls.py:29, subscribe.py:38,
+  webhook.py:54 (all f"...: {e}"). These are caught exceptions (not full
+  tracebacks — Vercel wouldn't surface a Python traceback), but the messages
+  leak internals.
+- AFFECTED: the 7 endpoints above
+- RECOMMENDED FIX: Log {e} server-side; return a generic client message.
+
+> ISSUE 4.3-B
+- SEVERITY: LOW
+- DESCRIPTION: No custom 404 page (no wrench_deploy/404.html; no notFound in
+  vercel.json) — unknown routes fall back to Vercel's default 404.
+- AFFECTED: wrench_deploy/ (missing 404.html)
+- RECOMMENDED FIX: Add a branded 404.html (Vercel serves root 404.html
+  automatically for static deploys).
+
+─── 4.4 VERCEL FUNCTION LIMITS ─────────────────────────────────────────────
+Function count: 13 Python functions (auth, garage, garage-logs, guide,
+identify-part, obd, promo, recalls, subscribe, verify-subscription, vin/[vin],
+webhook, youtube). Well under the Pro limit. NOTE: this is exactly the count
+that broke Hobby-plan deploys earlier; now on Pro it's fine.
+
+> ISSUE 4.4-A
+- SEVERITY: MEDIUM
+- DESCRIPTION: No maxDuration or memory config anywhere (vercel.json only sets
+  includeFiles for guide.py). External timeouts (requests/urllib timeout=15,
+  and youtube.py makes TWO sequential 15s calls = 30s worst case) can EXCEED
+  the platform function limit, so a slow upstream gets hard-killed mid-call
+  rather than returning a clean error. verify-subscription.py can make up to
+  ~40 Stripe calls in a loop.
+- AFFECTED: vercel.json; youtube.py, guide.py, identify-part.py,
+  verify-subscription.py
+- RECOMMENDED FIX: Set explicit per-function maxDuration (e.g. 30s for AI/
+  youtube/verify-subscription) and lower per-request external timeouts BELOW
+  maxDuration (e.g. 8s) so code returns a clean JSON error first. Optionally set
+  memory for AI functions.
+
+SECTION 4 ROLL-UP: HIGH(1): 29.6 MB inline blob. MEDIUM(3): VIN no cache, raw
+exception leak, no maxDuration/timeout mismatch. LOW(2): no 404 page, font
+weights. DONE WELL: 30d/90d caches, fail-closed budget guard, graceful Redis/
+Anthropic-down handling, no client-side third-party JS.
+
+
+╚═══════════════════════════════════════════════════════════════════════════╝
+APPENDIX — METHODOLOGY & NOTES
+────────────────────────────────────────────────────────────────────────────
+- Section 1: direct SQLite queries against wrench_vehicles.db (script
+  _audit_section1.py). EV set = 135 vehicles (combined_mpg>=90 OR
+  fuel_type='Electric' OR ev_specs OR known EV model names). A few plug-in/dual-
+  powertrain nameplates stored under a base name (e.g. "Hyundai Kona",
+  "Kia Soul", "Fiat 500") may be the electric variant; their gas-spec rows are
+  still flagged because the same record carries conflicting EV+gas data.
+- Sections 2-4: read-only static analysis of wrench_deploy/api/*.py,
+  wrench_serve.py, vercel.json, .gitignore/.vercelignore, requirements.txt,
+  terms.html/privacy.html, and measurement of index.html.
+- NOTHING WAS MODIFIED. This is an audit only.
+- Biggest single win available: one EV-cleanup pass (null oil/plugs/drain/oil-
+  maintenance for the ~70 EVs + move MPGe out of the MPG columns) clears 5 of
+  the 6 data HIGH findings. Linking Terms/Privacy + a delete-account endpoint
+  clears both legal HIGHs. Splitting the __D__ blob clears the perf HIGH.
+════════════════════════════════════════════════════════════════════════════
+END OF REPORT

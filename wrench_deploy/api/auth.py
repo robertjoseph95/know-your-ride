@@ -7,6 +7,9 @@ Routes (all POST, dispatched by `action` field in JSON body):
 - logout  { token }                            -> { ok }
 - me      { token }   OR  Authorization: Bearer <token>
                                               -> { ok, email, tier }
+- delete-account { token } OR Bearer          -> { ok, deleted, keys_removed }
+    GDPR/CCPA erasure: removes user:{email}, session, user_vehicles:{email},
+    and all user_mileage:{email}:* / user_logs:{email}:* keys.
 
 Redis schema:
 - user:{email}             -> JSON {pw, salt, created_at, tier}
@@ -106,7 +109,7 @@ class handler(BaseHTTPRequestHandler):
 
         action = str(body.get("action") or "").strip().lower()
         r = _redis()
-        if r is None and action in ("signup", "login", "logout", "me"):
+        if r is None and action in ("signup", "login", "logout", "me", "delete-account", "delete_account", "delete"):
             return self._send(503, {"ok": False, "error": "Auth backend not configured."})
 
         if action == "signup":
@@ -117,6 +120,8 @@ class handler(BaseHTTPRequestHandler):
             return self._logout(body, r)
         if action == "me":
             return self._me(body, r)
+        if action in ("delete-account", "delete_account", "delete"):
+            return self._delete_account(body, r)
         return self._send(400, {"ok": False, "error": "Unknown action."})
 
     # GET /api/auth?action=me with bearer token, for convenience on page load.
@@ -198,6 +203,40 @@ class handler(BaseHTTPRequestHandler):
             rec = {}
         tier = _tier_for(email) if _tier_for(email) == "pro" else rec.get("tier", "free")
         return self._send(200, {"ok": True, "email": email, "tier": tier})
+
+    def _delete_account(self, body, r):
+        """GDPR/CCPA right-to-erasure: delete the user and ALL their data.
+        Requires a valid session (bearer token or body.token); email is derived
+        from the session, never trusted from the request body."""
+        token = (str(body.get("token") or "").strip() or _bearer(self.headers))
+        if not token:
+            return self._send(401, {"ok": False, "error": "No session."})
+        email = session_lookup(r, token)
+        if not email:
+            return self._send(401, {"ok": False, "error": "Session expired."})
+        deleted = 0
+        try:
+            # Wildcard namespaces (per-vehicle mileage + logs) via SCAN.
+            for pattern in (f"user_mileage:{email}:*", f"user_logs:{email}:*"):
+                cursor = 0
+                while True:
+                    cursor, keys = r.scan(cursor, match=pattern, count=200)
+                    if keys:
+                        r.delete(*keys); deleted += len(keys)
+                    if str(cursor) in ("0", "None"):
+                        break
+            # Fixed-name per-user keys.
+            for key in (f"user_vehicles:{email}", f"user:{email}", f"session:{token}"):
+                try:
+                    if r.delete(key):
+                        deleted += 1
+                except Exception:
+                    pass
+        except Exception:
+            return self._send(503, {"ok": False, "error": "Could not complete account deletion. Please email hello@knowyourride.net."})
+        # Other devices' session tokens (if any) now point at a deleted user and
+        # will fail /me; they also expire via their 30-day TTL.
+        return self._send(200, {"ok": True, "deleted": True, "email": email, "keys_removed": deleted})
 
     def _new_session(self, r, email):
         token = secrets.token_urlsafe(32)

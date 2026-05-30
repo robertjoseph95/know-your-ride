@@ -1589,6 +1589,44 @@ def inject_onboard(html):
     return html
 
 
+# ── Footer with Terms / Privacy links + data attribution (audit fix) ──────────
+FOOTER_STYLE = """<style>
+.kyr-footer{margin-top:40px;padding:24px 28px;border-top:1px solid var(--border);background:var(--panel);font-family:'Manrope',sans-serif}
+.kyr-footer-links{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;font-size:13px;margin-bottom:10px}
+.kyr-footer-links a{color:var(--dim);text-decoration:none}
+.kyr-footer-links a:hover{color:var(--accent)}
+.kyr-footer-sep{color:var(--faint)}
+.kyr-footer-note{max-width:760px;margin:0 auto;text-align:center;font-size:11px;line-height:1.6;color:var(--faint)}
+</style>
+"""
+
+FOOTER_HTML = """<!--WRENCH_FOOTER--><footer class="kyr-footer">
+  <div class="kyr-footer-links">
+    <a href="/terms.html">Terms of Service</a>
+    <span class="kyr-footer-sep">&middot;</span>
+    <a href="/privacy.html">Privacy Policy</a>
+    <span class="kyr-footer-sep">&middot;</span>
+    <a href="mailto:hello@knowyourride.net">Contact</a>
+  </div>
+  <div class="kyr-footer-note">
+    Vehicle data sourced from NHTSA and EPA (U.S. Government, public domain). Know Your Ride is not affiliated with NHTSA, EPA, or any vehicle manufacturer.
+    As an Amazon Associate we earn from qualifying purchases. All specifications are for reference only &mdash; always verify against your owner's manual or factory service manual before performing any repair.
+  </div>
+</footer>
+"""
+
+
+def inject_footer(html):
+    """Add a site footer with Terms/Privacy links + data attribution (idempotent)."""
+    if "<!--WRENCH_FOOTER-->" in html:
+        return html
+    if "</head>" in html:
+        html = html.replace("</head>", FOOTER_STYLE + "</head>", 1)
+    if "</body>" in html:
+        html = html.replace("</body>", FOOTER_HTML + "</body>", 1)
+    return html
+
+
 def main():
     if not os.path.exists(OUT_FILE):
         print(f"ERROR: {OUT_FILE} not found.")
@@ -1647,6 +1685,7 @@ def main():
     html = inject_onboard(html)
     html = inject_branding(html)
     html = inject_logo(html)
+    html = inject_footer(html)
     html = fix_js_quotes(html)
 
     # 3) refresh the badge
