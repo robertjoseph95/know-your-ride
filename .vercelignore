@@ -1,0 +1,23 @@
+# The Vercel CLI uploads the entire cwd (repo root) and only honors .vercelignore
+# (NOT .gitignore). The project's Root Directory is `wrench_deploy`, so deploys must
+# run from the repo root — but we only need to upload wrench_deploy/ itself.
+# Without this file the CLI uploads ~4.9 GB of root-level DBs/caches/backups and
+# fails the 100 MB per-file limit (complaints_api_cache.json, wrench_vehicles.db).
+
+# Ignore everything at the repo root...
+/*
+# ...except the deploy root.
+!/wrench_deploy
+
+# Within the deploy root, drop backups and local node_modules (Vercel reinstalls deps).
+wrench_deploy/*.bak
+wrench_deploy/*.bak*
+wrench_deploy/**/*.bak
+wrench_deploy/**/*.bak*
+wrench_deploy/node_modules
+
+# Hobby plan caps a deployment at 12 Serverless Functions; api/ has 13.
+# obd.py is a stub that can't work in the cloud (OBD-II needs the local
+# wrench_serve.py + a physical ELM327 adapter), so it's excluded here.
+# The client's fetch().catch() already shows the correct "run it locally" message.
+wrench_deploy/api/obd.py
