@@ -1,14 +1,13 @@
 """
 WRENCH — Local demo server + VIN decode proxy
 =============================================
-The Vehicle Finder API sends no CORS headers and requires the X-API-Key
-header, so a browser cannot call it directly (a file:// demo or any page is
-blocked). This tiny stdlib server fixes both problems:
+NHTSA's vPIC API sends no CORS headers, so a browser cannot call it directly
+(a file:// demo or any page is blocked). This tiny stdlib server fixes that:
 
   * Serves wrench_demo.html at  http://localhost:8000/
-  * Proxies  GET /api/vin/<vin>  ->  https://api.vehicle-finder.com/v1/vin/<vin>
-    server-side, so the API KEY stays here (never shipped to the browser) and
-    the demo's JS calls a same-origin URL (no CORS).
+  * Proxies  GET /api/vin/<vin>  ->  NHTSA vPIC DecodeVIN (free, no API key)
+    server-side, so the demo's JS calls a same-origin URL (no CORS).
+    (Replaced the paid Vehicle Finder proxy — see api/vin/[vin].py.)
   * OBD-II (ELM327 over Bluetooth/USB) endpoints via the python-obd library:
         GET /api/obd/status               adapter / connection state
         GET /api/obd/connect[?port=COM5]  connect to the adapter
@@ -41,7 +40,6 @@ try:
 except Exception:
     OBD_AVAILABLE = False
 
-BASE_URL = "https://api.vehicle-finder.com/v1"
 PORT     = 8000
 ROOT     = os.path.dirname(os.path.abspath(__file__))
 DB_FILE  = os.path.join(ROOT, "wrench_vehicles.db")
@@ -58,7 +56,6 @@ def _load_config():
 
 
 CONFIG   = _load_config()
-API_KEY  = CONFIG.get("vehicle_finder_api_key", "")   # VIN proxy key
 YT_KEY   = CONFIG.get("youtube_api_key", "")           # YouTube Data API v3 key
 ANTHROPIC_KEY = CONFIG.get("anthropic_api_key", "")    # Claude API key (repair guides)
 YT_SEARCH = "https://www.googleapis.com/youtube/v3/search"
@@ -651,17 +648,51 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         vin = vin.strip().upper()
         if not VIN_RE.match(vin):
             return self._json(400, {"error": "VIN must be 17 valid characters (A-Z except I/O/Q, 0-9)."})
-        req = urllib.request.Request(f"{BASE_URL}/vin/{vin}", headers={"X-API-Key": API_KEY})
+        # NHTSA vPIC (free, no key) — replaced the paid Vehicle Finder proxy so the
+        # $99/mo subscription can be cancelled. Same flat response contract as before.
+        url = f"https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/{urllib.parse.quote(vin)}?format=json"
         try:
+            req = urllib.request.Request(url, headers={
+                "User-Agent": "KnowYourRide/1.0", "Accept": "application/json"})
             with urllib.request.urlopen(req, timeout=15) as r:
-                payload = json.loads(r.read())
-            data = payload.get("data", payload) if isinstance(payload, dict) else payload
-            return self._json(200, data)
-        except urllib.error.HTTPError as e:
-            msg = "VIN not found." if e.code == 404 else f"Decode service error ({e.code})."
-            return self._json(e.code, {"error": msg})
+                payload = json.loads(r.read().decode("utf-8", "ignore"))
         except Exception as e:
             return self._json(502, {"error": f"Could not reach decode service: {e}"})
+
+        vals = {}
+        for item in payload.get("Results") or []:
+            var, val = item.get("Variable"), item.get("Value")
+            if var and val not in (None, "", "Not Applicable"):
+                vals[var] = val
+
+        def first(*names):
+            for n in names:
+                if vals.get(n):
+                    return vals[n]
+            return None
+
+        make = first("Make")
+        if not make:
+            return self._json(200, {"error": "VIN not found."})
+        disp = first("Displacement (L)")
+        if disp:
+            try:
+                disp = f"{float(disp):.1f}"
+            except (TypeError, ValueError):
+                pass
+        cyl = first("Engine Number of Cylinders")
+        year = first("Model Year")
+        return self._json(200, {
+            "make": make,
+            "model": first("Model"),
+            "year": int(year) if year and str(year).isdigit() else year,
+            "trim": first("Trim", "Series", "Trim2", "Series2"),
+            "displacement_liters": disp,
+            "cylinders": int(cyl) if cyl and str(cyl).isdigit() else cyl,
+            "fuel_type": first("Fuel Type - Primary"),
+            "engine": first("Engine Model"),
+            "source": "nhtsa-vpic",
+        })
 
     def _recalls(self, make, model, year):
         make, model, year = (make or "").strip(), (model or "").strip(), (year or "").strip()
