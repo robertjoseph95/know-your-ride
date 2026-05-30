@@ -15,9 +15,3 @@ wrench_deploy/*.bak*
 wrench_deploy/**/*.bak
 wrench_deploy/**/*.bak*
 wrench_deploy/node_modules
-
-# Hobby plan caps a deployment at 12 Serverless Functions; api/ has 13.
-# obd.py is a stub that can't work in the cloud (OBD-II needs the local
-# wrench_serve.py + a physical ELM327 adapter), so it's excluded here.
-# The client's fetch().catch() already shows the correct "run it locally" message.
-wrench_deploy/api/obd.py
