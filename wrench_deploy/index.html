@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-05-30-landing-v1">
+<meta name="kyr-version" content="2026-05-30-landing-v2">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -528,6 +528,7 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
     </select>
     <div class="g-count" id="g-count">- VEHICLES</div>
   </div>
+  <div id="kyr-sample" style="max-width:880px;margin:0 0 16px;background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:13px 16px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px"><div style="font-weight:700;font-size:15px;color:var(--text)">2020 Toyota Camry</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);background:var(--p2,#1c1c1c);border:1px solid var(--border);padding:3px 9px;border-radius:100px">Sample Data</div></div><div style="display:flex;gap:12px;margin-bottom:13px"><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#128738; 0W-20 Full Synthetic</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Oil Type</div></div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#128295; 14mm &middot; M12x1.25</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Drain Plug</div></div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#9888;&#65039; 0 Open Recalls</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Recall Status</div></div></div><button onclick="openModal(12802)" style="width:100%;background:var(--accent);color:#000;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:13px;cursor:pointer">See Full Specs for This Car &#8594;</button></div>
   <div id="g-onboard" class="g-onboard"><div class="g-onboard-arrow">&#8593;</div><div><div class="g-onboard-h">Search for your car above to get started</div><div class="g-onboard-sub">Type a year, make, or model &mdash; or pick from the dropdowns above</div></div></div>
   <div class="vgrid" id="vgrid"></div>
 </div>
@@ -616,7 +617,6 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
 
 <div class="overlay" id="overlay">
   <div class="modal">
-    <div id="m-demo-banner" style="display:none;margin:0 0 6px;padding:9px 12px;background:#3a2e00;border:1px solid #e0a23b;border-radius:8px;color:#ffd97a;font-size:12.5px;line-height:1.45"></div>
     <div class="m-top">
       <button class="m-back" onclick="backToSearch()">&#8592; Change Vehicle</button>
       <div class="m-title" id="m-title">-</div>
@@ -1210,10 +1210,9 @@ var MTABS=['oil','parts','fluids','maint','perf','safety','warranty','comps'];
 var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG','Safety & Rel.','Warranty & Recalls','Complaints'];
 var curTab='oil';
 
-var KYR_DEMO_ID=12802;
-function openModal(vid,demo){
+function openModal(vid){
   var v=VEH[vid];if(!v)return;
-  document.getElementById('m-title').innerHTML=v.year+' '+v.make+' <em>'+v.model+'</em>';var __b=document.getElementById('m-demo-banner');if(demo){if(__b){__b.innerHTML='&#128203; Demo &mdash; showing 2020 Toyota Camry &middot; Search your car above to load your specs';__b.style.display='block';}}else{if(__b)__b.style.display='none';try{sessionStorage.setItem('kyr_last_vehicle',vid);}catch(e){}}
+  document.getElementById('m-title').innerHTML=v.year+' '+v.make+' <em>'+v.model+'</em>';try{sessionStorage.setItem('kyr_last_vehicle',vid);}catch(e){}var __sc=document.getElementById('kyr-sample');if(__sc)__sc.style.display='none';
   curTab='oil';renderMTabs(v);renderMBody(v);
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
@@ -1230,7 +1229,6 @@ function renderMBody(v){
   document.getElementById('m-body').innerHTML=fns[curTab](v);
 }
 
-function kyrAutoLoad(){var last=null;try{last=sessionStorage.getItem('kyr_last_vehicle');}catch(e){}if(last&&VEH[last]){openModal(last,false);}else if(VEH[KYR_DEMO_ID]){openModal(KYR_DEMO_ID,true);}}
 function closeModal(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';}
 
 function lookupCode(){
@@ -1252,7 +1250,7 @@ document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('cl-input').addEventListener('keydown',function(e){if(e.key==='Enter')lookupCode();});
   document.querySelectorAll('.cl-q').forEach(function(b){b.addEventListener('click',function(){document.getElementById('cl-input').value=b.textContent;lookupCode();});});
   lookupCode();
-  kyrAutoLoad();
+  try{var __lv=sessionStorage.getItem('kyr_last_vehicle');if(__lv&&VEH[__lv])openModal(__lv);}catch(e){}
 });
 
 </script>
