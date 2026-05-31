@@ -72,6 +72,46 @@ def snippet(text, limit=200):
     return cut.rstrip(",;:- ") + "..."
 
 
+# make-name variants for locating a brand mention inside a recall summary
+MAKE_TOKENS = {
+    "Rolls-Royce": ["rolls-royce", "rolls royce"],
+    "Mercedes-Benz": ["mercedes"],
+    "Land Rover": ["land rover", "range rover"],
+    "Alfa Romeo": ["alfa romeo"],
+    "Infiniti": ["infiniti", "infinity"],
+}
+
+
+def recall_excerpt(text, make, model, limit=180):
+    """Excerpt a recall summary so it reads about THIS vehicle.
+
+    Many recalls are filed under a parent company and open with a long list of
+    sibling-brand models (e.g. a BMW recall that also covers the Rolls-Royce
+    Ghost). Find the first mention of this vehicle's make or model and start the
+    excerpt 50 chars before it, so the brand-relevant text is what shows -- not
+    the parent-company opening.
+    """
+    t = clean(text)
+    low = t.lower()
+    needles = list(MAKE_TOKENS.get(make, [make.lower()]))
+    if model:
+        needles.insert(0, model.lower())  # prefer the model mention
+    pos = -1
+    for n in needles:
+        if not n:
+            continue
+        p = low.find(n)
+        if p != -1 and (pos == -1 or p < pos):
+            pos = p
+    start = 0 if pos < 0 else max(0, pos - 50)
+    body = t[start:start + limit]
+    if " " in body and start + limit < len(t):
+        body = body[:body.rfind(" ")]
+    prefix = "..." if start > 0 else ""
+    suffix = "..." if (start + len(body)) < len(t) else ""
+    return prefix + body.strip(" ,;:-") + suffix
+
+
 def words(text):
     return len(re.findall(r"[A-Za-z0-9']+", text))
 
@@ -153,9 +193,9 @@ def main():
         maint.setdefault(r["vehicle_id"], []).append(r)
 
     recalls = {r[0]: r[1] for r in cur.execute("SELECT vehicle_id, COUNT(*) FROM recalls GROUP BY vehicle_id")}
-    recall_sample = {}
-    for r in cur.execute("SELECT vehicle_id, component, summary FROM recalls"):
-        recall_sample.setdefault(r["vehicle_id"], r)
+    recall_rows = {}  # vid -> list of summary strings (all recalls kept; data is not altered)
+    for r in cur.execute("SELECT vehicle_id, summary FROM recalls WHERE summary IS NOT NULL AND summary<>''"):
+        recall_rows.setdefault(r["vehicle_id"], []).append(r["summary"])
 
     complaint_total = {r[0]: r[1] for r in cur.execute("SELECT vehicle_id, COUNT(*) FROM complaints GROUP BY vehicle_id")}
     complaint_comp = {}
@@ -355,6 +395,10 @@ def main():
                 cap = f", {o['capacity_with_filter']} qt with a new filter" if o["capacity_with_filter"] else ""
                 mt.append(f"It takes {' '.join(bits)}{cap}"
                           + (f" meeting {clean(o['oem_spec'])}" if o["oem_spec"] else "") + ".")
+            else:
+                mt.append("Verified engine oil viscosity and capacity for this vehicle are not in our "
+                          "database - consult the owner's manual or manufacturer service schedule for the "
+                          "correct oil specification.")
             fl = fluids.get(vid)
             if fl:
                 fb = []
@@ -400,10 +444,16 @@ def main():
                 ni.append(f"A representative report reads: \"{snippet(samp, 160)}\"")
         rc = recalls.get(vid, 0)
         if rc:
-            rsamp = recall_sample.get(vid)
             line = f"There {'is' if rc == 1 else 'are'} {rc} safety recall{'' if rc == 1 else 's'} on record"
-            if rsamp and rsamp["summary"]:
-                line += f"; one covers: {snippet(rsamp['summary'], 150)}"
+            sums = recall_rows.get(vid, [])
+            # prefer a recall whose summary actually names this vehicle's model/make,
+            # so multi-brand campaigns read about THIS car (not a parent-company opening)
+            needles = [model.lower()] + MAKE_TOKENS.get(make, [make.lower()])
+            chosen_sum = next((s for s in sums if any(n and n in s.lower() for n in needles)), None)
+            if chosen_sum is None and sums:
+                chosen_sum = sums[0]
+            if chosen_sum:
+                line += f"; one covers: {recall_excerpt(chosen_sum, make, model, 150)}"
             ni.append(line + ".")
         rl = reliab.get(vid)
         if rl and rl["rating"] and not cp and not ct:
@@ -604,7 +654,7 @@ def main():
             if f0 and f0["annual_fuel_cost"]:
                 srow("Est. annual charging", f"${f0['annual_fuel_cost']:,}")
         else:
-            if o:
+            if o and (o["viscosity"] or o["oil_type"] or o["capacity_with_filter"]):
                 if o["viscosity"]:
                     srow("Oil viscosity", clean(o["viscosity"]))
                 if o["oil_type"]:
@@ -615,6 +665,8 @@ def main():
                     srow("OEM oil spec", clean(o["oem_spec"]))
                 if ofilt and ofilt.get("part_number"):
                     srow("Oil filter", f"{ofilt.get('brand','')} {ofilt['part_number']}".strip())
+            else:
+                srow("Engine oil", "See owner's manual")
             if f0 and f0["combined_mpg"]:
                 srow("EPA combined", f"{f0['combined_mpg']} MPG")
         if p and p["tire_size"]:
