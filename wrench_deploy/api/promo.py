@@ -1,8 +1,10 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import os
+import re
 import time
 import uuid
+import datetime
 
 try:
     from upstash_redis import Redis
@@ -12,6 +14,11 @@ except Exception:
 # Valid promo codes -> days of free Pro access. Validated server-side so the code
 # list is not exposed in the client bundle.
 VALID = {"BETA2026": 30}
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+MAX_USES = 500                        # max total redemptions per code
+# Codes are dead after this date (UTC).
+PROMO_EXPIRY = int(datetime.datetime(2026, 8, 31, 23, 59, 59, tzinfo=datetime.timezone.utc).timestamp())
+LIMIT_MSG = "Promo code expired or limit reached"
 
 
 def _redis():
@@ -38,14 +45,29 @@ class handler(BaseHTTPRequestHandler):
         days = VALID.get(code)
         if not days:
             return self._send(200, {"ok": False, "error": "Invalid promo code."})
+        # Expired?
+        if time.time() > PROMO_EXPIRY:
+            return self._send(200, {"ok": False, "error": LIMIT_MSG})
+        # Require a valid email to redeem (ties each redemption to an identity).
+        email = str(body.get("email") or "").strip().lower()
+        if not EMAIL_RE.match(email):
+            return self._send(200, {"ok": False, "error": "A valid email is required to redeem a promo code."})
+        r = _redis()
+        # Enforce the total-redemption cap.
+        if r is not None:
+            try:
+                uses = int(r.get(f"promo:{code}:count") or 0)
+            except Exception:
+                uses = 0
+            if uses >= MAX_USES:
+                return self._send(200, {"ok": False, "error": LIMIT_MSG})
         until = int(time.time()) + days * 86400
         # Record the activation in Redis (per-device token), TTL = the grant window.
-        r = _redis()
         if r is not None:
             try:
                 token = (str(body.get("token") or "").strip() or uuid.uuid4().hex)[:64]
                 r.set(f"promo:{code}:{token}", str(until), ex=days * 86400)
-                r.incr(f"promo:{code}:uses")
+                r.incr(f"promo:{code}:count")
             except Exception:
                 pass
         return self._send(200, {"ok": True, "days": days, "until": until,

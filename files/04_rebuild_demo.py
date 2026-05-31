@@ -147,7 +147,10 @@ def build_data(cur):
         {"mid": r["maintenance_id"], "type": r["part_type"], "brand": r["brand"],
          "pn": r["part_number"], "desc": r["description"], "qty": r["qty"]}))
 
-    # complaints: cap to CAP most-recent per vehicle, keep total count
+    # complaints: cap to CAP most-recent per vehicle, keep total count.
+    # NOTE: these complaint narratives are NHTSA ODI data — PUBLIC DOMAIN U.S. Government
+    # records (NHTSA pre-redacts complainant identity/VIN). They ship in the public data
+    # file (data.<hash>.js); attribution is in the footer + privacy.html.
     with_comps = 0
     if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='complaints'").fetchone():
         raw = {}

@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-05-30-landing-v2">
+<meta name="kyr-version" content="2026-05-30-audit-v2-fixes">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -272,10 +272,10 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
 .gh-cache{font-size:9px;color:var(--faint);margin-top:6px;font-style:italic}
 </style>
 <!--KYR_META-->
-<meta name="description" content="Free vehicle maintenance specs for 3,360 vehicles. Oil specs, parts, torque, DTC codes, recalls and more.">
+<meta name="description" content="Free vehicle maintenance specs for 3,540 vehicles. Exact oil specs, drain plug sizes, DTC codes, recalls and more.">
 <link rel="canonical" href="https://knowyourride.net/">
 <meta property="og:title" content="Know Your Ride - Vehicle Maintenance Reference">
-<meta property="og:description" content="Free vehicle maintenance specs for 3,360 vehicles. Oil specs, parts, torque, DTC codes, recalls and more.">
+<meta property="og:description" content="Free vehicle maintenance specs for 3,540 vehicles. Exact oil specs, drain plug sizes, DTC codes, recalls and more.">
 <meta property="og:url" content="https://knowyourride.net/">
 <meta property="og:type" content="website">
 <style>
@@ -602,6 +602,17 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
     <div class="feat"><h3>48 MAKES &middot; 45 YEARS</h3><p>1981-2026 coverage across mainstream, luxury, performance, and discontinued brands.</p></div>
   </div>
 
+  <div class="kyr-account" style="margin:28px 0 6px;border-top:1px solid var(--border);padding-top:18px">
+<div class="sec-head">Account</div>
+<p class="about-sub" style="margin:0 0 10px">Permanently delete your Know Your Ride account and all saved vehicles, mileage, and service logs. This cannot be undone.</p>
+<button onclick="kyrShowDelete()" style="background:transparent;border:1px solid var(--red);color:var(--red);font-size:13px;font-weight:600;padding:9px 16px;border-radius:8px;cursor:pointer">Delete My Account</button>
+<div id="kyr-del-form" style="display:none;margin-top:14px;max-width:360px">
+<input id="kyr-del-email" type="email" placeholder="Account email" autocomplete="off" style="width:100%;background:var(--p2,#111);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;margin-bottom:8px;font-size:13px">
+<input id="kyr-del-pw" type="password" placeholder="Password" autocomplete="off" style="width:100%;background:var(--p2,#111);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;margin-bottom:8px;font-size:13px">
+<button onclick="kyrDeleteAccount()" style="width:100%;background:var(--red);color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:13px;cursor:pointer">Permanently Delete My Account</button>
+<div id="kyr-del-note" style="font-size:12px;color:var(--faint);margin-top:8px;line-height:1.5"></div>
+</div>
+</div>
   <div class="founder">
     <p class="founder-mission">Know Your Ride exists to put dealership-level vehicle knowledge in every driver's pocket &mdash; <strong>completely free</strong>. No subscriptions, no paywalls, just the specs you need to maintain your vehicle with confidence.</p>
     <div class="founder-card">
@@ -1010,7 +1021,7 @@ function closePricing(){var o=document.getElementById('pp-overlay');if(o){o.clas
 function proUnlock(label,sub){return '<div class="pro-unlock"><div class="lk">&#128274; '+label+'</div>'+(sub?'<div class="sm">'+sub+'</div>':'')+'<button class="pro-cta" onclick="openPricing()">Unlock with Pro</button></div>';}
 function restorePro(){var em=(document.getElementById('pp-restore-email').value||'').trim().toLowerCase();var note=document.getElementById('pp-note');if(!em){note.textContent='Enter the email you subscribed with.';return;}note.textContent='Checking...';fetch('/api/verify-subscription?email='+encodeURIComponent(em)).then(function(r){return r.json();}).then(function(d){if(d&&d.subscribed){kyrSetPro();note.style.color='var(--green)';note.textContent='Pro restored. Reloading...';setTimeout(function(){location.reload();},700);}else{note.textContent='No active subscription found for that email.';}}).catch(function(){note.textContent='Could not verify right now. Please try again.';});}
 function kyrPromoToken(){try{var t=localStorage.getItem('kyr_token');if(!t){t=Date.now().toString(36)+Math.random().toString(36).slice(2);localStorage.setItem('kyr_token',t);}return t;}catch(e){return '';}}
-function applyPromo(){var code=(document.getElementById('pp-promo-input').value||'').trim();var note=document.getElementById('pp-promo-note');if(!code){note.textContent='Enter a promo code.';return;}note.style.color='';note.textContent='Checking...';fetch('/api/promo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,token:kyrPromoToken()})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){kyrSetPro();try{localStorage.setItem('kyr_pro_until',String(d.until));}catch(e){}note.style.color='var(--green)';note.textContent=d.message||'Pro access unlocked for 30 days!';setTimeout(function(){location.reload();},1100);}else{note.style.color='';note.textContent=(d&&d.error)||'Invalid promo code.';}}).catch(function(){note.textContent='Could not check the code right now.';});}
+function applyPromo(){var code=(document.getElementById('pp-promo-input').value||'').trim();var em=(document.getElementById('pp-promo-email').value||'').trim();var note=document.getElementById('pp-promo-note');if(!code){note.textContent='Enter a promo code.';return;}if(!em||em.indexOf('@')<1){note.style.color='';note.textContent='Enter a valid email to redeem.';return;}note.style.color='';note.textContent='Checking...';fetch('/api/promo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,email:em,token:kyrPromoToken()})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){kyrSetPro();try{localStorage.setItem('kyr_pro_until',String(d.until));}catch(e){}note.style.color='var(--green)';note.textContent=d.message||'Pro access unlocked for 30 days!';setTimeout(function(){location.reload();},1100);}else{note.style.color='';note.textContent=(d&&d.error)||'Invalid promo code.';}}).catch(function(){note.textContent='Could not check the code right now.';});}
 function kyrToast(msg){var t=document.createElement('div');t.className='kyr-toast';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.classList.add('show');},40);setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},450);},5000);}
 function renderMaintGated(v){if(kyrPro()||!v.maint||v.maint.length<=3)return renderMaint(v);var clone={};for(var k in v)clone[k]=v[k];clone.maint=v.maint.slice(0,3);return renderMaint(clone)+proUnlock('Unlock the full maintenance schedule','Showing 3 of '+v.maint.length+' service intervals. Pro unlocks the rest plus regional service costs.');}
 function kyrInitPaywall(){var p=new URLSearchParams(location.search);if(p.get('success')==='true'){kyrSetPro();kyrToast('Welcome to Pro. All features unlocked.');history.replaceState({},'',location.pathname);}else if(p.get('canceled')==='true'){history.replaceState({},'',location.pathname);}var b=document.getElementById('go-pro-btn');if(b&&kyrPro()){b.classList.add('is-pro');b.innerHTML='&#9733; Pro';b.onclick=null;}}
@@ -1298,7 +1309,7 @@ document.addEventListener('DOMContentLoaded',function(){
       </div>
     </div>
     <div class="pp-promo">
-      <input id="pp-promo-input" type="text" placeholder="Have a promo code?" autocomplete="off">
+      <input id="pp-promo-email" type="email" placeholder="Your email" autocomplete="off" style="margin-bottom:6px"><input id="pp-promo-input" type="text" placeholder="Have a promo code?" autocomplete="off">
       <button class="pp-promo-btn" onclick="applyPromo()">Apply</button>
     </div>
     <div class="pp-note" id="pp-promo-note"></div>
@@ -1322,7 +1333,7 @@ document.addEventListener('DOMContentLoaded',function(){
     As an Amazon Associate we earn from qualifying purchases. All specifications are for reference only &mdash; always verify against your owner's manual or factory service manual before performing any repair.
   </div>
 </footer>
-<div id="kyr-save-banner" onclick="kyrSaveBannerGo()" style="display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999;max-width:560px;width:calc(100% - 32px);align-items:center;gap:12px;background:var(--panel);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:10px;padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.55);cursor:pointer;font-family:'Manrope',sans-serif"><div style="flex:1;font-size:13px;color:var(--text);line-height:1.45">&#128190; Save this vehicle to your garage &mdash; search faster next time. <span style="color:var(--accent);font-weight:700">Sign up for free &#8594;</span></div><button onclick="kyrDismissSaveBanner(event)" aria-label="Dismiss" style="flex:none;background:none;border:none;color:var(--faint);font-size:18px;line-height:1;cursor:pointer;padding:2px 4px">&#10005;</button></div>
+<div id="kyr-save-banner" onclick="kyrSaveBannerGo()" style="display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999;max-width:560px;width:calc(100% - 32px);align-items:center;gap:12px;background:var(--panel);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:10px;padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.55);cursor:pointer;font-family:'Manrope',sans-serif"><div style="flex:1;font-size:13px;color:var(--text);line-height:1.45">&#128190; Save this vehicle to your garage &mdash; search faster next time. <span style="color:var(--accent);font-weight:700">Save your car free &mdash; no credit card needed &#8594;</span></div><button onclick="kyrDismissSaveBanner(event)" aria-label="Dismiss" style="flex:none;background:none;border:none;color:var(--faint);font-size:18px;line-height:1;cursor:pointer;padding:2px 4px">&#10005;</button></div>
 <script>/*WRENCH_SAVEBANNER*/
 (function(){var _t=null,KEY='kyr_save_banner_done';
 function done(){try{return sessionStorage.getItem(KEY)==='1';}catch(e){return false;}}
@@ -1334,6 +1345,23 @@ function showBanner(){var b=document.getElementById('kyr-save-banner'),ov=docume
 if(typeof window.openModal==='function'){var _om=window.openModal;window.openModal=function(){var r=_om.apply(this,arguments);if(_t){clearTimeout(_t);_t=null;}if(!done()&&eligible()){_t=setTimeout(showBanner,20000);}return r;};}
 if(typeof window.closeModal==='function'){var _cm=window.closeModal;window.closeModal=function(){if(_t){clearTimeout(_t);_t=null;}var b=document.getElementById('kyr-save-banner');if(b)b.style.display='none';return _cm.apply(this,arguments);};}
 })();
+</script>
+<script>/*WRENCH_DELACCT*/
+function kyrShowDelete(){var f=document.getElementById('kyr-del-form');if(f)f.style.display=(!f.style.display||f.style.display==='none')?'block':'none';}
+function kyrDeleteAccount(){
+var em=(document.getElementById('kyr-del-email').value||'').trim();
+var pw=(document.getElementById('kyr-del-pw').value||'');
+var note=document.getElementById('kyr-del-note');
+if(!em||!pw){note.style.color='var(--red)';note.textContent='Enter your account email and password.';return;}
+if(!confirm('Permanently delete your account and all saved data? This cannot be undone.'))return;
+note.style.color='';note.textContent='Deleting your account...';
+fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',email:em,password:pw})}).then(function(r){return r.json();}).then(function(d){
+if(!d||!d.ok||!d.token){note.style.color='var(--red)';note.textContent=(d&&d.error)||'Could not verify your credentials.';return;}
+return fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete-account',token:d.token})}).then(function(r){return r.json();}).then(function(x){
+if(x&&x.ok){try{localStorage.removeItem('kyr_pro');localStorage.removeItem('kyr_pro_until');localStorage.removeItem('kyr_token');}catch(e){}note.style.color='var(--green)';note.textContent='Your account and all data have been permanently deleted.';var f=document.getElementById('kyr-del-form');if(f)f.style.display='none';}
+else{note.style.color='var(--red)';note.textContent=(x&&x.error)||'Could not delete account. Please email hello@knowyourride.net.';}});
+}).catch(function(){note.style.color='var(--red)';note.textContent='Could not reach the server. Please try again or email hello@knowyourride.net.';});
+}
 </script>
 </body>
 </html>

@@ -31,8 +31,8 @@ try:
 except Exception:
     Redis = None
 
-PRO_VEHICLE_CAP = 3
-FREE_VEHICLE_CAP = 0
+PRO_VEHICLE_CAP = 5
+FREE_VEHICLE_CAP = 1
 VIN_RE = re.compile(r"^[A-HJ-NPR-Z0-9]{17}$")  # No I/O/Q in real VINs.
 
 
@@ -177,6 +177,8 @@ class handler(BaseHTTPRequestHandler):
             if vin and v.get("vin") == vin:
                 return self._send(409, {"ok": False, "error": "That VIN is already in your garage."})
         if len(vehicles) >= cap:
+            if tier != "pro":
+                return self._send(402, {"ok": False, "error": "Upgrade to Pro to save up to %d vehicles →" % PRO_VEHICLE_CAP})
             return self._send(402, {"ok": False, "error": "Garage is full (%d of %d). Remove one to add another." % (len(vehicles), cap)})
 
         rec = {
