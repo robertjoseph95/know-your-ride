@@ -80,6 +80,11 @@ def build_data(cur):
         "plug_qty": r["spark_plug_qty"], "batt_group": r["battery_group"],
         "batt_cca": r["battery_cca"], "tire": r["tire_size"],
         "tnote": (r["tire_size_note"] if "tire_size_note" in r.keys() else None),
+        "batt_notes": (r["battery_notes"] if "battery_notes" in r.keys() else None),
+        "timing_type": (r["timing_type"] if "timing_type" in r.keys() else None),
+        "timing_notes": (r["timing_notes"] if "timing_notes" in r.keys() else None),
+        "rw_int": (r["real_world_interval_miles"] if "real_world_interval_miles" in r.keys() else None),
+        "rw_notes": (r["real_world_notes"] if "real_world_notes" in r.keys() else None),
         "psi_f": r["tire_pressure_front"], "psi_r": r["tire_pressure_rear"],
         "plugs": pj(r["spark_plugs_json"]), "air": pj(r["air_filters_json"]),
         "cabin": pj(r["cabin_filters_json"]), "wipers": pj(r["wiper_blades_json"]),
@@ -93,6 +98,11 @@ def build_data(cur):
 
     each("torque_specs", lambda d, r: d.setdefault("torque", []).append(
         {"comp": r["component"], "ft": r["torque_ft_lbs"], "nm": r["torque_nm"], "notes": r["notes"]}))
+
+    # vehicle_notes (known issues, jack points, DIY tips) -> rendered in the Parts tab
+    if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='vehicle_notes'").fetchone():
+        each("vehicle_notes", lambda d, r: d.setdefault("notes", []).append(
+            {"type": r["note_type"], "title": r["title"], "body": r["body"], "from_mi": r["applies_from_miles"]}))
 
     each("recalls", lambda d, r: d.setdefault("recalls", []).append(
         {"camp": r["campaign_number"], "comp": r["component"], "sum": r["summary"],
