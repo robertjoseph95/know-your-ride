@@ -680,7 +680,7 @@ function ghMd(t){
 function renderHowToDoIt(v){
   var btns=GH_SVCS.map(function(s){return '<button class="gh-svc" data-svc="'+s+'" onclick="ghLoad(this)">'+s+'</button>';}).join('');
   return '<div class="gh-wrap" data-vid="'+ghEsc(v.id)+'"><div class="sec-head">How To Do It</div>'
-    +'<div class="gh-banner">&#9888; AI-generated guide — always verify specs before use. Consult a professional for safety-critical work.</div>'
+    +'<div class="gh-banner">&#9888; AI-generated guide — always verify specs against your owner\'s manual or factory service manual before use. Consult a professional for safety-critical work.</div>'
     +'<div class="gh-svcs">'+btns+'</div>'
     +'<div id="gh-results"><div class="gh-hint">Pick a service to generate a step-by-step guide for this vehicle.</div></div></div>';
 }
@@ -1707,6 +1707,14 @@ def main():
     html = inject_logo(html)
     html = inject_footer(html)
     html = inject_dtc_disclaimer(html)
+    # Trim unused Google Fonts weight (Manrope 300 is never referenced in CSS) — audit LOW perf.
+    html = html.replace("family=Manrope:wght@300;400;500;600;700;800",
+                        "family=Manrope:wght@400;500;600;700;800")
+    # Expand the AI-guide banner to cite the owner/service manual (audit LOW 3.3-B). Migration
+    # replace because inject_guides is idempotent and won't update already-injected text.
+    # (Apostrophe-free wording: the banner lives inside a single-quoted JS string.)
+    html = html.replace("AI-generated guide - always verify specs before use.",
+                        "AI-generated guide - always verify specs against your owner manual or the factory service manual before use.")
     html = fix_js_quotes(html)
 
     # 3) refresh the badge

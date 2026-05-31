@@ -54,9 +54,24 @@ class handler(BaseHTTPRequestHandler):
         email = (q.get("email") or [""])[0].strip().lower()
         if not email:
             return self._send(400, {"subscribed": False, "error": "email parameter required"})
+        r = _redis()
+        # Per-IP rate limit (LOW audit fix). This endpoint accepts an email for the
+        # "restore Pro on a new device" flow, so it cannot require auth — instead we
+        # cap requests per IP to prevent bulk subscriber-status enumeration.
+        if r is not None:
+            ip = (self.headers.get("X-Forwarded-For") or self.headers.get("x-forwarded-for")
+                  or self.client_address[0] or "unknown").split(",")[0].strip()
+            rk = "vsub:ip:" + ip
+            try:
+                n = r.incr(rk)
+                if n == 1:
+                    r.expire(rk, 3600)
+                if n > 20:
+                    return self._send(429, {"subscribed": False, "error": "Too many requests. Please try again in a bit."})
+            except Exception:
+                pass
         if email in _whitelist():
             return self._send(200, {"subscribed": True, "email": email, "whitelisted": True})
-        r = _redis()
         if r is not None:
             try:
                 v = r.get("sub:" + email)
@@ -80,7 +95,7 @@ class handler(BaseHTTPRequestHandler):
         body = json.dumps(obj).encode()
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Origin", "https://knowyourride.net")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)

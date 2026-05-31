@@ -3,6 +3,7 @@ import json
 import os
 import re
 import sys
+import datetime
 import urllib.parse
 import requests
 
@@ -55,6 +56,19 @@ class handler(BaseHTTPRequestHandler):
                 cached = r.get(cache_key)
                 if cached:
                     return self._send(200, {"videos": json.loads(cached), "cached": True})
+            except Exception:
+                pass
+        # Per-IP daily cap on cache MISSES (LOW audit fix) to protect the YouTube quota.
+        if r:
+            ip = (self.headers.get("X-Forwarded-For") or self.client_address[0] or "unknown").split(",")[0].strip()
+            day = datetime.datetime.utcnow().strftime("%Y-%m-%d")
+            ipk = f"yt:ip:{day}:{ip}"
+            try:
+                n = r.incr(ipk)
+                if n == 1:
+                    r.expire(ipk, 60 * 60 * 48)
+                if n > 50:
+                    return self._send(429, {"videos": [], "error": "Daily video-search limit reached. Please try again tomorrow."})
             except Exception:
                 pass
         try:
@@ -113,7 +127,7 @@ class handler(BaseHTTPRequestHandler):
         body = json.dumps(obj).encode()
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
-        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Origin", "https://knowyourride.net")
         self.send_header("Content-Length", str(len(body)))
         self.end_headers()
         self.wfile.write(body)
