@@ -396,9 +396,8 @@ def main():
                 mt.append(f"It takes {' '.join(bits)}{cap}"
                           + (f" meeting {clean(o['oem_spec'])}" if o["oem_spec"] else "") + ".")
             else:
-                mt.append("Verified engine oil viscosity and capacity for this vehicle are not in our "
-                          "database - consult the owner's manual or manufacturer service schedule for the "
-                          "correct oil specification.")
+                mt.append("Oil specifications for this vehicle should be verified with your owner's "
+                          "manual or authorized dealer.")
             fl = fluids.get(vid)
             if fl:
                 fb = []
@@ -549,11 +548,13 @@ def main():
             wb = next((w for w in warr.get(vid, []) if w["warranty_type"] == "ev_battery"), None)
             if wb:
                 bits.append(f"{wb['months']//12}yr battery warranty")
-        else:
+        has_oil = False
+        if not ev:
             eo = engine_options(vid, v)
             if eo:
                 bits.append(eo[0])
             o = oil.get(vid)
+            has_oil = bool(o and (o["viscosity"] or o["oil_type"] or o["capacity_with_filter"]))
             if o and o["viscosity"]:
                 bits.append(f"{clean(o['viscosity'])} oil")
             if f0 and f0["combined_mpg"]:
@@ -569,8 +570,13 @@ def main():
             d = f"{lead}: {', '.join(bits[:4])}. "
         else:
             d = f"{lead} maintenance reference. "
-        d += ("Charging, battery, common issues & service specs." if ev
-              else "Oil specs, maintenance schedule, recalls & repair data.")
+        if ev:
+            d += "Charging, battery, common issues & service specs."
+        elif has_oil:
+            d += "Oil specs, maintenance schedule, recalls & repair data."
+        else:
+            # oil specs not on record (e.g. nulled exotic fallback) -- don't claim them
+            d += "Maintenance schedule, recalls & specs."
         d += " Free on Know Your Ride."
         return d[:300]
 
