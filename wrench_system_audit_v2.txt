@@ -1,0 +1,338 @@
+╔══════════════════════════════════════════════════════════════════════════╗
+║        KNOW YOUR RIDE — FULL SYSTEM AUDIT (v2, POST-FIX VERIFICATION)       ║
+║        Date: 2026-05-31   |   READ-ONLY (no fixes applied)                  ║
+║        DB: wrench_vehicles.db (3,540 vehicles)  |  Live: knowyourride.net   ║
+║        Deployed: kyr-version 2026-05-30-landing-v2 | index 114.8 KB         ║
+╚══════════════════════════════════════════════════════════════════════════╝
+
+────────────────────────────────────────────────────────────────────────────
+EXECUTIVE SUMMARY
+────────────────────────────────────────────────────────────────────────────
+  Prior fixes still holding : 28 / 28   (all v1 HIGH+MEDIUM+LOW verified)
+  Regressions found         : 0
+  New findings              : 11   (0 CRITICAL, 0 HIGH, 5 MEDIUM, 6 LOW)
+  Overall health score      : 89 / 100
+
+VERDICT: The app is in strong shape. Every fix from the first audit (two fix
+passes: HIGH+MEDIUM, then LOW) is intact after all subsequent rebuilds — no
+regressions. Security fundamentals (scrypt, CSPRNG sessions, login throttle,
+Stripe signature verify, fixed-origin CORS, budget caps, delete-account erasure)
+all verified LIVE via active tests. The 11 new findings are product/ops
+refinements, not vulnerabilities — the most actionable are a stale SEO meta
+description (still says 3,360 vehicles) and a messaging mismatch (the new
+"Sign up for free" garage banner vs garage being Pro-gated at free-cap 0).
+
+Score rationale: 100 base; −0 (no regressions, all prior fixes hold, no
+CRITICAL/HIGH); −~11 for the new MEDIUM/LOW items (promo cap, data bundling,
+no delete-UI, stale meta, garage messaging, + 6 LOW).
+
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+SECTION 1 — PRIOR-FIX VERIFICATION  (28/28 HOLDING)
+╚═══════════════════════════════════════════════════════════════════════════╝
+Method: direct DB queries + live fetch of deployed index.html / endpoints.
+
+HIGH (6/6 PASS):
+  PASS  EV cleanup — EVs with oil_change rows=0, spark-plug parts=0, drain
+        torque_specs=0, drain_bolt_json non-empty=0 (135 EVs).            [Data]
+  PASS  MPGe labeling — EV fuel rows with combined_mpg set=0; 622 EV rows
+        carry mpge instead.                                               [Data]
+  PASS  Exotic tire fallback — Ferrari/Lambo/Rolls/Bentley/Aston/McLaren
+        with non-null tire_size = 0; 215/55R17 on exotics = 0.            [Data]
+  PASS  Terms/Privacy footer — both linked in deployed index.html.        [Legal]
+  PASS  Delete-account — works LIVE (see §3 active test: deleted, keys
+        purged, session invalidated). NOTE: implemented as a delete-account
+        ACTION in api/auth.py, NOT a separate api/delete-account.py file
+        (correct design; the checklist's filename assumption is moot).    [Sec]
+  PASS  Page split — index.html 114.8 KB (<200 KB); data.585d2bb2.js served
+        Cache-Control: public, max-age=31536000, immutable.               [Perf]
+
+MEDIUM (verified PASS):
+  PASS  TSB cap — max TSBs per vehicle = 200; vehicles >200 = 0.          [Data]
+  PASS  Coolant/brake — non-EV (year>=2000) missing coolant=0, brake=0.   [Data]
+  PASS  EV battery warranty — 135/135 EVs have a battery warranty row.    [Data]
+  PASS  Login throttle — code present (auth.py LOGIN_MAX_FAILS=5/900s) AND
+        verified live: 6th attempt returns HTTP 429 (see §3).             [Sec]
+  PASS  guide.py budget cap — GUIDE_MONTHLY_BUDGET=30.0, gates before the
+        Claude call, returns fallback message.                           [Sec]
+  PASS  DTC disclaimer — amber "Diagnostic codes indicate possible
+        causes..." present in deployed page.                             [Legal]
+  PASS  VIN cache — vin/[vin].py caches NHTSA vPIC decode 30 days in Redis.[Perf]
+  PASS  Exception handling — no raw "{e}" returned to clients in any
+        api/*.py; exceptions logged to stderr, generic message returned.  [Sec]
+
+LOW (verified PASS):
+  PASS  CORS — all 12 api functions set Access-Control-Allow-Origin to
+        https://knowyourride.net (no wildcard); webhook omits ACAO (S2S). [Sec]
+  PASS  Vehicle Finder key — vehicle_finder_api_key ABSENT from
+        wrench_config.json (only a historical docstring mention remains). [Sec]
+  PASS  404 page — live /unknown returns HTTP 404 with the branded
+        "wrong turn" 404.html.                                           [Perf]
+  PASS  Recalls caching — recalls.py caches NHTSA results 24h in Redis.   [Perf]
+
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+SECTION 2 — DATA ACCURACY (new checks)
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+2.1 2026 VEHICLES (180)
+  - oil_change: 147/180 (the 33 without are EVs — 2026 non-EV missing oil = 0). PASS
+  - maintenance schedules: 179/180 (1 without — negligible). PASS
+  - engine_specs: 22/180 (~12% — known vPIC sparsity for 2026; not a bug).
+  - 2026 EVs with oil/spark-plug data: 0. PASS
+  - placeholder data: none detected.
+
+2.2 DRAIN PLUG (drain_bolt_json — what the UI reads)
+  rows=1,714 | socket_size_mm=1,581 | thread_size=1,559 | torque_nm=882 |
+  gasket_type=884 | notes=840.
+  - Non-EV oil rows missing ALL four drain fields: 83.                    [LOW]
+  - EVs with any drain data: 0. PASS
+  > FINDING 2.2 (LOW/Data): torque_nm populated on only 882/1,714 oil rows
+    (~51%) and ~83 non-EV vehicles have no drain data at all. Coverage is
+    partial; not a regression. FIX: continue manual/Dorman backfill of
+    torque + the 83 gaps.
+
+2.3 HONDA / ACURA  (163 oil rows)
+  - M14x1.5 thread: 151/163 ; 17mm socket: 145/163 ; 1.5T aluminum-pan
+    note: only 2/163.
+  > FINDING 2.3 (LOW/Data): Honda/Acura drain specs are MOSTLY but not
+    fully normalized — 12 lack M14x1.5, 18 lack 17mm socket, and the
+    "1.5T turbo aluminum pan" caution is on only 2 rows. Prologue (EV):
+    0 oil rows — PASS. FIX: finish Honda/Acura normalization + add the
+    1.5T aluminum-pan warning to all 1.5T turbo entries.
+
+2.4 EXOTIC DRAIN NOTES — EXCELLENT (all manual research present): PASS
+  - Maserati: thread M22x1.50, 10mm Allen, OEM #104280 (shared Ferrari). ✓
+  - Ferrari:  thread M22x1.50, OEM plug #104280, magnetic, copper washer. ✓
+  - McLaren:  "DRY-SUMP SYSTEM - TWO DRAIN POINTS..." warning present. ✓
+  - Rolls-Royce: M18x1.50, 8mm Allen, BMW N74 V12. ✓
+  - Bentley:  V8 T45 Torx / W12 10mm Allen / OEM #N91167901. ✓
+  - Lamborghini: M14x1.50, 14mm socket, OEM #N91167901 (note: torque_nm
+    is null — the "22 ft-lb" figure isn't in the numeric field). ✓(minor)
+  - Aston Martin: "V12 variant uses M12x1.25 - check your engine" strip
+    warning present. ✓
+
+2.5 FLUIDS
+  - Non-EV (>=2000) missing coolant: 0 ; missing brake: 0. PASS
+  - EVs with engine oil: 0 (oil_change rows deleted for EVs). PASS
+  - Power steering on EPS vehicles: not reliably detectable from schema
+    (no EPS flag); not flagged. (informational)
+
+2.6 MAINTENANCE
+  - Vehicles with 0 maintenance items: 1,693 (these are the older/partial
+    vehicles never given a spec pull — same coverage gap as oil/parts;
+    NOT a regression).                                                    [LOW]
+  - EVs with an oil-change maintenance item: 0. PASS
+  - Max maintenance items/vehicle: 20 (no anomalous outliers). PASS
+
+2.7 ABOUT-SECTION STATS  (DB truth vs displayed)
+  DB truth: vehicles=3,540 | makes=48 | dtc=12,196 | with_recalls=1,557 |
+            with_maintenance=1,847 | years=1981–2026.
+  - Topbar BADGE: "3540 VEHICLES · 48 MAKES · 12196 DTC CODES · 935 WITH
+    COMPLAINTS" — accurate (auto-generated). PASS
+  - About stat cards: Vehicles 3,540 ✓ | Makes 48 ✓ | DTC 12,196 ✓ |
+    With Recalls 1,557 ✓ | With Schedules 1,668.
+  > FINDING 2.7a (LOW/Data): About "With Schedules" shows 1,668 but the DB
+    has 1,847 vehicles with maintenance rows (undercount — the 1,668 value
+    was the one specified during the landing update). FIX: update to 1,847
+    or define "schedules" precisely.
+  > FINDING 2.7b (MEDIUM/SEO): the page <meta name="description"> AND
+    <meta property="og:description"> still read "...for 3,360 vehicles..."
+    — STALE (should be 3,540). The About cards + badge were updated but the
+    head meta tags were not. User-facing in Google results + social shares.
+    FIX: update both meta tags to 3,540 in the base wrench_demo.html head.
+
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+SECTION 3 — SECURITY RE-AUDIT
+╚═══════════════════════════════════════════════════════════════════════════╝
+(Code review of all 12 api/*.py + config + LIVE active tests.)
+
+3.1 SECRETS — PASS. No secrets in tracked/deployed code (git ls-files; only
+  the gitignored, undeployed wrench_config.json holds live keys). VF key
+  removed. All keys read from os.environ; Stripe webhook secret from
+  STRIPE_WEBHOOK_SECRET. README has placeholders only.
+
+3.2 ACCOUNT SYSTEM — LIVE ACTIVE TESTS (all PASS):
+  PASS  Account creation E2E — signup test account -> 200 {ok, tier:free,
+        token}; /me with token -> 200; delete-account -> 200 {deleted,
+        keys_removed:2}; /me after delete -> 401 (session purged). The test
+        account was created and deleted (self-cleaning).
+  PASS  Login throttle — 6 failed logins from one IP: attempts 1-5 -> 401,
+        attempt 6 -> 429 "Too many login attempts." Confirmed working live.
+  PASS  Session invalidation on logout — _logout deletes session:token.
+  PASS  Delete-account purges Redis — verified live (keys_removed, session
+        dead).
+  PASS  PROMO BETA2026 — POST /api/promo -> 200 {ok, days:30, "Pro access
+        unlocked for 30 days!"}. Works.
+  N/V   PRO_WHITELIST (robert.joseph95@yahoo.com) — whitelist LOGIC is
+        present and env-driven (auth.py _whitelist/_tier_for); the test
+        account correctly got tier=free (not whitelisted). The actual env
+        value can't be verified from here without that account's password —
+        owner should confirm by logging in. (Not a finding.)
+
+3.3 API ENDPOINTS — 12 functions (under Vercel Pro limit). Each: auth where
+    needed, error-handling clean (no raw {e}), budget caps on AI endpoints.
+    Full table in the agent detail; highlights:
+      auth (login throttled), garage/garage-logs (Bearer session, 401 w/o),
+      guide ($30/mo cap), identify-part (100/day + per-IP 3 + $50/mo,
+      fail-closed), verify-subscription (per-IP 20/hr), recalls (24h cache),
+      vin (30d cache), webhook (Stripe sig verified), obd (static stub).
+
+3.4 NEW SECURITY FINDINGS:
+  > FINDING 3.4a (MEDIUM/Security): promo.py has NO usage cap, NO expiry,
+    NO auth — BETA2026 grants 30 days Pro to anyone, unlimited times, keyed
+    to a client-supplied device token. (Confirmed live: returns ok every
+    call.) FIX: enforce a max-uses ceiling + expiry per code; bind grants to
+    an authenticated account, not a client token.                        [New]
+  > FINDING 3.4b (MEDIUM/Security): the public 31 MB data.<hash>.js bundles
+    verbatim NHTSA complaint narratives (first-person text). No consumer PII
+    found (emails/phones are manufacturer hotlines; NHTSA pre-redacts), and
+    the catalog is public by design — but the whole corpus is one-request
+    scrapable. FIX: confirm NHTSA redistribution terms; consider serving
+    narratives via the cached /api endpoints instead of the static bundle. [New]
+  > FINDING 3.4c (LOW/Security): rate-limit/throttle keys use client
+    X-Forwarded-For (spoofable on Vercel) — auth.py, verify-subscription,
+    identify-part, youtube. FIX: use the trusted Vercel client IP and/or add
+    a per-account dimension.                                              [New]
+  > FINDING 3.4d (LOW/Security): budget counters use non-atomic get+set
+    (guide.py, identify-part.py) — minor overshoot under concurrency. FIX:
+    use Redis INCRBYFLOAT.                                                [New]
+  > FINDING 3.4e (LOW/Security): live keys sit in plaintext local
+    wrench_config.json (gitignored/undeployed). FIX: rotate periodically;
+    keep prod secrets only in Vercel env.                                 [New]
+  PASS  CORS fixed-origin on all endpoints; Stripe webhook signature
+        verified before processing; no SQL (Redis/HTTP only).            [Sec]
+
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+SECTION 4 — LEGAL & COMPLIANCE RE-AUDIT
+╚═══════════════════════════════════════════════════════════════════════════╝
+  PASS  Affiliate — 0 RockAuto/AutoZone in shell; 0 links to non-Amazon
+        retailers; Amazon tag wrenchapp20-20 confirmed; FTC/"As an Amazon
+        Associate" disclosure present (parts area + footer).             [Legal]
+  PASS  Terms & Privacy — both linked from footer; privacy.html covers GA4,
+        Upstash "United States-based", data deletion/retention (30 days),
+        Stripe/Vercel/Anthropic/NHTSA/EPA; terms.html covers accuracy
+        disclaimer + DIY/repair liability + affiliate (names the tag).    [Legal]
+  PASS  Attribution — footer: "Vehicle data sourced from NHTSA and EPA
+        (U.S. Government, public domain). Know Your Ride is not affiliated
+        with NHTSA, EPA, or any vehicle manufacturer." AI-generated guide
+        disclosed.                                                        [Legal]
+  PASS  Amazon — no product links to non-Amazon domains in the shell.
+        (Note: per-part affiliate_url values live in the data file — a
+        separate data-side spot-check that all resolve to amazon.com is
+        recommended, out of this audit's scope.)
+  > FINDING 4.1 (MEDIUM/Legal+Feature): delete-account works in the backend
+    but has NO self-service UI control — index.html has no "delete account"
+    button; erasure is email-only (documented in privacy.html, so legally
+    acceptable today). FIX: add a "Delete my account" button that calls the
+    existing /api/auth delete-account action.                            [New]
+  > FINDING 4.2 (LOW/Legal): no cookie-consent banner; GA4 loads
+    unconditionally. Mitigated for US by the explicit "we do not sell
+    personal data" stance; relevant only for EU/UK ePrivacy. FIX: add a
+    consent gate for GA4 if courting EU/UK traffic.                      [New]
+
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+SECTION 5 — PERFORMANCE & RELIABILITY
+╚═══════════════════════════════════════════════════════════════════════════╝
+5.1 PAGE LOAD — index.html 114.8 KB (live); data.585d2bb2.js immutable
+    (max-age=31536000) ~31 MB; kyr-version 2026-05-30-landing-v2. The split
+    architecture is holding (returning visitors don't re-download data).
+
+5.2 API HEALTH (live status codes):
+    /api/vin/<vin> .............. 200  (HONDA Accord — vPIC working)
+    /api/recalls ................ 200  (count:3 from NHTSA)
+    /api/youtube ................ 200  (reachable; videos[] empty this call)
+    /api/guide .................. 200  (safety_blocked path, no Claude cost)
+    /api/obd/status ............. 200  (stub: available:false)
+    /api/subscribe?plan=monthly . 303  (redirect to Stripe Checkout)
+    /api/auth?action=me ......... 401  (no session — correct)
+    /api/garage (POST, no token)  401  (auth required — correct)
+    /api/verify-subscription .... 200  (subscribed:false)
+    /api/identify-part (GET) .... 501  (POST-only; reachable)
+    /api/promo (POST) ........... 200  (tested in §3)
+    -> All endpoints reachable and behaving correctly.                   PASS
+
+5.3 REDIS — reachable & healthy: signup/login/garage/delete all succeeded
+    live (they depend on Upstash). Sessions auto-expire (30-day TTL); promo/
+    rate-limit keys carry TTLs. Memory headroom not inspectable from here —
+    check the Upstash console for usage. (informational)
+
+5.4 VERCEL — auto-deploy pipeline HEALTHY: the latest commit (the save-VIN
+    upsell banner, 288a52b) is LIVE (banner present on the page) with no
+    manual deploy. Function count 12 (well under Pro limit). AI endpoints
+    have maxDuration=30 in vercel.json. (informational)
+
+5.5 GOOGLE ANALYTICS — GA4 G-7RE1GC9S5Q present; no other tracking scripts
+    detected.                                                            PASS
+
+5.6 SEO — sitemap.xml 200 (293 KB), robots.txt 200, canonical
+    https://knowyourride.net/ ✓, og:title present ✓.
+    > See FINDING 2.7b: meta description + og:description say "3,360
+      vehicles" (stale). MEDIUM.
+
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+SECTION 6 — FEATURE FUNCTIONALITY
+╚═══════════════════════════════════════════════════════════════════════════╝
+  PASS  Landing — hero (#kyr-hero), sample Camry card (#kyr-sample, opens
+        openModal(12802)), onboard text removed, OBD-II disclaimer present
+        and AFTER the search dropdowns, footer Terms/Privacy. Auto-modal
+        demo (kyrAutoLoad / m-demo-banner) fully removed.
+  PASS  Save-to-garage upsell banner (#kyr-save-banner) — present, armed via
+        setTimeout(showBanner,20000) on openModal, gated to non-Pro +
+        once-per-session. LIVE.
+  PASS  Vehicle lookup — search dropdowns + sort options present; VIN decode
+        works (NHTSA vPIC, live 200); demo Camry data correct.
+  PASS  My Garage — account creation/login/delete verified live; garage
+        endpoints require auth (401 without token).
+  PASS  DTC lookup — lookupCode present; full + partial code search wired;
+        amber disclaimer present; fix-rate rendering present.
+  PASS  Know Your Part — identify-part reachable; budget caps + fail-closed
+        verified in code.
+  PASS  YouTube guides — 30-day Redis cache; graceful partial/fallback.
+  PASS  Stripe — monthly/annual checkout (303 redirect) works; webhook
+        signature-verified; promo restore path present.
+
+  > FINDING 6.1 (MEDIUM/Feature): garage FREE_VEHICLE_CAP = 0 (garage.py:35)
+    — free users can save ZERO vehicles ("My Garage is a Pro feature.
+    Upgrade to save vehicles."), Pro = 3. This CONTRADICTS (a) the expected
+    "free tier can save 1 vehicle", and (b) the NEW upsell banner copy
+    "Save this vehicle to your garage ... Sign up for FREE", which opens the
+    Pro PRICING modal. So the banner promises a free garage that doesn't
+    exist at the free tier. FIX: either raise FREE_VEHICLE_CAP to 1 (so the
+    "free" pitch is honest), or change the banner copy to reflect that
+    saving is a Pro feature. Decide which is intended.                   [New]
+
+
+╔═══════════════════════════════════════════════════════════════════════════╗
+CONSOLIDATED NEW FINDINGS (0 CRITICAL · 0 HIGH · 5 MEDIUM · 6 LOW)
+╚═══════════════════════════════════════════════════════════════════════════╝
+MEDIUM:
+  M1 [Feature] garage free-cap=0 vs "Sign up for free" garage banner (§6.1)
+  M2 [SEO]     meta description + og:description stale "3,360 vehicles" (§2.7b)
+  M3 [Security] promo.py: no usage cap / expiry / auth — unlimited Pro (§3.4a)
+  M4 [Security] public data.js bundles NHTSA complaint narratives (§3.4b)
+  M5 [Legal]   no self-service delete-account UI (backend works) (§4.1)
+LOW:
+  L1 [Security] rate-limit keys trust spoofable X-Forwarded-For (§3.4c)
+  L2 [Security] non-atomic budget counters (use INCRBYFLOAT) (§3.4d)
+  L3 [Security] live keys in plaintext local config — rotate (§3.4e)
+  L4 [Legal]    no GA4 cookie-consent banner (EU/UK) (§4.2)
+  L5 [Data]     drain torque/Honda-Acura/83-gap partial coverage (§2.2/2.3)
+  L6 [Data]     About "With Schedules" 1,668 vs DB 1,847 (§2.7a); +duplicate
+               unused .g-onboard CSS blocks in <head> (cosmetic).
+
+REGRESSIONS: none.   PRIOR FIXES HOLDING: 28/28.
+
+────────────────────────────────────────────────────────────────────────────
+METHODOLOGY: DB queries (_audit_v2_db.py), live HTTP + active tests
+(_audit_v2_live.py: signup/delete E2E [self-cleaning], 6x login-throttle,
+promo, 11 endpoint probes), deployed-index grep, and two read-only sub-audits
+(security code, legal/feature). No code or data was modified. The only live
+side effects: one test account created+deleted, a per-IP login-fail counter
+(15-min TTL), and one BETA2026 promo grant to a throwaway token.
+════════════════════════════════════════════════════════════════════════════
+END OF REPORT v2
