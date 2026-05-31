@@ -1700,7 +1700,8 @@ def main():
     html = inject_ga(html)
     html = inject_pwa(html)
     html = inject_favlink(html)
-    html = inject_onboard(html)
+    # inject_onboard removed 2026-05-30: the empty-state onboard message was replaced by the
+    # hero + search bar + sample preview card. (inject_onboard left defined but no longer called.)
     html = inject_branding(html)
     html = inject_logo(html)
     html = inject_footer(html)
