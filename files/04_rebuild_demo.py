@@ -1023,17 +1023,15 @@ AFF_STYLE = """<style>
 AFF_JS = r"""/*WRENCH_AFF*/
 function affEnc(s){return encodeURIComponent(String(s==null?'':s).replace(/\s+/g,' ').trim());}
 function affAmz(term){return 'https://www.amazon.com/s?k='+affEnc(term)+'&tag=wrenchapp20-20';}
-function affRock(v){return v?('https://www.rockauto.com/en/catalog/'+affEnc(v.make)+','+affEnc(v.model)+','+affEnc(v.year)):'';}
-function affAz(pn){return 'https://www.autozone.com/searchresult?searchtext='+affEnc(pn);}
-function affFtc(){return '<div class="aff-ftc">Amazon links are affiliate links (we may earn a commission at no extra cost to you). Other retailer links are for convenience only.</div>';}
-// Amazon = affiliate CTA; RockAuto/AutoZone = small NON-affiliate convenience links.
+function affRock(v){return '';}
+function affAz(pn){return '';}
+function affFtc(){return '<div class="aff-ftc">As an Amazon Associate we earn from qualifying purchases, at no extra cost to you.</div>';}
+// Amazon affiliate CTA only (tag=wrenchapp20-20).
 function affRow(v,term,pn,compact){
   pn=pn||term;
   var amz='<a class="aff-az'+(compact?' aff-mini':'')+'" href="'+affAmz(term)+'" target="_blank" rel="nofollow sponsored noopener">Shop on Amazon'+(compact?'':' &#9656;')+'</a>';
-  var more='<span class="aff-more">'
-    +(v?'<a href="'+affRock(v)+'" target="_blank" rel="noopener">RockAuto</a>':'')
-    +'<a href="'+affAz(pn)+'" target="_blank" rel="noopener">AutoZone</a></span>';
-  return '<div class="aff-row">'+amz+more+'</div>';
+  var more='';
+  return '<div class="aff-row">'+amz+'</div>';
 }
 // Garage overview: compact "Shop Parts" quick-links for the common wear items.
 function affShopParts(v){
@@ -1071,7 +1069,7 @@ function affDtcShop(fixText){
   var comp=String(fixText||'').replace(/replacement|replace|repair|cleaning|clean|service|\bof\b|\bthe\b/gi,'').replace(/\s+/g,' ').trim();
   if(!comp)return '';
   return '<div class="aff-row"><a class="aff-az aff-mini" href="'+affAmz(comp)+'" target="_blank" rel="nofollow sponsored noopener">Shop '+comp+'</a>'
-    +'<span class="aff-more"><a href="'+affAz(comp)+'" target="_blank" rel="noopener">AutoZone</a></span></div>';
+    +'</div>';
 }
 """
 
