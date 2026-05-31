@@ -95,6 +95,10 @@
   <url><loc>https://knowyourride.net/vehicles/2024-acura-rdx/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-acura-mdx/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-acura-rdx/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-acura-integra/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-acura-mdx/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-acura-rdx/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-acura-zdx/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2020-alfa-romeo-stelvio/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2021-alfa-romeo-stelvio/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2022-alfa-romeo-stelvio/</loc></url>
@@ -102,12 +106,16 @@
   <url><loc>https://knowyourride.net/vehicles/2024-alfa-romeo-stelvio/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2024-alfa-romeo-tonale/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-alfa-romeo-stelvio/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-alfa-romeo-stelvio/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-alfa-romeo-tonale/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2020-aston-martin-db11/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2020-aston-martin-vantage/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2021-aston-martin-db11/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2021-aston-martin-dbx/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2021-aston-martin-vantage/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2022-aston-martin-dbx/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-aston-martin-dbx/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-aston-martin-vantage/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1988-audi-80/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1988-audi-90/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1989-audi-80/</loc></url>
@@ -188,6 +196,12 @@
   <url><loc>https://knowyourride.net/vehicles/2025-audi-q5/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-audi-q7/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-audi-e-tron-gt/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-audi-a3/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-audi-a6/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-audi-q3/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-audi-q7/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-audi-q8/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-audi-e-tron-gt/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1988-bmw-m3/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1989-bmw-m3/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1990-bmw-m3/</loc></url>
@@ -279,8 +293,22 @@
   <url><loc>https://knowyourride.net/vehicles/2025-bmw-x5/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-bmw-i4/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-bmw-ix/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-bmw-330i/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-bmw-430i/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-bmw-530i/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-bmw-m3/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-bmw-m4/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-bmw-m5/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-bmw-x1/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-bmw-x3/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-bmw-x5/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-bmw-x7/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-bmw-i4/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-bmw-i5/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-bmw-ix/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2021-bentley-bentayga/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2022-bentley-bentayga/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-bentley-bentayga/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-buick-century/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-buick-lesabre/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-buick-regal/</loc></url>
@@ -379,6 +407,10 @@
   <url><loc>https://knowyourride.net/vehicles/2024-buick-envision/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-buick-enclave/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-buick-encore-gx/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-buick-enclave/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-buick-encore/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-buick-encore-gx/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-buick-envision/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-cadillac-deville/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-cadillac-eldorado/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-cadillac-fleetwood/</loc></url>
@@ -505,6 +537,13 @@
   <url><loc>https://knowyourride.net/vehicles/2025-cadillac-escalade/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-cadillac-lyriq/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-cadillac-xt5/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-cadillac-ct4/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-cadillac-ct5/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-cadillac-escalade/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-cadillac-lyriq/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-cadillac-optiq/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-cadillac-vistiq/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-cadillac-xt5/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-chevrolet-blazer/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-chevrolet-camaro/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-chevrolet-cavalier/</loc></url>
@@ -740,6 +779,17 @@
   <url><loc>https://knowyourride.net/vehicles/2025-chevrolet-tahoe/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-chevrolet-traverse/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-chevrolet-trax/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-chevrolet-blazer/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-chevrolet-camaro/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-chevrolet-colorado/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-chevrolet-corvette/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-chevrolet-equinox/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-chevrolet-silverado-1500/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-chevrolet-suburban/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-chevrolet-tahoe/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-chevrolet-trailblazer/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-chevrolet-traverse/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-chevrolet-trax/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-chrysler-lebaron/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1982-chrysler-lebaron/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1983-chrysler-lebaron/</loc></url>
@@ -770,6 +820,8 @@
   <url><loc>https://knowyourride.net/vehicles/2022-chrysler-300/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2024-chrysler-pacifica/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-chrysler-pacifica/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-chrysler-300/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-chrysler-pacifica/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1984-dodge-caravan/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1985-dodge-caravan/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1986-dodge-caravan/</loc></url>
@@ -877,8 +929,12 @@
   <url><loc>https://knowyourride.net/vehicles/2024-dodge-charger/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2024-dodge-durango/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-dodge-durango/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-dodge-challenger/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-dodge-charger/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-dodge-durango/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2021-ferrari-roma/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2022-ferrari-roma/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-ferrari-roma/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2018-fiat-500/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2019-fiat-124-spider/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2019-fiat-500/</loc></url>
@@ -1133,6 +1189,15 @@
   <url><loc>https://knowyourride.net/vehicles/2025-ford-mustang/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-ford-mustang-mach-e/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-ford-ranger/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-ford-bronco/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-ford-escape/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-ford-expedition/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-ford-explorer/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-ford-f-150/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-ford-maverick/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-ford-mustang/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-ford-mustang-mach-e/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-ford-ranger/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-gmc-jimmy/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1982-gmc-jimmy/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1983-gmc-jimmy/</loc></url>
@@ -1215,6 +1280,11 @@
   <url><loc>https://knowyourride.net/vehicles/2025-gmc-sierra-1500/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-gmc-terrain/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-gmc-yukon/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-gmc-acadia/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-gmc-canyon/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-gmc-sierra-1500/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-gmc-terrain/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-gmc-yukon/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2020-genesis-g80/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2021-genesis-g80/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2021-genesis-gv80/</loc></url>
@@ -1233,6 +1303,11 @@
   <url><loc>https://knowyourride.net/vehicles/2025-genesis-g80/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-genesis-gv70/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-genesis-gv80/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-genesis-g70/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-genesis-g80/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-genesis-gv60/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-genesis-gv70/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-genesis-gv80/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-honda-accord/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-honda-civic/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-honda-prelude/</loc></url>
@@ -1427,6 +1502,16 @@
   <url><loc>https://knowyourride.net/vehicles/2025-honda-pilot/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-honda-prologue/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-honda-ridgeline/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-honda-accord/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-honda-cr-v/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-honda-civic/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-honda-hr-v/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-honda-odyssey/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-honda-passport/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-honda-pilot/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-honda-prelude/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-honda-prologue/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-honda-ridgeline/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1989-hyundai-sonata/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1990-hyundai-sonata/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1991-hyundai-sonata/</loc></url>
@@ -1524,6 +1609,16 @@
   <url><loc>https://knowyourride.net/vehicles/2025-hyundai-santa-fe/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-hyundai-sonata/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-hyundai-tucson/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-hyundai-elantra/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-hyundai-ioniq-5/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-hyundai-ioniq-9/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-hyundai-kona/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-hyundai-palisade/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-hyundai-santa-cruz/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-hyundai-santa-fe/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-hyundai-sonata/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-hyundai-tucson/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-hyundai-venue/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1990-infiniti-q45/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1991-infiniti-g20/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1991-infiniti-q45/</loc></url>
@@ -1586,6 +1681,8 @@
   <url><loc>https://knowyourride.net/vehicles/2024-infiniti-qx60/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-infiniti-qx50/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-infiniti-qx60/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-infiniti-qx60/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-infiniti-qx80/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-isuzu-pickup/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1982-isuzu-pickup/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1983-isuzu-pickup/</loc></url>
@@ -1646,6 +1743,7 @@
   <url><loc>https://knowyourride.net/vehicles/2021-jaguar-xf/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2022-jaguar-f-pace/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2022-jaguar-i-pace/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-jaguar-f-pace/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-jeep-cherokee/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1982-jeep-cherokee/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1983-jeep-cherokee/</loc></url>
@@ -1728,6 +1826,9 @@
   <url><loc>https://knowyourride.net/vehicles/2025-jeep-gladiator/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-jeep-grand-cherokee/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-jeep-wrangler/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-jeep-cherokee/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-jeep-grand-cherokee/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-jeep-wrangler/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1993-kia-sephia/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1994-kia-sephia/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1995-kia-sephia/</loc></url>
@@ -1796,8 +1897,15 @@
   <url><loc>https://knowyourride.net/vehicles/2025-kia-sorento/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-kia-sportage/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-kia-telluride/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-kia-carnival/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-kia-ev6/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-kia-ev9/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-kia-seltos/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-kia-sorento/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-kia-sportage/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2021-lamborghini-urus/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2022-lamborghini-urus/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-lamborghini-urus/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1985-land-rover-range-rover/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1986-land-rover-range-rover/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1987-land-rover-range-rover/</loc></url>
@@ -1905,10 +2013,16 @@
   <url><loc>https://knowyourride.net/vehicles/2024-lincoln-navigator/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-lincoln-aviator/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-lincoln-navigator/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-lincoln-aviator/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-lincoln-corsair/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-lincoln-nautilus/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-lincoln-navigator/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2022-lucid-air/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2023-lucid-air/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2024-lucid-air/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-lucid-air/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-lucid-air/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-lucid-gravity/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2018-mini-countryman/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2019-mini-countryman/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2020-mini-clubman/</loc></url>
@@ -1917,11 +2031,13 @@
   <url><loc>https://knowyourride.net/vehicles/2021-mini-countryman/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2022-mini-clubman/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2022-mini-countryman/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-mini-countryman/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2021-maserati-ghibli/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2021-maserati-levante/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2022-maserati-ghibli/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2022-maserati-levante/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2023-maserati-grecale/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-maserati-grecale/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-mazda-626/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-mazda-rx-7/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1982-mazda-626/</loc></url>
@@ -2022,6 +2138,11 @@
   <url><loc>https://knowyourride.net/vehicles/2025-mazda-cx-50/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-mazda-cx-90/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-mazda-mazda3/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-mazda-cx-30/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-mazda-cx-5/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-mazda-cx-50/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-mazda-cx-9/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-mazda-cx-90/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2020-mclaren-720s/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2020-mclaren-gt/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2021-mclaren-720s/</loc></url>
@@ -2212,6 +2333,9 @@
   <url><loc>https://knowyourride.net/vehicles/2022-mitsubishi-outlander/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2024-mitsubishi-outlander/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-mitsubishi-outlander/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-mitsubishi-eclipse-cross/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-mitsubishi-outlander/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-mitsubishi-outlander-sport/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-nissan-maxima/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1982-nissan-maxima/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1982-nissan-sentra/</loc></url>
@@ -2397,6 +2521,14 @@
   <url><loc>https://knowyourride.net/vehicles/2025-nissan-frontier/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-nissan-pathfinder/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-nissan-rogue/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-nissan-altima/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-nissan-armada/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-nissan-frontier/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-nissan-leaf/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-nissan-murano/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-nissan-pathfinder/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-nissan-rogue/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-nissan-sentra/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-oldsmobile-88/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-oldsmobile-cutlass-supreme/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1982-oldsmobile-88/</loc></url>
@@ -2616,6 +2748,11 @@
   <url><loc>https://knowyourride.net/vehicles/2025-porsche-cayenne/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-porsche-macan/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-porsche-taycan/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-porsche-911/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-porsche-cayenne/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-porsche-macan/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-porsche-panamera/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-porsche-taycan/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2005-ram-1500/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2006-ram-1500/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2016-ram-1500/</loc></url>
@@ -2632,10 +2769,14 @@
   <url><loc>https://knowyourride.net/vehicles/2024-ram-2500/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-ram-1500/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-ram-2500/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-ram-1500/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-ram-2500/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2020-rolls-royce-cullinan/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2020-rolls-royce-ghost/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2021-rolls-royce-cullinan/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2021-rolls-royce-ghost/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-rolls-royce-cullinan/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-rolls-royce-ghost/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-saab-900/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1982-saab-900/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1983-saab-900/</loc></url>
@@ -2821,6 +2962,14 @@
   <url><loc>https://knowyourride.net/vehicles/2025-subaru-forester/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-subaru-outback/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-subaru-solterra/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-subaru-ascent/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-subaru-brz/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-subaru-crosstrek/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-subaru-forester/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-subaru-impreza/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-subaru-outback/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-subaru-solterra/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-subaru-wrx/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1986-suzuki-samurai/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1987-suzuki-samurai/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1988-suzuki-samurai/</loc></url>
@@ -2884,6 +3033,11 @@
   <url><loc>https://knowyourride.net/vehicles/2025-tesla-model-s/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-tesla-model-x/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-tesla-model-y/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-tesla-cybertruck/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-tesla-model-3/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-tesla-model-s/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-tesla-model-x/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-tesla-model-y/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-toyota-celica/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-toyota-corolla/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-toyota-land-cruiser/</loc></url>
@@ -3208,6 +3362,22 @@
   <url><loc>https://knowyourride.net/vehicles/2025-toyota-tacoma/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-toyota-tundra/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-toyota-bz4x/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-4runner/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-camry/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-corolla/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-corolla-cross/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-crown/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-crown-signia/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-grand-highlander/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-highlander/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-land-cruiser/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-prius/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-rav4/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-sequoia/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-sienna/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-supra/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-tacoma/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-toyota-tundra/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1981-volkswagen-jetta/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1982-volkswagen-jetta/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1983-volkswagen-jetta/</loc></url>
@@ -3323,6 +3493,11 @@
   <url><loc>https://knowyourride.net/vehicles/2025-volkswagen-id-4/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-volkswagen-jetta/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-volkswagen-tiguan/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-volkswagen-atlas/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-volkswagen-atlas-cross-sport/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-volkswagen-id-4/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-volkswagen-jetta/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-volkswagen-tiguan/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1991-volvo-940/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1992-volvo-940/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/1993-volvo-850/</loc></url>
@@ -3361,6 +3536,11 @@
   <url><loc>https://knowyourride.net/vehicles/2025-volvo-xc40/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-volvo-xc60/</loc></url>
   <url><loc>https://knowyourride.net/vehicles/2025-volvo-xc90/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-volvo-ex30/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-volvo-ex90/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-volvo-xc40/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-volvo-xc60/</loc></url>
+  <url><loc>https://knowyourride.net/vehicles/2026-volvo-xc90/</loc></url>
   <url><loc>https://knowyourride.net/dtc/p0300/</loc></url>
   <url><loc>https://knowyourride.net/dtc/p0420/</loc></url>
   <url><loc>https://knowyourride.net/dtc/p0171/</loc></url>
