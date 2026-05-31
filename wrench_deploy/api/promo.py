@@ -41,6 +41,19 @@ class handler(BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(length) or b"{}") if length else {}
         except Exception:
             body = {}
+        ip = self._client_ip()
+        r = _redis()
+        # Per-IP attempt cap (uses the least-spoofable rightmost X-Forwarded-For IP).
+        if r is not None:
+            try:
+                k = f"promo:ip:{ip}:{int(time.time() // 3600)}"
+                n = r.incr(k)
+                if n == 1:
+                    r.expire(k, 3600)
+                if n > 20:
+                    return self._send(429, {"ok": False, "error": "Too many attempts. Please try again later."})
+            except Exception:
+                pass
         code = str(body.get("code") or "").strip().upper()
         days = VALID.get(code)
         if not days:
@@ -52,7 +65,6 @@ class handler(BaseHTTPRequestHandler):
         email = str(body.get("email") or "").strip().lower()
         if not EMAIL_RE.match(email):
             return self._send(200, {"ok": False, "error": "A valid email is required to redeem a promo code."})
-        r = _redis()
         # Enforce the total-redemption cap.
         if r is not None:
             try:
@@ -72,6 +84,15 @@ class handler(BaseHTTPRequestHandler):
                 pass
         return self._send(200, {"ok": True, "days": days, "until": until,
                                 "message": f"Pro access unlocked for {days} days!"})
+
+    def _client_ip(self):
+        xff = self.headers.get("X-Forwarded-For") or self.headers.get("x-forwarded-for") or ""
+        if xff:
+            return xff.split(",")[-1].strip()
+        try:
+            return self.client_address[0]
+        except Exception:
+            return "unknown"
 
     def _send(self, code, obj):
         body = json.dumps(obj).encode()

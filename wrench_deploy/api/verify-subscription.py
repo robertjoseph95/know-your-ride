@@ -60,7 +60,7 @@ class handler(BaseHTTPRequestHandler):
         # cap requests per IP to prevent bulk subscriber-status enumeration.
         if r is not None:
             ip = (self.headers.get("X-Forwarded-For") or self.headers.get("x-forwarded-for")
-                  or self.client_address[0] or "unknown").split(",")[0].strip()
+                  or self.client_address[0] or "unknown").split(",")[-1].strip()  # rightmost = least spoofable
             rk = "vsub:ip:" + ip
             try:
                 n = r.incr(rk)

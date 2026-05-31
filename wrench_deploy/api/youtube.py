@@ -60,7 +60,7 @@ class handler(BaseHTTPRequestHandler):
                 pass
         # Per-IP daily cap on cache MISSES (LOW audit fix) to protect the YouTube quota.
         if r:
-            ip = (self.headers.get("X-Forwarded-For") or self.client_address[0] or "unknown").split(",")[0].strip()
+            ip = (self.headers.get("X-Forwarded-For") or self.client_address[0] or "unknown").split(",")[-1].strip()  # rightmost = least spoofable
             day = datetime.datetime.utcnow().strftime("%Y-%m-%d")
             ipk = f"yt:ip:{day}:{ip}"
             try:

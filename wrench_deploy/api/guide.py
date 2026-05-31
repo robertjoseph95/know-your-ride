@@ -173,7 +173,9 @@ class handler(BaseHTTPRequestHandler):
         if r:
             try:
                 cost = in_tok * IN_RATE + out_tok * OUT_RATE
-                r.set(spend_key, float(r.get(spend_key) or 0) + cost, ex=60 * 60 * 24 * 40)
+                # Atomic increment (avoids read-modify-write races under concurrency).
+                r.incrbyfloat(spend_key, cost)
+                r.expire(spend_key, 86400 * 31)
             except Exception:
                 pass
         payload = {"guide": guide, "label": label, "specs": sp, "safety_blocked": False}

@@ -44,7 +44,7 @@ class handler(BaseHTTPRequestHandler):
         key = os.environ.get("ANTHROPIC_API_KEY", "")
         if not key:
             return self._send(503, {"error": "server not configured (ANTHROPIC_API_KEY)"})
-        ip = (self.headers.get("X-Forwarded-For") or self.client_address[0] or "unknown").split(",")[0].strip()
+        ip = (self.headers.get("X-Forwarded-For") or self.client_address[0] or "unknown").split(",")[-1].strip()  # rightmost = least spoofable
         now = datetime.datetime.utcnow()
         today, month = now.strftime("%Y-%m-%d"), now.strftime("%Y-%m")
         r = _redis()
@@ -109,11 +109,10 @@ class handler(BaseHTTPRequestHandler):
             try:
                 r.incr(f"idp:count:{today}"); r.expire(f"idp:count:{today}", 60 * 60 * 48)
                 r.incr(f"idp:ip:{today}:{ip}"); r.expire(f"idp:ip:{today}:{ip}", 60 * 60 * 48)
-                prev_day = float(r.get(f"idp:spend:day:{today}") or 0)
-                prev_month = float(r.get(f"idp:spend:{month}") or 0)
-                daily_total, monthly_total = prev_day + cost, prev_month + cost
-                r.set(f"idp:spend:day:{today}", daily_total, ex=60 * 60 * 48)
-                r.set(f"idp:spend:{month}", monthly_total, ex=60 * 60 * 24 * 40)
+                # Atomic spend increments (avoid read-modify-write races under concurrency).
+                daily_total = float(r.incrbyfloat(f"idp:spend:day:{today}", cost)); r.expire(f"idp:spend:day:{today}", 86400 * 31)
+                monthly_total = float(r.incrbyfloat(f"idp:spend:{month}", cost)); r.expire(f"idp:spend:{month}", 86400 * 31)
+                prev_day = daily_total - cost
                 if prev_day < DAILY_ALERT <= daily_total:
                     r.set(f"idp:alert:{today}", f"Daily spend ${daily_total:.2f} reached ${DAILY_ALERT:.2f}", ex=60 * 60 * 48)
                 if monthly_total > MONTHLY_BUDGET:

@@ -203,9 +203,11 @@ class handler(BaseHTTPRequestHandler):
         return self._send(200, {"ok": True, "token": token, "email": email, "tier": tier})
 
     def _client_ip(self):
+        # Rightmost X-Forwarded-For entry: clients can prepend spoofed values, but the
+        # trusted proxy (Vercel) appends the real connecting IP last (least spoofable).
         xff = self.headers.get("X-Forwarded-For") or self.headers.get("x-forwarded-for") or ""
         if xff:
-            return xff.split(",")[0].strip()
+            return xff.split(",")[-1].strip()
         try:
             return self.client_address[0]
         except Exception:

@@ -68,6 +68,22 @@ In production (Vercel), set these as project environment variables:
 | `VEHICLE_FINDER_KEY` | backfill scripts |
 | `KV_REST_API_URL` / `KV_REST_API_TOKEN` | Redis cache, rate-limits, budgets |
 
+### Key rotation (quarterly)
+
+Rotate these secrets every quarter in their respective dashboards **and** update the matching
+Vercel environment variables (and local `wrench_config.json`):
+
+| Key | Rotate in | Notes |
+|---|---|---|
+| Anthropic API key | console.anthropic.com | powers AI guides + part scanner |
+| YouTube API key | Google Cloud Console | restrict by referrer/IP |
+| Stripe keys (secret + webhook secret) | dashboard.stripe.com | live mode |
+
+- **Last rotated:** 2026-05-30
+- **Next rotation due:** 2026-08-30
+
+(The Vehicle Finder key was retired 2026-05-30 — no longer needed.)
+
 ## Local development
 
 ```bash

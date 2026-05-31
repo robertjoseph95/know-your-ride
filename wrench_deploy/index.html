@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-05-30-audit-v2-fixes">
+<meta name="kyr-version" content="2026-05-30-low-fixes-v2">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -449,13 +449,6 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
 </style>
 <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
 <style>
-.g-onboard{display:flex;align-items:center;gap:16px;background:linear-gradient(180deg,rgba(255,122,26,.13),rgba(255,122,26,.04));border:1px dashed var(--accent);border-radius:12px;padding:16px 20px;margin-bottom:20px}
-.g-onboard-arrow{font-size:30px;line-height:1;color:var(--accent);animation:gob 1.4s ease-in-out infinite}
-@keyframes gob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-.g-onboard-h{font-size:16px;font-weight:700;color:var(--text)}
-.g-onboard-sub{font-size:13px;color:var(--dim);margin-top:3px}
-</style>
-<style>
 .kyr-footer{margin-top:40px;padding:24px 28px;border-top:1px solid var(--border);background:var(--panel);font-family:'Manrope',sans-serif}
 .kyr-footer-links{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;font-size:13px;margin-bottom:10px}
 .kyr-footer-links a{color:var(--dim);text-decoration:none}
@@ -465,13 +458,6 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
 </style>
 <style>
 .dtc-disclaimer{margin:0 0 12px;padding:10px 13px;background:#3a2e00;border:1px solid #e0a23b;border-radius:8px;color:#ffd97a;font-size:12px;line-height:1.5}
-</style>
-<style>
-.g-onboard{display:flex;align-items:center;gap:16px;background:linear-gradient(180deg,rgba(255,122,26,.13),rgba(255,122,26,.04));border:1px dashed var(--accent);border-radius:12px;padding:16px 20px;margin-bottom:20px}
-.g-onboard-arrow{font-size:30px;line-height:1;color:var(--accent);animation:gob 1.4s ease-in-out infinite}
-@keyframes gob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-.g-onboard-h{font-size:16px;font-weight:700;color:var(--text)}
-.g-onboard-sub{font-size:13px;color:var(--dim);margin-top:3px}
 </style>
 </head>
 <body>
@@ -585,7 +571,7 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
     <div class="astat"><div class="astat-n">48</div><div class="astat-l">Makes</div></div>
     <div class="astat"><div class="astat-n">12,196</div><div class="astat-l">DTC Codes</div></div>
     <div class="astat"><div class="astat-n">1,557</div><div class="astat-l">With Recalls</div></div>
-    <div class="astat"><div class="astat-n">1,668</div><div class="astat-l">With Schedules</div></div>
+    <div class="astat"><div class="astat-n">1,847</div><div class="astat-l">With Schedules</div></div>
   </div>
   <div class="feat-grid">
     <div class="feat"><h3>MAINTENANCE SCHEDULES</h3><p>Factory service intervals with mileage and month triggers, linked to exact part numbers for each service item.</p></div>
@@ -1362,6 +1348,14 @@ if(x&&x.ok){try{localStorage.removeItem('kyr_pro');localStorage.removeItem('kyr_
 else{note.style.color='var(--red)';note.textContent=(x&&x.error)||'Could not delete account. Please email hello@knowyourride.net.';}});
 }).catch(function(){note.style.color='var(--red)';note.textContent='Could not reach the server. Please try again or email hello@knowyourride.net.';});
 }
+</script>
+<div id="kyr-consent" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:10000;background:var(--panel);border-top:1px solid var(--border);padding:11px 16px;font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--dim);align-items:center;gap:12px;justify-content:center;flex-wrap:wrap"><span>We use analytics to improve Know Your Ride. No personal data is sold. <a href="/privacy.html" style="color:var(--accent);text-decoration:none">Privacy Policy</a></span><button onclick="kyrConsentOk()" style="background:var(--accent);color:#000;border:none;border-radius:6px;padding:6px 14px;font-weight:700;font-size:11px;cursor:pointer;font-family:\'JetBrains Mono\',monospace">Got it</button></div>
+<script>/*WRENCH_CONSENT*/
+(function(){try{if(localStorage.getItem('kyrCookieConsent')==='1')return;}catch(e){}
+function show(){var el=document.getElementById('kyr-consent');if(el)el.style.display='flex';}
+window.kyrConsentOk=function(){var el=document.getElementById('kyr-consent');if(el)el.style.display='none';try{localStorage.setItem('kyrCookieConsent','1');}catch(e){}};
+if(document.readyState!=='loading')show();else document.addEventListener('DOMContentLoaded',show);
+})();
 </script>
 </body>
 </html>
