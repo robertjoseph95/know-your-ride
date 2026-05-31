@@ -1322,5 +1322,18 @@ document.addEventListener('DOMContentLoaded',function(){
     As an Amazon Associate we earn from qualifying purchases. All specifications are for reference only &mdash; always verify against your owner's manual or factory service manual before performing any repair.
   </div>
 </footer>
+<div id="kyr-save-banner" onclick="kyrSaveBannerGo()" style="display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999;max-width:560px;width:calc(100% - 32px);align-items:center;gap:12px;background:var(--panel);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:10px;padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.55);cursor:pointer;font-family:'Manrope',sans-serif"><div style="flex:1;font-size:13px;color:var(--text);line-height:1.45">&#128190; Save this vehicle to your garage &mdash; search faster next time. <span style="color:var(--accent);font-weight:700">Sign up for free &#8594;</span></div><button onclick="kyrDismissSaveBanner(event)" aria-label="Dismiss" style="flex:none;background:none;border:none;color:var(--faint);font-size:18px;line-height:1;cursor:pointer;padding:2px 4px">&#10005;</button></div>
+<script>/*WRENCH_SAVEBANNER*/
+(function(){var _t=null,KEY='kyr_save_banner_done';
+function done(){try{return sessionStorage.getItem(KEY)==='1';}catch(e){return false;}}
+function mark(){try{sessionStorage.setItem(KEY,'1');}catch(e){}}
+function eligible(){try{return !(typeof kyrPro==='function'&&kyrPro());}catch(e){return true;}}
+window.kyrDismissSaveBanner=function(ev){if(ev&&ev.stopPropagation)ev.stopPropagation();var b=document.getElementById('kyr-save-banner');if(b)b.style.display='none';mark();};
+window.kyrSaveBannerGo=function(){var b=document.getElementById('kyr-save-banner');if(b)b.style.display='none';mark();if(typeof openPricing==='function')openPricing();};
+function showBanner(){var b=document.getElementById('kyr-save-banner'),ov=document.getElementById('overlay');if(!b||!ov||!ov.classList.contains('open'))return;if(done()||!eligible())return;b.style.display='flex';mark();}
+if(typeof window.openModal==='function'){var _om=window.openModal;window.openModal=function(){var r=_om.apply(this,arguments);if(_t){clearTimeout(_t);_t=null;}if(!done()&&eligible()){_t=setTimeout(showBanner,20000);}return r;};}
+if(typeof window.closeModal==='function'){var _cm=window.closeModal;window.closeModal=function(){if(_t){clearTimeout(_t);_t=null;}var b=document.getElementById('kyr-save-banner');if(b)b.style.display='none';return _cm.apply(this,arguments);};}
+})();
+</script>
 </body>
 </html>
