@@ -79,6 +79,7 @@ def build_data(cur):
         "plug_type": r["spark_plug_type"], "plug_gap": r["spark_plug_gap"],
         "plug_qty": r["spark_plug_qty"], "batt_group": r["battery_group"],
         "batt_cca": r["battery_cca"], "tire": r["tire_size"],
+        "tnote": (r["tire_size_note"] if "tire_size_note" in r.keys() else None),
         "psi_f": r["tire_pressure_front"], "psi_r": r["tire_pressure_rear"],
         "plugs": pj(r["spark_plugs_json"]), "air": pj(r["air_filters_json"]),
         "cabin": pj(r["cabin_filters_json"]), "wipers": pj(r["wiper_blades_json"]),
