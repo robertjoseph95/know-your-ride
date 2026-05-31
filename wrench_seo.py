@@ -29,6 +29,13 @@ DTC_LIMIT = 500
 # common, widely-searched codes surfaced on every vehicle page (forced into the DTC set)
 COMMON_CODES = ["P0300", "P0420", "P0171", "P0128", "P0442", "P0455", "P0700", "P0301", "U0100"]
 
+# Meta-description lead-displacement corrections for models whose DB row aggregates
+# multiple engines (so engine_options[0] can be the wrong variant). Keep this tight.
+# Maserati Ghibli: oil spec is the 3.0L twin-turbo V6, so the meta must read 3.0L.
+META_DISP_OVERRIDE = {
+    ("Maserati", "Ghibli"): "3.0L",
+}
+
 CSS = (
     "body{margin:0;background:#0d0d0f;color:#e8e6e3;font:16px/1.6 -apple-system,Segoe UI,Roboto,"
     "Helvetica,Arial,sans-serif}a{color:#ff7a1a;text-decoration:none}a:hover{text-decoration:underline}"
@@ -521,10 +528,19 @@ def main():
                     disp = None
                 if disp:
                     break
+            # keep the structured engine consistent with the meta lead override
+            lead = META_DISP_OVERRIDE.get((make, model))
+            if lead:
+                try:
+                    disp = float(lead.rstrip("Ll"))
+                except ValueError:
+                    pass
             eng = {"@type": "EngineSpecification", "fuelType": "Gasoline"}
             if disp:
                 eng["engineDisplacement"] = {"@type": "QuantitativeValue", "value": disp, "unitCode": "LTR"}
-            if eo:
+            if lead:
+                eng["name"] = lead
+            elif eo:
                 eng["name"] = eo[0]
             data["vehicleEngine"] = eng
             data["fuelType"] = "Gasoline"
@@ -551,7 +567,13 @@ def main():
         has_oil = False
         if not ev:
             eo = engine_options(vid, v)
-            if eo:
+            # Some vehicle rows aggregate multiple engines, so engine_options[0] can be
+            # the wrong variant for the meta lead. META_DISP_OVERRIDE pins the displacement
+            # to the engine the model's oil spec is written for, for specific models only.
+            lead = META_DISP_OVERRIDE.get((make, model))
+            if lead:
+                bits.append(lead)
+            elif eo:
                 bits.append(eo[0])
             o = oil.get(vid)
             has_oil = bool(o and (o["viscosity"] or o["oil_type"] or o["capacity_with_filter"]))
