@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-05-31-specs-v3">
+<meta name="kyr-version" content="2026-05-31-specs-v4">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -1119,16 +1119,23 @@ function renderParts(v){
   if(p.air&&p.air.length)h+='<div class="sec-head">Air Filters</div><table class="tbl"><thead><tr><th>Brand</th><th>Part #</th><th>Interval</th><th></th></tr></thead><tbody>'+p.air.map(function(x){return '<tr><td style="font-weight:700">'+(x.brand||'&mdash;')+'</td><td><span class="pn">'+(x.part_number||'&mdash;')+'</span></td><td style="color:var(--dim)">'+(x.change_interval_miles?x.change_interval_miles.toLocaleString()+' mi':'')+'</td><td>'+(x.is_oem?'<span class="oem-tag">OEM</span>':'')+'</td></tr>';}).join('')+'</tbody></table>';
   if(p.cabin&&p.cabin.length)h+='<div class="sec-head">Cabin Air Filters</div><table class="tbl"><thead><tr><th>Brand</th><th>Part #</th><th>Interval</th><th></th></tr></thead><tbody>'+p.cabin.map(function(x){return '<tr><td style="font-weight:700">'+(x.brand||'&mdash;')+'</td><td><span class="pn">'+(x.part_number||'&mdash;')+'</span></td><td style="color:var(--dim)">'+(x.change_interval_miles?x.change_interval_miles.toLocaleString()+' mi':'')+'</td><td>'+(x.is_oem?'<span class="oem-tag">OEM</span>':'')+'</td></tr>';}).join('')+'</tbody></table>';
   if(p.wipers&&p.wipers.length)h+='<div class="sec-head">Wiper Blades</div><table class="tbl"><thead><tr><th>Brand</th><th>Part #</th><th>Position</th><th>Size</th></tr></thead><tbody>'+p.wipers.map(function(x){return '<tr><td style="font-weight:700">'+(x.brand||'&mdash;')+'</td><td><span class="pn">'+(x.part_number||'&mdash;')+'</span></td><td style="text-transform:capitalize;color:var(--dim)">'+(x.position||'&mdash;')+'</td><td>'+(x.size_inches?x.size_inches+'"':'&mdash;')+'</td></tr>';}).join('')+'</tbody></table>';
-  if(v.notes&&v.notes.length){
-    var ki=v.notes.filter(function(n){return n.type==='known_issue';});
-    var ot=v.notes.filter(function(n){return n.type!=='known_issue';});
-    if(ki.length)h+='<div class="sec-head">Known Issues</div>'+ki.map(function(n){return '<div class="recall-card park"><div class="rc-comp">'+n.title+(n.from_mi?' &middot; from '+n.from_mi.toLocaleString()+' mi':'')+'</div><div class="rc-text">'+n.body+'</div></div>';}).join('');
-    if(ot.length)h+='<div class="sec-head">Owner Notes</div>'+ot.map(function(n){return '<div class="recall-card"><div class="rc-comp">'+n.title+'</div><div class="rc-text">'+n.body+'</div></div>';}).join('');
-  }
-  if(!p.plug_type&&!p.tire&&!p.batt_group&&!(p.air&&p.air.length)&&!(p.wipers&&p.wipers.length)&&!(v.notes&&v.notes.length))return '<p class="empty-note">No parts data available.</p>';
+  var ot=(v.notes||[]).filter(function(n){return n.type!=='known_issue';});
+  if(ot.length)h+='<div class="sec-head">Owner Notes</div>'+ot.map(function(n){return '<div class="recall-card"><div class="rc-comp">'+n.title+'</div><div class="rc-text">'+n.body+'</div></div>';}).join('');
+  if(!p.plug_type&&!p.tire&&!p.batt_group&&!(p.air&&p.air.length)&&!(p.wipers&&p.wipers.length)&&!ot.length)return '<p class="empty-note">No parts data available.</p>';
   return h;
 }
 
+function renderIssues(v){
+  var n=(v.notes||[]).filter(function(x){return x.type==='known_issue';});
+  if(!n.length)return '<p class="empty-note">No known issues documented for this vehicle.</p>';
+  var h='<div class="sec-head">Known Issues ('+n.length+')</div>';
+  h+='<p style="color:var(--dim);font-size:12px;line-height:1.5;margin-bottom:12px">Documented model-specific problems to watch for. The mileage trigger indicates when the issue typically begins.</p>';
+  h+=n.map(function(x){
+    var trig=x.from_mi?'<span style="display:inline-block;background:var(--a2,#ffb800);color:#000;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 9px;border-radius:4px">WATCH FROM '+x.from_mi.toLocaleString()+' MI</span>':'<span style="display:inline-block;background:var(--red,#ef4444);color:#fff;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 9px;border-radius:4px">ALL MILEAGES</span>';
+    return '<div class="recall-card park"><div class="rc-comp" style="color:var(--red)">'+x.title+'</div><div style="margin:7px 0">'+trig+'</div><div class="rc-text">'+x.body+'</div></div>';
+  }).join('');
+  return h;
+}
 function renderFluids(v){
   var f=v.fluids,t=v.torque,h='';
   if(f){
@@ -1219,8 +1226,8 @@ function renderWarranty(v){
   return h;
 }
 
-var MTABS=['oil','parts','fluids','maint','perf','safety','warranty','comps'];
-var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG','Safety & Rel.','Warranty & Recalls','Complaints'];
+var MTABS=['oil','parts','fluids','maint','perf','safety','issues','warranty','comps'];
+var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG','Safety & Rel.','Known Issues','Warranty & Recalls','Complaints'];
 var curTab='oil';
 
 function openModal(vid){
@@ -1238,7 +1245,7 @@ function renderMTabs(v){
 function switchMTab(tab,vid){curTab=tab;var v=VEH[vid];renderMTabs(v);renderMBody(v);}
 
 function renderMBody(v){
-  var fns={oil:renderOilShop,parts:renderPartsTieredYTG,fluids:renderFluids,maint:renderMaintGated,perf:renderPerf,safety:renderSafety,warranty:renderWarrantyKbb,comps:renderComplaints};
+  var fns={oil:renderOilShop,parts:renderPartsTieredYTG,fluids:renderFluids,maint:renderMaintGated,perf:renderPerf,safety:renderSafety,issues:renderIssues,warranty:renderWarrantyKbb,comps:renderComplaints};
   document.getElementById('m-body').innerHTML=fns[curTab](v);
 }
 
