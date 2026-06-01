@@ -153,7 +153,10 @@ def build_data(cur):
     # maintenance + parts (the original 04 dropped these)
     each("maintenance", lambda d, r: d.setdefault("maint", []).append(
         {"id": r["id"], "mi": r["mileage_interval"], "mo": r["months_interval"],
-         "desc": r["description"], "src": r["source"], "notes": r["notes"]}))
+         "desc": r["description"], "src": r["source"], "notes": r["notes"],
+         "diff": (r["difficulty_level"] if "difficulty_level" in r.keys() else None),
+         "tool": (r["tool_required"] if "tool_required" in r.keys() else None),
+         "tmin": (r["time_minutes"] if "time_minutes" in r.keys() else None)}))
     each("maintenance_parts", lambda d, r: d.setdefault("maint_parts", []).append(
         {"mid": r["maintenance_id"], "type": r["part_type"], "brand": r["brand"],
          "pn": r["part_number"], "desc": r["description"], "qty": r["qty"]}))
