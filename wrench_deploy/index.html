@@ -1080,7 +1080,7 @@ function renderGarage(){
   const grid=document.getElementById('vgrid');
   if(!vs.length){grid.innerHTML='<div class="no-res">// NO VEHICLES FOUND</div>';return;}
   grid.innerHTML=vs.map(v=>{
-    const o=v.oil,p=v.parts,r=v.rel,s=v.safety,rc=(v.recalls||[]).length,m=v.mpg&&v.mpg[0],isEV=(v.id>=0)&&(!o||!o.visc);
+    const o=v.oil,p=v.parts,r=v.rel,s=v.safety,rc=(v.recalls||[]).length,m=v.mpg&&v.mpg[0],isEV=(v.id>=0)&&(!o||!o.visc),ic=(v.notes||[]).filter(function(n){return n.type==='known_issue';}).length;
     const bdg=[];if(v.id<0)bdg.push('<span class="bdg bdg-partial">Partial data - pre-2003</span>');
     if(o&&o.visc)bdg.push('<span class="bdg bdg-o">'+o.visc+'</span>');
     if(isEV)bdg.push('<span class="bdg bdg-ev">EV</span>');
@@ -1088,7 +1088,7 @@ function renderGarage(){
     if(s&&s.overall)bdg.push('<span class="bdg bdg-s">&#9733;'+s.overall+'</span>');
     if(rc>0)bdg.push('<span class="bdg bdg-r">'+rc+' RECALL'+(rc>1?'S':'')+'</span>');
     if(v.maint&&v.maint.length)bdg.push('<span class="bdg bdg-m">'+v.maint.length+' SCHEDULES</span>');
-    return '<div class="vcard" onclick="openModal('+v.id+')"><div class="vc-head"><div><div class="vc-name">'+v.year+' '+v.make+' '+v.model+'</div><div class="vc-sub">'+(v.engine||v.trim||'&mdash;')+'</div></div></div><div class="vc-badges">'+bdg.join('')+'</div><div class="vc-stats"><div><div class="vcs-l">OIL</div><div class="vcs-v">'+(o&&o.visc||'&mdash;')+'</div></div><div><div class="vcs-l">RELIABILITY</div><div class="vcs-v">'+(r&&r.score?r.score.toFixed(0)+'%':'&mdash;')+'</div></div><div><div class="vcs-l">MPG COMB</div><div class="vcs-v">'+(m&&m.comb||'&mdash;')+'</div></div></div></div>';
+    return '<div class="vcard" onclick="openModal('+v.id+')"><div class="vc-head"><div><div class="vc-name">'+v.year+' '+v.make+' '+v.model+'</div><div class="vc-sub">'+(v.engine||v.trim||'&mdash;')+'</div>'+(ic>0?'<div onclick="event.stopPropagation();openModal('+v.id+',\'issues\')" style="margin-top:6px;display:inline-block;background:rgba(255,184,0,.12);color:var(--a2,#ffb800);border:1px solid rgba(255,184,0,.3);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;cursor:pointer">&#9888;&#65039; '+ic+' known issue'+(ic>1?'s':'')+' documented</div>':'')+'</div></div><div class="vc-badges">'+bdg.join('')+'</div><div class="vc-stats"><div><div class="vcs-l">OIL</div><div class="vcs-v">'+(o&&o.visc||'&mdash;')+'</div></div><div><div class="vcs-l">RELIABILITY</div><div class="vcs-v">'+(r&&r.score?r.score.toFixed(0)+'%':'&mdash;')+'</div></div><div><div class="vcs-l">MPG COMB</div><div class="vcs-v">'+(m&&m.comb||'&mdash;')+'</div></div></div></div>';
   }).join('');
 }
 
@@ -1230,16 +1230,17 @@ var MTABS=['oil','parts','fluids','maint','perf','safety','issues','warranty','c
 var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG','Safety & Rel.','Known Issues','Warranty & Recalls','Complaints'];
 var curTab='oil';
 
-function openModal(vid){
+function openModal(vid,tab){
   var v=VEH[vid];if(!v)return;
   document.getElementById('m-title').innerHTML=v.year+' '+v.make+' <em>'+v.model+'</em>';try{sessionStorage.setItem('kyr_last_vehicle',vid);}catch(e){}var __sc=document.getElementById('kyr-sample');if(__sc)__sc.style.display='none';
-  curTab='oil';renderMTabs(v);renderMBody(v);
+  curTab=tab||'oil';renderMTabs(v);renderMBody(v);
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
 }
 
 function renderMTabs(v){
-  document.getElementById('m-tab-bar').innerHTML=MTABS.map(function(t,i){return '<div class="m-tab '+(t===curTab?'active':'')+'" onclick="switchMTab(\''+t+'\','+v.id+')">'+MLABELS[i]+'</div>';}).join('');
+  var ic=(v.notes||[]).filter(function(n){return n.type==='known_issue';}).length;
+  document.getElementById('m-tab-bar').innerHTML=MTABS.map(function(t,i){var lbl=MLABELS[i];if(t==='issues'&&ic>0)lbl+=' <span style="display:inline-block;background:var(--red,#ef4444);color:#fff;font-size:9px;font-weight:800;line-height:1;padding:2px 6px;border-radius:9px;vertical-align:middle">'+ic+'</span>';return '<div class="m-tab '+(t===curTab?'active':'')+'" onclick="switchMTab(\''+t+'\','+v.id+')">'+lbl+'</div>';}).join('');
 }
 
 function switchMTab(tab,vid){curTab=tab;var v=VEH[vid];renderMTabs(v);renderMBody(v);}
