@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-01-specs-v19a">
+<meta name="kyr-version" content="2026-06-01-specs-v19b">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -172,6 +172,41 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
 .astat-l{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:.2em;text-transform:uppercase;margin-top:4px}
 
 .bdg-m{background:rgba(74,222,128,.1);color:var(--green);border:1px solid rgba(74,222,128,.22)}
+
+@media (max-width: 600px) {
+
+  /* 1. Reduce flat padding - 28px eats too much on 360px phones */
+  .topbar { padding: 0 16px; }
+  .tabs   { padding: 0 16px; }
+  .pane   { padding: 16px; }
+
+  /* 2. Vehicle grid - 310px min causes overflow on small phones */
+  .vgrid  { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+  /* 3. Complaints layout - fixed 300px sidebar overflows on mobile */
+  .cl-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* 4. Stats row - 4 cells forced in a row, wraps to 2x2 on mobile */
+  .stats-row {
+    flex-wrap: wrap;
+  }
+  .stats-row > * {
+    flex: 1 1 45%;
+    min-width: 0;
+  }
+
+  /* 5. Modal tabs - ensure they scroll horizontally if needed */
+  .m-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* 6. Brand font - 96px is too large for mobile header */
+  .brand { font-size: 52px; }
+
+}
 </style>
 <style>
 .vin-bar{margin-bottom:14px;padding:14px;background:var(--panel);border:1px solid var(--border);border-radius:10px}
