@@ -75,6 +75,12 @@ def build_data(cur):
         "cap_wo": r["capacity_without_filter"], "spec": r["oem_spec"],
         "filters": pj(r["filters_json"]), "drain": pj(r["drain_bolt_json"])}))
 
+    # EV specs -> rendered in the Oil tab in place of the "No oil data - EV" message
+    if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ev_specs'").fetchone():
+        each("ev_specs", lambda d, r: d.update(ev={
+            "batt": r["battery_kwh"], "use": r["usable_kwh"],
+            "charge": r["max_charge_kw"], "range": r["range_miles"], "src": r["source"]}))
+
     each("parts", lambda d, r: d.update(parts={
         "plug_type": r["spark_plug_type"], "plug_gap": r["spark_plug_gap"],
         "plug_qty": r["spark_plug_qty"], "batt_group": r["battery_group"],
