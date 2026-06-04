@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-01-specs-v21a">
+<meta name="kyr-version" content="2026-06-01-specs-v21b">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -493,6 +493,23 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
 </style>
 <style>
 .dtc-disclaimer{margin:0 0 12px;padding:10px 13px;background:#3a2e00;border:1px solid #e0a23b;border-radius:8px;color:#ffd97a;font-size:12px;line-height:1.5}
+.cl-pinned{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 11px;margin-bottom:12px}
+.cl-pinned-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
+.cl-pinned-ttl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.cl-pinned-clear{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);cursor:pointer;background:none;border:none;padding:0}
+.cl-pinned-clear:hover{color:var(--accent)}
+.cl-chips{display:flex;flex-direction:column;gap:6px}
+.cl-chip{display:flex;align-items:center;gap:7px;background:var(--p2,#1c1c1c);border:1px solid var(--border);border-radius:7px;padding:6px 9px;font-size:11px;min-width:0}
+.cl-chip-code{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--accent);cursor:pointer;flex-shrink:0}
+.cl-chip-code:hover{text-decoration:underline}
+.cl-chip-desc{color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+.cl-chip-x{color:var(--faint);cursor:pointer;font-size:14px;line-height:1;flex-shrink:0;padding:0 2px;user-select:none}
+.cl-chip-x:hover{color:var(--red)}
+.dtc-pin{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;background:var(--p2,#1c1c1c);border:1px solid var(--border);color:var(--dim);border-radius:6px;padding:4px 10px;cursor:pointer;transition:all .15s;flex-shrink:0;white-space:nowrap}
+.dtc-pin:hover{border-color:var(--accent);color:var(--accent)}
+.dtc-pin.on{background:rgba(255,107,0,.12);border-color:rgba(255,107,0,.35);color:var(--accent)}
+.cl-toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(20px);background:var(--p3,#222);border:1px solid var(--b2,#333);color:var(--text);font-size:12.5px;font-weight:600;padding:11px 18px;border-radius:9px;box-shadow:0 8px 28px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:400}
+.cl-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
@@ -564,6 +581,7 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
 <div class="pane" id="pane-codes">
   <div class="cl-layout">
     <div class="cl-panel">
+      <div id="cl-pinned" class="cl-pinned" style="display:none"></div>
       <div class="cl-title">CODE <em>LOOKUP</em></div>
       <input class="cl-input" id="cl-input" type="text" placeholder="P0420" maxlength="6">
       <div class="cl-hint">// ENTER FULL OR PARTIAL CODE</div>
@@ -1306,8 +1324,43 @@ function lookupCode(){
   var matches=Object.entries(DB.dtc).filter(function(e){return e[0].startsWith(raw)&&e[0]!==raw;}).slice(0,25);
   if(!exact&&!matches.length){res.innerHTML='<div class="cl-empty">// NO MATCH FOR '+raw+'<br>// TRY A PARTIAL CODE LIKE &ldquo;P04&rdquo;</div>';return;}
   var sysL={P:'Powertrain',B:'Body',C:'Chassis',U:'Network'};
-  function card(code,desc){var s=code[0];return '<div class="dtc-card"><div class="dtc-head"><span class="dtc-code">'+code+'</span><span class="dtc-sys sys-'+s+'">'+(sysL[s]||s)+'</span><span class="dtc-desc">'+(desc||'No description available')+'</span></div>'+dtcFixes(code)+'</div>';}
+  function card(code,desc){var s=code[0];var pinned=clIsPinned(code);
+    return '<div class="dtc-card"><div class="dtc-head"><span class="dtc-code">'+code+'</span><span class="dtc-sys sys-'+s+'">'+(sysL[s]||s)+'</span><span class="dtc-desc">'+(desc||'No description available')+'</span>'
+      +'<button class="dtc-pin'+(pinned?' on':'')+'" onclick="clTogglePin(\''+code+'\')">&#128204; '+(pinned?'Unpin':'Pin')+'</button>'
+      +'</div>'+dtcFixes(code)+'</div>';}
   var h='';if(exact)h+=card(raw,exact);matches.forEach(function(e){h+=card(e[0],e[1]);});res.innerHTML=h;
+}
+
+/* DTC code pinning (session-only, max 6) */
+var clPins=[];
+function clIsPinned(code){return clPins.some(function(p){return p.code===code;});}
+function clTogglePin(code){code=String(code).toUpperCase();
+  if(clIsPinned(code)){clPins=clPins.filter(function(p){return p.code!==code;});}
+  else{
+    if(clPins.length>=6){clToast('Max 6 codes pinned &mdash; remove one to add more.');return;}
+    clPins.push({code:code,desc:(DB.dtc&&DB.dtc[code])||''});
+  }
+  clRenderPins();lookupCode();
+}
+function clUnpin(code){clPins=clPins.filter(function(p){return p.code!==code;});clRenderPins();lookupCode();}
+function clClearPins(){clPins=[];clRenderPins();lookupCode();}
+function clLoadPin(code){var i=document.getElementById('cl-input');if(!i)return;i.value=code;lookupCode();try{i.scrollIntoView({block:'nearest'});}catch(e){}}
+function clRenderPins(){var el=document.getElementById('cl-pinned');if(!el)return;
+  if(!clPins.length){el.style.display='none';el.innerHTML='';return;}
+  var chips=clPins.map(function(p){var d=dtcEsc(p.desc||'No description available');
+    return '<div class="cl-chip"><span class="cl-chip-code" onclick="clLoadPin(\''+p.code+'\')">'+p.code+'</span>'
+      +'<span class="cl-chip-desc" title="'+d+'">&mdash; '+d+'</span>'
+      +'<span class="cl-chip-x" onclick="clUnpin(\''+p.code+'\')" title="Remove">&times;</span></div>';}).join('');
+  el.innerHTML='<div class="cl-pinned-top"><span class="cl-pinned-ttl">&#128204; Pinned Codes ('+clPins.length+'/6)</span>'
+    +'<button class="cl-pinned-clear" onclick="clClearPins()">Clear all</button></div><div class="cl-chips">'+chips+'</div>';
+  el.style.display='block';
+}
+var clToastT=null;
+function clToast(msg){var t=document.getElementById('cl-toast');
+  if(!t){t=document.createElement('div');t.id='cl-toast';t.className='cl-toast';document.body.appendChild(t);}
+  t.innerHTML=msg;t.classList.add('show');
+  if(clToastT)clearTimeout(clToastT);
+  clToastT=setTimeout(function(){t.classList.remove('show');},2400);
 }
 
 document.addEventListener('DOMContentLoaded',function(){
