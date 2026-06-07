@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-01-specs-v21e">
+<meta name="kyr-version" content="2026-06-01-specs-v21f">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -548,6 +548,32 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
 
 <div class="pane active" id="pane-garage">
   <div id="kyr-hero" style="max-height:160px;overflow:hidden;text-align:center;padding:18px 16px 6px"><div style="font-family:'Anton',sans-serif;font-size:36px;letter-spacing:.04em;line-height:1.05;background:linear-gradient(180deg,#fff 0%,#aaa 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">KNOW YOUR RIDE</div><div style="font-family:'Manrope',sans-serif;font-size:14px;color:var(--dim);max-width:580px;margin:7px auto 0;line-height:1.5">Exact specs for your car &mdash; oil type, drain plug size, maintenance schedules, and recall alerts.</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.25);padding:5px 12px;border-radius:100px">3,654 Vehicles</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.25);padding:5px 12px;border-radius:100px">12,196 DTC Codes</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.25);padding:5px 12px;border-radius:100px">49 Makes</span></div></div>
+  <style>/*WRENCH_HEROSEARCH_v21f*/
+.kyr-hs{width:100%;padding:6px 16px 22px;text-align:center}
+.kyr-hs-inner{max-width:840px;margin:0 auto}
+.kyr-hs-title{font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:13px}
+.kyr-hs-row{display:flex;gap:10px;justify-content:center;align-items:stretch;flex-wrap:wrap}
+.kyr-hs-sel{flex:1 1 190px;min-width:0;max-width:240px;background:var(--p2,#1c1c1c);border:1px solid var(--border);color:var(--text);font-family:'Manrope',sans-serif;font-size:14px;font-weight:600;padding:13px 14px;border-radius:10px;cursor:pointer;outline:none;transition:border-color .15s,opacity .15s}
+.kyr-hs-sel:focus{border-color:var(--accent)}
+.kyr-hs-sel:disabled{opacity:.42;cursor:not-allowed}
+.kyr-hs-btn{flex:0 0 auto;background:var(--accent);color:#000;border:none;border-radius:10px;padding:13px 26px;font-family:'Manrope',sans-serif;font-weight:800;font-size:14px;letter-spacing:.02em;cursor:pointer;white-space:nowrap;transition:filter .15s,opacity .15s}
+.kyr-hs-btn:hover{filter:brightness(1.07)}
+.kyr-hs-btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
+.kyr-hs-sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.05em;margin-top:13px}
+@media(max-width:600px){.kyr-hs-row{flex-direction:column;align-items:stretch}.kyr-hs-sel{max-width:none;flex:1 1 auto;width:100%}.kyr-hs-btn{width:100%}}
+</style>
+  <div id="kyr-hero-search" class="kyr-hs">
+    <div class="kyr-hs-inner">
+      <div class="kyr-hs-title">Find Your Vehicle</div>
+      <div class="kyr-hs-row">
+        <select id="kyr-hs-make" class="kyr-hs-sel" onchange="kyrHsMakeChange()"><option value="">Make</option></select>
+        <select id="kyr-hs-model" class="kyr-hs-sel" onchange="kyrHsModelChange()" disabled><option value="">Model</option></select>
+        <select id="kyr-hs-year" class="kyr-hs-sel" onchange="kyrHsValidate()" disabled><option value="">Year</option></select>
+        <button id="kyr-hs-btn" class="kyr-hs-btn" onclick="kyrHsSubmit()" disabled>View Specs &rarr;</button>
+      </div>
+      <div class="kyr-hs-sub">No account required. Free to start.</div>
+    </div>
+  </div>
   <div class="vin-bar">
   <div class="vin-label">// Decode by VIN</div>
   <div class="vin-row">
@@ -1130,6 +1156,37 @@ function buildSelects(){
   YEARS.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;ys.appendChild(o);});
 }
 
+/*WRENCH_HEROSEARCH_v21f*/ // hero cascading search: Make -> Model -> Year -> View Specs
+function kyrHsFill(sel,placeholder,items){sel.innerHTML='<option value="">'+placeholder+'</option>'+items.map(function(x){return '<option value="'+x+'">'+x+'</option>';}).join('');}
+function kyrHsModelsFor(make){return [...new Set(DB.v.filter(function(v){return v.make===make;}).map(function(v){return v.model;}))].sort();}
+function kyrHsYearsFor(make,model){return [...new Set(DB.v.filter(function(v){return v.make===make&&v.model===model;}).map(function(v){return v.year;}))].sort(function(a,b){return b-a;});}
+function kyrHsInit(){var mk=document.getElementById('kyr-hs-make');if(mk)kyrHsFill(mk,'Make',MAKES);}
+function kyrHsMakeChange(){
+  var mk=document.getElementById('kyr-hs-make'),md=document.getElementById('kyr-hs-model'),yr=document.getElementById('kyr-hs-year');
+  if(mk.value){kyrHsFill(md,'Model',kyrHsModelsFor(mk.value));md.disabled=false;}else{kyrHsFill(md,'Model',[]);md.disabled=true;}
+  kyrHsFill(yr,'Year',[]);yr.disabled=true;kyrHsValidate();
+}
+function kyrHsModelChange(){
+  var mk=document.getElementById('kyr-hs-make'),md=document.getElementById('kyr-hs-model'),yr=document.getElementById('kyr-hs-year');
+  if(mk.value&&md.value){kyrHsFill(yr,'Year',kyrHsYearsFor(mk.value,md.value));yr.disabled=false;}else{kyrHsFill(yr,'Year',[]);yr.disabled=true;}
+  kyrHsValidate();
+}
+function kyrHsValidate(){
+  var mk=document.getElementById('kyr-hs-make'),md=document.getElementById('kyr-hs-model'),yr=document.getElementById('kyr-hs-year'),b=document.getElementById('kyr-hs-btn');
+  if(b)b.disabled=!(mk.value&&md.value&&yr.value);
+}
+function kyrHsSubmit(){
+  var mk=document.getElementById('kyr-hs-make').value,md=document.getElementById('kyr-hs-model').value,yr=document.getElementById('kyr-hs-year').value;
+  if(!mk||!md||!yr)return;
+  var matches=DB.v.filter(function(v){return v.make===mk&&v.model===md&&String(v.year)===String(yr);});
+  if(!matches.length)return;
+  if(matches.length===1){openModal(matches[0].id);return;}
+  // multiple trims/engines: drive the existing garage lookup, then scroll to the results grid
+  var s=document.getElementById('g-search');if(s){s.value=yr+' '+mk+' '+md;if(typeof gSearchInput==='function')gSearchInput();else renderGarage();}
+  var sg=document.getElementById('g-suggest');if(sg)sg.classList.remove('open');
+  var grid=document.getElementById('vgrid');if(grid)grid.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 function renderGarage(){
   const q=document.getElementById('g-search').value.toLowerCase();
   const make=document.getElementById('sel-make').value;
@@ -1412,7 +1469,7 @@ function clToast(msg){var t=document.getElementById('cl-toast');
 }
 
 document.addEventListener('DOMContentLoaded',function(){
-  buildSelects();renderGarage();
+  buildSelects();renderGarage();kyrHsInit();
   document.getElementById('overlay').addEventListener('click',function(e){if(e.target===document.getElementById('overlay'))closeModal();});
   document.getElementById('cl-input').addEventListener('input',lookupCode);
   document.getElementById('cl-input').addEventListener('keydown',function(e){if(e.key==='Enter')lookupCode();});
