@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-10-a11y-v23">
+<meta name="kyr-version" content="2026-06-10-copy-v24">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -1130,7 +1130,7 @@ document.addEventListener('DOMContentLoaded',kyrInitPaywall);
 function gTokens(){return (document.getElementById('g-search').value||'').toLowerCase().trim().split(/\s+/).filter(Boolean);}
 function gMatch(v,tokens){var h=(v.year+' '+v.make+' '+v.model+' '+(v.engine||'')+' '+(v.trim||'')).toLowerCase();return tokens.every(function(t){return h.indexOf(t)>=0;});}
 function gFilterDropdowns(tokens){var base=tokens.length?DB.v.filter(function(v){return gMatch(v,tokens);}):DB.v;var ms=document.getElementById('sel-make'),ys=document.getElementById('sel-year');var curM=ms.value,curY=ys.value;var makes=Array.from(new Set(base.map(function(v){return v.make;}))).sort();var years=Array.from(new Set(base.map(function(v){return String(v.year);}))).sort(function(a,b){return b-a;});ms.innerHTML='<option value="">All Makes</option>'+makes.map(function(m){return '<option'+(m===curM?' selected':'')+'>'+m+'</option>';}).join('');ys.innerHTML='<option value="">All Years</option>'+years.map(function(y){return '<option'+(y===curY?' selected':'')+'>'+y+'</option>';}).join('');}
-function gSearchInput(){var tokens=gTokens();var sug=document.getElementById('g-suggest');if(tokens.length){var matches=DB.v.filter(function(v){return gMatch(v,tokens);});if(matches.length){sug.innerHTML=matches.slice(0,8).map(function(v){return '<div class="g-sg-item" onmousedown="gPick('+v.id+')">'+v.year+' '+v.make+' '+v.model+(v.engine?' <span class="g-sg-sub">'+v.engine+'</span>':'')+'</div>';}).join('')+(matches.length>8?'<div class="g-sg-none">+'+(matches.length-8)+' more - keep typing to narrow</div>':'');sug.classList.add('open');}else{sug.innerHTML='<div class="g-sg-none">No matching vehicles</div>';sug.classList.add('open');}}else{sug.classList.remove('open');sug.innerHTML='';}gFilterDropdowns(tokens);renderGarage();}
+function gSearchInput(){var tokens=gTokens();var sug=document.getElementById('g-suggest');if(tokens.length){var matches=DB.v.filter(function(v){return gMatch(v,tokens);});if(matches.length){sug.innerHTML=matches.slice(0,8).map(function(v){return '<div class="g-sg-item" onmousedown="gPick('+v.id+')">'+v.year+' '+v.make+' '+v.model+(v.engine?' <span class="g-sg-sub">'+v.engine+'</span>':'')+'</div>';}).join('')+(matches.length>8?'<div class="g-sg-none">+'+(matches.length-8)+' more - keep typing to narrow</div>':'');sug.classList.add('open');}else{sug.innerHTML='<div class="g-sg-none">No match &mdash; try fewer words</div>';sug.classList.add('open');}}else{sug.classList.remove('open');sug.innerHTML='';}gFilterDropdowns(tokens);renderGarage();}
 function gPick(id){var v=VEH[id];var inp=document.getElementById('g-search');if(v)inp.value=v.year+' '+v.make+' '+v.model;var s=document.getElementById('g-suggest');if(s)s.classList.remove('open');openModal(id);}
 
 /*WRENCH_BACK*/
@@ -1252,7 +1252,7 @@ function renderGarage(){
   else if(sort==='rel')vs.sort((a,b)=>(b.rel&&b.rel.score||0)-(a.rel&&a.rel.score||0));
   document.getElementById('g-count').textContent=vs.length+' VEHICLES';
   const grid=document.getElementById('vgrid');
-  if(!vs.length){grid.innerHTML='<div class="no-res">// NO VEHICLES FOUND</div>';return;}
+  if(!vs.length){grid.innerHTML='<div class="no-res">// NO MATCH &mdash; TRY FEWER WORDS, OR PICK A MAKE &amp; YEAR ABOVE</div>';return;}
   grid.innerHTML=vs.map(v=>{
     const o=v.oil,p=v.parts,r=v.rel,s=v.safety,rc=(v.recalls||[]).length,m=v.mpg&&v.mpg[0],isEV=(v.id>=0)&&(!o||!o.visc),ic=(v.notes||[]).filter(function(n){return n.type==='known_issue';}).length;
     const bdg=[];if(v.id<0)bdg.push('<span class="bdg bdg-partial">Partial data - pre-2003</span>');
