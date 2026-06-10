@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-10-skin-v22c">
+<meta name="kyr-version" content="2026-06-10-a11y-v23">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -38,7 +38,10 @@
 
 :root{--bg:#15171c;--panel:#1e222b;--p2:#232833;--p3:#2b313c;--border:#333a45;--b2:#3f4654;--text:#e8e8e6;--dim:#8a8f98;--faint:#585e68;--accent:#ff6b00;--a2:#ffb800;--green:#4ade80;--red:#ef4444;--blue:#60a5fa;--purple:#a78bfa;--placard:#cdd0d4}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;min-height:100vh;font-size:14px}
+html,body{background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;min-height:100vh;font-size:14px;color-scheme:dark}
+.tab-btn:focus-visible,.go-pro-btn:focus-visible,.vcard:focus-visible,.m-tab:focus-visible,.m-close:focus-visible,.kyr-pl-cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.overlay{overscroll-behavior:contain}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
 body{background:var(--bg)}
 .pn,.vcs-v,.sp-v,.astat-n,.mpg-val,.rel-score-big,.g-count{font-variant-numeric:tabular-nums}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;background:rgba(10,10,10,.96);backdrop-filter:blur(10px)}
@@ -540,11 +543,11 @@ body{background:var(--bg)}
 </div>
 
 <div class="tabs">
-  <div class="tab-btn active" data-tab="garage" onclick="switchTab('garage');gResetSelector()">&#128665; &nbsp;Garage</div>
-  <div class="tab-btn" data-tab="codes" onclick="switchTab('codes')">&#128269; &nbsp;Code Lookup</div>
-  <div class="tab-btn" data-tab="identify" onclick="switchTab('identify')">&#128247; &nbsp;Know Your Part</div>
-  <div class="tab-btn" data-tab="about" onclick="switchTab('about')">&#9881; &nbsp;About</div>
-  <div class="go-pro-btn" id="go-pro-btn" onclick="openPricing()">&#9889; Go Pro</div>
+  <div class="tab-btn active" data-tab="garage" tabindex="0" role="button" onclick="switchTab('garage');gResetSelector()">&#128665; &nbsp;Garage</div>
+  <div class="tab-btn" data-tab="codes" tabindex="0" role="button" onclick="switchTab('codes')">&#128269; &nbsp;Code Lookup</div>
+  <div class="tab-btn" data-tab="identify" tabindex="0" role="button" onclick="switchTab('identify')">&#128247; &nbsp;Know Your Part</div>
+  <div class="tab-btn" data-tab="about" tabindex="0" role="button" onclick="switchTab('about')">&#9881; &nbsp;About</div>
+  <div class="go-pro-btn" id="go-pro-btn" tabindex="0" role="button" onclick="openPricing()">&#9889; Go Pro</div>
 </div>
 
 <div class="pane active" id="pane-garage">
@@ -581,9 +584,9 @@ body{background:var(--bg)}
     <div class="kyr-hs-inner">
       <div class="kyr-hs-title">Find Your Vehicle</div>
       <div class="kyr-hs-row">
-        <select id="kyr-hs-make" class="kyr-hs-sel" onchange="kyrHsMakeChange()"><option value="">Make</option></select>
-        <select id="kyr-hs-model" class="kyr-hs-sel" onchange="kyrHsModelChange()" disabled><option value="">Model</option></select>
-        <select id="kyr-hs-year" class="kyr-hs-sel" onchange="kyrHsValidate()" disabled><option value="">Year</option></select>
+        <select id="kyr-hs-make" class="kyr-hs-sel" aria-label="Make" onchange="kyrHsMakeChange()"><option value="">Make</option></select>
+        <select id="kyr-hs-model" class="kyr-hs-sel" aria-label="Model" onchange="kyrHsModelChange()" disabled><option value="">Model</option></select>
+        <select id="kyr-hs-year" class="kyr-hs-sel" aria-label="Year" onchange="kyrHsValidate()" disabled><option value="">Year</option></select>
         <button id="kyr-hs-btn" class="kyr-hs-btn" onclick="kyrHsSubmit()" disabled>View Specs &rarr;</button>
       </div>
       <div class="kyr-hs-sub">No account required. Free to start.</div>
@@ -592,7 +595,7 @@ body{background:var(--bg)}
   <div class="vin-bar">
   <div class="vin-label">// Decode by VIN</div>
   <div class="vin-row">
-    <input type="text" id="vin-input" maxlength="17" placeholder="Enter 17-character VIN..." autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')decodeVIN()">
+    <input type="text" id="vin-input" aria-label="17-character VIN" maxlength="17" placeholder="Enter 17-character VIN..." autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')decodeVIN()">
     <button id="vin-btn" onclick="decodeVIN()">Decode VIN</button>
   </div>
   <div id="vin-result" class="vin-result"></div>
@@ -600,12 +603,12 @@ body{background:var(--bg)}
 <div class="g-controls">
     <div class="g-search">
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="g-search" placeholder="Type your car &mdash; e.g. 2020 Toyota Camry" autocomplete="off" oninput="gSearchInput()" onblur="setTimeout(function(){var s=document.getElementById('g-suggest');if(s)s.classList.remove('open');},200)">
+      <input type="text" id="g-search" aria-label="Search vehicles by year, make, or model" placeholder="Type your car &mdash; e.g. 2020 Toyota Camry" autocomplete="off" oninput="gSearchInput()" onblur="setTimeout(function(){var s=document.getElementById('g-suggest');if(s)s.classList.remove('open');},200)">
       <div id="g-suggest" class="g-suggest"></div>
     </div>
-    <select class="g-sel" id="sel-make" onchange="renderGarage()"><option value="">All Makes</option></select>
-    <select class="g-sel" id="sel-year" onchange="renderGarage()"><option value="">All Years</option></select>
-    <select class="g-sel" id="sel-sort" onchange="renderGarage()">
+    <select class="g-sel" id="sel-make" aria-label="Filter by make" onchange="renderGarage()"><option value="">All Makes</option></select>
+    <select class="g-sel" id="sel-year" aria-label="Filter by year" onchange="renderGarage()"><option value="">All Years</option></select>
+    <select class="g-sel" id="sel-sort" aria-label="Sort vehicles" onchange="renderGarage()">
       <option value="make">Sort: Make</option>
       <option value="year-new">Sort: Newest</option>
       <option value="year-old">Sort: Oldest</option>
@@ -640,7 +643,7 @@ body{background:var(--bg)}
     <div class="cl-panel">
       <div id="cl-pinned" class="cl-pinned" style="display:none"></div>
       <div class="cl-title">CODE <em>LOOKUP</em></div>
-      <input class="cl-input" id="cl-input" type="text" placeholder="P0420" maxlength="6">
+      <input class="cl-input" id="cl-input" aria-label="Diagnostic trouble code" type="text" placeholder="P0420" maxlength="6">
       <div class="cl-hint">// ENTER FULL OR PARTIAL CODE</div>
       <div class="cl-quicks">
         <span class="cl-q">P0420</span><span class="cl-q">P0300</span><span class="cl-q">P0171</span><span class="cl-q">P0101</span>
@@ -730,11 +733,11 @@ body{background:var(--bg)}
 </div>
 
 <div class="overlay" id="overlay">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Vehicle specifications">
     <div class="m-top">
       <button class="m-back" onclick="backToSearch()">&#8592; Change Vehicle</button>
       <div class="m-title" id="m-title">-</div>
-      <div class="m-close" onclick="closeModal()">&#10005;</div>
+      <div class="m-close" tabindex="0" role="button" aria-label="Close" onclick="closeModal()">&#10005;</div>
     </div>
     <div class="m-tabs" id="m-tab-bar"></div>
     <div class="m-body" id="m-body"></div>
@@ -1259,7 +1262,7 @@ function renderGarage(){
     if(s&&s.overall)bdg.push('<span class="bdg bdg-s">&#9733;'+s.overall+'</span>');
     if(rc>0)bdg.push('<span class="bdg bdg-r">'+rc+' RECALL'+(rc>1?'S':'')+'</span>');
     if(v.maint&&v.maint.length)bdg.push('<span class="bdg bdg-m">'+v.maint.length+' SCHEDULES</span>');
-    return '<div class="vcard" onclick="openModal('+v.id+')"><div class="vc-head"><div><div class="vc-name">'+v.year+' '+v.make+' '+v.model+'</div><div class="vc-sub">'+(v.engine||v.trim||'&mdash;')+'</div>'+(ic>0?'<div onclick="event.stopPropagation();openModal('+v.id+',\'issues\')" style="margin-top:6px;display:inline-block;background:rgba(255,184,0,.12);color:var(--a2,#ffb800);border:1px solid rgba(255,184,0,.3);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;cursor:pointer">&#9888;&#65039; '+ic+' known issue'+(ic>1?'s':'')+' documented</div>':'')+'</div></div><div class="vc-badges">'+bdg.join('')+'</div><div class="vc-stats"><div><div class="vcs-l">OIL</div><div class="vcs-v">'+(o&&o.visc||'&mdash;')+'</div></div><div><div class="vcs-l">RELIABILITY</div><div class="vcs-v">'+(r&&r.score?r.score.toFixed(0)+'%':'&mdash;')+'</div></div><div><div class="vcs-l">MPG COMB</div><div class="vcs-v">'+(m&&m.comb||'&mdash;')+'</div></div></div></div>';
+    return '<div class="vcard" tabindex="0" role="button" aria-label="'+v.year+' '+v.make+' '+v.model+'" onclick="openModal('+v.id+')"><div class="vc-head"><div><div class="vc-name">'+v.year+' '+v.make+' '+v.model+'</div><div class="vc-sub">'+(v.engine||v.trim||'&mdash;')+'</div>'+(ic>0?'<div onclick="event.stopPropagation();openModal('+v.id+',\'issues\')" style="margin-top:6px;display:inline-block;background:rgba(255,184,0,.12);color:var(--a2,#ffb800);border:1px solid rgba(255,184,0,.3);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;cursor:pointer">&#9888;&#65039; '+ic+' known issue'+(ic>1?'s':'')+' documented</div>':'')+'</div></div><div class="vc-badges">'+bdg.join('')+'</div><div class="vc-stats"><div><div class="vcs-l">OIL</div><div class="vcs-v">'+(o&&o.visc||'&mdash;')+'</div></div><div><div class="vcs-l">RELIABILITY</div><div class="vcs-v">'+(r&&r.score?r.score.toFixed(0)+'%':'&mdash;')+'</div></div><div><div class="vcs-l">MPG COMB</div><div class="vcs-v">'+(m&&m.comb||'&mdash;')+'</div></div></div></div>';
   }).join('');
 }
 
@@ -1422,7 +1425,7 @@ function openModal(vid,tab){
 
 function renderMTabs(v){
   var ic=(v.notes||[]).filter(function(n){return n.type==='known_issue';}).length;
-  document.getElementById('m-tab-bar').innerHTML=MTABS.map(function(t,i){var lbl=MLABELS[i];if(t==='issues'&&ic>0)lbl+=' <span style="display:inline-block;background:var(--red,#ef4444);color:#fff;font-size:9px;font-weight:800;line-height:1;padding:2px 6px;border-radius:9px;vertical-align:middle">'+ic+'</span>';return '<div class="m-tab '+(t===curTab?'active':'')+'" onclick="switchMTab(\''+t+'\','+v.id+')">'+lbl+'</div>';}).join('');
+  document.getElementById('m-tab-bar').innerHTML=MTABS.map(function(t,i){var lbl=MLABELS[i];if(t==='issues'&&ic>0)lbl+=' <span style="display:inline-block;background:var(--red,#ef4444);color:#fff;font-size:9px;font-weight:800;line-height:1;padding:2px 6px;border-radius:9px;vertical-align:middle">'+ic+'</span>';return '<div class="m-tab '+(t===curTab?'active':'')+'" tabindex="0" role="button" onclick="switchMTab(\''+t+'\','+v.id+')">'+lbl+'</div>';}).join('');
 }
 
 function switchMTab(tab,vid){curTab=tab;var v=VEH[vid];renderMTabs(v);renderMBody(v);}
@@ -1515,6 +1518,7 @@ function clToast(msg){var t=document.getElementById('cl-toast');
 
 document.addEventListener('DOMContentLoaded',function(){
   buildSelects();renderGarage();kyrHsInit();kyrHsDefaultPlacard();
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){var o=document.getElementById('overlay');if(o&&o.classList.contains('open')){closeModal();}return;}if(e.key==='Enter'||e.key===' '){var t=e.target;if(t&&t.getAttribute&&t.getAttribute('role')==='button'&&t.hasAttribute('tabindex')){e.preventDefault();t.click();}}});
   document.getElementById('overlay').addEventListener('click',function(e){if(e.target===document.getElementById('overlay'))closeModal();});
   document.getElementById('cl-input').addEventListener('input',lookupCode);
   document.getElementById('cl-input').addEventListener('keydown',function(e){if(e.key==='Enter')lookupCode();});
