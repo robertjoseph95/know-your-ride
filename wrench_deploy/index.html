@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-10-deeplink2-v29">
+<meta name="kyr-version" content="2026-06-10-lightpaper-v30">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -100,6 +100,13 @@ body{background:var(--bg)}
 .m-tab:hover{color:var(--dim)}
 .m-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 .m-body{padding:22px;max-height:72vh;overflow-y:auto}
+.m-body.paper{--panel:#e3dccb;--p2:#ddd5c0;--p3:#d3cab2;--border:#c3bca9;--b2:#a89f88;--text:#1b1e23;--dim:#5f5848;--faint:#6f6648;--accent:#a8470a;--a2:#d99a2e;--red:#a3380f;--green:#1f6b3a;--purple:#5b3a8a;background:#ece6d8;color:#1b1e23}
+.m-body.paper .spec-item{background:transparent;border:0;border-bottom:1px solid var(--border);border-radius:0;padding:8px 2px}
+.m-body.paper .recall-card,.m-body.paper .wty-card,.m-body.paper .mpg-row,.m-body.paper .pt-card{background:transparent;border:1px solid var(--border);border-radius:2px}
+.m-body.paper .sec-head::before{content:"\00A7 ";color:var(--accent);font-weight:700}
+.m-body.paper .gh-banner{background:#efe2c4;border-color:#b88a2e;color:#5a3d0a}
+.m-body.paper .gh-safety{background:#f3dcd2;border-color:var(--red);color:#7a2a0c}
+.m-body.paper .pro-cta{color:#fff}
 .sec-head{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:.25em;text-transform:uppercase;margin-bottom:10px;margin-top:22px;display:flex;align-items:center;gap:8px;border-left:3px solid var(--b2);padding-left:9px}
 .m-tab-n{color:var(--faint);margin-right:7px;font-weight:400;letter-spacing:.05em}
 .m-tab.active .m-tab-n{color:var(--accent)}
@@ -748,7 +755,7 @@ body{background:var(--bg)}
       <div class="m-close" tabindex="0" role="button" aria-label="Close" onclick="closeModal()">&#10005;</div>
     </div>
     <div class="m-tabs" id="m-tab-bar"></div>
-    <div class="m-body" id="m-body"></div>
+    <div class="m-body paper" id="m-body"></div>
   </div>
 </div>
 
