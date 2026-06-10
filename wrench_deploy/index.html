@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-10-skin-v22">
+<meta name="kyr-version" content="2026-06-10-skin-v22b">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -562,6 +562,20 @@ body{background:var(--bg)}
 .kyr-hs-btn:disabled{opacity:.4;cursor:not-allowed;filter:none}
 .kyr-hs-sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.05em;margin-top:13px}
 @media(max-width:600px){.kyr-hs-row{flex-direction:column;align-items:stretch}.kyr-hs-sel{max-width:none;flex:1 1 auto;width:100%}.kyr-hs-btn{width:100%}}
+.kyr-pl{max-width:520px;width:100%;background:var(--placard);color:#23262b;border-radius:4px;overflow:hidden;position:relative;box-shadow:0 1px 0 #e7e9ec inset,0 10px 30px rgba(0,0,0,.35);font-family:'JetBrains Mono',monospace}
+.kyr-pl-hd{background:#1b1d22;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 14px;border-bottom:2px solid var(--accent)}
+.kyr-pl-hd .t{font-size:9px;letter-spacing:.18em;color:#8a8f98;white-space:nowrap}
+.kyr-pl-hd .v{font-family:'Manrope',sans-serif;font-weight:700;font-size:14px;color:#fff;text-align:right;line-height:1.2}
+.kyr-pl-body{padding:6px 16px 14px}
+.kyr-pl-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 0;border-top:1px solid #aeb1b7}
+.kyr-pl-row:first-child{border-top:none}
+.kyr-pl-row .l{font-size:9px;letter-spacing:.12em;color:#5f6268;white-space:nowrap}
+.kyr-pl-row .val{font-size:13px;font-weight:700;color:#1b1e23;text-align:right}
+.kyr-pl-cta{display:block;width:100%;margin-top:12px;background:var(--accent);color:#1a1205;border:none;border-radius:4px;padding:11px;font-family:'Manrope',sans-serif;font-weight:700;font-size:13px;letter-spacing:.01em;cursor:pointer;transition:filter .15s}
+.kyr-pl-cta:hover{filter:brightness(1.06)}
+.kyr-pl-rivet{position:absolute;top:34px;width:6px;height:6px;border-radius:50%;background:#9a9da2;box-shadow:0 1px 1px rgba(0,0,0,.3)}
+.kyr-pl-more{margin-top:10px;font-size:10px;letter-spacing:.06em;color:var(--accent);cursor:pointer;text-align:center;font-family:'JetBrains Mono',monospace}
+.kyr-pl-more:hover{text-decoration:underline}
 </style>
   <div id="kyr-hero-search" class="kyr-hs">
     <div class="kyr-hs-inner">
@@ -1176,16 +1190,46 @@ function kyrHsValidate(){
   var mk=document.getElementById('kyr-hs-make'),md=document.getElementById('kyr-hs-model'),yr=document.getElementById('kyr-hs-year'),b=document.getElementById('kyr-hs-btn');
   if(b)b.disabled=!(mk.value&&md.value&&yr.value);
 }
+/*WRENCH_PLACARD_v22b*/ // door-jamb spec placard: the at-a-glance result of a vehicle lookup
+function kyrReduceMotion(){try{return window.matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}}
+function plRow(l,val){return '<div class="kyr-pl-row"><span class="l">'+l+'</span><span class="val">'+val+'</span></div>';}
+function renderPlacard(v){
+  if(!v)return '';
+  var o=v.oil||{},p=v.parts||{},d=o.drain||{},ev=v.ev,rc=(v.recalls||[]).length;
+  var psi=p.psi_f?(p.psi_f+(p.psi_r&&p.psi_r!=p.psi_f?'/'+p.psi_r:'')+' PSI'):'';
+  var rows=plRow('TIRE / PSI',(p.tire||'See manual')+(psi?'  &middot;  '+psi:''));
+  var isEV=!!ev||(!o.visc&&v.id>=0);
+  if(isEV&&ev){
+    rows+=plRow('BATTERY',ev.batt?ev.batt+' kWh':'See manual');
+    rows+=plRow('EPA RANGE',ev.range?Math.round(ev.range)+' mi':'See manual');
+  }else{
+    rows+=plRow('ENGINE OIL',(o.visc||'See manual')+(o.cap_w?'  &middot;  '+o.cap_w+' qt':''));
+    rows+=plRow('DRAIN PLUG',(d.socket_size_mm?d.socket_size_mm+'mm':(o.visc?'See manual':'&mdash;'))+(d.thread_size?'  &middot;  '+d.thread_size:''));
+  }
+  rows+=plRow('OPEN RECALLS',rc>0?'<span style="color:#a3380f">'+rc+' &mdash; check now</span>':'<span style="color:#1f6b3a">None on record</span>');
+  return '<div class="kyr-pl">'
+    +'<span class="kyr-pl-rivet" style="left:9px"></span><span class="kyr-pl-rivet" style="right:9px"></span>'
+    +'<div class="kyr-pl-hd"><span class="t">VEHICLE&nbsp;SPECIFICATION</span><span class="v">'+v.year+' '+v.make+' '+v.model+'</span></div>'
+    +'<div class="kyr-pl-body">'+rows
+    +'<button class="kyr-pl-cta" onclick="openModal('+v.id+')">Open full manual &rarr;</button>'
+    +'</div></div>';
+}
+function kyrPlSlot(){var s=document.getElementById('kyr-sample');if(s)s.style.cssText='max-width:560px;margin:0 0 16px;display:block';return s;}
+function kyrHsDefaultPlacard(){var s=kyrPlSlot();if(!s)return;var v=VEH[12802]||DB.v[0];if(v)s.innerHTML=renderPlacard(v);}
+function kyrHsShowTrims(mk,md,yr){
+  var s=document.getElementById('g-search');if(s){s.value=yr+' '+mk+' '+md;if(typeof gSearchInput==='function')gSearchInput();else renderGarage();}
+  var sg=document.getElementById('g-suggest');if(sg)sg.classList.remove('open');
+  var grid=document.getElementById('vgrid');if(grid)grid.scrollIntoView({behavior:kyrReduceMotion()?'auto':'smooth',block:'start'});
+}
 function kyrHsSubmit(){
   var mk=document.getElementById('kyr-hs-make').value,md=document.getElementById('kyr-hs-model').value,yr=document.getElementById('kyr-hs-year').value;
   if(!mk||!md||!yr)return;
   var matches=DB.v.filter(function(v){return v.make===mk&&v.model===md&&String(v.year)===String(yr);});
   if(!matches.length)return;
-  if(matches.length===1){openModal(matches[0].id);return;}
-  // multiple trims/engines: drive the existing garage lookup, then scroll to the results grid
-  var s=document.getElementById('g-search');if(s){s.value=yr+' '+mk+' '+md;if(typeof gSearchInput==='function')gSearchInput();else renderGarage();}
-  var sg=document.getElementById('g-suggest');if(sg)sg.classList.remove('open');
-  var grid=document.getElementById('vgrid');if(grid)grid.scrollIntoView({behavior:'smooth',block:'start'});
+  var slot=kyrPlSlot();if(!slot){openModal(matches[0].id);return;}
+  var note=(matches.length>1)?('<div class="kyr-pl-more" onclick="kyrHsShowTrims(\''+mk+'\',\''+md+'\',\''+yr+'\')">'+matches.length+' trims/engines on record &mdash; compare all &darr;</div>'):'';
+  slot.innerHTML=renderPlacard(matches[0])+note;
+  slot.scrollIntoView({behavior:kyrReduceMotion()?'auto':'smooth',block:'center'});
 }
 
 function renderGarage(){
@@ -1470,7 +1514,7 @@ function clToast(msg){var t=document.getElementById('cl-toast');
 }
 
 document.addEventListener('DOMContentLoaded',function(){
-  buildSelects();renderGarage();kyrHsInit();
+  buildSelects();renderGarage();kyrHsInit();kyrHsDefaultPlacard();
   document.getElementById('overlay').addEventListener('click',function(e){if(e.target===document.getElementById('overlay'))closeModal();});
   document.getElementById('cl-input').addEventListener('input',lookupCode);
   document.getElementById('cl-input').addEventListener('keydown',function(e){if(e.key==='Enter')lookupCode();});
