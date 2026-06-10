@@ -1425,9 +1425,9 @@ var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG',
 var curTab='oil';
 
 /*WRENCH_DEEPLINK_v27*/ // shareable/refreshable URLs: ?v=<id> opens a vehicle, ?tab=, ?code=<DTC>
-var __kyrCurV=null,__kyrBooting=true;
+var __kyrCurV=null,__kyrBooting=true,__kyrReplaying=false,__kyrPushedModal=false;
 function kyrSyncURL(){
-  if(__kyrBooting)return;
+  if(__kyrBooting||__kyrReplaying)return;
   try{
     var p=new URLSearchParams();
     var ov=document.getElementById('overlay');
@@ -1568,7 +1568,8 @@ document.addEventListener('DOMContentLoaded',function(){
     upd();
   })();
   __kyrBooting=false;
-  if(!kyrApplyURL()){try{var __lv=sessionStorage.getItem('kyr_last_vehicle');if(__lv&&VEH[__lv])openModal(__lv);}catch(e){}}
+  __kyrReplaying=true;
+  try{if(!kyrApplyURL()){try{var __lv=sessionStorage.getItem('kyr_last_vehicle');if(__lv&&VEH[__lv])openModal(__lv);}catch(e){}}}finally{__kyrReplaying=false;}
 });
 
 </script>
