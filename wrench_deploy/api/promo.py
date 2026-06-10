@@ -48,8 +48,7 @@ class handler(BaseHTTPRequestHandler):
             try:
                 k = f"promo:ip:{ip}:{int(time.time() // 3600)}"
                 n = r.incr(k)
-                if n == 1:
-                    r.expire(k, 3600)
+                r.expire(k, 3600)  # always (re)set TTL so a crash can't orphan the key
                 if n > 20:
                     return self._send(429, {"ok": False, "error": "Too many attempts. Please try again later."})
             except Exception:
@@ -65,6 +64,17 @@ class handler(BaseHTTPRequestHandler):
         email = str(body.get("email") or "").strip().lower()
         if not EMAIL_RE.match(email):
             return self._send(200, {"ok": False, "error": "A valid email is required to redeem a promo code."})
+        # Per-email idempotency: one redemption per email per code. Re-entry returns the same
+        # grant and does NOT consume another of the MAX_USES slots.
+        em_key = f"promo:{code}:email:{email}"
+        if r is not None:
+            try:
+                prev = r.get(em_key)
+                if prev:
+                    return self._send(200, {"ok": True, "days": days, "until": int(prev),
+                                            "message": f"Pro access unlocked for {days} days!"})
+            except Exception:
+                pass
         # Enforce the total-redemption cap.
         if r is not None:
             try:
@@ -74,11 +84,12 @@ class handler(BaseHTTPRequestHandler):
             if uses >= MAX_USES:
                 return self._send(200, {"ok": False, "error": LIMIT_MSG})
         until = int(time.time()) + days * 86400
-        # Record the activation in Redis (per-device token), TTL = the grant window.
+        # Record the activation in Redis (per-device token + per-email), TTL = the grant window.
         if r is not None:
             try:
                 token = (str(body.get("token") or "").strip() or uuid.uuid4().hex)[:64]
                 r.set(f"promo:{code}:{token}", str(until), ex=days * 86400)
+                r.set(em_key, str(until), ex=days * 86400)
                 r.incr(f"promo:{code}:count")
             except Exception:
                 pass

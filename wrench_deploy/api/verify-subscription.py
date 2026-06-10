@@ -64,8 +64,7 @@ class handler(BaseHTTPRequestHandler):
             rk = "vsub:ip:" + ip
             try:
                 n = r.incr(rk)
-                if n == 1:
-                    r.expire(rk, 3600)
+                r.expire(rk, 3600)  # always (re)set TTL so a crash between incr/expire can't orphan the key
                 if n > 20:
                     return self._send(429, {"subscribed": False, "error": "Too many requests. Please try again in a bit."})
             except Exception:

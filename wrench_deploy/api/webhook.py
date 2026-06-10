@@ -59,6 +59,10 @@ class handler(BaseHTTPRequestHandler):
         obj = event["data"]["object"]
         r = _redis()
         try:
+            # Idempotency: Stripe may deliver the same event more than once. Skip if already handled.
+            evid = str(event.get("id") or "")
+            if r is not None and evid and r.get("evt:" + evid):
+                return self._send(200, {"received": True, "duplicate": True})
             email = self._email_for(stripe, obj)
             if email and r:
                 if etype in INACTIVE_EVENTS:
@@ -68,9 +72,12 @@ class handler(BaseHTTPRequestHandler):
                     if etype.startswith("customer.subscription"):
                         active = obj.get("status") in ("active", "trialing")
                     r.set("sub:" + email, "active" if active else "inactive", ex=60 * 60 * 24 * 40)
+            if r is not None and evid:
+                r.set("evt:" + evid, "1", ex=60 * 60 * 24 * 3)  # remember 3 days (Stripe's retry window)
         except Exception:
             pass
-        # Always 200 so Stripe doesn't retry on our bookkeeping hiccups.
+        # Always 200 so Stripe doesn't retry on our bookkeeping hiccups; verify-subscription
+        # re-checks Stripe directly (the source of truth) if a cache write was ever missed.
         return self._send(200, {"received": True})
 
     def _email_for(self, stripe, obj):

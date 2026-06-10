@@ -32,7 +32,7 @@ class handler(BaseHTTPRequestHandler):
                 line_items=[{"price": price_id, "quantity": 1}],
                 allow_promotion_codes=True,
                 billing_address_collection="auto",
-                success_url=SITE + "/?success=true",
+                success_url=SITE + "/?success=true&session_id={CHECKOUT_SESSION_ID}",
                 cancel_url=SITE + "/?canceled=true",
             )
         except Exception as e:
