@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-10-a11y-v28">
+<meta name="kyr-version" content="2026-06-10-deeplink2-v29">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -1441,6 +1441,12 @@ function kyrSyncURL(){
     history.replaceState(null,'',location.pathname+(qs?'?'+qs:''));
   }catch(e){}
 }
+function kyrModalOpenURL(vid){
+  if(__kyrBooting)return;
+  var url=location.pathname+'?v='+encodeURIComponent(vid);
+  if(__kyrReplaying){history.replaceState(null,'',url);}
+  else{history.pushState(null,'',url);__kyrPushedModal=true;}
+}
 function kyrApplyURL(){
   try{
     var p=new URLSearchParams(location.search);
@@ -1457,7 +1463,7 @@ function openModal(vid,tab){
   curTab=tab||'oil';renderMTabs(v);renderMBody(v);
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
-  __kyrCurV=vid;kyrSyncURL();
+  __kyrCurV=vid;kyrModalOpenURL(vid);
 }
 
 function renderMTabs(v){
@@ -1472,7 +1478,12 @@ function renderMBody(v){
   document.getElementById('m-body').innerHTML=fns[curTab](v);
 }
 
-function closeModal(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';__kyrCurV=null;kyrSyncURL();}
+function closeModalUI(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';__kyrCurV=null;}
+function closeModal(){
+  if(__kyrReplaying){closeModalUI();return;}
+  if(__kyrPushedModal){__kyrPushedModal=false;history.back();return;}
+  closeModalUI();kyrSyncURL();
+}
 
 function lookupCode(){
   var raw=document.getElementById('cl-input').value.trim().toUpperCase();
@@ -1570,6 +1581,17 @@ document.addEventListener('DOMContentLoaded',function(){
   __kyrBooting=false;
   __kyrReplaying=true;
   try{if(!kyrApplyURL()){try{var __lv=sessionStorage.getItem('kyr_last_vehicle');if(__lv&&VEH[__lv])openModal(__lv);}catch(e){}}}finally{__kyrReplaying=false;}
+  window.addEventListener('popstate',function(){
+    __kyrReplaying=true;
+    try{
+      var p=new URLSearchParams(location.search);
+      var v=p.get('v');
+      var ov=document.getElementById('overlay');var open=ov&&ov.classList.contains('open');
+      if(v&&VEH[v]){if(!open)openModal(v);}
+      else{if(open)closeModalUI();var tab=p.get('tab')||'garage';if(typeof switchTab==='function')switchTab(tab);}
+    }catch(e){}
+    __kyrReplaying=false;
+  });
 });
 
 </script>
