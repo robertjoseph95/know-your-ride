@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-10-refactor-v31">
+<meta name="kyr-version" content="2026-06-10-refactor-v32">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -909,11 +909,12 @@ function renderPartTiers(v){
    +'<div class="pt-caveat">&#9888; Verify fitment for your exact year, trim and VIN before buying. Listings are suggestions, not a fitment guarantee.</div>'
    +'<div class="pt-disc">As an Amazon Associate, qualifying purchases may earn a commission at no extra cost to you.</div></div>';
 }
-function renderPartsTiered(v){return renderPartTiers(v)+renderParts(v);}
-
 /*WRENCH_YOUTUBE*/
 var YT_SVCS=['oil change','air filter','cabin filter','spark plugs','brake pads','tire rotation','battery replacement','wiper blades'];
 function ytEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function htmlEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function specNote(l,v,sz){return '<div class="spec-item" style="grid-column:1/-1"><div class="sp-l">'+l+'</div><div class="sp-v" style="font-size:'+(sz||11)+'px;font-weight:500;color:var(--dim)">'+v+'</div></div>';}
+function partRow(x,extra){return '<tr><td style="font-weight:700">'+(x.brand||'&mdash;')+'</td><td><span class="pn">'+(x.part_number||'&mdash;')+'</span></td>'+(extra||'')+'</tr>';}
 function ytViews(n){if(n==null)return '';n=+n;if(n>=1e6)return (n/1e6).toFixed(1)+'M views';if(n>=1e3)return Math.round(n/1e3)+'K views';return n+' views';}
 function renderWatchItDone(v){
   var btns=YT_SVCS.map(function(s){return '<button class="yt-svc" data-svc="'+s+'" onclick="ytLoad(this)">'+s+'</button>';}).join('');
@@ -942,13 +943,10 @@ function ytLoad(btn){
     box.innerHTML='<div class="yt-hint yt-err">Video search needs the local server. Run <code>python wrench_serve.py</code> and open <code>http://localhost:8000/</code>.</div>';
   });
 }
-function renderPartsTieredYT(v){return renderPartTiers(v)+renderWatchItDone(v)+renderParts(v);}
-
 /*WRENCH_GUIDES*/
 var GH_SVCS=['oil change','air filter','cabin filter','spark plugs','tire rotation','battery replacement','wiper blades','brake pads'];
-function ghEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function ghMd(t){
-  var lines=ghEsc(t).split('\n'), out=[], inList=null;
+  var lines=htmlEsc(t).split('\n'), out=[], inList=null;
   function close(){ if(inList){out.push('</'+inList+'>');inList=null;} }
   for(var i=0;i<lines.length;i++){
     var ln=lines[i].replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
@@ -964,7 +962,7 @@ function ghMd(t){
 }
 function renderHowToDoIt(v){
   var btns=GH_SVCS.map(function(s){return '<button class="gh-svc" data-svc="'+s+'" onclick="ghLoad(this)">'+s+'</button>';}).join('');
-  return '<div class="gh-wrap" data-vid="'+ghEsc(v.id)+'"><div class="sec-head">How To Do It</div>'
+  return '<div class="gh-wrap" data-vid="'+htmlEsc(v.id)+'"><div class="sec-head">How To Do It</div>'
     +'<div class="gh-banner">&#9888; AI-generated guide - always verify specs against your owner manual or the factory service manual before use. Consult a professional for safety-critical work.</div>'
     +'<div class="gh-svcs">'+btns+'</div>'
     +'<div id="gh-results"><div class="gh-hint">Pick a service to generate a step-by-step guide for this vehicle.</div></div></div>';
@@ -975,8 +973,8 @@ function ghLoad(btn){
   var box=wrap.querySelector('#gh-results');
   box.innerHTML='<div class="gh-hint">Generating '+svc+' guide... (a few seconds)</div>';
   fetch('/api/guide/'+encodeURIComponent(vid)+'/'+encodeURIComponent(svc)).then(function(r){return r.json();}).then(function(d){
-    if(d.error){box.innerHTML='<div class="gh-hint gh-err">'+ghEsc(d.error)+'</div>';return;}
-    if(d.safety_blocked){box.innerHTML='<div class="gh-safety">&#9888; '+ghEsc(d.message)+'</div>';return;}
+    if(d.error){box.innerHTML='<div class="gh-hint gh-err">'+htmlEsc(d.error)+'</div>';return;}
+    if(d.safety_blocked){box.innerHTML='<div class="gh-safety">&#9888; '+htmlEsc(d.message)+'</div>';return;}
     if(!d.guide){box.innerHTML='<div class="gh-hint">No guide available.</div>';return;}
     box.innerHTML=(kyrPro()?('<div class="gh-guide">'+ghMd(d.guide)+'</div>'+affGuideParts(vid,svc)):('<div class="gh-guide pro-fade">'+ghMd(d.guide)+'</div>'+proUnlock('Unlock the full step-by-step guide','Preview shown - Pro unlocks the complete guide.')))+(d.cached?'<div class="gh-cache">cached</div>':'');
   }).catch(function(){
@@ -987,7 +985,6 @@ function renderPartsTieredYTG(v){return renderPartTiers(v)+renderWatchItDone(v)+
 
 /*WRENCH_KYP*/
 var KYP_CAT=null, KYP_DATAURL=null;
-function kypEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function kypPreview(inp){
   var f=inp.files&&inp.files[0]; if(!f) return;
   var rd=new FileReader();
@@ -1008,7 +1005,7 @@ function kypScan(){if(!kyrPro()){if(kyrFreeUsed('scan')>=1){openPricing();return
     fetch('/api/identify-part',{method:'POST',headers:{'Content-Type':'text/plain','X-Image-Type':'image/jpeg'},body:b64})
       .then(function(r){return r.json();}).then(function(d){
         btn.disabled=false; btn.textContent='Identify Part';
-        if(d.error){res.innerHTML='<div class="kyp-msg err">'+kypEsc(d.error)+'</div>';return;}
+        if(d.error){res.innerHTML='<div class="kyp-msg err">'+htmlEsc(d.error)+'</div>';return;}
         if(!d.identification){res.innerHTML='<div class="kyp-msg">No identification returned.</div>';return;}
         res.innerHTML=kypRender(d.identification);
       }).catch(function(){
@@ -1027,7 +1024,7 @@ function kypCatalog(){
   return KYP_CAT;
 }
 function kypRender(text){
-  var html='<div class="kyp-card"><h3>Identification</h3><div class="kyp-desc">'+kypEsc(text)+'</div></div>';
+  var html='<div class="kyp-card"><h3>Identification</h3><div class="kyp-desc">'+htmlEsc(text)+'</div></div>';
   var cat=kypCatalog(), t=(text||'').toLowerCase(), hits=[];
   [['plug',/spark plug|ignition plug/],['air',/air filter|air cleaner|intake filter/],['cabin',/cabin (air )?filter|pollen filter/],['battery',/\bbattery\b/],['wiper',/wiper|windshield blade/],['oil',/oil filter/]].forEach(function(rl){if(rl[1].test(t))hits=hits.concat(cat[rl[0]].slice(0,6));});
   var seen={},uniq=[]; hits.forEach(function(p){var k=(p.brand||'')+(p.part_number||'');if(!seen[k]){seen[k]=1;uniq.push(p);}});
@@ -1036,7 +1033,7 @@ function kypRender(text){
     html+='<div class="kyp-match-title">// Matching parts in our database</div>';
     html+=uniq.map(function(p){
       var shop=p.url?('<a class="kyp-shop" href="'+p.url+'" target="_blank" rel="nofollow sponsored noopener">Shop</a>'):'';
-      return '<div class="kyp-match"><div><span class="b">'+kypEsc(p.brand||'')+'</span> <span class="pn">'+kypEsc(p.part_number||'')+'</span></div>'+shop+'</div>';
+      return '<div class="kyp-match"><div><span class="b">'+htmlEsc(p.brand||'')+'</span> <span class="pn">'+htmlEsc(p.part_number||'')+'</span></div>'+shop+'</div>';
     }).join('');
     html+='<div class="kyp-msg" style="font-size:11px;color:var(--faint)">Suggestions by part type - verify fitment for your specific vehicle.</div>';
   }
@@ -1055,7 +1052,6 @@ function kbbButton(v){
 function renderWarrantyKbb(v){return renderWarranty(v)+kbbButton(v);}
 
 /*WRENCH_FIXRATES*/
-function dtcEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function dtcSevColor(s){s=String(s||'').toLowerCase();return s.indexOf('high')>=0?'var(--red)':(s.indexOf('med')>=0?'#e0a23b':'var(--green)');}
 function dtcFixes(code){
   var fx=(DB.fixes&&DB.fixes[code])||[];
@@ -1063,9 +1059,9 @@ function dtcFixes(code){
   var rows=fx.map(function(f){
     var prob=(f.prob!=null?f.prob:0);
     var cost=(f.cost!=null?'$'+f.cost:'cost varies');
-    var sev=f.sev?'<span class="dtc-fix-sev" style="color:'+dtcSevColor(f.sev)+'">'+dtcEsc(f.sev)+'</span>':'';
+    var sev=f.sev?'<span class="dtc-fix-sev" style="color:'+dtcSevColor(f.sev)+'">'+htmlEsc(f.sev)+'</span>':'';
     return '<div class="dtc-fix">'
-      +'<div class="dtc-fix-top"><span class="dtc-fix-name">'+dtcEsc(f.fix)+'</span><span class="dtc-fix-prob">'+prob+'%</span></div>'
+      +'<div class="dtc-fix-top"><span class="dtc-fix-name">'+htmlEsc(f.fix)+'</span><span class="dtc-fix-prob">'+prob+'%</span></div>'
       +'<div class="dtc-fix-track"><div class="dtc-fix-bar" style="width:'+prob+'%"></div></div>'
       +'<div class="dtc-fix-meta">avg '+cost+(sev?' &middot; '+sev:'')+'</div>'+(typeof affDtcShop==='function'?affDtcShop(f.fix):'')
       +'</div>';
@@ -1076,8 +1072,6 @@ function dtcFixes(code){
 /*WRENCH_AFF*/
 function affEnc(s){return encodeURIComponent(String(s==null?'':s).replace(/\s+/g,' ').trim());}
 function affAmz(term){return 'https://www.amazon.com/s?k='+affEnc(term)+'&tag=wrenchapp20-20';}
-function affRock(v){return '';}
-function affAz(pn){return '';}
 function affFtc(){return '<div class="aff-ftc">As an Amazon Associate we earn from qualifying purchases, at no extra cost to you.</div>';}
 // Amazon affiliate CTA only (tag=wrenchapp20-20).
 function affRow(v,term,pn,compact){
@@ -1137,7 +1131,7 @@ function restorePro(){var em=(document.getElementById('pp-restore-email').value|
 function kyrPromoToken(){try{var t=localStorage.getItem('kyr_token');if(!t){t=Date.now().toString(36)+Math.random().toString(36).slice(2);localStorage.setItem('kyr_token',t);}return t;}catch(e){return '';}}
 function applyPromo(){var code=(document.getElementById('pp-promo-input').value||'').trim();var em=(document.getElementById('pp-promo-email').value||'').trim();var note=document.getElementById('pp-promo-note');if(!code){note.textContent='Enter a promo code.';return;}if(!em||em.indexOf('@')<1){note.style.color='';note.textContent='Enter a valid email to redeem.';return;}note.style.color='';note.textContent='Checking...';fetch('/api/promo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,email:em,token:kyrPromoToken()})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){kyrSetPro();try{localStorage.setItem('kyr_pro_until',String(d.until));}catch(e){}note.style.color='var(--green)';note.textContent=d.message||'Pro access unlocked for 30 days!';setTimeout(function(){location.reload();},1100);}else{note.style.color='';note.textContent=(d&&d.error)||'Invalid promo code.';}}).catch(function(){note.textContent='Could not check the code right now.';});}
 function kyrToast(msg){var t=document.createElement('div');t.className='kyr-toast';t.setAttribute('role','status');t.setAttribute('aria-live','polite');t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.classList.add('show');},40);setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},450);},5000);}
-function renderMaintGated(v){if(kyrPro()||!v.maint||v.maint.length<=3)return renderMaint(v);var clone={};for(var k in v)clone[k]=v[k];clone.maint=v.maint.slice(0,3);return renderMaint(clone)+proUnlock('Unlock the full maintenance schedule','Showing 3 of '+v.maint.length+' service intervals. Pro unlocks the rest plus regional service costs.');}
+function renderMaintGated(v){if(kyrPro()||!v.maint||v.maint.length<=3)return renderMaint(v);var clone=Object.assign({},v,{maint:v.maint.slice(0,3)});return renderMaint(clone)+proUnlock('Unlock the full maintenance schedule','Showing 3 of '+v.maint.length+' service intervals. Pro unlocks the rest plus regional service costs.');}
 function kyrInitPaywall(){var p=new URLSearchParams(location.search);if(p.get('success')==='true'){kyrSetPro();kyrToast('Welcome to Pro. All features unlocked.');history.replaceState({},'',location.pathname);}else if(p.get('canceled')==='true'){history.replaceState({},'',location.pathname);}var b=document.getElementById('go-pro-btn');if(b&&kyrPro()){b.classList.add('is-pro');b.innerHTML='&#9733; Pro';b.onclick=null;}}
 document.addEventListener('DOMContentLoaded',kyrInitPaywall);
 
@@ -1153,7 +1147,6 @@ function gResetSelector(){var s=document.getElementById('g-search');if(s)s.value
 function backToSearch(){if(typeof closeModal==='function')closeModal();if(typeof switchTab==='function')switchTab('garage');gResetSelector();window.scrollTo(0,0);}
 
 /*WRENCH_RECALL*/
-function rclEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function loadRecalls(dec){
   var out=document.getElementById('vin-result'); if(!out||!dec||!dec.make)return;
   var qs='make='+encodeURIComponent(dec.make)+'&model='+encodeURIComponent(dec.model||'')+'&year='+encodeURIComponent(dec.year||'');
@@ -1170,7 +1163,7 @@ function loadRecalls(dec){
         var sum=x.Summary||x.summary||x.Consequence||x.consequence||'';
         var rem=x.Remedy||x.remedy||'';
         var done=x.completion||x.Completion||x.recallStatus||x.status||'';
-        return '<div class="rcl-item">'+(camp?'<div class="rcl-camp">CAMPAIGN '+rclEsc(camp)+'</div>':'')+(comp?'<div class="rcl-comp">'+rclEsc(comp)+'</div>':'')+(sum?'<div class="rcl-sum">'+rclEsc(sum)+'</div>':'')+(rem?'<div class="rcl-rem"><strong>Remedy:</strong> '+rclEsc(rem)+'</div>':'')+(done?'<div class="rcl-status">Status: '+rclEsc(done)+'</div>':'')+'</div>';
+        return '<div class="rcl-item">'+(camp?'<div class="rcl-camp">CAMPAIGN '+htmlEsc(camp)+'</div>':'')+(comp?'<div class="rcl-comp">'+htmlEsc(comp)+'</div>':'')+(sum?'<div class="rcl-sum">'+htmlEsc(sum)+'</div>':'')+(rem?'<div class="rcl-rem"><strong>Remedy:</strong> '+htmlEsc(rem)+'</div>':'')+(done?'<div class="rcl-status">Status: '+htmlEsc(done)+'</div>':'')+'</div>';
       }).join('');
     }
     out.innerHTML+=h+'</div>';
@@ -1299,7 +1292,7 @@ function renderEV(e){
 function renderOil(v){
   var o=v.oil;if(!o||!o.visc)return (v.ev?renderEV(v.ev):'<p class="empty-note">No oil data &mdash; EV or no engine oil required.</p>');
   var h='<div class="sec-head">Oil Specifications</div><div class="spec-grid">'+specRow('Viscosity',fmt(o.visc),'ac')+specRow('Oil Type',fmt(o.type))+specRow('Capacity w/ Filter',(o.cap_w?o.cap_w+' qts':'&mdash;'))+specRow('Capacity w/o Filter',(o.cap_wo?o.cap_wo+' qts':'&mdash;'))+specRow('OEM Spec',fmt(o.spec))+'</div>';
-  if(o.drain){var d=o.drain;h+='<div class="sec-head">Drain Plug</div><div class="spec-grid">'+specRow('Socket',(d.socket_size_mm?d.socket_size_mm+'mm':'&mdash;'),'ac')+specRow('Thread',fmt(d.thread_size))+specRow('Torque',(d.torque_nm?(Math.round(d.torque_nm*0.7376)+' ft-lb &middot; '+d.torque_nm+' Nm'):'&mdash;'),'gr')+specRow('Gasket',fmt(d.gasket_type))+(d.notes?'<div class="spec-item" style="grid-column:1/-1"><div class="sp-l">Notes</div><div class="sp-v" style="font-size:11px;font-weight:500;color:var(--dim)">'+d.notes+'</div></div>':'')+'</div>';}
+  if(o.drain){var d=o.drain;h+='<div class="sec-head">Drain Plug</div><div class="spec-grid">'+specRow('Socket',(d.socket_size_mm?d.socket_size_mm+'mm':'&mdash;'),'ac')+specRow('Thread',fmt(d.thread_size))+specRow('Torque',(d.torque_nm?(Math.round(d.torque_nm*0.7376)+' ft-lb &middot; '+d.torque_nm+' Nm'):'&mdash;'),'gr')+specRow('Gasket',fmt(d.gasket_type))+(d.notes?specNote('Notes',d.notes):'')+'</div>';}
   if(o.filters&&o.filters.length){h+='<div class="sec-head">Oil Filters</div><table class="tbl"><thead><tr><th>Brand</th><th>Part Number</th><th>Description</th><th></th></tr></thead><tbody>'+o.filters.map(function(f){return '<tr><td style="font-weight:700">'+(f.brand||'&mdash;')+'</td><td><span class="pn">'+(f.part_number||'&mdash;')+'</span></td><td style="color:var(--dim)">'+(f.description||'')+'</td><td>'+(f.is_oem?'<span class="oem-tag">OEM</span>':'')+'</td></tr>';}).join('')+'</tbody></table>';}
   return h;
 }
@@ -1309,18 +1302,18 @@ function renderParts(v){
   var h='';
   if(p.plug_type||p.plugs){
     h+='<div class="sec-head">Spark Plugs</div><div class="spec-grid">'+specRow('Type',fmt(p.plug_type),'ac')+specRow('Gap',(p.plug_gap?p.plug_gap+'"':'&mdash;'))+specRow('Quantity',fmt(p.plug_qty))+'</div>';
-    if(p.plugs&&p.plugs.length)h+='<table class="tbl"><thead><tr><th>Brand</th><th>Part #</th><th>Description</th><th></th></tr></thead><tbody>'+p.plugs.map(function(x){return '<tr><td style="font-weight:700">'+(x.brand||'&mdash;')+'</td><td><span class="pn">'+(x.part_number||'&mdash;')+'</span></td><td style="color:var(--dim)">'+(x.description||'')+'</td><td>'+(x.is_oem?'<span class="oem-tag">OEM</span>':'')+'</td></tr>';}).join('')+'</tbody></table>';
+    if(p.plugs&&p.plugs.length)h+='<table class="tbl"><thead><tr><th>Brand</th><th>Part #</th><th>Description</th><th></th></tr></thead><tbody>'+p.plugs.map(function(x){return partRow(x,'<td style="color:var(--dim)">'+(x.description||'')+'</td><td>'+(x.is_oem?'<span class="oem-tag">OEM</span>':'')+'</td>');}).join('')+'</tbody></table>';
   }
-  if(p.tire||p.psi_f)h+='<div class="sec-head">Tires</div><div class="spec-grid">'+specRow('Size',fmt(p.tire),'ac')+specRow('Front PSI',(p.psi_f?p.psi_f+' PSI':'&mdash;'))+specRow('Rear PSI',(p.psi_r?p.psi_r+' PSI':'&mdash;'))+(p.tnote?'<div class="spec-item" style="grid-column:1/-1"><div class="sp-l">Trim Variants</div><div class="sp-v" style="font-size:11px;font-weight:500;color:var(--dim)">'+p.tnote+'</div></div>':'')+'</div>';
+  if(p.tire||p.psi_f)h+='<div class="sec-head">Tires</div><div class="spec-grid">'+specRow('Size',fmt(p.tire),'ac')+specRow('Front PSI',(p.psi_f?p.psi_f+' PSI':'&mdash;'))+specRow('Rear PSI',(p.psi_r?p.psi_r+' PSI':'&mdash;'))+(p.tnote?specNote('Trim Variants',p.tnote):'')+'</div>';
   // Always show a Battery section. When we have no verified group size, show an honest
   // "See owner's manual" fallback instead of fabricating one. (Vehicles with no parts data
   // at all still fall through to the "No parts data available" message below.)
-  h+='<div class="sec-head">Battery</div><div class="spec-grid">'+specRow('Group Size',(p.batt_group?fmt(p.batt_group):'See owner\'s manual'),'ac')+((p.batt_group||p.batt_cca)?specRow('CCA',(p.batt_cca?p.batt_cca+' CCA':'&mdash;')):'')+(p.batt_notes?'<div class="spec-item" style="grid-column:1/-1"><div class="sp-l">Battery Notes</div><div class="sp-v" style="font-size:11px;font-weight:500;color:var(--dim)">'+p.batt_notes+'</div></div>':'')+'</div>';
-  if(p.batts&&p.batts.length)h+='<table class="tbl"><thead><tr><th>Brand</th><th>Part #</th><th></th></tr></thead><tbody>'+p.batts.map(function(x){return '<tr><td style="font-weight:700">'+(x.brand||'&mdash;')+'</td><td><span class="pn">'+(x.part_number||'&mdash;')+'</span></td><td>'+(x.is_oem?'<span class="oem-tag">OEM</span>':'')+'</td></tr>';}).join('')+'</tbody></table>';
-  if(p.timing_type||p.rw_int)h+='<div class="sec-head">Service Notes</div><div class="spec-grid"><div class="spec-item"><div class="sp-l">Timing</div><div class="sp-v ac" style="text-transform:capitalize">'+fmt(p.timing_type)+'</div></div>'+specRow('Real-World Oil Interval',(p.rw_int?p.rw_int.toLocaleString()+' mi':'&mdash;'))+(p.timing_notes?'<div class="spec-item" style="grid-column:1/-1"><div class="sp-l">Timing Notes</div><div class="sp-v" style="font-size:11px;font-weight:500;color:var(--dim)">'+p.timing_notes+'</div></div>':'')+(p.rw_notes?'<div class="spec-item" style="grid-column:1/-1"><div class="sp-l">Oil Interval Notes</div><div class="sp-v" style="font-size:11px;font-weight:500;color:var(--dim)">'+p.rw_notes+'</div></div>':'')+'</div>';
-  if(p.air&&p.air.length)h+='<div class="sec-head">Air Filters</div><table class="tbl"><thead><tr><th>Brand</th><th>Part #</th><th>Interval</th><th></th></tr></thead><tbody>'+p.air.map(function(x){return '<tr><td style="font-weight:700">'+(x.brand||'&mdash;')+'</td><td><span class="pn">'+(x.part_number||'&mdash;')+'</span></td><td style="color:var(--dim)">'+(x.change_interval_miles?x.change_interval_miles.toLocaleString()+' mi':'')+'</td><td>'+(x.is_oem?'<span class="oem-tag">OEM</span>':'')+'</td></tr>';}).join('')+'</tbody></table>';
-  if(p.cabin&&p.cabin.length)h+='<div class="sec-head">Cabin Air Filters</div><table class="tbl"><thead><tr><th>Brand</th><th>Part #</th><th>Interval</th><th></th></tr></thead><tbody>'+p.cabin.map(function(x){return '<tr><td style="font-weight:700">'+(x.brand||'&mdash;')+'</td><td><span class="pn">'+(x.part_number||'&mdash;')+'</span></td><td style="color:var(--dim)">'+(x.change_interval_miles?x.change_interval_miles.toLocaleString()+' mi':'')+'</td><td>'+(x.is_oem?'<span class="oem-tag">OEM</span>':'')+'</td></tr>';}).join('')+'</tbody></table>';
-  if(p.wipers&&p.wipers.length)h+='<div class="sec-head">Wiper Blades</div><table class="tbl"><thead><tr><th>Brand</th><th>Part #</th><th>Position</th><th>Size</th></tr></thead><tbody>'+p.wipers.map(function(x){return '<tr><td style="font-weight:700">'+(x.brand||'&mdash;')+'</td><td><span class="pn">'+(x.part_number||'&mdash;')+'</span></td><td style="text-transform:capitalize;color:var(--dim)">'+(x.position||'&mdash;')+'</td><td>'+(x.size_inches?x.size_inches+'"':'&mdash;')+'</td></tr>';}).join('')+'</tbody></table>';
+  h+='<div class="sec-head">Battery</div><div class="spec-grid">'+specRow('Group Size',(p.batt_group?fmt(p.batt_group):'See owner\'s manual'),'ac')+((p.batt_group||p.batt_cca)?specRow('CCA',(p.batt_cca?p.batt_cca+' CCA':'&mdash;')):'')+(p.batt_notes?specNote('Battery Notes',p.batt_notes):'')+'</div>';
+  if(p.batts&&p.batts.length)h+='<table class="tbl"><thead><tr><th>Brand</th><th>Part #</th><th></th></tr></thead><tbody>'+p.batts.map(function(x){return partRow(x,'<td>'+(x.is_oem?'<span class="oem-tag">OEM</span>':'')+'</td>');}).join('')+'</tbody></table>';
+  if(p.timing_type||p.rw_int)h+='<div class="sec-head">Service Notes</div><div class="spec-grid"><div class="spec-item"><div class="sp-l">Timing</div><div class="sp-v ac" style="text-transform:capitalize">'+fmt(p.timing_type)+'</div></div>'+specRow('Real-World Oil Interval',(p.rw_int?p.rw_int.toLocaleString()+' mi':'&mdash;'))+(p.timing_notes?specNote('Timing Notes',p.timing_notes):'')+(p.rw_notes?specNote('Oil Interval Notes',p.rw_notes):'')+'</div>';
+  if(p.air&&p.air.length)h+='<div class="sec-head">Air Filters</div><table class="tbl"><thead><tr><th>Brand</th><th>Part #</th><th>Interval</th><th></th></tr></thead><tbody>'+p.air.map(function(x){return partRow(x,'<td style="color:var(--dim)">'+(x.change_interval_miles?x.change_interval_miles.toLocaleString()+' mi':'')+'</td><td>'+(x.is_oem?'<span class="oem-tag">OEM</span>':'')+'</td>');}).join('')+'</tbody></table>';
+  if(p.cabin&&p.cabin.length)h+='<div class="sec-head">Cabin Air Filters</div><table class="tbl"><thead><tr><th>Brand</th><th>Part #</th><th>Interval</th><th></th></tr></thead><tbody>'+p.cabin.map(function(x){return partRow(x,'<td style="color:var(--dim)">'+(x.change_interval_miles?x.change_interval_miles.toLocaleString()+' mi':'')+'</td><td>'+(x.is_oem?'<span class="oem-tag">OEM</span>':'')+'</td>');}).join('')+'</tbody></table>';
+  if(p.wipers&&p.wipers.length)h+='<div class="sec-head">Wiper Blades</div><table class="tbl"><thead><tr><th>Brand</th><th>Part #</th><th>Position</th><th>Size</th></tr></thead><tbody>'+p.wipers.map(function(x){return partRow(x,'<td style="text-transform:capitalize;color:var(--dim)">'+(x.position||'&mdash;')+'</td><td>'+(x.size_inches?x.size_inches+'"':'&mdash;')+'</td>');}).join('')+'</tbody></table>';
   var ot=(v.notes||[]).filter(function(n){return n.type!=='known_issue';});
   if(ot.length)h+='<div class="sec-head">Owner Notes</div>'+ot.map(function(n){return '<div class="recall-card"><div class="rc-comp">'+n.title+'</div><div class="rc-text">'+n.body+'</div></div>';}).join('');
   if(!p.plug_type&&!p.tire&&!p.batt_group&&!(p.air&&p.air.length)&&!(p.wipers&&p.wipers.length)&&!ot.length)return '<p class="empty-note">No parts data available.</p>';
@@ -1527,13 +1520,13 @@ function clToggleChip(code){clPins.forEach(function(p){if(p.code===code)p.open=!
 function clRenderPins(){var el=document.getElementById('cl-pinned');if(!el)return;
   if(!clPins.length){el.style.display='none';el.innerHTML='';return;}
   var chips=clPins.map(function(p){
-    var d=dtcEsc(p.desc||'No description available');
+    var d=htmlEsc(p.desc||'No description available');
     var f=clTopFix(p.code);
     var det='';
     if(p.open){
       det='<div class="cl-chip-det"><div class="cl-chip-det-desc">'+d+'</div>'
-        +'<div class="cl-chip-det-row"><span class="cl-chip-det-lbl">Most likely</span><span class="cl-chip-det-cause">'+(f&&f.fix?dtcEsc(f.fix):'&mdash;')+'</span></div>';
-      if(f&&f.sev)det+='<div class="cl-chip-det-row"><span class="cl-chip-det-lbl">Urgency</span><span style="color:'+dtcSevColor(f.sev)+';font-weight:600;text-transform:capitalize">'+dtcEsc(f.sev)+'</span></div>';
+        +'<div class="cl-chip-det-row"><span class="cl-chip-det-lbl">Most likely</span><span class="cl-chip-det-cause">'+(f&&f.fix?htmlEsc(f.fix):'&mdash;')+'</span></div>';
+      if(f&&f.sev)det+='<div class="cl-chip-det-row"><span class="cl-chip-det-lbl">Urgency</span><span style="color:'+dtcSevColor(f.sev)+';font-weight:600;text-transform:capitalize">'+htmlEsc(f.sev)+'</span></div>';
       det+='</div>';
     }
     return '<div class="cl-chip">'
