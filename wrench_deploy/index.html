@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-10-deeplink-v27">
+<meta name="kyr-version" content="2026-06-10-a11y-v28">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -39,7 +39,11 @@
 :root{--bg:#15171c;--panel:#1e222b;--p2:#232833;--p3:#2b313c;--border:#333a45;--b2:#3f4654;--text:#e8e8e6;--dim:#8a8f98;--faint:#585e68;--accent:#ff6b00;--a2:#ffb800;--green:#4ade80;--red:#ef4444;--blue:#60a5fa;--purple:#a78bfa;--placard:#cdd0d4}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;min-height:100vh;font-size:14px;color-scheme:dark}
-.tab-btn:focus-visible,.go-pro-btn:focus-visible,.vcard:focus-visible,.m-tab:focus-visible,.m-close:focus-visible,.kyr-pl-cta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tab-btn:focus-visible,.go-pro-btn:focus-visible,.vcard:focus-visible,.m-tab:focus-visible,.m-close:focus-visible,.kyr-pl-cta:focus-visible,.kyr-pl-more:focus-visible,.obd-head:focus-visible,.cl-q:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip-link{position:absolute;left:8px;top:-48px;z-index:500;background:var(--accent);color:#000;padding:8px 14px;border-radius:0 0 8px 8px;font-weight:700;font-size:13px;text-decoration:none;transition:top .15s}
+.skip-link:focus{top:0}
+button,.tab-btn,.m-tab,.m-close,.go-pro-btn,.vcard,.cl-q,.kyr-pl-more,.kyr-pl-cta,.obd-head,.dtc-pin{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .overlay{overscroll-behavior:contain}
 @media (prefers-reduced-motion: reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
 body{background:var(--bg)}
@@ -50,7 +54,7 @@ body{background:var(--bg)}
 .tagline{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:.25em;text-transform:uppercase;margin-top:2px}
 .db-badge{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);background:var(--p2);border:1px solid var(--border);padding:5px 12px;border-radius:4px;letter-spacing:.1em}
 .tabs{display:flex;border-bottom:1px solid var(--border);padding:0 28px;background:var(--panel)}
-.tab-btn{padding:13px 24px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;user-select:none}
+.tab-btn{padding:13px 24px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-bottom-color .2s;user-select:none}
 .tab-btn:hover{color:var(--dim)}
 .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
 .pane{display:none;padding:24px 28px;max-width:1600px;margin:0 auto}
@@ -89,10 +93,10 @@ body{background:var(--bg)}
 .m-top{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--border);background:var(--panel)}
 .m-title{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:22px;letter-spacing:.02em}
 .m-title em{color:var(--accent);font-style:normal}
-.m-close{width:32px;height:32px;border-radius:8px;background:var(--p2);border:1px solid var(--border);color:var(--dim);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;line-height:1}
+.m-close{width:32px;height:32px;border-radius:8px;background:var(--p2);border:1px solid var(--border);color:var(--dim);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s;line-height:1}
 .m-close:hover{color:var(--text);border-color:#555}
 .m-tabs{display:flex;padding:0 22px;border-bottom:1px solid var(--border);background:var(--panel);overflow-x:auto;gap:0}
-.m-tab{padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .15s}
+.m-tab{padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:color .15s,border-bottom-color .15s}
 .m-tab:hover{color:var(--dim)}
 .m-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 .m-body{padding:22px;max-height:72vh;overflow-y:auto}
@@ -150,7 +154,7 @@ body{background:var(--bg)}
 .cl-input:focus{border-color:var(--accent)}
 .cl-hint{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:.1em;margin-bottom:12px}
 .cl-quicks{display:flex;flex-wrap:wrap;gap:5px}
-.cl-q{font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 9px;border-radius:5px;background:var(--p2);border:1px solid var(--border);color:var(--dim);cursor:pointer;letter-spacing:.05em;transition:all .15s}
+.cl-q{font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 9px;border-radius:5px;background:var(--p2);border:1px solid var(--border);color:var(--dim);cursor:pointer;letter-spacing:.05em;transition:color .15s,border-color .15s,background .15s}
 .cl-q:hover{border-color:var(--accent);color:var(--accent)}
 .cl-empty{text-align:center;padding:60px 20px;color:var(--faint);font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.15em;line-height:2}
 .dtc-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px}
@@ -523,7 +527,7 @@ body{background:var(--bg)}
 .cl-copy{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);cursor:pointer;background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.28);border-radius:5px;padding:3px 9px}
 .cl-copy:hover{background:rgba(255,107,0,.18)}
 .cl-pinned-hint{font-size:10px;color:var(--faint);margin:0 0 9px;line-height:1.4}
-.dtc-pin{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;background:var(--p2,#1c1c1c);border:1px solid var(--border);color:var(--dim);border-radius:6px;padding:4px 10px;cursor:pointer;transition:all .15s;flex-shrink:0;white-space:nowrap}
+.dtc-pin{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;background:var(--p2,#1c1c1c);border:1px solid var(--border);color:var(--dim);border-radius:6px;padding:4px 10px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;flex-shrink:0;white-space:nowrap}
 .dtc-pin:hover{border-color:var(--accent);color:var(--accent)}
 .dtc-pin.on{background:rgba(255,107,0,.12);border-color:rgba(255,107,0,.35);color:var(--accent)}
 .cl-toast{position:fixed;left:50%;bottom:32px;transform:translateX(-50%) translateY(20px);background:var(--p3,#222);border:1px solid var(--b2,#333);color:var(--text);font-size:12.5px;font-weight:600;padding:11px 18px;border-radius:9px;box-shadow:0 8px 28px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:400}
@@ -536,6 +540,8 @@ body{background:var(--bg)}
 </head>
 <body>
 
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<h1 class="sr-only">Know Your Ride &mdash; free vehicle maintenance specs for 3,654 vehicles</h1>
 <div class="topbar">
   <div>
     <div class="brand-lockup"><svg class="brand-ico" viewBox="0 0 512 512" role="img" aria-label="Know Your Ride"><rect width="512" height="512" rx="96" fill="#09090b"/><g transform="rotate(-20 330 140)"><rect x="316" y="80" width="46" height="190" rx="23" fill="#fdba74"/><rect x="290" y="36" width="100" height="100" rx="28" fill="#fdba74"/><rect x="324" y="28" width="32" height="66" rx="14" fill="#09090b"/></g><rect x="134" y="172" width="268" height="290" rx="18" fill="#f5e6d3"/><rect x="116" y="156" width="268" height="290" rx="22" fill="#f97316"/><rect x="116" y="156" width="32" height="290" rx="16" fill="#c2560a"/><text x="274" y="330" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="76" fill="#fff7ed">P0420</text></svg><div class="brand">KNOW YOUR RIDE<em>.</em></div></div>
@@ -544,7 +550,7 @@ body{background:var(--bg)}
   <div class="db-badge">3654 VEHICLES - 49 MAKES - 12196 DTC CODES - 935 WITH COMPLAINTS</div>
 </div>
 
-<div class="tabs">
+<div class="tabs" id="main-content" tabindex="-1">
   <div class="tab-btn active" data-tab="garage" tabindex="0" role="button" onclick="switchTab('garage');gResetSelector()">&#128665; &nbsp;Garage</div>
   <div class="tab-btn" data-tab="codes" tabindex="0" role="button" onclick="switchTab('codes')">&#128269; &nbsp;Code Lookup</div>
   <div class="tab-btn" data-tab="identify" tabindex="0" role="button" onclick="switchTab('identify')">&#128247; &nbsp;Know Your Part</div>
@@ -600,7 +606,7 @@ body{background:var(--bg)}
     <input type="text" id="vin-input" aria-label="17-character VIN" maxlength="17" placeholder="Enter 17-character VIN..." autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')decodeVIN()">
     <button id="vin-btn" onclick="decodeVIN()">Decode VIN</button>
   </div>
-  <div id="vin-result" class="vin-result"></div>
+  <div id="vin-result" class="vin-result" aria-live="polite"></div>
 </div>
 <div class="g-controls">
     <div class="g-search">
@@ -620,7 +626,7 @@ body{background:var(--bg)}
   </div>
   <div id="kyr-sample" style="max-width:880px;margin:0 0 16px;background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:13px 16px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px"><div style="font-weight:700;font-size:15px;color:var(--text)">2020 Toyota Camry</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);background:var(--p2,#1c1c1c);border:1px solid var(--border);padding:3px 9px;border-radius:100px">Sample Data</div></div><div style="display:flex;gap:12px;margin-bottom:13px"><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#128738; 0W-20 Full Synthetic</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Oil Type</div></div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#128295; 14mm &middot; M12x1.25</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Drain Plug</div></div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#9888;&#65039; 0 Open Recalls</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Recall Status</div></div></div><button onclick="openModal(12802)" style="width:100%;background:var(--accent);color:#000;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:13px;cursor:pointer">See Full Specs for This Car &#8594;</button></div>
 <div class="obd-panel">
-  <div class="obd-head" onclick="obdToggle()">
+  <div class="obd-head" tabindex="0" role="button" aria-label="Toggle OBD-II live diagnostics" onclick="obdToggle()">
     <span><span class="obd-dot" id="obd-dot"></span>OBD-II Live Diagnostics</span>
     <span class="obd-caret" id="obd-caret">&#9656;</span>
   </div>
@@ -633,7 +639,7 @@ body{background:var(--bg)}
     </div>
     <div class="obd-grid" id="obd-live"></div>
     <div id="obd-dtcs"></div>
-    <div id="obd-msg" class="obd-msg"></div>
+    <div id="obd-msg" class="obd-msg" aria-live="polite"></div>
   </div>
 </div>
 <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);text-align:center;line-height:1.6;max-width:680px;margin:6px auto 16px">&#9888;&#65039; OBD-II live diagnostics require the Know Your Ride companion app and a physical ELM327 Bluetooth adapter connected to your vehicle. Not available in the browser.</div>
@@ -653,7 +659,7 @@ body{background:var(--bg)}
         <span class="cl-q">B0001</span><span class="cl-q">C0035</span><span class="cl-q">U0100</span>
       </div>
     </div>
-    <!--WRENCH_DTC_DISC--><div class="dtc-disclaimer">&#9888; Diagnostic codes indicate possible causes, not definitive diagnoses. Always verify with additional testing before replacing parts. Consult a qualified mechanic for complex issues.</div><div id="cl-results"><div class="cl-empty">// ENTER A DTC CODE ABOVE<br>// e.g. P0420, P0300, B0001</div></div>
+    <!--WRENCH_DTC_DISC--><div class="dtc-disclaimer">&#9888; Diagnostic codes indicate possible causes, not definitive diagnoses. Always verify with additional testing before replacing parts. Consult a qualified mechanic for complex issues.</div><div id="cl-results" aria-live="polite"><div class="cl-empty">// ENTER A DTC CODE ABOVE<br>// e.g. P0420, P0300, B0001</div></div>
   </div>
 </div>
 
@@ -708,8 +714,8 @@ body{background:var(--bg)}
 <p class="about-sub" style="margin:0 0 10px">Permanently delete your Know Your Ride account and all saved vehicles, mileage, and service logs. This cannot be undone.</p>
 <button onclick="kyrShowDelete()" style="background:transparent;border:1px solid var(--red);color:var(--red);font-size:13px;font-weight:600;padding:9px 16px;border-radius:8px;cursor:pointer">Delete My Account</button>
 <div id="kyr-del-form" style="display:none;margin-top:14px;max-width:360px">
-<input id="kyr-del-email" type="email" placeholder="Account email" autocomplete="off" style="width:100%;background:var(--p2,#111);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;margin-bottom:8px;font-size:13px">
-<input id="kyr-del-pw" type="password" placeholder="Password" autocomplete="off" style="width:100%;background:var(--p2,#111);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;margin-bottom:8px;font-size:13px">
+<input id="kyr-del-email" name="email" type="email" placeholder="Account email" autocomplete="email" style="width:100%;background:var(--p2,#111);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;margin-bottom:8px;font-size:13px">
+<input id="kyr-del-pw" name="password" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;background:var(--p2,#111);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;margin-bottom:8px;font-size:13px">
 <button onclick="kyrDeleteAccount()" style="width:100%;background:var(--red);color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:13px;cursor:pointer">Permanently Delete My Account</button>
 <div id="kyr-del-note" style="font-size:12px;color:var(--faint);margin-top:8px;line-height:1.5"></div>
 </div>
@@ -910,7 +916,7 @@ function renderWatchItDone(v){
 }
 function ytCard(vd){
   return '<a class="yt-card'+(kyrPro()?'':' pro-locked')+'" href="'+(kyrPro()?('https://www.youtube.com/watch?v='+encodeURIComponent(vd.id)):'javascript:void(0)')+'"'+(kyrPro()?' target="_blank" rel="noopener"':' onclick="openPricing();return false;"')+'>'
-    +'<div class="yt-thumb"><img loading="lazy" alt="" src="'+ytEsc(vd.thumbnail||'')+'">'+(vd.duration?'<span class="yt-dur">'+ytEsc(vd.duration)+'</span>':'')+'</div>'
+    +'<div class="yt-thumb"><img loading="lazy" width="320" height="180" decoding="async" alt="" src="'+ytEsc(vd.thumbnail||'')+'">'+(vd.duration?'<span class="yt-dur">'+ytEsc(vd.duration)+'</span>':'')+'</div>'
     +'<div class="yt-meta"><div class="yt-vtitle">'+ytEsc(vd.title)+'</div><div class="yt-vch">'+ytEsc(vd.channel)+'</div><div class="yt-vviews">'+ytViews(vd.views)+'</div></div></a>';
 }
 function ytLoad(btn){
@@ -1123,7 +1129,7 @@ function proUnlock(label,sub){return '<div class="pro-unlock"><div class="lk">&#
 function restorePro(){var em=(document.getElementById('pp-restore-email').value||'').trim().toLowerCase();var note=document.getElementById('pp-note');if(!em){note.textContent='Enter the email you subscribed with.';return;}note.textContent='Checking...';fetch('/api/verify-subscription?email='+encodeURIComponent(em)).then(function(r){return r.json();}).then(function(d){if(d&&d.subscribed){kyrSetPro();note.style.color='var(--green)';note.textContent='Pro restored. Reloading...';setTimeout(function(){location.reload();},700);}else{note.textContent='No active subscription found for that email.';}}).catch(function(){note.textContent='Could not verify right now. Please try again.';});}
 function kyrPromoToken(){try{var t=localStorage.getItem('kyr_token');if(!t){t=Date.now().toString(36)+Math.random().toString(36).slice(2);localStorage.setItem('kyr_token',t);}return t;}catch(e){return '';}}
 function applyPromo(){var code=(document.getElementById('pp-promo-input').value||'').trim();var em=(document.getElementById('pp-promo-email').value||'').trim();var note=document.getElementById('pp-promo-note');if(!code){note.textContent='Enter a promo code.';return;}if(!em||em.indexOf('@')<1){note.style.color='';note.textContent='Enter a valid email to redeem.';return;}note.style.color='';note.textContent='Checking...';fetch('/api/promo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,email:em,token:kyrPromoToken()})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){kyrSetPro();try{localStorage.setItem('kyr_pro_until',String(d.until));}catch(e){}note.style.color='var(--green)';note.textContent=d.message||'Pro access unlocked for 30 days!';setTimeout(function(){location.reload();},1100);}else{note.style.color='';note.textContent=(d&&d.error)||'Invalid promo code.';}}).catch(function(){note.textContent='Could not check the code right now.';});}
-function kyrToast(msg){var t=document.createElement('div');t.className='kyr-toast';t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.classList.add('show');},40);setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},450);},5000);}
+function kyrToast(msg){var t=document.createElement('div');t.className='kyr-toast';t.setAttribute('role','status');t.setAttribute('aria-live','polite');t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.classList.add('show');},40);setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},450);},5000);}
 function renderMaintGated(v){if(kyrPro()||!v.maint||v.maint.length<=3)return renderMaint(v);var clone={};for(var k in v)clone[k]=v[k];clone.maint=v.maint.slice(0,3);return renderMaint(clone)+proUnlock('Unlock the full maintenance schedule','Showing 3 of '+v.maint.length+' service intervals. Pro unlocks the rest plus regional service costs.');}
 function kyrInitPaywall(){var p=new URLSearchParams(location.search);if(p.get('success')==='true'){kyrSetPro();kyrToast('Welcome to Pro. All features unlocked.');history.replaceState({},'',location.pathname);}else if(p.get('canceled')==='true'){history.replaceState({},'',location.pathname);}var b=document.getElementById('go-pro-btn');if(b&&kyrPro()){b.classList.add('is-pro');b.innerHTML='&#9733; Pro';b.onclick=null;}}
 document.addEventListener('DOMContentLoaded',kyrInitPaywall);
@@ -1233,7 +1239,7 @@ function kyrHsSubmit(){
   var matches=DB.v.filter(function(v){return v.make===mk&&v.model===md&&String(v.year)===String(yr);});
   if(!matches.length)return;
   var slot=kyrPlSlot();if(!slot){openModal(matches[0].id);return;}
-  var note=(matches.length>1)?('<div class="kyr-pl-more" onclick="kyrHsShowTrims(\''+mk+'\',\''+md+'\',\''+yr+'\')">'+matches.length+' trims/engines on record &mdash; compare all &darr;</div>'):'';
+  var note=(matches.length>1)?('<div class="kyr-pl-more" tabindex="0" role="button" onclick="kyrHsShowTrims(\''+mk+'\',\''+md+'\',\''+yr+'\')">'+matches.length+' trims/engines on record &mdash; compare all &darr;</div>'):'';
   slot.innerHTML=renderPlacard(matches[0])+note;
   slot.scrollIntoView({behavior:kyrReduceMotion()?'auto':'smooth',block:'center'});
 }
@@ -1265,7 +1271,7 @@ function renderGarage(){
     if(s&&s.overall)bdg.push('<span class="bdg bdg-s">&#9733;'+s.overall+'</span>');
     if(rc>0)bdg.push('<span class="bdg bdg-r">'+rc+' RECALL'+(rc>1?'S':'')+'</span>');
     if(v.maint&&v.maint.length)bdg.push('<span class="bdg bdg-m">'+v.maint.length+' SCHEDULES</span>');
-    return '<div class="vcard" tabindex="0" role="button" aria-label="'+v.year+' '+v.make+' '+v.model+'" onclick="openModal('+v.id+')"><div class="vc-head"><div><div class="vc-name">'+v.year+' '+v.make+' '+v.model+'</div><div class="vc-sub">'+(v.engine||v.trim||'&mdash;')+'</div>'+(ic>0?'<div onclick="event.stopPropagation();openModal('+v.id+',\'issues\')" style="margin-top:6px;display:inline-block;background:rgba(255,184,0,.12);color:var(--a2,#ffb800);border:1px solid rgba(255,184,0,.3);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;cursor:pointer">&#9888;&#65039; '+ic+' known issue'+(ic>1?'s':'')+' documented</div>':'')+'</div></div><div class="vc-badges">'+bdg.join('')+'</div><div class="vc-stats"><div><div class="vcs-l">OIL</div><div class="vcs-v">'+(o&&o.visc||'&mdash;')+'</div></div><div><div class="vcs-l">RELIABILITY</div><div class="vcs-v">'+(r&&r.score?r.score.toFixed(0)+'%':'&mdash;')+'</div></div><div><div class="vcs-l">MPG COMB</div><div class="vcs-v">'+(m&&m.comb||'&mdash;')+'</div></div></div></div>';
+    return '<div class="vcard" tabindex="0" role="button" aria-label="'+v.year+' '+v.make+' '+v.model+'" onclick="openModal('+v.id+')"><div class="vc-head"><div><div class="vc-name">'+v.year+' '+v.make+' '+v.model+'</div><div class="vc-sub">'+(v.engine||v.trim||'&mdash;')+'</div>'+(ic>0?'<div tabindex="0" role="button" aria-label="View known issues" onclick="event.stopPropagation();openModal('+v.id+',\'issues\')" style="margin-top:6px;display:inline-block;background:rgba(255,184,0,.12);color:var(--a2,#ffb800);border:1px solid rgba(255,184,0,.3);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;cursor:pointer">&#9888;&#65039; '+ic+' known issue'+(ic>1?'s':'')+' documented</div>':'')+'</div></div><div class="vc-badges">'+bdg.join('')+'</div><div class="vc-stats"><div><div class="vcs-l">OIL</div><div class="vcs-v">'+(o&&o.visc||'&mdash;')+'</div></div><div><div class="vcs-l">RELIABILITY</div><div class="vcs-v">'+(r&&r.score?r.score.toFixed(0)+'%':'&mdash;')+'</div></div><div><div class="vcs-l">MPG COMB</div><div class="vcs-v">'+(m&&m.comb||'&mdash;')+'</div></div></div></div>';
   }).join('');
 }
 
@@ -1541,7 +1547,7 @@ function clCopyAll(){
 }
 var clToastT=null;
 function clToast(msg){var t=document.getElementById('cl-toast');
-  if(!t){t=document.createElement('div');t.id='cl-toast';t.className='cl-toast';document.body.appendChild(t);}
+  if(!t){t=document.createElement('div');t.id='cl-toast';t.className='cl-toast';t.setAttribute('role','status');t.setAttribute('aria-live','polite');document.body.appendChild(t);}
   t.innerHTML=msg;t.classList.add('show');
   if(clToastT)clearTimeout(clToastT);
   clToastT=setTimeout(function(){t.classList.remove('show');},2400);
@@ -1553,7 +1559,7 @@ document.addEventListener('DOMContentLoaded',function(){
   document.getElementById('overlay').addEventListener('click',function(e){if(e.target===document.getElementById('overlay'))closeModal();});
   document.getElementById('cl-input').addEventListener('input',lookupCode);
   document.getElementById('cl-input').addEventListener('keydown',function(e){if(e.key==='Enter')lookupCode();});
-  document.querySelectorAll('.cl-q').forEach(function(b){b.addEventListener('click',function(){document.getElementById('cl-input').value=b.textContent;lookupCode();});});
+  document.querySelectorAll('.cl-q').forEach(function(b){b.setAttribute('tabindex','0');b.setAttribute('role','button');b.addEventListener('click',function(){document.getElementById('cl-input').value=b.textContent;lookupCode();});});
   lookupCode();
   (function(){var b=document.getElementById('b2t');if(!b)return;
     function upd(){var y=window.pageYOffset||document.documentElement.scrollTop||0;if(y>400)b.classList.add('show');else b.classList.remove('show');}
