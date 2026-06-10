@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-01-specs-v21f">
+<meta name="kyr-version" content="2026-06-10-skin-v22">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -36,15 +36,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 
-:root{--bg:#0a0a0a;--panel:#141414;--p2:#1c1c1c;--p3:#222;--border:#2a2a2a;--b2:#333;--text:#f5f5f5;--dim:#888;--faint:#555;--accent:#ff6b00;--a2:#ffb800;--green:#4ade80;--red:#ef4444;--blue:#60a5fa;--purple:#a78bfa}
+:root{--bg:#15171c;--panel:#1e222b;--p2:#232833;--p3:#2b313c;--border:#333a45;--b2:#3f4654;--text:#e8e8e6;--dim:#8a8f98;--faint:#585e68;--accent:#ff6b00;--a2:#ffb800;--green:#4ade80;--red:#ef4444;--blue:#60a5fa;--purple:#a78bfa;--placard:#cdd0d4}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;min-height:100vh;font-size:14px}
-body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent 40%),radial-gradient(circle at 85% 100%,rgba(255,184,0,.04),transparent 40%),var(--bg)}
+body{background:var(--bg)}
+.pn,.vcs-v,.sp-v,.astat-n,.mpg-val,.rel-score-big,.g-count{font-variant-numeric:tabular-nums}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;background:rgba(10,10,10,.96);backdrop-filter:blur(10px)}
 .brand{font-family:'Anton',sans-serif;font-size:28px;letter-spacing:.04em;background:linear-gradient(180deg,#fff 0%,#aaa 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .brand em{-webkit-text-fill-color:var(--accent);font-style:normal}
 .tagline{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:.25em;text-transform:uppercase;margin-top:2px}
-.db-badge{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.25);padding:5px 12px;border-radius:100px;letter-spacing:.1em}
+.db-badge{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);background:var(--p2);border:1px solid var(--border);padding:5px 12px;border-radius:4px;letter-spacing:.1em}
 .tabs{display:flex;border-bottom:1px solid var(--border);padding:0 28px;background:var(--panel)}
 .tab-btn{padding:13px 24px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;user-select:none}
 .tab-btn:hover{color:var(--dim)}
@@ -61,7 +62,7 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
 .g-sel:focus{border-color:var(--accent)}
 .g-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);letter-spacing:.1em;white-space:nowrap;padding:0 4px}
 .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
-.vcard{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:16px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.vcard{background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:16px;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;position:relative;overflow:hidden}
 .vcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--a2));opacity:0;transition:opacity .18s}
 .vcard:hover{border-color:#3a3a3a;transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.45)}
 .vcard:hover::before{opacity:1}
@@ -81,7 +82,7 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
 .no-res{text-align:center;padding:80px 20px;color:var(--faint);font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.15em;grid-column:1/-1}
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;backdrop-filter:blur(4px);overflow-y:auto;padding:20px;justify-content:center}
 .overlay.open{display:flex}
-.modal{background:var(--bg);border:1px solid var(--b2);border-radius:16px;width:100%;max-width:880px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.7);align-self:flex-start}
+.modal{background:var(--bg);border:1px solid var(--b2);border-radius:6px;width:100%;max-width:880px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.7);align-self:flex-start}
 .m-top{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;border-bottom:1px solid var(--border);background:var(--panel)}
 .m-title{font-family:'Anton',sans-serif;font-size:22px;letter-spacing:.02em}
 .m-title em{color:var(--accent);font-style:normal}
@@ -547,7 +548,7 @@ body{background:radial-gradient(circle at 15% 0%,rgba(255,107,0,.07),transparent
 </div>
 
 <div class="pane active" id="pane-garage">
-  <div id="kyr-hero" style="max-height:160px;overflow:hidden;text-align:center;padding:18px 16px 6px"><div style="font-family:'Anton',sans-serif;font-size:36px;letter-spacing:.04em;line-height:1.05;background:linear-gradient(180deg,#fff 0%,#aaa 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">KNOW YOUR RIDE</div><div style="font-family:'Manrope',sans-serif;font-size:14px;color:var(--dim);max-width:580px;margin:7px auto 0;line-height:1.5">Exact specs for your car &mdash; oil type, drain plug size, maintenance schedules, and recall alerts.</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.25);padding:5px 12px;border-radius:100px">3,654 Vehicles</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.25);padding:5px 12px;border-radius:100px">12,196 DTC Codes</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);background:rgba(255,107,0,.1);border:1px solid rgba(255,107,0,.25);padding:5px 12px;border-radius:100px">49 Makes</span></div></div>
+  <div id="kyr-hero" style="max-height:160px;overflow:hidden;text-align:center;padding:18px 16px 6px"><div style="font-family:'Anton',sans-serif;font-size:36px;letter-spacing:.04em;line-height:1.05;color:var(--text)">KNOW YOUR RIDE</div><div style="font-family:'Manrope',sans-serif;font-size:14px;color:var(--dim);max-width:580px;margin:7px auto 0;line-height:1.5">Exact specs for your car &mdash; oil type, drain plug size, maintenance schedules, and recall alerts.</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);background:var(--p2);border:1px solid var(--border);padding:5px 12px;border-radius:4px">3,654 Vehicles</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);background:var(--p2);border:1px solid var(--border);padding:5px 12px;border-radius:4px">12,196 DTC Codes</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);background:var(--p2);border:1px solid var(--border);padding:5px 12px;border-radius:4px">49 Makes</span></div></div>
   <style>/*WRENCH_HEROSEARCH_v21f*/
 .kyr-hs{width:100%;padding:6px 16px 22px;text-align:center}
 .kyr-hs-inner{max-width:840px;margin:0 auto}
