@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-10-manual-v25">
+<meta name="kyr-version" content="2026-06-10-perf-v26">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -65,7 +65,7 @@ body{background:var(--bg)}
 .g-sel:focus{border-color:var(--accent)}
 .g-count{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);letter-spacing:.1em;white-space:nowrap;padding:0 4px}
 .vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px}
-.vcard{background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:16px;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;position:relative;overflow:hidden}
+.vcard{background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:16px;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;position:relative;overflow:hidden;content-visibility:auto;contain-intrinsic-size:auto 190px}
 .vcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--a2));opacity:0;transition:opacity .18s}
 .vcard:hover{border-color:#3a3a3a;transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.45)}
 .vcard:hover::before{opacity:1}
@@ -474,7 +474,7 @@ body{background:var(--bg)}
   gtag('config', 'G-7RE1GC9S5Q');
 </script>
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#f97316">
+<meta name="theme-color" content="#15171c">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
