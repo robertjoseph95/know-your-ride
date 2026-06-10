@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-10-perf-v26">
+<meta name="kyr-version" content="2026-06-10-deeplink-v27">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -1167,6 +1167,7 @@ function loadRecalls(dec){
 function switchTab(name){
   document.querySelectorAll('.tab-btn').forEach(t=>t.classList.toggle('active',t.dataset.tab===name));
   document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active',p.id==='pane-'+name));
+  kyrSyncURL();
 }
 
 function buildSelects(){
@@ -1417,12 +1418,40 @@ var MTABS=['oil','parts','fluids','maint','perf','safety','issues','warranty','c
 var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG','Safety & Rel.','Known Issues','Warranty & Recalls','Complaints'];
 var curTab='oil';
 
+/*WRENCH_DEEPLINK_v27*/ // shareable/refreshable URLs: ?v=<id> opens a vehicle, ?tab=, ?code=<DTC>
+var __kyrCurV=null,__kyrBooting=true;
+function kyrSyncURL(){
+  if(__kyrBooting)return;
+  try{
+    var p=new URLSearchParams();
+    var ov=document.getElementById('overlay');
+    if(ov&&ov.classList.contains('open')&&__kyrCurV!=null){p.set('v',__kyrCurV);}
+    else{
+      var at=document.querySelector('.tab-btn.active');var tab=at?at.getAttribute('data-tab'):'garage';
+      if(tab&&tab!=='garage')p.set('tab',tab);
+      if(tab==='codes'){var ci=document.getElementById('cl-input');if(ci&&ci.value.trim())p.set('code',ci.value.trim().toUpperCase());}
+    }
+    var qs=p.toString();
+    history.replaceState(null,'',location.pathname+(qs?'?'+qs:''));
+  }catch(e){}
+}
+function kyrApplyURL(){
+  try{
+    var p=new URLSearchParams(location.search);
+    var v=p.get('v'),tab=p.get('tab'),code=p.get('code');
+    if(v&&VEH[v]){openModal(v);return true;}
+    if(code){switchTab('codes');var ci=document.getElementById('cl-input');if(ci){ci.value=code;lookupCode();}return true;}
+    if(tab&&tab!=='garage'){switchTab(tab);return true;}
+  }catch(e){}
+  return false;
+}
 function openModal(vid,tab){
   var v=VEH[vid];if(!v)return;
   document.getElementById('m-title').innerHTML=v.year+' '+v.make+' <em>'+v.model+'</em>';try{sessionStorage.setItem('kyr_last_vehicle',vid);}catch(e){}var __sc=document.getElementById('kyr-sample');if(__sc)__sc.style.display='none';
   curTab=tab||'oil';renderMTabs(v);renderMBody(v);
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
+  __kyrCurV=vid;kyrSyncURL();
 }
 
 function renderMTabs(v){
@@ -1437,7 +1466,7 @@ function renderMBody(v){
   document.getElementById('m-body').innerHTML=fns[curTab](v);
 }
 
-function closeModal(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';}
+function closeModal(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';__kyrCurV=null;kyrSyncURL();}
 
 function lookupCode(){
   var raw=document.getElementById('cl-input').value.trim().toUpperCase();
@@ -1451,7 +1480,7 @@ function lookupCode(){
     return '<div class="dtc-card"><div class="dtc-head"><span class="dtc-code">'+code+'</span><span class="dtc-sys sys-'+s+'">'+(sysL[s]||s)+'</span><span class="dtc-desc">'+(desc||'No description available')+'</span>'
       +'<button class="dtc-pin'+(pinned?' on':'')+'" onclick="clTogglePin(\''+code+'\')">&#128204; '+(pinned?'Unpin':'Pin')+'</button>'
       +'</div>'+dtcFixes(code)+'</div>';}
-  var h='';if(exact)h+=card(raw,exact);matches.forEach(function(e){h+=card(e[0],e[1]);});res.innerHTML=h;
+  var h='';if(exact)h+=card(raw,exact);matches.forEach(function(e){h+=card(e[0],e[1]);});res.innerHTML=h;kyrSyncURL();
 }
 
 /* DTC code pinning (session-only, max 6) */
@@ -1532,7 +1561,8 @@ document.addEventListener('DOMContentLoaded',function(){
     b.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
     upd();
   })();
-  try{var __lv=sessionStorage.getItem('kyr_last_vehicle');if(__lv&&VEH[__lv])openModal(__lv);}catch(e){}
+  __kyrBooting=false;
+  if(!kyrApplyURL()){try{var __lv=sessionStorage.getItem('kyr_last_vehicle');if(__lv&&VEH[__lv])openModal(__lv);}catch(e){}}
 });
 
 </script>
