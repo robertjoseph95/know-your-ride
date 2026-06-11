@@ -197,18 +197,23 @@ class handler(BaseHTTPRequestHandler):
         try:
             vid = int(vehicle_id)
         except Exception:
-            vid = vehicle_id  # might be a vin-prefixed key for vin-only saves
+            vid = vehicle_id  # might be a bare VIN for vin-only saves
         vehicles = _load_vehicles(r, email)
-        before = len(vehicles)
-        vehicles = [v for v in vehicles if v.get("id") != vid and v.get("vin") != vid]
-        if len(vehicles) == before:
+        removed = [v for v in vehicles if v.get("id") == vid or v.get("vin") == vid]
+        if not removed:
             return self._send(404, {"ok": False, "error": "Vehicle not in garage."})
+        kept = [v for v in vehicles if v.get("id") != vid and v.get("vin") != vid]
         try:
-            _save_vehicles(r, email, vehicles)
-            r.delete("user_mileage:%s:%s" % (email, vid))
+            _save_vehicles(r, email, kept)
+            # Delete each removed record's mileage key, mirroring _mileage_map's key shape
+            # (int id -> "<id>", vin-only -> "vin-<VIN>") so no orphaned key is left behind.
+            for v in removed:
+                mk = v.get("id") if v.get("id") is not None else ("vin-" + v["vin"] if v.get("vin") else None)
+                if mk is not None:
+                    r.delete("user_mileage:%s:%s" % (email, mk))
         except Exception:
             return self._send(503, {"ok": False, "error": "Could not update your garage."})
-        return self._send(200, {"ok": True, "vehicles": vehicles, "mileage": _mileage_map(r, email, vehicles)})
+        return self._send(200, {"ok": True, "vehicles": kept, "mileage": _mileage_map(r, email, kept)})
 
     def _mileage(self, r, email, vehicle_id, mileage):
         try:

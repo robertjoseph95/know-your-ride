@@ -45,7 +45,7 @@ class handler(BaseHTTPRequestHandler):
         if not key:
             return self._send(503, {"error": "server not configured (ANTHROPIC_API_KEY)"})
         ip = (self.headers.get("X-Forwarded-For") or self.client_address[0] or "unknown").split(",")[-1].strip()  # rightmost = least spoofable
-        now = datetime.datetime.utcnow()
+        now = datetime.datetime.now(datetime.timezone.utc)
         today, month = now.strftime("%Y-%m-%d"), now.strftime("%Y-%m")
         r = _redis()
         # FAIL CLOSED: without Redis we cannot enforce caps/budget, so do not allow paid scans.

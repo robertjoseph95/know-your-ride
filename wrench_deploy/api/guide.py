@@ -151,7 +151,7 @@ class handler(BaseHTTPRequestHandler):
                 f"Known specs (use these EXACT values; invent nothing else):\n{speclines}\n\n"
                 "Write the DIY guide.")
         # Budget cap: stop paid generation once monthly Claude spend hits the limit.
-        month = datetime.datetime.utcnow().strftime("%Y_%m")
+        month = datetime.datetime.now(datetime.timezone.utc).strftime("%Y_%m")
         spend_key = f"guide_api_spend_{month}"
         if r:
             try:

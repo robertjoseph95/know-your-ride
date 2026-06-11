@@ -61,7 +61,7 @@ class handler(BaseHTTPRequestHandler):
         # Per-IP daily cap on cache MISSES (LOW audit fix) to protect the YouTube quota.
         if r:
             ip = (self.headers.get("X-Forwarded-For") or self.client_address[0] or "unknown").split(",")[-1].strip()  # rightmost = least spoofable
-            day = datetime.datetime.utcnow().strftime("%Y-%m-%d")
+            day = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
             ipk = f"yt:ip:{day}:{ip}"
             try:
                 n = r.incr(ipk)
@@ -111,7 +111,7 @@ class handler(BaseHTTPRequestHandler):
                 print(f"[youtube] stats fetch failed, returning partial results: {e}", file=sys.stderr)
         out = []
         for it in items:
-            vid = it["id"].get("videoId")
+            vid = it.get("id", {}).get("videoId")
             if not vid:
                 continue
             sn = it.get("snippet", {})
