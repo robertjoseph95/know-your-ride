@@ -38,6 +38,11 @@ def _redis():
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
+        # PHASE 2 / deferred (decided 2026-06-11): no per-user Pro gating here yet. Cost is
+        # bounded by the per-IP daily cap below + the 30-day result cache. We rely on those
+        # until ~50 subscribers, then add server-side auth (verify a Stripe subscriber token /
+        # session). The browser 'kyr_pro' flag is UX-only, NOT a security boundary. See
+        # garage.py for the Bearer-session + _tier() pattern to copy.
         q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
         year = (q.get("year") or [""])[0]
         make = (q.get("make") or [""])[0]

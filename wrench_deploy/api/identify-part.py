@@ -41,6 +41,11 @@ def _redis():
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
+        # PHASE 2 / deferred (decided 2026-06-11): no per-user Pro gating here yet. Cost is
+        # bounded by the fail-closed Redis budget/day/IP caps below. We rely on those until
+        # ~50 subscribers, then add server-side auth (verify a Stripe subscriber token /
+        # session before the paid vision call). The browser 'kyr_pro' flag is UX-only, NOT a
+        # security boundary. See garage.py for the Bearer-session + _tier() pattern to copy.
         key = os.environ.get("ANTHROPIC_API_KEY", "")
         if not key:
             return self._send(503, {"error": "server not configured (ANTHROPIC_API_KEY)"})

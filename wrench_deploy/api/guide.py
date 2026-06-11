@@ -117,6 +117,12 @@ def _redis():
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
+        # PHASE 2 / deferred (decided 2026-06-11): no per-user Pro gating here yet. Access is
+        # bounded only by GUIDE_MONTHLY_BUDGET below. We rely on that budget cap until ~50
+        # subscribers, then add server-side auth (verify a Stripe subscriber token / session
+        # before the paid Claude call). The browser localStorage 'kyr_pro' flag is UX-only, NOT
+        # a security boundary -- this endpoint serves anyone. See garage.py for the
+        # Bearer-session + _tier() pattern to copy when implementing the gate.
         q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
         vid = (q.get("vehicle_id") or [""])[0]
         service = (q.get("service") or [""])[0]
