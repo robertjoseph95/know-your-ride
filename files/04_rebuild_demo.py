@@ -26,6 +26,7 @@ import sqlite3
 import json
 import os
 import re
+import glob
 import shutil
 import datetime
 
@@ -1685,9 +1686,11 @@ def main():
     data_json = data_json.replace("</", "<\\/")        # can't break out of <script>
     print(f"Data JSON: {len(data_json)/1024/1024:.2f} MB  | vehicles={len(vlist)}  with complaints={with_comps}")
 
-    # back up the existing demo
+    # back up the existing demo (keep only the 5 most recent .bak files; each is ~31 MB)
     stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     shutil.copy2(OUT_FILE, f"{OUT_FILE}.{stamp}.bak")
+    for _old in sorted(glob.glob(f"{OUT_FILE}.*.bak"))[:-5]:
+        os.remove(_old)
 
     # The demo declares <meta charset="UTF-8"> but the original bytes are cp1252
     # (e.g. 0xB7 mid-dots), which renders as mojibake. Read robustly (utf-8, then
@@ -1701,6 +1704,7 @@ def main():
     # 1) swap the embedded data, bounded by the data <script> (no fragile regex)
     start = html.find("const __D__=")
     sci = html.find("</script>", start)
+    assert start >= 0 and sci > start, "data <script> boundaries not found in demo template (refusing to corrupt output)"
     html = html[:start] + "const __D__=" + data_json + ";\n" + html[sci:]
 
     # 2) inject the Complaints tab + VIN decode + OBD-II UI (once each)
@@ -1738,6 +1742,14 @@ def main():
     html = html.replace("AI-generated guide - always verify specs before use.",
                         "AI-generated guide - always verify specs against your owner manual or the factory service manual before use.")
     html = fix_js_quotes(html)
+
+    # Build-integrity guards: a .replace(old, new, 1) silently no-ops if `old` ever drifts,
+    # which would ship a degraded build with no error. Fail loudly instead. (These all hold
+    # on the normal success path; they only fire if an upstream template string changed.)
+    assert SENTINEL in html, "Complaints tab sentinel missing -- inject_tab did not apply"
+    assert "const __D__=" in html, "embedded dataset missing after rebuild"
+    assert "family=Manrope:wght@400;500;600;700;800" in html, "Manrope-300 weight trim did not apply"
+    assert "always verify specs against your owner manual" in html, "AI-guide banner migration did not apply"
 
     # 3) refresh the badge
     makes = len(set(v["make"] for v in vlist))
