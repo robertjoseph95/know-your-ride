@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-10-vinesc-v33">
+<meta name="kyr-version" content="2026-06-11-procosts-v34">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -781,10 +781,10 @@ function renderComplaints(v){
     if(x.inj)f+='<span class="bdg bdg-r">'+x.inj+' INJ</span> ';
     if(x.deaths)f+='<span class="bdg bdg-r">'+x.deaths+' DEATH</span> ';
     return '<div class="recall-card'+((x.crash||x.fire||x.deaths)?' park':'')+'">'
-      +(x.comp?'<div class="rc-comp">'+x.comp+'</div>':'')
-      +'<div class="rc-camp">'+(x.date||'')+(x.num?' &middot; #'+x.num:'')+'</div>'
+      +(x.comp?'<div class="rc-comp">'+htmlEsc(x.comp)+'</div>':'')
+      +'<div class="rc-camp">'+htmlEsc(x.date||'')+(x.num?' &middot; #'+htmlEsc(x.num):'')+'</div>'
       +(f?'<div style="margin:6px 0">'+f+'</div>':'')
-      +(x.sum?'<div class="rc-text">'+x.sum+'</div>':'')
+      +(x.sum?'<div class="rc-text">'+htmlEsc(x.sum)+'</div>':'')
       +'</div>';
   }).join('');
   return h;
@@ -1131,7 +1131,18 @@ function restorePro(){var em=(document.getElementById('pp-restore-email').value|
 function kyrPromoToken(){try{var t=localStorage.getItem('kyr_token');if(!t){t=Date.now().toString(36)+Math.random().toString(36).slice(2);localStorage.setItem('kyr_token',t);}return t;}catch(e){return '';}}
 function applyPromo(){var code=(document.getElementById('pp-promo-input').value||'').trim();var em=(document.getElementById('pp-promo-email').value||'').trim();var note=document.getElementById('pp-promo-note');if(!code){note.textContent='Enter a promo code.';return;}if(!em||em.indexOf('@')<1){note.style.color='';note.textContent='Enter a valid email to redeem.';return;}note.style.color='';note.textContent='Checking...';fetch('/api/promo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,email:em,token:kyrPromoToken()})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){kyrSetPro();try{localStorage.setItem('kyr_pro_until',String(d.until));}catch(e){}note.style.color='var(--green)';note.textContent=d.message||'Pro access unlocked for 30 days!';setTimeout(function(){location.reload();},1100);}else{note.style.color='';note.textContent=(d&&d.error)||'Invalid promo code.';}}).catch(function(){note.textContent='Could not check the code right now.';});}
 function kyrToast(msg){var t=document.createElement('div');t.className='kyr-toast';t.setAttribute('role','status');t.setAttribute('aria-live','polite');t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.classList.add('show');},40);setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},450);},5000);}
-function renderMaintGated(v){if(kyrPro()||!v.maint||v.maint.length<=3)return renderMaint(v);var clone=Object.assign({},v,{maint:v.maint.slice(0,3)});return renderMaint(clone)+proUnlock('Unlock the full maintenance schedule','Showing 3 of '+v.maint.length+' service intervals. Pro unlocks the rest plus regional service costs.');}
+function renderMaintGated(v){
+  if(kyrPro())return renderMaint(v);
+  // Free tier: cap the schedule to 3 rows AND lock the regional service-cost table
+  // (costs are a Pro feature). The clone nulls costs so renderMaint won't render them;
+  // we append a blurred preview + unlock overlay instead.
+  var n=(v.maint||[]).length;
+  var clone=Object.assign({},v,{maint:(v.maint||[]).slice(0,3),costs:null});
+  var h=renderMaint(clone);
+  if(n>3)h+=proUnlock('Unlock the full maintenance schedule','Showing 3 of '+n+' service intervals. Pro unlocks the complete schedule.');
+  if(v.costs)h+='<div class="sec-head">Service Costs &mdash; National Average</div><div class="pro-fade" aria-hidden="true">'+costsTableHTML(v)+'</div>'+proUnlock('Unlock regional service costs','Pro shows low, high, average &amp; labor-hour pricing for every service.');
+  return h;
+}
 function kyrInitPaywall(){var p=new URLSearchParams(location.search);if(p.get('success')==='true'){kyrSetPro();kyrToast('Welcome to Pro. All features unlocked.');history.replaceState({},'',location.pathname);}else if(p.get('canceled')==='true'){history.replaceState({},'',location.pathname);}var b=document.getElementById('go-pro-btn');if(b&&kyrPro()){b.classList.add('is-pro');b.innerHTML='&#9733; Pro';b.onclick=null;}}
 document.addEventListener('DOMContentLoaded',kyrInitPaywall);
 
@@ -1362,12 +1373,15 @@ function renderMaint(v){
     }
   });
   h+='</tbody></table>';
-  if(v.costs){
-    var serviceMap={oil_change:'Oil Change',oil_change_synthetic:'Oil Change (Synthetic)',air_filter_replacement:'Air Filter',cabin_filter_replacement:'Cabin Filter',battery_replacement:'Battery',brake_pad_replacement:'Brake Pads',brake_rotor_replacement:'Brake Rotors',spark_plug_replacement:'Spark Plugs',tire_rotation:'Tire Rotation',wheel_alignment:'Wheel Alignment',transmission_fluid_change:'Trans. Fluid',coolant_flush:'Coolant Flush',serpentine_belt_replacement:'Serpentine Belt',wiper_blade_replacement:'Wiper Blades',timing_belt_replacement:'Timing Belt',turbo_service:'Turbo Service'};
-    var maxC=Math.max.apply(null,Object.values(v.costs).map(function(x){return x.hi||0;}).concat([1]));
-    h+='<div class="sec-head">Service Costs &mdash; National Average</div><table class="tbl"><thead><tr><th>Service</th><th>Low</th><th>High</th><th>Avg</th><th>Labor</th></tr></thead><tbody>'+Object.entries(v.costs).map(function(e){var k=e[0],x=e[1];return '<tr><td style="font-weight:700">'+(serviceMap[k]||k.replace(/_/g,' '))+'</td><td style="color:var(--green)">$'+(x.lo||'&mdash;')+'</td><td style="color:var(--dim)">$'+(x.hi||'&mdash;')+'</td><td><span style="font-weight:700;color:var(--accent)">$'+(x.avg||'&mdash;')+'</span><span class="costs-bar"><span class="costs-fill" style="width:'+Math.round((x.avg||0)/maxC*100)+'%"></span></span></td><td class="pn" style="color:var(--faint)">'+(x.hr_lo&&x.hr_hi?x.hr_lo+'&ndash;'+x.hr_hi+' hr':'')+'</td></tr>';}).join('')+'</tbody></table>';
-  }
+  if(v.costs)h+='<div class="sec-head">Service Costs &mdash; National Average</div>'+costsTableHTML(v);
   return h;
+}
+// Regional service-cost table (Pro feature). Returns the <table> only so callers can place
+// the heading and, for free users, wrap the table in a .pro-fade lock overlay.
+function costsTableHTML(v){
+  var serviceMap={oil_change:'Oil Change',oil_change_synthetic:'Oil Change (Synthetic)',air_filter_replacement:'Air Filter',cabin_filter_replacement:'Cabin Filter',battery_replacement:'Battery',brake_pad_replacement:'Brake Pads',brake_rotor_replacement:'Brake Rotors',spark_plug_replacement:'Spark Plugs',tire_rotation:'Tire Rotation',wheel_alignment:'Wheel Alignment',transmission_fluid_change:'Trans. Fluid',coolant_flush:'Coolant Flush',serpentine_belt_replacement:'Serpentine Belt',wiper_blade_replacement:'Wiper Blades',timing_belt_replacement:'Timing Belt',turbo_service:'Turbo Service'};
+  var maxC=Math.max.apply(null,Object.values(v.costs).map(function(x){return x.hi||0;}).concat([1]));
+  return '<table class="tbl"><thead><tr><th>Service</th><th>Low</th><th>High</th><th>Avg</th><th>Labor</th></tr></thead><tbody>'+Object.entries(v.costs).map(function(e){var k=e[0],x=e[1];return '<tr><td style="font-weight:700">'+(serviceMap[k]||k.replace(/_/g,' '))+'</td><td style="color:var(--green)">$'+(x.lo||'&mdash;')+'</td><td style="color:var(--dim)">$'+(x.hi||'&mdash;')+'</td><td><span style="font-weight:700;color:var(--accent)">$'+(x.avg||'&mdash;')+'</span><span class="costs-bar"><span class="costs-fill" style="width:'+Math.round((x.avg||0)/maxC*100)+'%"></span></span></td><td class="pn" style="color:var(--faint)">'+(x.hr_lo&&x.hr_hi?x.hr_lo+'&ndash;'+x.hr_hi+' hr':'')+'</td></tr>';}).join('')+'</tbody></table>';
 }
 
 function renderPerf(v){
@@ -1417,7 +1431,7 @@ function renderWarranty(v){
   }
   h+='<div class="sec-head">Recalls ('+recs.length+')</div>';
   if(!recs.length)h+='<p class="empty-note">No recalls on record.</p>';
-  else h+=recs.map(function(r){return '<div class="recall-card '+(r.park?'park':'')+'">'+( r.camp?'<div class="rc-camp">Campaign: '+r.camp+'</div>':'')+( r.park?'<div class="rc-park">&#9888; DO NOT DRIVE</div>':'')+( r.comp?'<div class="rc-comp">'+r.comp+'</div>':'')+( r.sum?'<div class="rc-text" style="margin-bottom:8px">'+r.sum+'</div>':'')+( r.remedy?'<div class="rc-text"><strong style="color:var(--text)">Remedy:</strong> '+r.remedy+'</div>':'')+'</div>';}).join('');
+  else h+=recs.map(function(r){return '<div class="recall-card '+(r.park?'park':'')+'">'+( r.camp?'<div class="rc-camp">Campaign: '+htmlEsc(r.camp)+'</div>':'')+( r.park?'<div class="rc-park">&#9888; DO NOT DRIVE</div>':'')+( r.comp?'<div class="rc-comp">'+htmlEsc(r.comp)+'</div>':'')+( r.sum?'<div class="rc-text" style="margin-bottom:8px">'+htmlEsc(r.sum)+'</div>':'')+( r.remedy?'<div class="rc-text"><strong style="color:var(--text)">Remedy:</strong> '+htmlEsc(r.remedy)+'</div>':'')+'</div>';}).join('');
   return h;
 }
 
@@ -1491,14 +1505,15 @@ function lookupCode(){
   var res=document.getElementById('cl-results');
   if(!raw){res.innerHTML='<div class="cl-empty">// ENTER A DTC CODE ABOVE<br>// e.g. P0420, P0300, B0001</div>';return;}
   var exact=DB.dtc[raw];
-  var matches=Object.entries(DB.dtc).filter(function(e){return e[0].startsWith(raw)&&e[0]!==raw;}).slice(0,25);
-  if(!exact&&!matches.length){res.innerHTML='<div class="cl-empty">// NO MATCH FOR '+raw+'<br>// TRY A PARTIAL CODE LIKE &ldquo;P04&rdquo;</div>';return;}
+  var allMatches=Object.entries(DB.dtc).filter(function(e){return e[0].startsWith(raw)&&e[0]!==raw;});
+  var matches=allMatches.slice(0,25);
+  if(!exact&&!matches.length){res.innerHTML='<div class="cl-empty">// NO MATCH FOR '+htmlEsc(raw)+'<br>// TRY A PARTIAL CODE LIKE &ldquo;P04&rdquo;</div>';return;}
   var sysL={P:'Powertrain',B:'Body',C:'Chassis',U:'Network'};
   function card(code,desc){var s=code[0];var pinned=clIsPinned(code);
-    return '<div class="dtc-card"><div class="dtc-head"><span class="dtc-code">'+code+'</span><span class="dtc-sys sys-'+s+'">'+(sysL[s]||s)+'</span><span class="dtc-desc">'+(desc||'No description available')+'</span>'
+    return '<div class="dtc-card"><div class="dtc-head"><span class="dtc-code">'+code+'</span><span class="dtc-sys sys-'+s+'">'+(sysL[s]||s)+'</span><span class="dtc-desc">'+(htmlEsc(desc)||'No description available')+'</span>'
       +'<button class="dtc-pin'+(pinned?' on':'')+'" onclick="clTogglePin(\''+code+'\')">&#128204; '+(pinned?'Unpin':'Pin')+'</button>'
       +'</div>'+dtcFixes(code)+'</div>';}
-  var h='';if(exact)h+=card(raw,exact);matches.forEach(function(e){h+=card(e[0],e[1]);});res.innerHTML=h;kyrSyncURL();
+  var h='';if(exact)h+=card(raw,exact);matches.forEach(function(e){h+=card(e[0],e[1]);});if(allMatches.length>matches.length)h+='<div class="cl-empty">// '+(allMatches.length-matches.length)+' MORE &mdash; TYPE A LONGER CODE TO NARROW</div>';res.innerHTML=h;kyrSyncURL();
 }
 
 /* DTC code pinning (session-only, max 6) */
