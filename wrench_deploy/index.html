@@ -1072,13 +1072,13 @@ function dtcFixes(code){
 /*WRENCH_AFF*/
 function affEnc(s){return encodeURIComponent(String(s==null?'':s).replace(/\s+/g,' ').trim());}
 function affAmz(term){return 'https://www.amazon.com/s?k='+affEnc(term)+'&tag=wrenchapp20-20';}
-function affFtc(){return '<div class="aff-ftc">As an Amazon Associate we earn from qualifying purchases, at no extra cost to you.</div>';}
+function affFtc(){return '<div class="aff-ftc">As an Amazon Associate, I earn from qualifying purchases.</div>';}
 // Amazon affiliate CTA only (tag=wrenchapp20-20).
 function affRow(v,term,pn,compact){
   pn=pn||term;
   var amz='<a class="aff-az'+(compact?' aff-mini':'')+'" href="'+affAmz(term)+'" target="_blank" rel="nofollow sponsored noopener">Shop on Amazon'+(compact?'':' &#9656;')+'</a>';
   var more='';
-  return '<div class="aff-row">'+amz+'</div>';
+  return '<div class="aff-row">'+amz+' <span class="aff-paid" style="font-size:11px;color:var(--dim)">(paid link)</span></div>';
 }
 // Garage overview: compact "Shop Parts" quick-links for the common wear items.
 function affShopParts(v){
@@ -1095,7 +1095,7 @@ function renderOilShop(v){return affShopParts(v)+renderOil(v);}
 function affMaintBtn(v,desc){
   if(!v||!v.make)return '';
   var term=(v.year+' '+v.make+' '+v.model+' '+String(desc||'')).replace(/replacement|service|inspect(ion)?|rotate|rotation|flush|check|adjust/gi,'').replace(/\s+/g,' ').trim()+' parts';
-  return ' <a class="aff-az aff-mini" href="'+affAmz(term)+'" target="_blank" rel="nofollow sponsored noopener">Buy Parts</a>';
+  return ' <a class="aff-az aff-mini" href="'+affAmz(term)+'" target="_blank" rel="nofollow sponsored noopener">Buy Parts</a> <span class="aff-paid" style="font-size:11px;color:var(--dim)">(paid link)</span>';
 }
 // AI guide: "Parts You'll Need" using the exact service + any known part number.
 function affGuideParts(vid,svc){
@@ -1115,7 +1115,7 @@ function affGuideParts(vid,svc){
 function affDtcShop(fixText){
   var comp=String(fixText||'').replace(/replacement|replace|repair|cleaning|clean|service|\bof\b|\bthe\b/gi,'').replace(/\s+/g,' ').trim();
   if(!comp)return '';
-  return '<div class="aff-row"><a class="aff-az aff-mini" href="'+affAmz(comp)+'" target="_blank" rel="nofollow sponsored noopener">Shop '+comp+'</a>'
+  return '<div class="aff-row"><a class="aff-az aff-mini" href="'+affAmz(comp)+'" target="_blank" rel="nofollow sponsored noopener">Shop '+comp+'</a> <span class="aff-paid" style="font-size:11px;color:var(--dim)">(paid link)</span>'
     +'</div>';
 }
 
@@ -1661,15 +1661,15 @@ document.addEventListener('DOMContentLoaded',function(){
 <script>/*WRENCH_PWA*/if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>
 <!--WRENCH_FOOTER--><footer class="kyr-footer">
   <div class="kyr-footer-links">
-    <a href="/terms.html">Terms of Service</a>
+    <a href="/terms">Terms of Service</a>
     <span class="kyr-footer-sep">&middot;</span>
-    <a href="/privacy.html">Privacy Policy</a>
+    <a href="/privacy">Privacy Policy</a>
     <span class="kyr-footer-sep">&middot;</span>
     <a href="mailto:hello@knowyourride.net">Contact</a>
   </div>
   <div class="kyr-footer-note">
     Vehicle data sourced from NHTSA and EPA (U.S. Government, public domain). Know Your Ride is not affiliated with NHTSA, EPA, or any vehicle manufacturer.
-    As an Amazon Associate we earn from qualifying purchases. All specifications are for reference only &mdash; always verify against your owner's manual or factory service manual before performing any repair.
+    As an Amazon Associate, I earn from qualifying purchases. All specifications are for reference only &mdash; always verify against your owner's manual or factory service manual before performing any repair.
   </div>
 </footer>
 <div id="kyr-save-banner" onclick="kyrSaveBannerGo()" style="display:none;position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999;max-width:560px;width:calc(100% - 32px);align-items:center;gap:12px;background:var(--panel);border:1px solid var(--accent);border-left:4px solid var(--accent);border-radius:10px;padding:12px 14px;box-shadow:0 10px 30px rgba(0,0,0,.55);cursor:pointer;font-family:'Manrope',sans-serif"><div style="flex:1;font-size:13px;color:var(--text);line-height:1.45">&#128190; Save this vehicle to your garage &mdash; search faster next time. <span style="color:var(--accent);font-weight:700">Save your car free &mdash; no credit card needed &#8594;</span></div><button onclick="kyrDismissSaveBanner(event)" aria-label="Dismiss" style="flex:none;background:none;border:none;color:var(--faint);font-size:18px;line-height:1;cursor:pointer;padding:2px 4px">&#10005;</button></div>

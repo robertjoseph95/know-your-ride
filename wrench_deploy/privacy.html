@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Privacy Policy &mdash; Know Your Ride</title>
-<meta name="description" content="Privacy Policy for Know Your Ride — what we collect, how we use it, and your choices.">
+<meta name="description" content="Privacy Policy for Know Your Ride — what we collect, how we use it, the third parties involved, and your CCPA rights.">
 <link rel="icon" href="/favicon.ico">
 <style>
 :root{--bg:#0a0a0b;--panel:#0f0f12;--p2:#111;--text:#f5e6d3;--dim:#a39078;--faint:#5f5a55;--accent:#ff7a1a;--border:#222;--green:#7fd99c}
@@ -21,89 +21,97 @@ p,li{color:var(--dim);font-size:14.5px;line-height:1.7}
 strong{color:var(--text)}
 a{color:var(--accent)}
 ul{padding-left:22px;margin:8px 0 14px}
+code{background:#1a1a1d;padding:1px 5px;border-radius:3px;font-size:13px;color:var(--text)}
 .footer{margin-top:50px;padding-top:20px;border-top:1px solid var(--border);font-size:12px;color:var(--faint);text-align:center}
 .footer a{margin:0 8px;text-decoration:none;color:var(--accent)}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header>
-  <a href="/">&larr; Back to Know Your Ride</a>
-</header>
+<header><a href="/">&larr; Back to Know Your Ride</a></header>
 
 <h1>Privacy Policy</h1>
-<div class="sub">Last updated: <span id="lu"></span></div>
+<div class="sub">Effective date: June 14, 2026</div>
 
-<p>This Privacy Policy explains what information Know Your Ride (the &ldquo;Service&rdquo;) collects, how we use it, and your choices.</p>
+<p>This Privacy Policy explains what information Know Your Ride Technologies LLC (&ldquo;Know Your Ride,&rdquo; &ldquo;we,&rdquo; &ldquo;us&rdquo;) collects through <strong>knowyourride.net</strong> (the &ldquo;Service&rdquo;), how we use it, who we share it with, and the choices you have. We keep it in plain English on purpose.</p>
 
 <h2>What We Collect</h2>
 <ul>
-  <li><strong>Email address</strong> &mdash; if you create an account or subscribe to Pro. Used for sign-in, subscription management, and operational email.</li>
+  <li><strong>Email address</strong> &mdash; when you create an account or subscribe to Pro. Used for sign-in, subscription management, and operational email.</li>
   <li><strong>Password</strong> &mdash; stored only as a salted <code>scrypt</code> hash. We never see or store your plaintext password.</li>
-  <li><strong>Saved vehicles, mileage, and maintenance log entries</strong> &mdash; if you use My Garage. Stored against your account so we can show them back to you. Please do not include sensitive personal information (e.g. financial or health details) in free-text log notes.</li>
-  <li><strong>Usage analytics via Google Analytics 4 (GA4)</strong> &mdash; aggregated, pseudonymous data such as pages viewed, browser, approximate location (country/region), and basic device info. We do not link analytics to your account email.</li>
-  <li><strong>Payment information</strong> &mdash; handled entirely by <strong>Stripe</strong>. Card details never touch our servers; we only receive a customer/subscription identifier.</li>
-  <li><strong>VINs you enter</strong> &mdash; sent to our VIN decode endpoint to look up vehicle specs. VINs you do not explicitly save are not retained beyond what is necessary to serve the decode response.</li>
+  <li><strong>Vehicle information</strong> &mdash; the year, make, and model of vehicles you add, the mileage you log, and any service-log entries you create. Please don&rsquo;t put sensitive personal details in free-text notes.</li>
+  <li><strong>VINs you enter</strong> &mdash; sent to our decode endpoint to look up specs; not retained beyond what&rsquo;s needed to answer, unless you save the vehicle.</li>
+  <li><strong>Payment information</strong> &mdash; handled entirely by <strong>Stripe</strong>. <strong>Card numbers never touch our servers</strong> — we only receive a customer/subscription identifier and your subscription status.</li>
+  <li><strong>Usage analytics</strong> &mdash; if Google Analytics is enabled, aggregated, pseudonymous data such as pages viewed, browser, approximate location (country/region), and basic device info. We don&rsquo;t link analytics to your account email.</li>
 </ul>
 
 <h2>How We Use It</h2>
 <ul>
-  <li>To run your account and Pro subscription (sign-in, billing, restoring access on a new device).</li>
-  <li>To save and display your garage, mileage, and service log.</li>
-  <li>To understand which features are used, so we can improve the Service. Analytics are aggregated; we do not profile individuals.</li>
-  <li>To respond to support requests you send us.</li>
-  <li>To detect and prevent abuse, fraud, or security incidents.</li>
+  <li>Run your account and Pro subscription (sign-in, billing, restoring access on a new device).</li>
+  <li>Save and display your garage, mileage, and service log.</li>
+  <li>Understand which features are used so we can improve the Service (aggregated only — we don&rsquo;t profile individuals).</li>
+  <li>Respond to your support requests.</li>
+  <li>Detect and prevent abuse, fraud, and security incidents.</li>
 </ul>
 
-<h2>What We Do Not Do</h2>
-<p><strong>We do not sell personal data.</strong> We do not share your email, password hash, garage, or service log with advertisers or data brokers. We do not use your personal data to train third-party AI models.</p>
+<h2>We Do Not Sell Your Data</h2>
+<p><strong>Know Your Ride does not sell your personal information</strong> — not to advertisers, not to data brokers, not to anyone. We also do not use your personal data to train third-party AI models, and we do not share your email, password hash, garage, or service log for cross-context behavioral advertising.</p>
 
-<h2>Service Providers</h2>
-<p>We use a small set of providers to operate the Service:</p>
+<h2>Third Parties We Share Data With</h2>
+<p>We use a small set of providers to operate the Service. Each handles only the limited data needed for its specific job, under its own privacy practices:</p>
 <ul>
   <li><strong>Stripe</strong> &mdash; payment processing and subscription management.</li>
-  <li><strong>Upstash Redis (United States)</strong> &mdash; encrypted at-rest storage, hosted in a U.S. region, for accounts, sessions, garage data, and service logs.</li>
+  <li><strong>Amazon Associates</strong> &mdash; affiliate links to recommended parts. We send Amazon no personal data; if you click an affiliate link, Amazon may set its own cookies on its site. See our <a href="/affiliate-disclosure.html">Affiliate Disclosure</a>.</li>
+  <li><strong>NHTSA</strong> (U.S. Government) &mdash; recall, VIN-decode, and complaint data. Queried server-side; vehicle identifiers only, no account info.</li>
+  <li><strong>Upstash Redis (United States)</strong> &mdash; encrypted, U.S.-based storage for accounts, sessions, garage data, and service logs.</li>
   <li><strong>Vercel</strong> &mdash; hosting and serverless functions.</li>
-  <li><strong>Google Analytics 4</strong> &mdash; aggregated, pseudonymous usage analytics.</li>
-  <li><strong>Anthropic Claude API</strong> &mdash; powers repair guides and the Know Your Part image scanner. We do not send your email or account identifiers to Anthropic.</li>
-  <li><strong>NHTSA, EPA, and OEM data sources</strong> &mdash; queried server-side; no personal data is sent. Vehicle complaint data sourced from NHTSA (public domain, U.S. Government).</li>
+  <li><strong>Google Analytics</strong> &mdash; aggregated, pseudonymous usage analytics (if enabled).</li>
+  <li><strong>Anthropic Claude API</strong> &mdash; powers repair guides and the part-image scanner. We don&rsquo;t send your email or account identifiers.</li>
 </ul>
-<p>Each provider has its own privacy practices governing how it handles the limited data we share for that specific purpose.</p>
 
 <h2>Where Your Data Is Stored</h2>
-<p>User account data (email, password hash, saved vehicles, mileage, and service logs) is stored in a <strong>United States&ndash;based</strong> Upstash Redis instance, and the Service is hosted on Vercel&rsquo;s infrastructure. If you access the Service from outside the United States, your data will be transferred to and processed in the U.S.</p>
+<p>Account data (email, password hash, saved vehicles, mileage, and service logs) is stored in a <strong>United States&ndash;based</strong> Upstash Redis instance, and the Service is hosted on Vercel. If you access the Service from outside the U.S., your data will be transferred to and processed in the U.S.</p>
 
-<h2>Cookies and Local Storage</h2>
-<p>We use cookies and browser <code>localStorage</code> for the following purposes:</p>
-<ul>
-  <li><strong>Strictly necessary</strong> &mdash; session token (so you stay signed in), Pro entitlement flag, dismissed-banner flag.</li>
-  <li><strong>Analytics</strong> &mdash; GA4 sets first-party cookies to measure aggregate usage. You can block these via your browser settings or extensions without breaking the Service.</li>
-</ul>
+<h2>Cookies</h2>
+<p>We use a small number of cookies for sign-in, payments, and (if enabled) analytics. See our <a href="/cookie-policy.html">Cookie Policy</a> for the full list and how to opt out.</p>
 
 <h2>Data Retention</h2>
-<p>Account data and saved vehicles are retained while your account is active. Session tokens auto-expire after 30 days. You may delete your account at any time by emailing <a href="mailto:hello@knowyourride.net">hello@knowyourride.net</a>; we will remove your account record, garage, and logs from our active stores within 30 days of the request.</p>
+<p>We keep your account and garage data while your account is active. Session tokens auto-expire after 30 days. When you delete your account, we begin a <strong>30-day grace period</strong>; after that, your personal data is permanently purged from our active stores, except limited records we must keep for legal, tax, or fraud-prevention reasons.</p>
 
-<h2>Your Rights</h2>
-<p>Depending on where you live, you may have rights to access, correct, export, or delete the personal data we hold about you. Email us at <a href="mailto:hello@knowyourride.net">hello@knowyourride.net</a> and we will respond within a reasonable time.</p>
+<h2>Your CCPA Rights (and Rights for All Users)</h2>
+<p>We honor these rights for <strong>all users</strong>. If you&rsquo;re a California resident, they reflect your rights under the CCPA/CPRA:</p>
+<ul>
+  <li><strong>Right to know / access</strong> &mdash; request a copy of the personal information we hold about you.</li>
+  <li><strong>Right to delete</strong> &mdash; ask us to delete your personal information, or delete your account yourself in the app.</li>
+  <li><strong>Right to opt out of sale</strong> &mdash; <strong>not applicable, because we do not sell or share your personal information.</strong> There is nothing to opt out of.</li>
+  <li><strong>Right to non-discrimination</strong> &mdash; we will never deny service or change pricing because you exercised a right.</li>
+</ul>
+<p>To exercise a right, email <a href="mailto:hello@knowyourride.net">hello@knowyourride.net</a> from your account address. We respond within the timeframe the law requires (generally within 45 days) and may need to verify your identity first.</p>
 
 <h2>Children</h2>
 <p>The Service is not directed to children under 13, and Pro subscriptions require users to be 18 or older. We do not knowingly collect personal data from children under 13.</p>
 
 <h2>Security</h2>
-<p>We use industry-standard practices: HTTPS everywhere, scrypt-hashed passwords, short-lived session tokens, server-side validation of all writes, and least-privilege access to our data stores. No service can guarantee perfect security; please use a strong, unique password and notify us if you suspect compromise.</p>
+<p>We use HTTPS everywhere, scrypt-hashed passwords, short-lived session tokens, server-side validation of all writes, and least-privilege access to our data stores. No service can guarantee perfect security; please use a strong, unique password and tell us if you suspect compromise.</p>
+
+<h2>Governing Law</h2>
+<p>This Privacy Policy and any dispute relating to it are governed by the laws of the <strong>State of Texas</strong>, without regard to its conflict-of-laws rules.</p>
 
 <h2>Changes</h2>
-<p>We may update this Privacy Policy from time to time. Material changes will be communicated through the Service or by email.</p>
+<p>We may update this Policy from time to time. Material changes will be communicated through the Service or by email, and the effective date above will be updated.</p>
 
 <h2>Contact</h2>
 <p>Questions or requests? Email <a href="mailto:hello@knowyourride.net">hello@knowyourride.net</a>.</p>
+<p><strong>Know Your Ride Technologies LLC</strong><br>
+5900 Balcones Drive STE 100<br>Austin, TX 78731<br>United States</p>
 
 <div class="footer">
   <a href="/">Home</a> &middot;
-  <a href="/terms.html">Terms of Service</a> &middot;
+  <a href="/terms.html">Terms</a> &middot;
+  <a href="/cookie-policy.html">Cookies</a> &middot;
+  <a href="/affiliate-disclosure.html">Affiliate</a> &middot;
   <a href="mailto:hello@knowyourride.net">Contact</a>
 </div>
 </div>
-<script>document.getElementById('lu').textContent=new Date().toISOString().slice(0,10);</script>
 </body>
 </html>
