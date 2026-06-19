@@ -1245,6 +1245,10 @@ PAYWALL_STYLE = r"""<style>
 
 PAYWALL_JS = r"""/*WRENCH_PAYWALL*/
 function kyrEmail(){try{return localStorage.getItem('kyr_email')||'';}catch(e){return '';}}
+function kyrRelinkSubmit(){var em=(document.getElementById('kyr-relink-email').value||'').trim().toLowerCase();var msg=document.getElementById('kyr-relink-msg');if(!em||em.indexOf('@')<1){msg.textContent='Enter a valid email.';return;}msg.textContent='Checking...';fetch('/api/verify-subscription?email='+encodeURIComponent(em)).then(function(r){return r.json();}).then(function(d){if(d&&d.subscribed){try{localStorage.setItem('kyr_email',em);localStorage.setItem('kyr_relinked','1');}catch(e){}msg.textContent='Pro access restored';setTimeout(function(){var b=document.getElementById('kyr-relink');if(b)b.style.display='none';},1500);}else{msg.textContent='Email not found — check your subscription email';}}).catch(function(){msg.textContent='Could not verify right now. Please try again.';});}
+function kyrRelinkDismiss(){try{localStorage.setItem('kyr_relink_dismissed','1');}catch(e){}var b=document.getElementById('kyr-relink');if(b)b.style.display='none';}
+function kyrRelinkInit(){try{if(typeof kyrPro==='function'&&kyrPro()&&!(localStorage.getItem('kyr_email')||'')&&localStorage.getItem('kyr_relinked')!=='1'&&localStorage.getItem('kyr_relink_dismissed')!=='1'){var b=document.getElementById('kyr-relink');if(b)b.style.display='flex';}}catch(e){}}
+if(document.readyState!=='loading'){kyrRelinkInit();}else{document.addEventListener('DOMContentLoaded',kyrRelinkInit);}
 function kyrPro(){try{if(localStorage.getItem('kyr_pro')!=='1')return false;var u=parseInt(localStorage.getItem('kyr_pro_until')||'0',10);if(u&&Date.now()/1000>u){localStorage.removeItem('kyr_pro');localStorage.removeItem('kyr_pro_until');return false;}return true;}catch(e){return false;}}
 function kyrSetPro(){try{localStorage.setItem('kyr_pro','1');}catch(e){}}
 function kyrFreeUsed(k){try{return parseInt(localStorage.getItem('kyr_free_'+k)||'0',10)||0;}catch(e){return 0;}}
