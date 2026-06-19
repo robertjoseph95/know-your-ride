@@ -108,22 +108,20 @@ def _stripe_active(email):
         return None
 
 
-def check(handler):
-    """handler: a BaseHTTPRequestHandler (reads handler.headers).
-    Returns (is_pro: bool, user_email: str | None). (False, None) when no valid session."""
-    headers = getattr(handler, "headers", None)
-    if headers is None:
-        return (False, None)
-    token = _token_from(headers)
-    if not token:
-        return (False, None)
-    r = _redis()
-    email = _session_email(r, token)
-    if not email:
-        return (False, None)
-    email = str(email).strip().lower()
+def _email_from(headers):
+    """Client-asserted subscriber email (X-KYR-Email). Matches the existing email-based
+    restore model; the email is only a lookup key, never trusted on its own (see _email_pro)."""
+    e = headers.get("X-KYR-Email") or headers.get("x-kyr-email") or ""
+    return e.strip().lower()
 
-    # ---- Pro determination, in order of cheapest/most-authoritative source ----
+
+def _email_pro(r, email):
+    """Pro determination for a known email, cheapest/most-authoritative source first:
+    PRO_WHITELIST, then the sub:{email} cache the Stripe webhook + verify-subscription
+    maintain, then a live Stripe check (result cached). Returns (is_pro, email|None)."""
+    email = str(email).strip().lower()
+    if not email or "@" not in email:
+        return (False, None)
     if email in _whitelist():
         return (True, email)
     if r is not None:
@@ -144,3 +142,33 @@ def check(handler):
         except Exception:
             pass
     return (bool(active), email)
+
+
+def check(handler):
+    """handler: a BaseHTTPRequestHandler (reads handler.headers).
+    Returns (is_pro: bool, user_email: str | None).
+
+    Two ways a caller can prove Pro, BOTH validated against the real subscription state:
+      1. A server-issued session token (Authorization: Bearer / session cookie) ->
+         session:{token} -> email. (Future-proof; works if a real session ever exists.)
+      2. A client-asserted subscriber email (X-KYR-Email header) -- the credential the
+         current client actually has. This matches the EXISTING email-based restore model
+         (verify-subscription.py is already email-only). The email is never trusted on its
+         own: it must resolve to PRO_WHITELIST, sub:{email}=="active", or a live Stripe
+         active subscription.
+    The browser localStorage 'kyr_pro' flag is still ignored entirely."""
+    headers = getattr(handler, "headers", None)
+    if headers is None:
+        return (False, None)
+    r = _redis()
+    # 1) session-token path
+    token = _token_from(headers)
+    if token:
+        email = _session_email(r, token)
+        if email:
+            return _email_pro(r, email)
+    # 2) email path (current client credential)
+    email = _email_from(headers)
+    if email:
+        return _email_pro(r, email)
+    return (False, None)

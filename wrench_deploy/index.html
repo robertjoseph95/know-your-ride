@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-11-procosts-v34">
+<meta name="kyr-version" content="2026-06-18-email-pro-gate">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -934,7 +934,7 @@ function ytLoad(btn){
   var box=wrap.querySelector('#yt-results');
   box.innerHTML='<div class="yt-hint">Loading top videos for '+svc+'\u2026</div>';
   var url='/api/youtube/'+encodeURIComponent(y)+'/'+encodeURIComponent(mk)+'/'+encodeURIComponent(md)+'/'+encodeURIComponent(svc);
-  fetch(url).then(function(r){return r.json();}).then(function(d){
+  fetch(url,{headers:{'X-KYR-Email':kyrEmail()}}).then(function(r){return r.json();}).then(function(d){
     if(d.error){box.innerHTML='<div class="yt-hint yt-err">'+ytEsc(d.error)+'</div>';return;}
     var vids=d.videos||[];
     if(!vids.length){box.innerHTML='<div class="yt-hint">No DIY videos found for '+svc+'.</div>';return;}
@@ -972,7 +972,7 @@ function ghLoad(btn){
   var bs=wrap.querySelectorAll('.gh-svc'); for(var i=0;i<bs.length;i++) bs[i].classList.remove('active'); btn.classList.add('active');
   var box=wrap.querySelector('#gh-results');
   box.innerHTML='<div class="gh-hint">Generating '+svc+' guide... (a few seconds)</div>';
-  fetch('/api/guide/'+encodeURIComponent(vid)+'/'+encodeURIComponent(svc)).then(function(r){return r.json();}).then(function(d){
+  fetch('/api/guide/'+encodeURIComponent(vid)+'/'+encodeURIComponent(svc),{headers:{'X-KYR-Email':kyrEmail()}}).then(function(r){return r.json();}).then(function(d){
     if(d.error){box.innerHTML='<div class="gh-hint gh-err">'+htmlEsc(d.error)+'</div>';return;}
     if(d.safety_blocked){box.innerHTML='<div class="gh-safety">&#9888; '+htmlEsc(d.message)+'</div>';return;}
     if(!d.guide){box.innerHTML='<div class="gh-hint">No guide available.</div>';return;}
@@ -1002,7 +1002,7 @@ function kypScan(){if(!kyrPro()){if(kyrFreeUsed('scan')>=1){openPricing();return
     if(w>max||h>max){var s=Math.min(max/w,max/h);w=Math.round(w*s);h=Math.round(h*s);}
     var c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(img,0,0,w,h);
     var b64=c.toDataURL('image/jpeg',0.85).split(',')[1];
-    fetch('/api/identify-part',{method:'POST',headers:{'Content-Type':'text/plain','X-Image-Type':'image/jpeg'},body:b64})
+    fetch('/api/identify-part',{method:'POST',headers:{'Content-Type':'text/plain','X-Image-Type':'image/jpeg','X-KYR-Email':kyrEmail()},body:b64})
       .then(function(r){return r.json();}).then(function(d){
         btn.disabled=false; btn.textContent='Identify Part';
         if(d.error){res.innerHTML='<div class="kyp-msg err">'+htmlEsc(d.error)+'</div>';return;}
@@ -1120,6 +1120,7 @@ function affDtcShop(fixText){
 }
 
 /*WRENCH_PAYWALL*/
+function kyrEmail(){try{return localStorage.getItem('kyr_email')||'';}catch(e){return '';}}
 function kyrPro(){try{if(localStorage.getItem('kyr_pro')!=='1')return false;var u=parseInt(localStorage.getItem('kyr_pro_until')||'0',10);if(u&&Date.now()/1000>u){localStorage.removeItem('kyr_pro');localStorage.removeItem('kyr_pro_until');return false;}return true;}catch(e){return false;}}
 function kyrSetPro(){try{localStorage.setItem('kyr_pro','1');}catch(e){}}
 function kyrFreeUsed(k){try{return parseInt(localStorage.getItem('kyr_free_'+k)||'0',10)||0;}catch(e){return 0;}}
@@ -1127,9 +1128,9 @@ function kyrUseFree(k){try{localStorage.setItem('kyr_free_'+k,String(kyrFreeUsed
 function openPricing(){var o=document.getElementById('pp-overlay');if(o){o.classList.add('open');document.body.style.overflow='hidden';}}
 function closePricing(){var o=document.getElementById('pp-overlay');if(o){o.classList.remove('open');document.body.style.overflow='';}}
 function proUnlock(label,sub){return '<div class="pro-unlock"><div class="lk">&#128274; '+label+'</div>'+(sub?'<div class="sm">'+sub+'</div>':'')+'<button class="pro-cta" onclick="openPricing()">Unlock with Pro</button></div>';}
-function restorePro(){var em=(document.getElementById('pp-restore-email').value||'').trim().toLowerCase();var note=document.getElementById('pp-note');if(!em){note.textContent='Enter the email you subscribed with.';return;}note.textContent='Checking...';fetch('/api/verify-subscription?email='+encodeURIComponent(em)).then(function(r){return r.json();}).then(function(d){if(d&&d.subscribed){kyrSetPro();note.style.color='var(--green)';note.textContent='Pro restored. Reloading...';setTimeout(function(){location.reload();},700);}else{note.textContent='No active subscription found for that email.';}}).catch(function(){note.textContent='Could not verify right now. Please try again.';});}
+function restorePro(){var em=(document.getElementById('pp-restore-email').value||'').trim().toLowerCase();var note=document.getElementById('pp-note');if(!em){note.textContent='Enter the email you subscribed with.';return;}note.textContent='Checking...';fetch('/api/verify-subscription?email='+encodeURIComponent(em)).then(function(r){return r.json();}).then(function(d){if(d&&d.subscribed){kyrSetPro();try{localStorage.setItem('kyr_email',em);}catch(e){}note.style.color='var(--green)';note.textContent='Pro restored. Reloading...';setTimeout(function(){location.reload();},700);}else{note.textContent='No active subscription found for that email.';}}).catch(function(){note.textContent='Could not verify right now. Please try again.';});}
 function kyrPromoToken(){try{var t=localStorage.getItem('kyr_token');if(!t){t=Date.now().toString(36)+Math.random().toString(36).slice(2);localStorage.setItem('kyr_token',t);}return t;}catch(e){return '';}}
-function applyPromo(){var code=(document.getElementById('pp-promo-input').value||'').trim();var em=(document.getElementById('pp-promo-email').value||'').trim();var note=document.getElementById('pp-promo-note');if(!code){note.textContent='Enter a promo code.';return;}if(!em||em.indexOf('@')<1){note.style.color='';note.textContent='Enter a valid email to redeem.';return;}note.style.color='';note.textContent='Checking...';fetch('/api/promo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,email:em,token:kyrPromoToken()})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){kyrSetPro();try{localStorage.setItem('kyr_pro_until',String(d.until));}catch(e){}note.style.color='var(--green)';note.textContent=d.message||'Pro access unlocked for 30 days!';setTimeout(function(){location.reload();},1100);}else{note.style.color='';note.textContent=(d&&d.error)||'Invalid promo code.';}}).catch(function(){note.textContent='Could not check the code right now.';});}
+function applyPromo(){var code=(document.getElementById('pp-promo-input').value||'').trim();var em=(document.getElementById('pp-promo-email').value||'').trim();var note=document.getElementById('pp-promo-note');if(!code){note.textContent='Enter a promo code.';return;}if(!em||em.indexOf('@')<1){note.style.color='';note.textContent='Enter a valid email to redeem.';return;}note.style.color='';note.textContent='Checking...';fetch('/api/promo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:code,email:em,token:kyrPromoToken()})}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){kyrSetPro();try{localStorage.setItem('kyr_pro_until',String(d.until));localStorage.setItem('kyr_email',em);}catch(e){}note.style.color='var(--green)';note.textContent=d.message||'Pro access unlocked for 30 days!';setTimeout(function(){location.reload();},1100);}else{note.style.color='';note.textContent=(d&&d.error)||'Invalid promo code.';}}).catch(function(){note.textContent='Could not check the code right now.';});}
 function kyrToast(msg){var t=document.createElement('div');t.className='kyr-toast';t.setAttribute('role','status');t.setAttribute('aria-live','polite');t.textContent=msg;document.body.appendChild(t);setTimeout(function(){t.classList.add('show');},40);setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.remove();},450);},5000);}
 function renderMaintGated(v){
   if(kyrPro())return renderMaint(v);
