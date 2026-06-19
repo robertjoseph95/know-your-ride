@@ -10,10 +10,89 @@ try:
 except Exception:
     Redis = None
 
-try:
-    import _gate                      # PHASE 2: shared server-side Pro gate (closes the localStorage bypass)
-except Exception:
-    _gate = None
+def _pro_gate(handler):
+    """Self-contained server-side Pro gate (NO sibling import -- Vercel's Python builder
+    bundles only the entry file, so `import _gate` fails silently and would gate everyone).
+    Pro if a session token resolves to a subscriber email, or an X-KYR-Email header resolves
+    to PRO_WHITELIST / sub:{email}=='active' / a live Stripe active subscription. The browser
+    localStorage 'kyr_pro' flag is ignored entirely."""
+    import os, http.cookies
+    headers = getattr(handler, "headers", None)
+    if headers is None:
+        return (False, None)
+
+    def _r():
+        try:
+            from upstash_redis import Redis
+        except Exception:
+            return None
+        u = os.environ.get("UPSTASH_REDIS_REST_URL") or os.environ.get("KV_REST_API_URL")
+        t = os.environ.get("UPSTASH_REDIS_REST_TOKEN") or os.environ.get("KV_REST_API_TOKEN")
+        if not (u and t):
+            return None
+        try:
+            return Redis(url=u, token=t)
+        except Exception:
+            return None
+
+    r = _r()
+    email = None
+    a = headers.get("Authorization") or headers.get("authorization") or ""
+    tok = a[7:].strip() if a.lower().startswith("bearer ") else ""
+    if not tok:
+        raw = headers.get("Cookie") or headers.get("cookie") or ""
+        if raw:
+            try:
+                jar = http.cookies.SimpleCookie(); jar.load(raw)
+                for n in ("kyr_session", "kyr_token", "session"):
+                    if n in jar and jar[n].value:
+                        tok = jar[n].value.strip(); break
+            except Exception:
+                pass
+    if tok and r is not None:
+        try:
+            email = r.get("session:" + tok) or None
+        except Exception:
+            email = None
+    if not email:
+        e = headers.get("X-KYR-Email") or headers.get("x-kyr-email") or ""
+        email = e.strip().lower() or None
+    if not email or "@" not in email:
+        return (False, None)
+    email = email.strip().lower()
+
+    if email in {x.strip().lower() for x in os.environ.get("PRO_WHITELIST", "").split(",") if x.strip()}:
+        return (True, email)
+    if r is not None:
+        try:
+            v = r.get("sub:" + email)
+            if v == "active":
+                return (True, email)
+            if v == "inactive":
+                return (False, email)
+        except Exception:
+            pass
+    active = None
+    key = os.environ.get("STRIPE_SECRET_KEY", "")
+    if key:
+        try:
+            import stripe
+            stripe.api_key = key
+            active = False
+            for c in stripe.Customer.list(email=email, limit=20).data:
+                for status in ("active", "trialing"):
+                    if stripe.Subscription.list(customer=c.id, status=status, limit=1).data:
+                        active = True; break
+                if active:
+                    break
+        except Exception:
+            active = None
+    if active is not None and r is not None:
+        try:
+            r.set("sub:" + email, "active" if active else "inactive", ex=(60 * 60 * 6 if active else 60 * 30))
+        except Exception:
+            pass
+    return (bool(active), email)
 
 DAILY_CAP = 100
 PER_IP = 3
@@ -48,7 +127,7 @@ class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         # PHASE 2 (server-side Pro gate): validate the REAL subscription on every paid call.
         # The browser 'kyr_pro' flag is ignored -- it is no longer a security boundary.
-        is_pro, _email = (_gate.check(self) if _gate else (False, None))
+        is_pro, _email = _pro_gate(self)
         if not is_pro:
             return self._send(200, {"identification": None, "pro_required": True,
                                     "message": "Part identification is a Pro feature. Upgrade to scan and identify parts."})
