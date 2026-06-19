@@ -10,6 +10,11 @@ try:
 except Exception:
     Redis = None
 
+try:
+    import _gate                      # PHASE 2: shared server-side Pro gate (closes the localStorage bypass)
+except Exception:
+    _gate = None
+
 DAILY_CAP = 100
 PER_IP = 3
 MAX_IMAGE_BYTES = 2 * 1024 * 1024
@@ -41,11 +46,12 @@ def _redis():
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
-        # PHASE 2 / deferred (decided 2026-06-11): no per-user Pro gating here yet. Cost is
-        # bounded by the fail-closed Redis budget/day/IP caps below. We rely on those until
-        # ~50 subscribers, then add server-side auth (verify a Stripe subscriber token /
-        # session before the paid vision call). The browser 'kyr_pro' flag is UX-only, NOT a
-        # security boundary. See garage.py for the Bearer-session + _tier() pattern to copy.
+        # PHASE 2 (server-side Pro gate): validate the REAL subscription on every paid call.
+        # The browser 'kyr_pro' flag is ignored -- it is no longer a security boundary.
+        is_pro, _email = (_gate.check(self) if _gate else (False, None))
+        if not is_pro:
+            return self._send(200, {"identification": None, "pro_required": True,
+                                    "message": "Part identification is a Pro feature. Upgrade to scan and identify parts."})
         key = os.environ.get("ANTHROPIC_API_KEY", "")
         if not key:
             return self._send(503, {"error": "server not configured (ANTHROPIC_API_KEY)"})

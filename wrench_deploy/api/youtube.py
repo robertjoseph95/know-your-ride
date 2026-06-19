@@ -12,6 +12,11 @@ try:
 except Exception:
     Redis = None
 
+try:
+    import _gate                      # PHASE 2: shared server-side Pro gate (closes the localStorage bypass)
+except Exception:
+    _gate = None
+
 CACHE_TTL = 60 * 60 * 24 * 30  # 30 days
 
 
@@ -38,11 +43,12 @@ def _redis():
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        # PHASE 2 / deferred (decided 2026-06-11): no per-user Pro gating here yet. Cost is
-        # bounded by the per-IP daily cap below + the 30-day result cache. We rely on those
-        # until ~50 subscribers, then add server-side auth (verify a Stripe subscriber token /
-        # session). The browser 'kyr_pro' flag is UX-only, NOT a security boundary. See
-        # garage.py for the Bearer-session + _tier() pattern to copy.
+        # PHASE 2 (server-side Pro gate): validate the REAL subscription on every paid call.
+        # The browser 'kyr_pro' flag is ignored -- it is no longer a security boundary.
+        is_pro, _email = (_gate.check(self) if _gate else (False, None))
+        if not is_pro:
+            return self._send(200, {"videos": [], "pro_required": True,
+                                    "message": "Video tutorials are a Pro feature. Upgrade to unlock curated how-to videos."})
         q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
         year = (q.get("year") or [""])[0]
         make = (q.get("make") or [""])[0]

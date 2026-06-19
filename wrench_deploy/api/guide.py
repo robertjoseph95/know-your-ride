@@ -10,6 +10,11 @@ try:
 except Exception:
     Redis = None
 
+try:
+    import _gate                      # PHASE 2: shared server-side Pro gate (closes the localStorage bypass)
+except Exception:
+    _gate = None
+
 SAFETY = ("brake", "suspension", "fuel pump", "fuel system", "airbag",
           "timing belt", "timing chain", "steering", "clutch")
 CACHE_TTL = 60 * 60 * 24 * 90  # 90 days
@@ -117,12 +122,12 @@ def _redis():
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        # PHASE 2 / deferred (decided 2026-06-11): no per-user Pro gating here yet. Access is
-        # bounded only by GUIDE_MONTHLY_BUDGET below. We rely on that budget cap until ~50
-        # subscribers, then add server-side auth (verify a Stripe subscriber token / session
-        # before the paid Claude call). The browser localStorage 'kyr_pro' flag is UX-only, NOT
-        # a security boundary -- this endpoint serves anyone. See garage.py for the
-        # Bearer-session + _tier() pattern to copy when implementing the gate.
+        # PHASE 2 (server-side Pro gate): validate the REAL subscription on every paid call.
+        # The browser localStorage 'kyr_pro' flag is ignored -- it is no longer a security boundary.
+        is_pro, _email = (_gate.check(self) if _gate else (False, None))
+        if not is_pro:
+            return self._send(200, {"guide": None, "pro_required": True, "label": None,
+                                    "message": "AI repair guides are a Pro feature. Upgrade to unlock step-by-step, vehicle-specific guides."})
         q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
         vid = (q.get("vehicle_id") or [""])[0]
         service = (q.get("service") or [""])[0]
