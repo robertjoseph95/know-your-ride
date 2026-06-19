@@ -48,6 +48,8 @@ class handler(BaseHTTPRequestHandler):
         is_pro, _email = (_gate.check(self) if _gate else (False, None))
         if not is_pro:
             return self._send(200, {"videos": [], "pro_required": True,
+                                    "_dbg_gate_loaded": (_gate is not None),
+                                    "_dbg_xkyr_seen": bool(self.headers.get("X-KYR-Email")),
                                     "message": "Video tutorials are a Pro feature. Upgrade to unlock curated how-to videos."})
         q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
         year = (q.get("year") or [""])[0]
