@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-19-relink-banner">
+<meta name="kyr-version" content="2026-06-19-auth-ui">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -563,7 +563,7 @@ body{background:var(--bg)}
   <div class="tab-btn" data-tab="codes" tabindex="0" role="button" onclick="switchTab('codes')">&#128269; &nbsp;Code Lookup</div>
   <div class="tab-btn" data-tab="identify" tabindex="0" role="button" onclick="switchTab('identify')">&#128247; &nbsp;Know Your Part</div>
   <div class="tab-btn" data-tab="about" tabindex="0" role="button" onclick="switchTab('about')">&#9881; &nbsp;About</div>
-  <div class="go-pro-btn" id="go-pro-btn" tabindex="0" role="button" onclick="openPricing()">&#9889; Go Pro</div>
+  <div class="go-pro-btn" id="go-pro-btn" tabindex="0" role="button" onclick="openPricing()">&#9889; Go Pro</div><span class="kyr-auth-nav" id="kyr-auth-nav"><button type="button" class="kyr-auth-btn" id="nav-signin" onclick="kyrOpenLogin()">Sign In</button><button type="button" class="kyr-auth-btn primary" id="nav-signup" onclick="kyrOpenSignup()">Create Account</button><button type="button" class="kyr-auth-btn" id="nav-account" style="display:none" onclick="kyrOpenAccount()">My Account</button><button type="button" class="kyr-auth-btn" id="nav-signout" style="display:none" onclick="kyrLogout()">Sign Out</button></span>
 </div>
 
 <div class="pane active" id="pane-garage">
@@ -1717,5 +1717,132 @@ if(document.readyState!=='loading')show();else document.addEventListener('DOMCon
 })();
 </script>
 <button id="b2t" class="b2t" type="button" title="Back to top" aria-label="Back to top">&#8679;</button>
+<style id="kyr-auth-css">
+.kyr-auth-nav{display:inline-flex;gap:8px;align-items:center}
+.kyr-auth-btn{font-family:'Manrope',system-ui,sans-serif;font-size:13px;font-weight:600;padding:7px 14px;border-radius:6px;cursor:pointer;border:1px solid #2a2a2a;background:transparent;color:#e8e8e8;white-space:nowrap}
+.kyr-auth-btn:hover{border-color:#ff6b00;color:#fff}
+.kyr-auth-btn.primary{background:#ff6b00;border-color:#ff6b00;color:#111;font-weight:700}
+.kyr-auth-btn.primary:hover{background:#ff8124}
+.kyr-auth-btn:focus-visible{outline:2px solid #ff6b00;outline-offset:2px}
+.kyr-auth-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9000;align-items:center;justify-content:center;padding:16px;font-family:'Manrope',system-ui,sans-serif}
+.kyr-auth-overlay.open{display:flex}
+.kyr-auth-modal{position:relative;background:#141414;border:1px solid #2a2a2a;border-radius:12px;width:360px;max-width:100%;padding:24px;color:#e8e8e8;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.kyr-auth-modal h2{margin:0 0 4px;font-size:20px;font-weight:800;color:#fff}
+.kyr-auth-sub{font-size:13px;color:#9a9a9a;margin:0 0 18px}
+.kyr-auth-field{margin-bottom:12px}
+.kyr-auth-field label{display:block;font-size:12px;font-weight:600;color:#bdbdbd;margin-bottom:5px}
+.kyr-auth-field input{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:7px;border:1px solid #2a2a2a;background:#0e0e0e;color:#fff;font-size:14px;font-family:inherit}
+.kyr-auth-field input:focus{outline:none;border-color:#ff6b00}
+.kyr-forgot{font-size:12px;text-align:right;margin:-4px 0 10px}
+.kyr-auth-remember{display:flex;align-items:center;gap:8px;font-size:13px;color:#bdbdbd;margin-bottom:14px;cursor:pointer}
+.kyr-auth-remember input{accent-color:#ff6b00;width:15px;height:15px}
+.kyr-auth-submit{width:100%;padding:11px;border:none;border-radius:8px;background:#ff6b00;color:#111;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit}
+.kyr-auth-submit:hover{background:#ff8124}
+.kyr-auth-submit:disabled{opacity:.6;cursor:default}
+.kyr-auth-msg{font-size:13px;margin:10px 0 0;min-height:16px;line-height:1.4}
+.kyr-auth-msg.err{color:#ff6b66}
+.kyr-auth-msg.ok{color:#3fb950}
+.kyr-auth-alt{font-size:13px;color:#9a9a9a;margin-top:14px;text-align:center}
+.kyr-auth-link{color:#ff6b00;cursor:pointer;text-decoration:none;font-weight:600}
+.kyr-auth-link:hover{text-decoration:underline}
+.kyr-auth-x{position:absolute;top:12px;right:14px;background:none;border:none;color:#9a9a9a;font-size:22px;line-height:1;cursor:pointer;padding:2px 6px}
+.kyr-auth-x:hover{color:#fff}
+.kyr-acct-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #2a2a2a;font-size:14px;color:#bdbdbd}
+.kyr-acct-row .v{color:#fff;font-weight:600}
+.kyr-badge-pro{display:inline-block;background:#ff6b00;color:#111;font-size:10px;font-weight:800;padding:2px 7px;border-radius:4px;margin-left:6px}
+</style>
+
+<div class="kyr-auth-overlay" id="kyr-signup-overlay" role="dialog" aria-modal="true" aria-labelledby="kyr-signup-h">
+  <div class="kyr-auth-modal">
+    <button type="button" class="kyr-auth-x" aria-label="Close" onclick="kyrCloseAuth()">&times;</button>
+    <h2 id="kyr-signup-h">Create your account</h2>
+    <p class="kyr-auth-sub">Save your garage and service history across devices.</p>
+    <div class="kyr-auth-field"><label for="su-email">Email</label><input type="email" id="su-email" autocomplete="email" spellcheck="false" placeholder="you@example.com"></div>
+    <div class="kyr-auth-field"><label for="su-pw">Password</label><input type="password" id="su-pw" autocomplete="new-password" placeholder="At least 8 characters"></div>
+    <div class="kyr-auth-field"><label for="su-pw2">Confirm Password</label><input type="password" id="su-pw2" autocomplete="new-password" placeholder="Re-enter password"></div>
+    <button type="button" class="kyr-auth-submit" id="su-submit" onclick="kyrSignupSubmit()">Create Account</button>
+    <div class="kyr-auth-msg" id="su-msg" role="status" aria-live="polite"></div>
+    <div class="kyr-auth-alt">Already have an account? <a class="kyr-auth-link" onclick="kyrOpenLogin()">Sign in</a></div>
+  </div>
+</div>
+<div class="kyr-auth-overlay" id="kyr-login-overlay" role="dialog" aria-modal="true" aria-labelledby="kyr-login-h">
+  <div class="kyr-auth-modal">
+    <button type="button" class="kyr-auth-x" aria-label="Close" onclick="kyrCloseAuth()">&times;</button>
+    <h2 id="kyr-login-h">Sign in</h2>
+    <p class="kyr-auth-sub">Welcome back to Know Your Ride.</p>
+    <div class="kyr-auth-field"><label for="li-email">Email</label><input type="email" id="li-email" autocomplete="email" spellcheck="false" placeholder="you@example.com"></div>
+    <div class="kyr-auth-field"><label for="li-pw">Password</label><input type="password" id="li-pw" autocomplete="current-password" placeholder="Your password"></div>
+    <div class="kyr-forgot"><a class="kyr-auth-link" onclick="kyrForgotPw()">Forgot password?</a></div>
+    <label class="kyr-auth-remember"><input type="checkbox" id="li-remember" checked> Remember me</label>
+    <button type="button" class="kyr-auth-submit" id="li-submit" onclick="kyrLoginSubmit()">Sign In</button>
+    <div class="kyr-auth-msg" id="li-msg" role="status" aria-live="polite"></div>
+    <div class="kyr-auth-alt">New here? <a class="kyr-auth-link" onclick="kyrOpenSignup()">Create account</a></div>
+  </div>
+</div>
+<div class="kyr-auth-overlay" id="kyr-account-overlay" role="dialog" aria-modal="true" aria-labelledby="kyr-acct-h">
+  <div class="kyr-auth-modal">
+    <button type="button" class="kyr-auth-x" aria-label="Close" onclick="kyrCloseAuth()">&times;</button>
+    <h2 id="kyr-acct-h">My Account</h2>
+    <p class="kyr-auth-sub">Signed in to Know Your Ride.</p>
+    <div class="kyr-acct-row"><span>Email</span><span class="v" id="acct-email">&mdash;</span></div>
+    <div class="kyr-acct-row"><span>Plan</span><span class="v" id="acct-plan">Free</span></div>
+    <button type="button" class="kyr-auth-submit" style="margin-top:18px" onclick="kyrLogout()">Sign Out</button>
+  </div>
+</div>
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  function emailOk(e){return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e);}
+  function tok(){try{return localStorage.getItem('kyr_session')||'';}catch(e){return '';}}
+  function setTok(t){try{t?localStorage.setItem('kyr_session',t):localStorage.removeItem('kyr_session');}catch(e){}}
+  function closeAll(){['kyr-signup-overlay','kyr-login-overlay','kyr-account-overlay'].forEach(function(id){var o=$(id);if(o)o.classList.remove('open');});}
+  window.kyrCloseAuth=closeAll;
+  window.kyrOpenSignup=function(){closeAll();var m=$('su-msg');if(m){m.textContent='';m.className='kyr-auth-msg';}$('su-email').value='';$('su-pw').value='';$('su-pw2').value='';$('kyr-signup-overlay').classList.add('open');setTimeout(function(){$('su-email').focus();},40);};
+  window.kyrOpenLogin=function(){closeAll();var m=$('li-msg');if(m){m.textContent='';m.className='kyr-auth-msg';}$('li-email').value='';$('li-pw').value='';$('kyr-login-overlay').classList.add('open');setTimeout(function(){$('li-email').focus();},40);};
+  window.kyrOpenAccount=function(){closeAll();$('kyr-account-overlay').classList.add('open');};
+  window.kyrForgotPw=function(){var m=$('li-msg');if(m){m.className='kyr-auth-msg';m.textContent='Password reset is coming soon - email hello@knowyourride.net to reset for now.';}};
+  window.kyrUpdateNav=function(authed,email,tier){
+    var pro=(tier==='pro');
+    function show(id,on){var e=$(id);if(e)e.style.display=on?'':'none';}
+    show('nav-signin',!authed);show('nav-signup',!authed);show('nav-account',authed);show('nav-signout',authed);
+    var gp=$('go-pro-btn');if(gp)gp.style.display=(authed&&pro)?'none':'';
+    var acc=$('nav-account');if(acc)acc.innerHTML='My Account'+(pro?' <span style="color:#ff6b00">&#9733;</span>':'');
+    if(authed){if($('acct-email'))$('acct-email').textContent=email||'';if($('acct-plan'))$('acct-plan').innerHTML=pro?'Pro <span class="kyr-badge-pro">PRO</span>':'Free';}
+  };
+  function applyAuthed(email,tier){try{localStorage.setItem('kyr_email',email||'');}catch(e){}if(tier==='pro'){try{localStorage.setItem('kyr_pro','1');}catch(e){}}kyrUpdateNav(true,email,tier);var rb=$('kyr-relink');if(rb)rb.style.display='none';}
+  window.kyrSignupSubmit=function(){
+    var email=($('su-email').value||'').trim().toLowerCase(),pw=$('su-pw').value||'',pw2=$('su-pw2').value||'',m=$('su-msg');
+    m.className='kyr-auth-msg err';
+    if(!emailOk(email)){m.textContent='Enter a valid email address.';return;}
+    if(pw.length<8){m.textContent='Password must be at least 8 characters.';return;}
+    if(pw!==pw2){m.textContent='Passwords do not match.';return;}
+    var btn=$('su-submit');btn.disabled=true;m.className='kyr-auth-msg';m.textContent='Creating account...';
+    fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'signup',email:email,password:pw})})
+      .then(function(r){return r.json();}).then(function(d){btn.disabled=false;
+        if(d&&d.ok&&d.token){setTok(d.token);applyAuthed(d.email||email,d.tier);m.className='kyr-auth-msg ok';m.textContent='Account created. You are signed in.';setTimeout(closeAll,1400);}
+        else{m.className='kyr-auth-msg err';m.textContent=(d&&d.error)||'Could not create account.';}
+      }).catch(function(){btn.disabled=false;m.className='kyr-auth-msg err';m.textContent='Could not reach the server. Please try again.';});
+  };
+  window.kyrLoginSubmit=function(){
+    var email=($('li-email').value||'').trim().toLowerCase(),pw=$('li-pw').value||'',m=$('li-msg');
+    m.className='kyr-auth-msg err';
+    if(!emailOk(email)||!pw){m.textContent='Enter your email and password.';return;}
+    var btn=$('li-submit');btn.disabled=true;m.className='kyr-auth-msg';m.textContent='Signing in...';
+    fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',email:email,password:pw})})
+      .then(function(r){return r.json().then(function(d){return {s:r.status,d:d};});}).then(function(o){btn.disabled=false;var d=o.d||{};
+        if(o.s===200&&d.ok&&d.token){setTok(d.token);applyAuthed(d.email||email,d.tier);m.className='kyr-auth-msg ok';m.textContent='Signed in.';setTimeout(closeAll,900);}
+        else if(o.s===429){m.className='kyr-auth-msg err';m.textContent='Too many attempts - try again later.';$('li-pw').value='';}
+        else{m.className='kyr-auth-msg err';m.textContent='Incorrect email or password.';$('li-pw').value='';}
+      }).catch(function(){btn.disabled=false;m.className='kyr-auth-msg err';m.textContent='Could not reach the server. Please try again.';});
+  };
+  window.kyrLogout=function(){var t=tok();function done(){setTok('');try{localStorage.removeItem('kyr_email');localStorage.removeItem('kyr_pro');localStorage.removeItem('kyr_pro_until');}catch(e){}kyrUpdateNav(false);location.reload();}
+    if(!t){done();return;}fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout',token:t})}).then(done).catch(done);};
+  function init(){var t=tok();if(!t){kyrUpdateNav(false);return;}
+    fetch('/api/auth?action=me',{headers:{'Authorization':'Bearer '+t}}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){applyAuthed(d.email,d.tier);}else{setTok('');kyrUpdateNav(false);}}).catch(function(){kyrUpdateNav(false);});}
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll();});
+  ['kyr-signup-overlay','kyr-login-overlay','kyr-account-overlay'].forEach(function(id){var o=document.getElementById(id);if(o)o.addEventListener('click',function(e){if(e.target===o)closeAll();});});
+  if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
+})();
+</script>
 </body>
 </html>
