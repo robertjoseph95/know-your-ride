@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-19-auth-ui">
+<meta name="kyr-version" content="2026-06-19-service-log">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -1441,8 +1441,8 @@ function renderWarranty(v){
   return h;
 }
 
-var MTABS=['oil','parts','fluids','maint','perf','safety','issues','warranty','comps'];
-var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG','Safety & Rel.','Known Issues','Warranty & Recalls','Complaints'];
+var MTABS=['oil','parts','fluids','maint','perf','safety','issues','warranty','comps','log'];
+var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG','Safety & Rel.','Known Issues','Warranty & Recalls','Complaints','Service Log'];
 var curTab='oil';
 
 /*WRENCH_DEEPLINK_v27*/ // shareable/refreshable URLs: ?v=<id> opens a vehicle, ?tab=, ?code=<DTC>
@@ -1495,8 +1495,8 @@ function renderMTabs(v){
 function switchMTab(tab,vid){curTab=tab;var v=VEH[vid];renderMTabs(v);renderMBody(v);}
 
 function renderMBody(v){
-  var fns={oil:renderOilShop,parts:renderPartsTieredYTG,fluids:renderFluids,maint:renderMaintGated,perf:renderPerf,safety:renderSafety,issues:renderIssues,warranty:renderWarrantyKbb,comps:renderComplaints};
-  document.getElementById('m-body').innerHTML=fns[curTab](v);
+  var fns={oil:renderOilShop,parts:renderPartsTieredYTG,fluids:renderFluids,maint:renderMaintGated,perf:renderPerf,safety:renderSafety,issues:renderIssues,warranty:renderWarrantyKbb,comps:renderComplaints,log:renderServiceLog};
+  document.getElementById('m-body').innerHTML=fns[curTab](v);if(curTab==='log'&&typeof kyrSlLoad==='function')kyrSlLoad();
 }
 
 function closeModalUI(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';__kyrCurV=null;}
@@ -1802,7 +1802,7 @@ if(document.readyState!=='loading')show();else document.addEventListener('DOMCon
   window.kyrOpenAccount=function(){closeAll();$('kyr-account-overlay').classList.add('open');};
   window.kyrForgotPw=function(){var m=$('li-msg');if(m){m.className='kyr-auth-msg';m.textContent='Password reset is coming soon - email hello@knowyourride.net to reset for now.';}};
   window.kyrUpdateNav=function(authed,email,tier){
-    var pro=(tier==='pro');
+    var pro=(tier==='pro')||(typeof kyrPro==='function'&&kyrPro());
     function show(id,on){var e=$(id);if(e)e.style.display=on?'':'none';}
     show('nav-signin',!authed);show('nav-signup',!authed);show('nav-account',authed);show('nav-signout',authed);
     var gp=$('go-pro-btn');if(gp)gp.style.display=(authed&&pro)?'none':'';
@@ -1842,6 +1842,169 @@ if(document.readyState!=='loading')show();else document.addEventListener('DOMCon
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll();});
   ['kyr-signup-overlay','kyr-login-overlay','kyr-account-overlay'].forEach(function(id){var o=document.getElementById(id);if(o)o.addEventListener('click',function(e){if(e.target===o)closeAll();});});
   if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
+})();
+</script>
+<style id="kyr-sl-css">
+.kyr-sl-head{display:flex;align-items:center;justify-content:space-between;margin:4px 0 14px;flex-wrap:wrap;gap:10px}
+.kyr-sl-title{font-family:'Manrope',system-ui,sans-serif;font-size:18px;font-weight:800;color:var(--text,#e8e8e8)}
+.kyr-sl-add{font-family:'Manrope',system-ui,sans-serif;font-size:13px;font-weight:700;padding:8px 16px;border:none;border-radius:7px;background:var(--accent,#ff6b00);color:#111;cursor:pointer}
+.kyr-sl-add:hover{background:#ff8124}
+.kyr-sl-meta{font-size:12px;color:var(--faint,#888);margin-bottom:10px;font-family:'Manrope',system-ui,sans-serif}
+.kyr-sl-empty{padding:26px 14px;text-align:center;color:var(--faint,#888);font-family:'Manrope',system-ui,sans-serif;font-size:14px;line-height:1.6}
+.kyr-sl-row{border:1px solid var(--border,#2a2a2a);border-radius:8px;margin-bottom:8px;overflow:hidden;background:rgba(255,255,255,0.02)}
+.kyr-sl-rowmain{display:flex;align-items:center;gap:12px;padding:11px 14px;cursor:pointer;font-family:'Manrope',system-ui,sans-serif}
+.kyr-sl-rowmain:hover{background:rgba(255,107,0,0.06)}
+.kyr-sl-date{font-size:12px;color:var(--faint,#888);min-width:84px;font-variant-numeric:tabular-nums}
+.kyr-sl-type{flex:1;min-width:0;font-size:14px;font-weight:600;color:var(--text,#e8e8e8);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kyr-sl-mi{font-size:12px;color:var(--dim,#bbb);white-space:nowrap;font-variant-numeric:tabular-nums}
+.kyr-sl-detail{display:none;padding:0 14px 12px;border-top:1px solid var(--border,#2a2a2a);font-family:'Manrope',system-ui,sans-serif}
+.kyr-sl-row.open .kyr-sl-detail{display:block}
+.kyr-sl-notes{font-size:13px;color:var(--dim,#bbb);margin:10px 0;line-height:1.5;white-space:pre-wrap}
+.kyr-sl-nd{font-size:12px;color:var(--accent,#ff6b00);margin:8px 0}
+.kyr-sl-del{font-family:'Manrope',system-ui,sans-serif;font-size:12px;font-weight:600;padding:5px 12px;border:1px solid var(--border,#2a2a2a);border-radius:6px;background:transparent;color:#ff6b66;cursor:pointer}
+.kyr-sl-del:hover{border-color:#ff6b66}
+.kyr-auth-field select,.kyr-auth-field textarea{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:7px;border:1px solid #2a2a2a;background:#0e0e0e;color:#fff;font-size:14px;font-family:'Manrope',system-ui,sans-serif}
+.kyr-auth-field select:focus,.kyr-auth-field textarea:focus{outline:none;border-color:#ff6b00}
+</style>
+
+<div class="kyr-auth-overlay" id="kyr-sl-form-overlay" role="dialog" aria-modal="true" aria-labelledby="kyr-sl-form-h">
+  <div class="kyr-auth-modal">
+    <button type="button" class="kyr-auth-x" aria-label="Close" onclick="kyrSlCloseForm()">&times;</button>
+    <h2 id="kyr-sl-form-h">Log a Service</h2>
+    <p class="kyr-auth-sub" id="kyr-sl-form-veh">-</p>
+    <div id="kyr-sl-fields">
+      <div class="kyr-auth-field"><label for="kyr-sl-date">Date</label><input type="date" id="kyr-sl-date"></div>
+      <div class="kyr-auth-field"><label for="kyr-sl-mileage">Mileage</label><input type="number" id="kyr-sl-mileage" inputmode="numeric" placeholder="e.g. 87420"></div>
+      <div class="kyr-auth-field"><label for="kyr-sl-type">Service Type</label><select id="kyr-sl-type" onchange="kyrSlTypeChange()"></select></div>
+      <div class="kyr-auth-field" id="kyr-sl-other-wrap" style="display:none"><label for="kyr-sl-other">Describe service</label><input type="text" id="kyr-sl-other" placeholder="Service performed"></div>
+      <div class="kyr-auth-field"><label for="kyr-sl-notes">Notes (optional)</label><textarea id="kyr-sl-notes" rows="2" placeholder="e.g. noticed slight coolant smell - watch this"></textarea></div>
+      <button type="button" class="kyr-auth-submit" id="kyr-sl-save" onclick="kyrSlSubmit()">Save Entry</button>
+      <div class="kyr-auth-msg" id="kyr-sl-msg" role="status" aria-live="polite"></div>
+    </div>
+    <div id="kyr-sl-upgrade" style="display:none">
+      <p style="font-size:14px;color:#e8e8e8;line-height:1.5;margin:6px 0 16px">You have used all 3 free service entries for this vehicle. Upgrade to Pro for unlimited service history - $2.99/month.</p>
+      <button type="button" class="kyr-auth-submit" onclick="kyrSlCloseForm();if(typeof openPricing==='function')openPricing();">Upgrade to Pro</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  function esc(s){return (typeof htmlEsc==='function')?htmlEsc(String(s==null?'':s)):String(s==null?'':s);}
+  function tok(){try{return localStorage.getItem('kyr_session')||'';}catch(e){return '';}}
+  function curVeh(){try{return (typeof VEH!=='undefined'&&typeof __kyrCurV!=='undefined')?(VEH[__kyrCurV]||{}):{};}catch(e){return {};}}
+  function curVid(){try{return (typeof __kyrCurV!=='undefined')?__kyrCurV:null;}catch(e){return null;}}
+  function nf(n){try{return Number(n).toLocaleString('en-US');}catch(e){return String(n);}}
+
+  var TYPES=['Engine Oil & Filter Change','Tire Rotation','Brake Pad Replacement (Front)','Brake Pad Replacement (Rear)','Air Filter Replacement','Cabin Air Filter Replacement','Spark Plug Replacement','Transmission Service','Coolant Flush','Battery Replacement','Wiper Blade Replacement','Alignment','Tire Replacement','Brake Fluid Flush','Power Steering Service','Fuel Filter Replacement','Serpentine Belt Replacement','Timing Belt / Chain Service','Suspension / Struts','Inspection / Multi-Point Check','Other'];
+  var EV_HIDE=['Engine Oil & Filter Change','Air Filter Replacement','Spark Plug Replacement','Transmission Service','Fuel Filter Replacement','Serpentine Belt Replacement','Timing Belt / Chain Service','Power Steering Service'];
+  var INTERVAL={'Engine Oil & Filter Change':5000,'Tire Rotation':6000,'Air Filter Replacement':20000,'Cabin Air Filter Replacement':20000,'Spark Plug Replacement':60000,'Transmission Service':40000,'Coolant Flush':50000,'Brake Fluid Flush':30000,'Fuel Filter Replacement':30000,'Serpentine Belt Replacement':70000,'Timing Belt / Chain Service':90000,'Wiper Blade Replacement':12000,'Tire Replacement':40000};
+  function isEV(v){var s=((v&&v.engine)||'')+' '+((v&&v.model)||'')+' '+((v&&v.trim)||'');return /electric|\bev\b|\bbev\b/i.test(s);}
+
+  var STATE={entries:[],count:0,isPro:false,limit:3};
+  window.kyrSlState=STATE;
+
+  window.renderServiceLog=function(v){
+    return '<div class="kyr-sl"><div class="kyr-sl-head"><div class="kyr-sl-title">Service Log</div>'
+      +'<button type="button" class="kyr-sl-add" onclick="kyrSlOpenForm()">+ Log Service</button></div>'
+      +'<div id="kyr-sl-list" class="kyr-sl-list"><div class="kyr-sl-empty">Loading service history...</div></div></div>';
+  };
+
+  window.kyrSlLoad=function(){
+    var box=$('kyr-sl-list'); if(!box)return;
+    var t=tok();
+    if(!t){box.innerHTML='<div class="kyr-sl-empty">Sign in to log and view your service history.<br><a class="kyr-auth-link" onclick="kyrOpenLogin&&kyrOpenLogin()">Sign in</a></div>';return;}
+    box.innerHTML='<div class="kyr-sl-empty">Loading service history...</div>';
+    fetch('/api/service-log',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({action:'list',vehicle_id:curVid()})})
+      .then(function(r){return r.json().then(function(d){return {s:r.status,d:d};});}).then(function(o){
+        if(o.s===401){box.innerHTML='<div class="kyr-sl-empty">Your session expired.<br><a class="kyr-auth-link" onclick="kyrOpenLogin&&kyrOpenLogin()">Sign in</a> to view your service log.</div>';return;}
+        var d=o.d||{}; STATE.entries=d.entries||[]; STATE.count=d.count||0; STATE.isPro=!!d.isPro; STATE.limit=d.limit||3;
+        kyrSlRender();
+      }).catch(function(){box.innerHTML='<div class="kyr-sl-empty">Could not load your service log. Please try again.</div>';});
+  };
+
+  function nextDue(x){
+    var iv=INTERVAL[x.service_type];
+    if(!iv) return 'No reminder available for this service type.';
+    return 'Next due ~'+nf(Number(x.mileage)+iv)+' mi (every '+nf(iv)+' mi)';
+  }
+  window.kyrSlRender=function(){
+    var box=$('kyr-sl-list'); if(!box)return;
+    var e=STATE.entries||[];
+    var head=STATE.isPro?'':('<div class="kyr-sl-meta">'+STATE.count+' of '+STATE.limit+' free entries used'+(STATE.count>=STATE.limit?' - upgrade for unlimited':'')+'</div>');
+    if(!e.length){box.innerHTML=head+'<div class="kyr-sl-empty">No services logged yet - tap Log Service to add your first entry.</div>';return;}
+    box.innerHTML=head+e.map(function(x){
+      var cost=(x.cost!=null&&x.cost!=='')?(' &middot; $'+esc(x.cost)):'';
+      return '<div class="kyr-sl-row"><div class="kyr-sl-rowmain" onclick="kyrSlToggle(this)">'
+        +'<span class="kyr-sl-date">'+esc(x.date)+'</span>'
+        +'<span class="kyr-sl-type">'+esc(x.service_type)+'</span>'
+        +'<span class="kyr-sl-mi">'+nf(x.mileage)+' mi'+cost+'</span></div>'
+        +'<div class="kyr-sl-detail">'
+        +(x.notes?('<div class="kyr-sl-notes">'+esc(x.notes)+'</div>'):'')
+        +'<div class="kyr-sl-nd">'+nextDue(x)+'</div>'
+        +'<button type="button" class="kyr-sl-del" onclick="kyrSlDelete(\''+esc(x.id)+'\')">Delete entry</button>'
+        +'</div></div>';
+    }).join('');
+  };
+  window.kyrSlToggle=function(el){var row=el.parentNode;row.classList.toggle('open');};
+
+  window.kyrSlTypeChange=function(){
+    var sel=$('kyr-sl-type'),w=$('kyr-sl-other-wrap');
+    w.style.display=(sel.value==='Other')?'':'none';
+  };
+
+  window.kyrSlOpenForm=function(){
+    if(!tok()){ if(typeof kyrOpenLogin==='function')kyrOpenLogin(); return; }
+    var v=curVeh();
+    $('kyr-sl-form-veh').textContent=(v&&v.year)?(v.year+' '+v.make+' '+v.model):'This vehicle';
+    var limited=(!STATE.isPro && STATE.count>=STATE.limit);
+    $('kyr-sl-fields').style.display=limited?'none':'';
+    $('kyr-sl-upgrade').style.display=limited?'':'none';
+    if(!limited){
+      var ev=isEV(v), sel=$('kyr-sl-type');
+      sel.innerHTML=TYPES.filter(function(x){return !(ev&&EV_HIDE.indexOf(x)>-1);}).map(function(x){return '<option>'+x+'</option>';}).join('');
+      $('kyr-sl-other-wrap').style.display='none';
+      var d=new Date();
+      $('kyr-sl-date').value=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+      $('kyr-sl-mileage').value='';$('kyr-sl-notes').value='';$('kyr-sl-other').value='';
+      var m=$('kyr-sl-msg');m.textContent='';m.className='kyr-auth-msg';
+    }
+    $('kyr-sl-form-overlay').classList.add('open');
+  };
+  window.kyrSlCloseForm=function(){$('kyr-sl-form-overlay').classList.remove('open');};
+
+  window.kyrSlSubmit=function(){
+    var t=tok(),m=$('kyr-sl-msg');m.className='kyr-auth-msg err';
+    if(!t){m.textContent='Please sign in first.';return;}
+    var date=$('kyr-sl-date').value, mileageRaw=$('kyr-sl-mileage').value, typeSel=$('kyr-sl-type').value;
+    var type=(typeSel==='Other')?($('kyr-sl-other').value||'').trim():typeSel;
+    var notes=$('kyr-sl-notes').value||'';
+    if(!date){m.textContent='Please choose a date.';return;}
+    var mi=parseInt(mileageRaw,10);
+    if(!mileageRaw||isNaN(mi)){m.textContent='Please enter the mileage.';return;}
+    if(typeSel==='Other'&&!type){m.textContent='Please describe the service.';return;}
+    var last=null;(STATE.entries||[]).forEach(function(e){var n=Number(e.mileage)||0;if(last==null||n>last)last=n;});
+    if(last!=null && mi<last){ if(!window.confirm('This mileage ('+nf(mi)+') is lower than your last entry ('+nf(last)+' mi) - is that correct?')) return; }
+    var btn=$('kyr-sl-save');btn.disabled=true;m.className='kyr-auth-msg';m.textContent='Saving...';
+    fetch('/api/service-log',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({action:'create',vehicle_id:curVid(),entry:{date:date,mileage:mi,service_type:type,notes:notes}})})
+      .then(function(r){return r.json().then(function(d){return {s:r.status,d:d};});}).then(function(o){
+        btn.disabled=false;var d=o.d||{};
+        if(o.s===401){m.className='kyr-auth-msg err';m.textContent='Your session expired - please sign in again.';return;}
+        if(d.limit_reached){$('kyr-sl-fields').style.display='none';$('kyr-sl-upgrade').style.display='';return;}
+        if(!d.ok){m.className='kyr-auth-msg err';m.textContent=d.error||'Could not save the entry.';return;}
+        m.className='kyr-auth-msg ok';m.textContent='Service logged.';
+        setTimeout(function(){kyrSlCloseForm();kyrSlLoad();},700);
+      }).catch(function(){btn.disabled=false;m.className='kyr-auth-msg err';m.textContent='Could not reach the server. Please try again.';});
+  };
+
+  window.kyrSlDelete=function(id){
+    if(!window.confirm('Delete this service entry? This cannot be undone.'))return;
+    var t=tok(); if(!t)return;
+    fetch('/api/service-log',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({action:'delete',vehicle_id:curVid(),id:id})})
+      .then(function(r){return r.json();}).then(function(d){ if(d&&d.ok){kyrSlLoad();} }).catch(function(){});
+  };
+
+  ['kyr-sl-form-overlay'].forEach(function(id){var o=document.getElementById(id);if(o)o.addEventListener('click',function(e){if(e.target===o)kyrSlCloseForm();});});
 })();
 </script>
 </body>
