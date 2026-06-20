@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-19-service-log">
+<meta name="kyr-version" content="2026-06-19-expenses">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -1441,8 +1441,8 @@ function renderWarranty(v){
   return h;
 }
 
-var MTABS=['oil','parts','fluids','maint','perf','safety','issues','warranty','comps','log'];
-var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG','Safety & Rel.','Known Issues','Warranty & Recalls','Complaints','Service Log'];
+var MTABS=['oil','parts','fluids','maint','perf','safety','issues','warranty','comps','log','costs'];
+var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG','Safety & Rel.','Known Issues','Warranty & Recalls','Complaints','Service Log','Costs'];
 var curTab='oil';
 
 /*WRENCH_DEEPLINK_v27*/ // shareable/refreshable URLs: ?v=<id> opens a vehicle, ?tab=, ?code=<DTC>
@@ -1495,8 +1495,8 @@ function renderMTabs(v){
 function switchMTab(tab,vid){curTab=tab;var v=VEH[vid];renderMTabs(v);renderMBody(v);}
 
 function renderMBody(v){
-  var fns={oil:renderOilShop,parts:renderPartsTieredYTG,fluids:renderFluids,maint:renderMaintGated,perf:renderPerf,safety:renderSafety,issues:renderIssues,warranty:renderWarrantyKbb,comps:renderComplaints,log:renderServiceLog};
-  document.getElementById('m-body').innerHTML=fns[curTab](v);if(curTab==='log'&&typeof kyrSlLoad==='function')kyrSlLoad();
+  var fns={oil:renderOilShop,parts:renderPartsTieredYTG,fluids:renderFluids,maint:renderMaintGated,perf:renderPerf,safety:renderSafety,issues:renderIssues,warranty:renderWarrantyKbb,comps:renderComplaints,log:renderServiceLog,costs:(typeof renderExpenses==='function'?renderExpenses:function(){return '';})};
+  document.getElementById('m-body').innerHTML=fns[curTab](v);if(curTab==='log'&&typeof kyrSlLoad==='function')kyrSlLoad();if(curTab==='costs'&&typeof kyrExpLoad==='function')kyrExpLoad();
 }
 
 function closeModalUI(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';__kyrCurV=null;}
@@ -2005,6 +2005,193 @@ if(document.readyState!=='loading')show();else document.addEventListener('DOMCon
   };
 
   ['kyr-sl-form-overlay'].forEach(function(id){var o=document.getElementById(id);if(o)o.addEventListener('click',function(e){if(e.target===o)kyrSlCloseForm();});});
+})();
+</script>
+<style id="kyr-ex-css">
+.kyr-ex-head{display:flex;align-items:center;justify-content:space-between;margin:4px 0 14px;flex-wrap:wrap;gap:10px}
+.kyr-ex-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:6px}
+.kyr-ex-card{border:1px solid var(--border,#2a2a2a);border-radius:9px;padding:13px 14px;background:rgba(255,255,255,0.02);font-family:'Manrope',system-ui,sans-serif}
+.kyr-ex-cv{font-size:20px;font-weight:800;color:var(--text,#e8e8e8);font-variant-numeric:tabular-nums;line-height:1.1}
+.kyr-ex-cl{font-size:11px;color:var(--faint,#888);text-transform:uppercase;letter-spacing:.07em;margin-top:5px}
+.kyr-ex-cs{font-size:10px;color:var(--faint,#888);margin-top:4px;line-height:1.3}
+.kyr-ex-card.locked{cursor:pointer}
+.kyr-ex-lockv{color:var(--faint,#888);letter-spacing:.05em}
+.kyr-ex-pro{display:inline-block;background:var(--accent,#ff6b00);color:#111;font-size:9px;font-weight:800;padding:1px 6px;border-radius:100px;letter-spacing:.06em;vertical-align:middle}
+.kyr-ex-sec{font-family:'Manrope',system-ui,sans-serif;font-size:13px;font-weight:800;color:var(--text,#e8e8e8);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 10px}
+.kyr-ex-bars{display:flex;flex-direction:column;gap:9px;margin-bottom:4px;font-family:'Manrope',system-ui,sans-serif}
+.kyr-ex-bl{display:flex;justify-content:space-between;font-size:12.5px;color:var(--dim,#bbb);margin-bottom:4px}
+.kyr-ex-bv{font-variant-numeric:tabular-nums;color:var(--text,#e8e8e8);font-weight:700}
+.kyr-ex-btrack{height:9px;background:rgba(255,255,255,0.05);border-radius:100px;overflow:hidden}
+.kyr-ex-bfill{height:100%;border-radius:100px;background:var(--accent,#ff6b00)}
+.kyr-ex-bfill.cat-maintenance{background:#ff6b00}.kyr-ex-bfill.cat-repairs{background:#ef4444}.kyr-ex-bfill.cat-tires{background:#3b82f6}.kyr-ex-bfill.cat-other{background:#8a8a8a}.kyr-ex-bfill.cat-fuel{background:#22c55e}.kyr-ex-bfill.cat-insurance{background:#a855f7}.kyr-ex-bfill.cat-registration{background:#eab308}
+.kyr-ex-locked-panel{border:1px dashed var(--border,#2a2a2a);border-radius:9px;padding:16px;color:var(--faint,#888);font-family:'Manrope',system-ui,sans-serif;font-size:13px;line-height:1.5;cursor:pointer;text-align:center}
+.kyr-ex-locked-panel:hover{border-color:var(--accent,#ff6b00);color:var(--dim,#bbb)}
+.kyr-ex-trend{display:flex;align-items:flex-end;gap:5px;height:60px;padding:4px 0 0;margin-bottom:4px}
+.kyr-ex-tcol{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:0}
+.kyr-ex-tbar{width:100%;max-width:18px;background:var(--accent,#ff6b00);border-radius:3px 3px 0 0;min-height:2px}
+.kyr-ex-tlbl{font-size:8px;color:var(--faint,#888);font-variant-numeric:tabular-nums}
+.kyr-ex-lhead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:18px 0 10px}
+</style>
+
+<div class="kyr-auth-overlay" id="kyr-ex-form-overlay" role="dialog" aria-modal="true" aria-labelledby="kyr-ex-form-h">
+  <div class="kyr-auth-modal">
+    <button type="button" class="kyr-auth-x" aria-label="Close" onclick="kyrExCloseForm()">&times;</button>
+    <h2 id="kyr-ex-form-h">Add an Expense</h2>
+    <p class="kyr-auth-sub" id="kyr-ex-form-veh">-</p>
+    <div class="kyr-auth-field"><label for="kyr-ex-date">Date</label><input type="date" id="kyr-ex-date"></div>
+    <div class="kyr-auth-field"><label for="kyr-ex-type">Expense Type</label><select id="kyr-ex-type"><option value="registration">Registration / Fees</option><option value="insurance">Insurance</option><option value="fuel">Fuel</option><option value="other">Other</option></select></div>
+    <div class="kyr-auth-field"><label for="kyr-ex-amount">Amount ($)</label><input type="number" id="kyr-ex-amount" inputmode="decimal" step="0.01" min="0" placeholder="e.g. 142.50"></div>
+    <div class="kyr-auth-field"><label for="kyr-ex-notes">Notes (optional)</label><textarea id="kyr-ex-notes" rows="2" placeholder="e.g. 6-month premium"></textarea></div>
+    <button type="button" class="kyr-auth-submit" id="kyr-ex-save" onclick="kyrExSubmit()">Save Expense</button>
+    <div class="kyr-auth-msg" id="kyr-ex-msg" role="status" aria-live="polite"></div>
+  </div>
+</div>
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  function esc(s){return (typeof htmlEsc==='function')?htmlEsc(String(s==null?'':s)):String(s==null?'':s);}
+  function tok(){try{return localStorage.getItem('kyr_session')||'';}catch(e){return '';}}
+  function curVeh(){try{return (typeof VEH!=='undefined'&&typeof __kyrCurV!=='undefined')?(VEH[__kyrCurV]||{}):{};}catch(e){return {};}}
+  function curVid(){try{return (typeof __kyrCurV!=='undefined')?__kyrCurV:null;}catch(e){return null;}}
+  function nf(n){try{return Number(n).toLocaleString('en-US');}catch(e){return String(n);}}
+  function money(n){var x=Number(n||0);try{return '$'+x.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}catch(e){return '$'+x.toFixed(2);}}
+  var EXTYPE={registration:'Registration / Fees',insurance:'Insurance',fuel:'Fuel',other:'Other'};
+
+  var EXSTATE={summary:{},entries:[],isPro:false};
+  window.kyrExState=EXSTATE;
+
+  window.renderExpenses=function(v){
+    return '<div class="kyr-ex"><div class="kyr-ex-head"><div class="kyr-sl-title">Ownership Costs</div></div>'
+      +'<div id="kyr-ex-body"><div class="kyr-sl-empty">Loading cost summary...</div></div></div>';
+  };
+
+  function postEx(action,extra){
+    var t=tok();
+    var b=Object.assign({action:action,vehicle_id:curVid()},extra||{});
+    return fetch('/api/expenses',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify(b)})
+      .then(function(r){return r.json().then(function(d){return {s:r.status,d:d};});});
+  }
+
+  window.kyrExLoad=window.kyrExpLoad=function(){
+    var box=$('kyr-ex-body'); if(!box)return;
+    var t=tok();
+    if(!t){box.innerHTML='<div class="kyr-sl-empty">Sign in to see your ownership costs.<br><a class="kyr-auth-link" onclick="kyrOpenLogin&&kyrOpenLogin()">Sign in</a></div>';return;}
+    box.innerHTML='<div class="kyr-sl-empty">Loading cost summary...</div>';
+    postEx('summary',{}).then(function(o){
+      if(o.s===401){box.innerHTML='<div class="kyr-sl-empty">Your session expired.<br><a class="kyr-auth-link" onclick="kyrOpenLogin&&kyrOpenLogin()">Sign in</a> to view your costs.</div>';return null;}
+      EXSTATE.summary=o.d||{}; EXSTATE.isPro=!!(o.d&&o.d.isPro);
+      return postEx('list',{}).then(function(o2){ EXSTATE.entries=(o2.d&&o2.d.entries)||[]; kyrExRender(); });
+    }).catch(function(){box.innerHTML='<div class="kyr-sl-empty">Could not load your cost summary. Please try again.</div>';});
+  };
+
+  function card(l,v,sub){return '<div class="kyr-ex-card"><div class="kyr-ex-cv">'+v+'</div><div class="kyr-ex-cl">'+l+'</div>'+(sub?'<div class="kyr-ex-cs">'+sub+'</div>':'')+'</div>';}
+  function lockedCard(l){return '<div class="kyr-ex-card locked" onclick="kyrExUpsell()"><div class="kyr-ex-cv kyr-ex-lockv">$ - -</div><div class="kyr-ex-cl">'+l+' <span class="kyr-ex-pro">Pro</span></div></div>';}
+
+  window.kyrExRender=function(){
+    var box=$('kyr-ex-body'); if(!box)return;
+    var d=EXSTATE.summary||{}, pro=EXSTATE.isPro, ents=EXSTATE.entries||[];
+    if(!d.has_data && !ents.length){
+      box.innerHTML='<div class="kyr-sl-empty">No expenses yet - log a service with a cost, or add an expense, to see your ownership cost summary.</div>';
+      return;
+    }
+    var cards=card('Total Spent',money(d.total_spent))+card('This Year',money(d.spent_this_year))+card('Services Logged',nf(d.services_count||0));
+    if(pro){
+      var cpm=(d.cost_per_mile!=null)?('$'+Number(d.cost_per_mile).toFixed(2)):'-';
+      var cpmSub=(d.cost_per_mile==null)?'Log 2+ services with mileage':'over '+nf(d.miles_driven||0)+' mi';
+      cards+=card('Cost / Mile',cpm,cpmSub);
+      cards+=card('Avg / Month',(d.avg_per_month!=null)?money(d.avg_per_month):'-');
+    }else{
+      cards+=lockedCard('Cost / Mile')+lockedCard('Avg / Month');
+    }
+
+    var catHtml='';
+    if(pro){
+      var cats=d.categories||[];
+      if(cats.length){
+        var max=0; cats.forEach(function(c){if(c.total>max)max=c.total;});
+        catHtml='<div class="kyr-ex-sec">Spending by Category</div><div class="kyr-ex-bars">'+cats.map(function(c){
+          var pct=max>0?Math.max(4,Math.round(c.total/max*100)):0;
+          return '<div class="kyr-ex-bar"><div class="kyr-ex-bl"><span>'+esc(c.label)+'</span><span class="kyr-ex-bv">'+money(c.total)+'</span></div>'
+            +'<div class="kyr-ex-btrack"><div class="kyr-ex-bfill cat-'+esc(c.key)+'" style="width:'+pct+'%"></div></div></div>';
+        }).join('')+'</div>';
+      }
+    }else{
+      catHtml='<div class="kyr-ex-sec">Spending by Category <span class="kyr-ex-pro">Pro</span></div>'
+        +'<div class="kyr-ex-locked-panel" onclick="kyrExUpsell()">Unlock category breakdown, cost per mile, monthly trend, and expense tracking with Pro - $2.99/month.</div>';
+    }
+
+    var trendHtml='';
+    if(pro){
+      var tr=d.trend||[], tmax=0; tr.forEach(function(t){if(t.total>tmax)tmax=t.total;});
+      if(tmax>0){
+        trendHtml='<div class="kyr-ex-sec">12-Month Trend</div><div class="kyr-ex-trend">'+tr.map(function(t){
+          var h=tmax>0?Math.max(2,Math.round(t.total/tmax*44)):2;
+          return '<div class="kyr-ex-tcol" title="'+esc(t.ym)+': '+money(t.total)+'"><div class="kyr-ex-tbar" style="height:'+h+'px"></div><div class="kyr-ex-tlbl">'+esc(t.ym.slice(5))+'</div></div>';
+        }).join('')+'</div>';
+      }
+    }
+
+    var addBtn=pro?'<button type="button" class="kyr-sl-add" onclick="kyrExOpenForm()">+ Add Expense</button>'
+                  :'<button type="button" class="kyr-sl-add" onclick="kyrExUpsell()">+ Add Expense</button>';
+    var listHtml='<div class="kyr-ex-lhead"><div class="kyr-ex-sec" style="margin:0">Other Expenses</div>'+addBtn+'</div>';
+    if(ents.length){
+      listHtml+=ents.map(function(x){
+        return '<div class="kyr-sl-row"><div class="kyr-sl-rowmain" onclick="kyrExToggle(this)">'
+          +'<span class="kyr-sl-date">'+esc(x.date)+'</span>'
+          +'<span class="kyr-sl-type">'+esc(EXTYPE[x.expense_type]||'Other')+'</span>'
+          +'<span class="kyr-sl-mi">'+money(x.amount)+'</span></div>'
+          +'<div class="kyr-sl-detail">'
+          +(x.notes?('<div class="kyr-sl-notes">'+esc(x.notes)+'</div>'):'')
+          +(pro?('<button type="button" class="kyr-sl-del" onclick="kyrExDelete(\''+esc(x.id)+'\')">Delete expense</button>'):'')
+          +'</div></div>';
+      }).join('');
+    }else{
+      listHtml+='<div class="kyr-sl-empty" style="padding:16px">'+(pro?'No other expenses yet - add registration, insurance, or fuel.':'Registration, insurance, and fuel tracking is a Pro feature.')+'</div>';
+    }
+
+    box.innerHTML='<div class="kyr-ex-cards">'+cards+'</div>'+catHtml+trendHtml+listHtml;
+  };
+  window.kyrExToggle=function(el){var row=el.parentNode;row.classList.toggle('open');};
+  window.kyrExUpsell=function(){if(typeof openPricing==='function')openPricing();};
+
+  window.kyrExOpenForm=function(){
+    if(!tok()){ if(typeof kyrOpenLogin==='function')kyrOpenLogin(); return; }
+    if(!EXSTATE.isPro){ kyrExUpsell(); return; }
+    var v=curVeh();
+    $('kyr-ex-form-veh').textContent=(v&&v.year)?(v.year+' '+v.make+' '+v.model):'This vehicle';
+    var d=new Date();
+    $('kyr-ex-date').value=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+    $('kyr-ex-type').value='registration';$('kyr-ex-amount').value='';$('kyr-ex-notes').value='';
+    var m=$('kyr-ex-msg');m.textContent='';m.className='kyr-auth-msg';
+    $('kyr-ex-form-overlay').classList.add('open');
+  };
+  window.kyrExCloseForm=function(){$('kyr-ex-form-overlay').classList.remove('open');};
+
+  window.kyrExSubmit=function(){
+    var t=tok(),m=$('kyr-ex-msg');m.className='kyr-auth-msg err';
+    if(!t){m.textContent='Please sign in first.';return;}
+    var date=$('kyr-ex-date').value, amtRaw=$('kyr-ex-amount').value, type=$('kyr-ex-type').value, notes=$('kyr-ex-notes').value||'';
+    if(!date){m.textContent='Please choose a date.';return;}
+    var amt=parseFloat(amtRaw);
+    if(!amtRaw||isNaN(amt)||amt<=0){m.textContent='Please enter a valid amount.';return;}
+    var btn=$('kyr-ex-save');btn.disabled=true;m.className='kyr-auth-msg';m.textContent='Saving...';
+    postEx('create',{entry:{date:date,amount:amt,expense_type:type,notes:notes}}).then(function(o){
+      btn.disabled=false;var d=o.d||{};
+      if(o.s===401){m.className='kyr-auth-msg err';m.textContent='Your session expired - please sign in again.';return;}
+      if(d.upgrade){m.className='kyr-auth-msg err';m.textContent=d.message||'Expense tracking is a Pro feature.';return;}
+      if(!d.ok){m.className='kyr-auth-msg err';m.textContent=d.error||'Could not save the expense.';return;}
+      m.className='kyr-auth-msg ok';m.textContent='Expense saved.';
+      setTimeout(function(){kyrExCloseForm();kyrExLoad();},700);
+    }).catch(function(){btn.disabled=false;m.className='kyr-auth-msg err';m.textContent='Could not reach the server. Please try again.';});
+  };
+
+  window.kyrExDelete=function(id){
+    if(!window.confirm('Delete this expense? This cannot be undone.'))return;
+    var t=tok(); if(!t)return;
+    postEx('delete',{id:id}).then(function(o){ if(o.d&&o.d.ok){kyrExLoad();} }).catch(function(){});
+  };
+
+  ['kyr-ex-form-overlay'].forEach(function(id){var o=document.getElementById(id);if(o)o.addEventListener('click',function(e){if(e.target===o)kyrExCloseForm();});});
 })();
 </script>
 </body>

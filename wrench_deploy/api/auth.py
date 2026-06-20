@@ -9,7 +9,7 @@ Routes (all POST, dispatched by `action` field in JSON body):
                                               -> { ok, email, tier }
 - delete-account { token } OR Bearer          -> { ok, deleted, keys_removed }
     GDPR/CCPA erasure: removes user:{email}, session, user_vehicles:{email},
-    and all user_mileage:{email}:* / user_logs:{email}:* keys.
+    and all user_mileage:{email}:* / user_logs:{email}:* / user_expenses:{email}:* keys.
 
 Redis schema:
 - user:{email}             -> JSON {pw, salt, created_at, tier}
@@ -258,7 +258,7 @@ class handler(BaseHTTPRequestHandler):
         deleted = 0
         try:
             # Wildcard namespaces (per-vehicle mileage + logs) via SCAN.
-            for pattern in (f"user_mileage:{email}:*", f"user_logs:{email}:*"):
+            for pattern in (f"user_mileage:{email}:*", f"user_logs:{email}:*", f"user_expenses:{email}:*"):
                 cursor = 0
                 while True:
                     cursor, keys = r.scan(cursor, match=pattern, count=200)
