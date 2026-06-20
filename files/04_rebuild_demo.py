@@ -58,6 +58,20 @@ def date_key(s):
         return (0, 0, 0)
 
 
+def _ver(src):
+    """Data-integrity gate: 1 if a curated spec's source is manufacturer/government
+    verified (owner's manual / vPIC / EPA / NHTSA), else 0. AI-generated (ai-haiku),
+    scraped, classifier, unknown, and null are all UNVERIFIED. Single source of truth
+    for the UI gate (the blob carries the boolean, not the raw source string, so
+    'ai-haiku-4.5' never ships to the client)."""
+    s = (src or "").strip().lower()
+    if not s or "ai-" in s or "haiku" in s or s == "scraped" or "classifier" in s or s == "unknown":
+        return 0
+    if "owner" in s or "manual" in s or "vpic" in s or "epa" in s or "nhtsa" in s:
+        return 1
+    return 0
+
+
 def build_data(cur):
     cur.execute("SELECT id,year,make,model,engine,trim FROM vehicles ORDER BY make,year,model")
     veh = {}
@@ -74,7 +88,8 @@ def build_data(cur):
     each("oil_change", lambda d, r: d.update(oil={
         "visc": r["viscosity"], "type": r["oil_type"], "cap_w": r["capacity_with_filter"],
         "cap_wo": r["capacity_without_filter"], "spec": r["oem_spec"],
-        "filters": pj(r["filters_json"]), "drain": pj(r["drain_bolt_json"])}))
+        "filters": pj(r["filters_json"]), "drain": pj(r["drain_bolt_json"]),
+        "ver": _ver(r["source"] if "source" in r.keys() else None)}))
 
     # EV specs -> rendered in the Oil tab in place of the "No oil data - EV" message
     if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ev_specs'").fetchone():
@@ -95,16 +110,19 @@ def build_data(cur):
         "psi_f": r["tire_pressure_front"], "psi_r": r["tire_pressure_rear"],
         "plugs": pj(r["spark_plugs_json"]), "air": pj(r["air_filters_json"]),
         "cabin": pj(r["cabin_filters_json"]), "wipers": pj(r["wiper_blades_json"]),
-        "batts": pj(r["batteries_json"])}))
+        "batts": pj(r["batteries_json"]),
+        "ver": _ver(r["source"] if "source" in r.keys() else None)}))
 
     each("fluids", lambda d, r: d.update(fluids={
         "trans": r["transmission_fluid"], "trans_cap": r["transmission_capacity"],
         "brake": r["brake_fluid"], "coolant": r["coolant_type"],
         "coolant_cap": r["coolant_capacity"], "ps": r["power_steering_fluid"],
-        "diff": pj(r["differential_fluids_json"])}))
+        "diff": pj(r["differential_fluids_json"]),
+        "ver": _ver(r["source"] if "source" in r.keys() else None)}))
 
     each("torque_specs", lambda d, r: d.setdefault("torque", []).append(
-        {"comp": r["component"], "ft": r["torque_ft_lbs"], "nm": r["torque_nm"], "notes": r["notes"]}))
+        {"comp": r["component"], "ft": r["torque_ft_lbs"], "nm": r["torque_nm"], "notes": r["notes"],
+         "ver": _ver(r["source"] if "source" in r.keys() else None)}))
 
     # vehicle_notes (known issues, jack points, DIY tips) -> rendered in the Parts tab
     if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='vehicle_notes'").fetchone():
@@ -118,7 +136,8 @@ def build_data(cur):
     each("engine_specs", lambda d, r: d.setdefault("engines", []).append(
         {"var": r["variant"], "hp": r["horsepower"], "tq": r["torque_ft_lbs"],
          "disp": r["displacement_l"], "cyl": r["cylinders"], "config": r["cylinder_config"],
-         "asp": r["aspiration"], "fuel": r["fuel_system"]}))
+         "asp": r["aspiration"], "fuel": r["fuel_system"],
+         "ver": _ver(r["source"] if "source" in r.keys() else None)}))
 
     # fuel economy (range_miles/mpge added by script 02)
     cur.execute("PRAGMA table_info(fuel_economy)")
@@ -160,7 +179,7 @@ def build_data(cur):
     # maintenance + parts (the original 04 dropped these)
     each("maintenance", lambda d, r: d.setdefault("maint", []).append(
         {"id": r["id"], "mi": r["mileage_interval"], "mo": r["months_interval"],
-         "desc": r["description"], "src": r["source"], "notes": r["notes"],
+         "desc": r["description"], "ver": _ver(r["source"]), "notes": r["notes"],
          "diff": (r["difficulty_level"] if "difficulty_level" in r.keys() else None),
          "tool": (r["tool_required"] if "tool_required" in r.keys() else None),
          "tmin": (r["time_minutes"] if "time_minutes" in r.keys() else None)}))

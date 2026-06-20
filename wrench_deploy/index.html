@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-06-20-mazda3-specs">
+<meta name="kyr-version" content="2026-06-20-integrity-gate">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -760,7 +760,7 @@ body{background:var(--bg)}
   </div>
 </div>
 
-<script src="/data.c1936bf8.js"></script>
+<script src="/data.957337a6.js"></script>
 <script>
 
 const DB=__D__;
@@ -1312,6 +1312,7 @@ function specSoon(){return '<p class="empty-note">Spec data coming soon &mdash; 
 function valU(v,u){if(v==null||v==='')return '&mdash;';var s=String(v);return /[A-Za-z(]/.test(s)?s:(s+u);}
 function renderOil(v){
   var o=v.oil;if(!o||!o.visc)return (v.ev?renderEV(v.ev):specSoon());
+  if(!o.ver)return specSoon();
   var h='<div class="sec-head">Oil Specifications</div><div class="spec-grid">'+specRow('Viscosity',fmt(o.visc),'ac')+specRow('Oil Type',fmt(o.type))+specRow('Capacity w/ Filter',valU(o.cap_w,' qts'))+specRow('Capacity w/o Filter',valU(o.cap_wo,' qts'))+specRow('OEM Spec',fmt(o.spec))+'</div>';
   if(o.drain){var d=o.drain;h+='<div class="sec-head">Drain Plug</div><div class="spec-grid">'+specRow('Socket',(d.socket_size_mm?d.socket_size_mm+'mm':'&mdash;'),'ac')+specRow('Thread',fmt(d.thread_size))+specRow('Torque',(d.torque_nm?(Math.round(d.torque_nm*0.7376)+' ft-lb &middot; '+d.torque_nm+' Nm'):'&mdash;'),'gr')+specRow('Gasket',fmt(d.gasket_type))+(d.notes?specNote('Notes',d.notes):'')+'</div>';}
   if(o.filters&&o.filters.length){h+='<div class="sec-head">Oil Filters</div><table class="tbl"><thead><tr><th>Brand</th><th>Part Number</th><th>Description</th><th></th></tr></thead><tbody>'+o.filters.map(function(f){return '<tr><td style="font-weight:700">'+(f.brand||'&mdash;')+'</td><td><span class="pn">'+(f.part_number||'&mdash;')+'</span></td><td style="color:var(--dim)">'+(f.description||'')+'</td><td>'+(f.is_oem?'<span class="oem-tag">OEM</span>':'')+'</td></tr>';}).join('')+'</tbody></table>';}
@@ -1320,6 +1321,7 @@ function renderOil(v){
 
 function renderParts(v){
   var p=v.parts||{};
+  if(p.ver===0)return specSoon();
   var h='';
   if(p.plug_type||p.plugs){
     h+='<div class="sec-head">Spark Plugs</div><div class="spec-grid">'+specRow('Type',fmt(p.plug_type),'ac')+specRow('Gap',valU(p.plug_gap,'"'))+specRow('Quantity',fmt(p.plug_qty))+'</div>';
@@ -1353,29 +1355,29 @@ function renderIssues(v){
   return h;
 }
 function renderFluids(v){
-  var f=v.fluids,t=v.torque,h='';
-  if(f){
+  var f=v.fluids,t=(v.torque||[]).filter(function(x){return x.ver;}),h='';
+  if(f&&f.ver){
     h+='<div class="sec-head">Fluids</div><div class="spec-grid">'+specRow('Transmission',fmt(f.trans))+specRow('Trans Capacity',valU(f.trans_cap,' qts'))+specRow('Brake Fluid',fmt(f.brake),'ac')+specRow('Coolant',fmt(f.coolant))+specRow('Coolant Capacity',valU(f.coolant_cap,' qts'))+specRow('Power Steering',fmt(f.ps))+'</div>';
     if(f.diff&&f.diff.length)h+='<div class="sec-head">Differential Fluids</div><table class="tbl"><thead><tr><th>Location</th><th>Fluid</th><th>Capacity</th></tr></thead><tbody>'+f.diff.map(function(d){return '<tr><td style="font-weight:700;text-transform:capitalize">'+(d.location||'&mdash;')+'</td><td style="color:var(--dim)">'+(d.fluid_type||'&mdash;')+'</td><td>'+(d.capacity_qts?d.capacity_qts+' qts':'&mdash;')+'</td></tr>';}).join('')+'</tbody></table>';
   }
-  if(t&&t.length)h+='<div class="sec-head">Torque Specs</div><table class="tbl"><thead><tr><th>Component</th><th>ft-lbs</th><th>Nm</th><th>Notes</th></tr></thead><tbody>'+t.map(function(x){return '<tr><td style="font-weight:700;text-transform:capitalize">'+(x.comp||'').replace(/_/g,' ')+'</td><td class="pn">'+(x.ft||'&mdash;')+'</td><td class="pn" style="color:var(--accent)">'+(x.nm||'&mdash;')+'</td><td style="color:var(--dim);font-size:11px">'+(x.notes||'')+'</td></tr>';}).join('')+'</tbody></table>';
-  if(!f&&!(t&&t.length))return specSoon();
+  if(t.length)h+='<div class="sec-head">Torque Specs</div><table class="tbl"><thead><tr><th>Component</th><th>ft-lbs</th><th>Nm</th><th>Notes</th></tr></thead><tbody>'+t.map(function(x){return '<tr><td style="font-weight:700;text-transform:capitalize">'+(x.comp||'').replace(/_/g,' ')+'</td><td class="pn">'+(x.ft||'&mdash;')+'</td><td class="pn" style="color:var(--accent)">'+(x.nm||'&mdash;')+'</td><td style="color:var(--dim);font-size:11px">'+(x.notes||'')+'</td></tr>';}).join('')+'</tbody></table>';
+  if(!(f&&f.ver)&&!t.length)return specSoon();
   return h;
 }
 
 function renderMaint(v){
-  var m=v.maint,mp=v.maint_parts||[];
-  if(!m||!m.length)return specSoon();
+  var m=(v.maint||[]).filter(function(s){return s.ver;}),mp=v.maint_parts||[];
+  if(!m.length)return specSoon();
   var h='<div class="sec-head">Maintenance Schedule</div>';
-  h+='<table class="tbl"><thead><tr><th>Service</th><th>Every</th><th>Or Every</th><th>Source</th></tr></thead><tbody>';
+  h+='<table class="tbl"><thead><tr><th>Service</th><th>Every</th><th>Or Every</th></tr></thead><tbody>';
   m.forEach(function(s){
     // find parts for this maintenance item
     var parts=mp.filter(function(p){return p.mid===s.id;});
     var ch='';
     if(s.tmin||s.tool||s.diff){var EM=String.fromCodePoint,cc=[];if(s.tmin)cc.push(EM(9201,65039)+' '+s.tmin+' min');if(s.tool)cc.push(EM(128295)+' '+(s.tool==='None'?'No tools':s.tool));if(s.diff)cc.push(EM(11088)+' '+s.diff);ch='<div style="margin-top:4px;font-size:11px;color:var(--dim);font-weight:500">'+cc.join(' '+EM(183)+' ')+'</div>';}
-    h+='<tr><td style="font-weight:700">'+s.desc+affMaintBtn(v,s.desc)+ch+'</td><td class="pn" style="color:var(--accent)">'+(s.mi?s.mi.toLocaleString()+' mi':'&mdash;')+'</td><td class="pn" style="color:var(--dim)">'+(s.mo?s.mo+' mo':'&mdash;')+'</td><td style="color:var(--faint);font-size:10px;text-transform:capitalize">'+(s.src||'')+'</td></tr>';
+    h+='<tr><td style="font-weight:700">'+s.desc+affMaintBtn(v,s.desc)+ch+'</td><td class="pn" style="color:var(--accent)">'+(s.mi?s.mi.toLocaleString()+' mi':'&mdash;')+'</td><td class="pn" style="color:var(--dim)">'+(s.mo?s.mo+' mo':'&mdash;')+'</td></tr>';
     if(parts.length){
-      h+='<tr><td colspan="4" style="padding:0 11px 10px;background:var(--p2)"><div style="display:flex;flex-wrap:wrap;gap:6px;padding-top:6px">';
+      h+='<tr><td colspan="3" style="padding:0 11px 10px;background:var(--p2)"><div style="display:flex;flex-wrap:wrap;gap:6px;padding-top:6px">';
       parts.forEach(function(p){
         h+='<div style="background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px"><span style="color:var(--faint);font-family:\'JetBrains Mono\',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:2px">'+(p.type||'').replace(/_/g,' ')+'</span><span style="font-weight:700">'+(p.brand||'')+'</span> <span class="pn">'+(p.pn||'')+'</span>'+(p.qty&&p.qty>1?' <span style="color:var(--faint)">x'+p.qty+'</span>':'')+'</div>';
       });
@@ -1396,7 +1398,9 @@ function costsTableHTML(v){
 
 function renderPerf(v){
   var h='';
-  if(v.engines&&v.engines.length)h+='<div class="sec-head">Engine Specs</div><table class="tbl"><thead><tr><th>Variant</th><th>HP</th><th>Torque</th><th>Displacement</th><th>Aspiration</th><th>Fuel System</th></tr></thead><tbody>'+v.engines.map(function(e){return '<tr><td style="font-weight:700">'+(e.var||'&mdash;')+'</td><td class="pn" style="color:var(--accent)">'+(e.hp?e.hp+' hp':'&mdash;')+'</td><td class="pn">'+(e.tq?e.tq+' ft-lb':'&mdash;')+'</td><td class="pn">'+(e.disp?e.disp+'L':'&mdash;')+'</td><td style="color:var(--dim)">'+(e.asp||'&mdash;')+'</td><td style="color:var(--dim)">'+(e.fuel||'&mdash;')+'</td></tr>';}).join('')+'</tbody></table>';
+  var ev=(v.engines||[]).filter(function(e){return e.ver;});
+  if(v.engines&&v.engines.length&&!ev.length)h+='<p class="empty-note" style="margin:0 0 14px">Engine performance specs (horsepower / torque) pending factory verification.</p>';
+  if(ev.length)h+='<div class="sec-head">Engine Specs</div><table class="tbl"><thead><tr><th>Variant</th><th>HP</th><th>Torque</th><th>Displacement</th><th>Aspiration</th><th>Fuel System</th></tr></thead><tbody>'+ev.map(function(e){return '<tr><td style="font-weight:700">'+(e.var||'&mdash;')+'</td><td class="pn" style="color:var(--accent)">'+(e.hp?e.hp+' hp':'&mdash;')+'</td><td class="pn">'+(e.tq?e.tq+' ft-lb':'&mdash;')+'</td><td class="pn">'+(e.disp?e.disp+'L':'&mdash;')+'</td><td style="color:var(--dim)">'+(e.asp||'&mdash;')+'</td><td style="color:var(--dim)">'+(e.fuel||'&mdash;')+'</td></tr>';}).join('')+'</tbody></table>';
   if(v.mpg&&v.mpg.length){
     h+='<div class="sec-head">Fuel Economy</div>';
     v.mpg.forEach(function(m){
