@@ -108,3 +108,26 @@ Had NS-3 + hydraulic been carried across, R53 would have been wrong on both. The
 | NULL → service manual | spark-plug type/gap, battery group/CCA, trans-fluid capacity | same |
 
 **Towing:** OM presents a GCWR-based Towing Load/Specification chart (no single clean max-tow value; the "9,100 lbs" is in a worked example) → **not written** per discipline; noted only (R53 coolant differs with tow package). **Preview-verified the two gens render differently** (R52: NS-3 + hydraulic E-PSF; R53: Matic-R + electric). 2019 was empty (fresh write); others purged fabricated ai-haiku. **R50/R51 (2000–2006, 7 rows) stays gated (unreachable, pre-2008).** Deployed `2026-06-21-nissan-pathfinder`.
+
+---
+
+## Nissan Rogue (T32 ids 12145/12274/12408/12552/12705/470 · T33 ids 1968/3494/5027/6608/8177/9790) — ✅ WRITTEN + preview-verified + DEPLOYED
+**Sources:** 2020 Rogue OM (T32 rep) + 2021/2023 Rogue OM (T33). 12 rows written; **S35 (2008/2009) HELD — manuals don't self-ID in text (source-confirmation gate failure, same standard that declined Toyota). Stays gated.**
+
+**Three divergences caught:**
+- **★ CVT fluid:** S35 (2008–10) = **NS-2** (held anyway); T32/T33 = **NS-3**.
+- **★ Engine per generation:** T32 = QR25DE 2.5L (oil 4.9 qt); T33 = 2.5L PR25DD (oil 5.4 qt) **or** 1.5T KR15DDT (oil 5.0 qt + intercooler coolant 3 qt). Two different 2.5L engines across gens with different capacities.
+- **★ Per-year engine (vPIC-sourced, OM values):** **2021 is a DUAL transition year** (vPIC decodes both 1.5T + 2.5L → dual-value strings); **2022–2026 = 1.5T only** (vPIC/OM). The "write 2021 single-2.5L" assumption was wrong — the boundary check caught it.
+
+| Field | T32 (2015–2020) gas 2.5L | T33 2021 (DUAL) | T33 2022–2026 (1.5T) |
+|---|---|---|---|
+| Oil cap w/filter | 4.9 qt (4-7/8) | 5.0 qt (1.5T) / 5.4 qt (2.5L) | 5.0 qt |
+| Coolant | blue · 8.6 qt | 9.0 qt (1.5T) / 9.3 qt (2.5L) | blue · 9.0 qt (+intercooler 3 qt) |
+| Transmission | CVT NS-3 | CVT NS-3 | CVT NS-3 |
+| Power steering | Electric (no fluid) | Electric | Electric |
+| AWD diff / transfer | GL-5 80W-90 / 80W-90 | GL-5 75W-80 / 75W-90 | GL-5 75W-80 / 75W-90 |
+| Brake | DOT 3 | DOT 3 | DOT 3 |
+| Tire + psi | 225/65R17·225/60R18·225/55R19 @ 33/33 | 235/65R17 @36/33 · 235/60R18 @33/30 · 235/55R19 @33/30 | same as 2021 |
+| ★ Lug/drain/oil-filter | 83 / 22–29 / 11–15 ft-lb | same | same |
+
+**Notes:** 2017–2019 Rogue Hybrid (2.0L QR20DE, separate manual) NOT claimed — gas 2.5L written, hybrid noted in battery_notes. Preview-verified the three value-sets render distinctly (T32 4.9 qt; T33-2021 dual; T33 1.5T 5.0 qt + intercooler). NULL/gated: spark gap, battery, CVT capacity. **S35 (2008/2009) gated.** Deployed `2026-06-21-nissan-rogue`.
