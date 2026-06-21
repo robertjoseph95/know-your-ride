@@ -35,3 +35,25 @@ Parallel to the Honda/Nissan/Mazda logs. Ford pilot. Source-map findings in `KYR
 **Pilot write:** single vehicle (2022 F-150, id 12901). Multi-value strings for engine-divergent fields; single-value common fields; fabricated ai-haiku purged; gated fields left pending. Preview-verified: multi-engine oil (6.0/7.75 qt) renders, **lug 150 (not 83)**, EPAS, MERCON LV, DOT 4, battery group 48/94R; gap/tire pending. Deployed `2026-06-21-ford-f150-pilot`.
 
 **Next Ford step:** decide the F-150 bulk engine-roster approach, then bulk-verify F-150 (13th + 14th gen) and roll out to Escape/Explorer/Mustang/Ranger + Lincoln sibling.
+
+---
+
+## Ford Escape 4th gen (2020–2026, ids 12762/12830/12897/12962/13094/13160) — ✅ WRITTEN + preview-verified + DEPLOYED
+**Source:** 2024 Escape OM (4th-gen rep; self-ID p1, Capacities & Specs p415–430). **EPA-confirmed roster STABLE** 2020–2026: 1.5L EcoBoost / 2.0L EcoBoost / 2.5L Duratec hybrid (FHEV/PHEV) every year → generation-wide multi-value.
+
+| Field | Value | Page |
+|---|---|---|
+| Oil viscosity | **0W-20 (1.5L EB, 2.5 hybrid) / 5W-30 (2.0L EB)** | p417–419 |
+| Oil cap w/filter | **5.0 qt (1.5L EB) / 6.1 qt (2.0L EB) / 5.7 qt (2.5 hybrid)** | p417–419 |
+| Coolant | Motorcraft Yellow (WSS-M97B57-A2) · 8.0 qt (1.5L) / 9.0 qt (2.0L) / hybrid dual-circuit (FHEV 5.0+9.6; PHEV 6.6+10.1 qt) | p420–422 |
+| Brake | Motorcraft **DOT 4 LV** | p430 |
+| **★ Transmission** | **Motorcraft MERCON ULV** — **8-speed auto (8F35, gas) / eCVT (2.5 hybrid)** — *NOT F-150's 10-speed MERCON LV* | p429–430 |
+| Power steering | **Electric (EPAS)** | — |
+| **★ Lug torque** | **100 ft-lb (135 N·m), M12×1.5** — *NOT F-150's 150* | p411 |
+| **★ Tire pressure** | **35 psi (P-metric)** — *crossover lists it in-OM* (truck didn't) | p389 |
+| Battery group | **48 (1.5/2.0) / 99R (2.5 hybrid 12V)** | p415–416 |
+| NULL → gated | drain-plug torque, oil-filter torque, spark-plug gap, **tire size** (trim placard) | — |
+
+**Cross-platform differences confirmed by reading (not assumed):** Escape trans = **8-speed MERCON ULV** (vs F-150 10-speed MERCON LV); lug **100** (vs 150); tire pressure **in-OM** (vs placard-only on the truck). Format generalizes; per-platform specifics verified. Fabricated ai-haiku purged. Preview-verified all 6 render the 3-way oil + MERCON ULV + lug 100 + tire 35 + EPAS; gated fields pending. Deployed `2026-06-21-ford-escape`.
+
+**Ford coverage now: F-150 ×1 (pilot) + Escape ×6 = 7 vehicles.** Next: Explorer 6th gen (per-year for the dropped hybrid), then F-150 bulk (EPA roster + 2 OMs), Lincoln sibling.
