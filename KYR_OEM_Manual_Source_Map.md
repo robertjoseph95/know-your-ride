@@ -9,6 +9,11 @@
 
 ---
 
+> ## ⚠️ STANDING RULE — Engine config is NOT generation-stable
+> **Before writing dual-value (multi-engine) strings across a generation's year-rows, verify each year's actual engine options against its own manual.** Engine options get added/dropped mid-generation — **Mazda 3 Gen 2 added SkyActiv mid-cycle**; **Altima 2.0T dropped 2025**; **Sentra B17 1.6T turbo launched 2017** (absent 2013–2016). **Never assume the lineup is stable.** A generation-representative manual covers the spec *values* (generation-stable), but the *engine roster* is per-model-year — cheap to check (grep each year's PDF for the engine codes). Write a dual-value string to a year **only if that year actually offered both engines**; single-value otherwise. **Flag uncertain years rather than guess — leave them gated.** (Full rule in `KYR_Verification_Pipeline_Design.md` §1.)
+
+---
+
 ## Confidence tiers
 - 🟢 **PILOT-CONFIRMED** — used in production verification (Honda, Mazda). Trusted at volume.
 - 🔵 **PDF-VERIFIED (this pass)** — a real owner's-manual PDF was reached hands-on (HTTP 200 + `%PDF` bytes), login-free, by year+model. Reachable; still needs a 1-vehicle pipeline pilot to characterize URL/filename templates + Self-ID before bulk.
