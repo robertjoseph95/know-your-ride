@@ -58,3 +58,26 @@ Parallel to `KYR_Honda_Verification_Log.md` / `KYR_Mazda3_Spec_Verification_Log.
 | NULL → service manual | spark-plug type/gap, battery group/CCA, CVT capacity | same |
 
 **Notes:** dual-value strings only on 2018/2019 (both engines offered); 2015 + all B18 single-value. Fabricated ai-haiku purged (incl. **wrong lug=80** + **fabricated spark-plug torque** — OM gives none). Gate verified on preview (2019 B17 dual + 2020 B18: oil/fluids/tire + **all 3 torque rows ver=1/verified**; gap/battery/CVT-cap pending). **B15 (2000–2006, 7 rows) stays gated — pre-2008 manuals not hosted on the Nissan portal (unreachable).** Deployed `2026-06-21-nissan-sentra`.
+
+---
+
+## Nissan Maxima (ids 38633/479/1977) — A36 2019–2021 — ✅ WRITTEN + preview-verified + DEPLOYED
+**Source:** 2020 Maxima OM (A36 rep; self-ID p1 "MAXIMA 2020", 500 pp). Per-year engine config verified vs each year's own manual: **2016/2019/2020/2021/2023 all = VQ35DE 3.5L V6 only** → single-engine throughout A36 (no dual-value strings). CVT = **NS-3** (pinned).
+
+**★ KEY divergence — HYDRAULIC power steering:** unlike the 4-cyl Sentra/Altima (electric), the V6 Maxima uses **hydraulic PS with Nissan E-PSF fluid** — confirmed by reading the actual fluid table (PSF section p8-11 + capacities entry p10-2). Written `Nissan E-PSF (hydraulic)`, NOT "electric, no fluid". (Reading-the-diagram discipline caught it.)
+
+| Field | Value (VQ35DE 3.5L V6) | Page |
+|---|---|---|
+| Oil viscosity | 0W-20 | 10-2 |
+| Oil cap w/filter | 5.1 qt (5-1/8; 4.8 L) | 10-2 |
+| Coolant | Nissan LLC blue · 9.7 qt (9.2 L) | 10-2 |
+| Brake | Nissan DOT 3 | 10-3 |
+| Transmission | NS-3 (cap not in OM) | 8-10, 10-2 |
+| **Power steering** | **HYDRAULIC — Nissan E-PSF** ★ | 8-11, 10-2 |
+| Tire + psi | 245/45R18 (SV) / 245/40R19 (SR/Platinum) @ 33 | 8-30 |
+| ★ Lug torque | 83 ft-lb (113 N·m) | 6-8 |
+| ★ Drain-plug torque | 22–29 ft-lb (29–39 N·m) | 8-10 |
+| ★ Oil-filter torque | 11–15 ft-lb (14.7–20.6) | 8-10 |
+| NULL → service manual | spark-plug type/gap, battery group/CCA, CVT capacity | — |
+
+**Notes:** all 3 single-value (V6). 2019 was empty (fresh write); 2020/2021 purged fabricated ai-haiku (wrong lug + fabricated spark-plug torque). Gate verified on preview (oil/fluids/tire + 3 torque rows ver=1/verified; **PS renders "Nissan E-PSF (hydraulic)"**; gap/battery/CVT-cap pending). **A33/A34 (2000–2004, 5 rows) stays gated — pre-2008 not hosted (unreachable).** Deployed `2026-06-21-nissan-maxima`.
