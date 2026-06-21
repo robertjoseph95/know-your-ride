@@ -81,3 +81,30 @@ Parallel to `KYR_Honda_Verification_Log.md` / `KYR_Mazda3_Spec_Verification_Log.
 | NULL → service manual | spark-plug type/gap, battery group/CCA, CVT capacity | — |
 
 **Notes:** all 3 single-value (V6). 2019 was empty (fresh write); 2020/2021 purged fabricated ai-haiku (wrong lug + fabricated spark-plug torque). Gate verified on preview (oil/fluids/tire + 3 torque rows ver=1/verified; **PS renders "Nissan E-PSF (hydraulic)"**; gap/battery/CVT-cap pending). **A33/A34 (2000–2004, 5 rows) stays gated — pre-2008 not hosted (unreachable).** Deployed `2026-06-21-nissan-maxima`.
+
+---
+
+## Nissan Pathfinder (ids 38632/469 R52 · 3493/8176/9789 R53) — ✅ WRITTEN + preview-verified + DEPLOYED
+**Sources:** 2020 Pathfinder OM (R52 rep) + 2022 Pathfinder OM (R53 rep) + 2026 OM (R53, self-ID confirmed). Per-year engine: **VQ35DD 3.5L V6** throughout both gens (single). Brake DOT 3 both. AWD diff/transfer fluids captured.
+
+**⚠️ TWO per-generation divergences (the headline) — written differently, both preview-verified to render distinctly:**
+| | R52 (2019/2020) | R53 (2022/2025/2026) |
+|---|---|---|
+| **Transmission** | **CVT → Nissan CVT Fluid NS-3** | **9-speed auto → Nissan Matic-R ATF** (tx GE9F01A) — *NOT NS-3* |
+| **Power steering** | **HYDRAULIC → Nissan E-PSF** | **ELECTRIC → no fluid** |
+
+Had NS-3 + hydraulic been carried across, R53 would have been wrong on both. The transmission-per-generation rule + reading each PS table caught it.
+
+| Field | R52 (2019/2020) | R53 (2022/2025/2026) |
+|---|---|---|
+| Oil viscosity / cap w/filter | 0W-20 / 5.1 qt (5-1/8; 4.8 L) | 0W-20 / 5.1 qt |
+| Coolant | blue · 10.4 qt (9.8 L) | blue · 12.3 qt (11.6 L; 12.6 qt w/ tow pkg) |
+| Transmission | Nissan CVT Fluid NS-3 (cap not in OM) | Nissan Matic-R ATF 9-speed (cap not in OM) |
+| Power steering | HYDRAULIC — Nissan E-PSF | ELECTRIC — no fluid |
+| AWD diff / transfer | GL-5 75W-90 / GL-5 80W-90 | GL-5 75W-90 / GL-5 75W-90 (+ coupling LSC 12-301) |
+| Brake | Nissan DOT 3 | Nissan DOT 3 |
+| Tire + psi | 235/65R18 @33 / 235/55R20 @35 / 255/60R18 @36 (p8-31) | 255/60R18 @33 / 255/50R20 @35 (p8-33) |
+| ★ Lug / drain / oil-filter torque | 83 / 22–29 / 11–15 ft-lb (p6-8, p8-10) | 83 / 22–29 / 11–15 ft-lb |
+| NULL → service manual | spark-plug type/gap, battery group/CCA, trans-fluid capacity | same |
+
+**Towing:** OM presents a GCWR-based Towing Load/Specification chart (no single clean max-tow value; the "9,100 lbs" is in a worked example) → **not written** per discipline; noted only (R53 coolant differs with tow package). **Preview-verified the two gens render differently** (R52: NS-3 + hydraulic E-PSF; R53: Matic-R + electric). 2019 was empty (fresh write); others purged fabricated ai-haiku. **R50/R51 (2000–2006, 7 rows) stays gated (unreachable, pre-2008).** Deployed `2026-06-21-nissan-pathfinder`.
