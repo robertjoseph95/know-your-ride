@@ -41,6 +41,23 @@ Parallel to the Ford/Honda/Nissan/Mazda logs. **First GM-group pilot.** Source-m
 
 ---
 
+## ★ T1XX BULK (2019–2026) — ✅ WRITTEN + preview-verified + DEPLOYED (`2026-06-22-silverado-t1xx`, commit 97600e97)
+All 8 current-gen rows done (2024 pilot + 7 bulk: 2019, 2020, 2021, 2022, 2023, 2025, 2026).
+**Sources:** 2021 Silverado 1500 OM (84550389C, early-T1XX rep incl. 4.3 V6) + 2024 OM (85516379C) — gas values cross-confirmed identical for shared engines. + 2021 LM2 Duramax sup (84557033C) + 2024 LZ0 Duramax sup (85137419 B).
+
+| Field | 2.7T (L3B) | 4.3 V6 (LV3, ’19–’21) | 5.3 V8 (L82/L84) | 6.2 V8 (L87) | 3.0 Duramax diesel |
+|---|---|---|---|---|---|
+| Oil | 5W-30 dexos1 | 5W-30 dexos1 | 0W-20 dexos1 | 0W-20 dexos1 | 0W-20 **dexos D** |
+| Cap w/filter | 6.0 qt | 6.0 qt | 8.0 qt | 8.0 qt | 7.0 qt |
+| Coolant cap | 12.4 qt | 12.2 qt | 13.5 (L82)/13.8 (L84) qt | 13.3 qt | **LM2 20.5 / LZ0 19.4 qt** + charge-air |
+| Spark gap | .026–.030 | .037–.043 | .037–.043 | .037–.043 | n/a (compression) |
+
+**Diesel version split (CONFIRM-DON'T-ASSUME paid off — LM2 ≠ LZ0):** 2020–2022 = **LM2** (coolant 20.5 qt, DEF 5.3 gal, fuel filter GM 23304096/TP1015, VIN T); 2023/2025/2026 = **LZ0** (coolant 19.4 qt, DEF 5.4 gal, fuel filter GM 13539108, VIN 8); oil cap 7.0 qt & 0W-20 dexos D & DEXRON ULV 10-spd common to both. **2019 = no diesel** (launched 2020); **2019 row confirmed new-body T1XX** (old-body "Silverado 1500 LD" is a separately-named nameplate, absent from DB).
+**Per-era gas part #s:** 2019–21 oil filter 2.7L PF66/GM 55495105, V-engines PF63E/12690385; 2022–26 2.7L PF66/12727115, V8s PF63/12707246. Spark 2.7L 41-106-IP, others 41-114. Cabin CF185.
+Common gen-stable: DEX-COOL GMW3420 (no color), DOT 4, EPS, lug 140, 8-spd DEXRON-HP/10-spd DEXRON ULV, transfer DEXRON-VI 1.6 qt. Gated: battery group, drain/oil-filter torque, tire (placard), gas trans-speed binding.
+
+---
+
 ## Silverado 1500 — DB inventory & per-year EPA engine roster (for bulk)
 **21 rows, all gated** (20× `ai-haiku-4.5`, 2019 never-pulled `None`, 2026 `scraped`). **No EV trap** — Silverado EV is a separate nameplate, absent from the DB; all 21 rows are the gas truck.
 
@@ -53,7 +70,13 @@ Parallel to the Ford/Honda/Nissan/Mazda logs. **First GM-group pilot.** Source-m
 
 **Bulk flags:** (1) **2019 is a split model-year** — redesigned T1XX sold alongside a carryover "Silverado 1500 LD" (old K2XX body, 4.3/5.3 only) with a *separate OM*; decide which OM covers the single 2019 row. (2) Pre-2008 GMT800/early GMT900 OMs — confirm self-ID before writing (source-confirmation gate). (3) Each year/gen needs its own OM for spec values (coolant spec, oil viscosity changed eras), engine roster per the table above.
 
-## Queued discrete tasks
-- [ ] **Duramax 3.0L diesel supplement pull** — separate batched pass; covers Silverado 1500 diesel (2020+) + GMC Sierra + HD trucks. Un-gate diesel columns after.
-- [ ] **Silverado bulk** — by generation, OM per gen, engine roster per table above; resolve 2019 LD split.
-- [ ] **Engine→transmission-speed binding** — confirm from an authoritative GM source (build/EPA) or leave the speed gated (ATF type already verified).
+## Progress & queued tasks
+- [x] **2024 Silverado 1500 pilot** (gas) — `2026-06-22-silverado-pilot`
+- [x] **2024 diesel column** (LZ0) — `2026-06-22-silverado-diesel`
+- [x] **Duramax 3.0L supplements** — 2024 LZ0 (85137419 B) + 2021 LM2 (84557033C) pulled & extracted. *Confirmed "Chevrolet/GMC" shared doc → also covers Sierra.* (Still pending: HD 6.6L supplement for the Sierra 2500 rows; 2020/2022 LM2 + 2023/2025/2026 LZ0 per-exact-year part #s if needed — values stable within each version.)
+- [x] **T1XX bulk (2019–2026, 8 rows)** — `2026-06-22-silverado-t1xx`; 2019 LD split resolved (new-body T1XX).
+- [ ] **K2XX (2016–2018, 3 rows)** — 4.3 V6 / 5.3 / 6.2; pull a K2XX-era OM (2016–2018); no diesel/2.7T.
+- [ ] **GMT900 (2008, 2009, 2012, 3 rows)** — 4.3/4.8/5.3/6.0(+6.2 from 2009); confirm self-ID + spec density of late-2000s GM OMs.
+- [ ] **GMT800 (2000–2006, 7 rows)** — 4.3/4.8/5.3(+6.0 from 2003); **source-confirmation gate** — confirm pre-2008 OM self-ID before writing, else HOLD/gate.
+- [ ] **Engine→transmission-speed binding** — confirm from an authoritative GM source or leave gated (ATF type already verified; diesel→10-spd confirmed in supplement).
+- [ ] **GMC Sierra 1500** (15 rows) — twin pass; ships diesel-complete (shared Duramax supplement). Sierra 2500 HD (4 rows) separate (6.6L Duramax).
