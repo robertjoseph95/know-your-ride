@@ -58,6 +58,22 @@ Common gen-stable: DEX-COOL GMW3420 (no color), DOT 4, EPS, lug 140, 8-spd DEXRO
 
 ---
 
+## ★ K2XX BULK (2016–2018) — ✅ WRITTEN + preview-verified + DEPLOYED (`2026-06-22-silverado-k2xx`, commit 9c098e12)
+3 rows from the **2017 Silverado 1500 OM** (23476161A, K2XX gen-rep, self-ID p1), applied across 2016–2018 (engines EPA-confirmed byte-identical: 4.3 V6 LV3/LV1, 5.3 V8 L83, 6.2 V8 L86; no 2.7T, no diesel). No GM-hosted 2016 full OM reachable → representative-OM application (same method as F-150 13th gen / T1XX); honest provenance in source string. **NOTE: combined 1500+2500/3500 OM** — the 6.0L V8 / hydraulic PS belong to the HD; the 1500 fields below were isolated.
+
+| Field | 4.3 V6 | 5.3 V8 (L83) | 6.2 V8 (L86) |
+|---|---|---|---|
+| Oil | 5W-30 dexos1 | 0W-20 dexos1 | 0W-20 dexos1 |
+| Cap w/filter | 6.0 qt | 8.0 qt | 8.0 qt |
+| Coolant cap | 15.9 qt | 16.6 qt | 16.6 qt |
+| Spark gap | .037–.043 | .037–.043 | .037–.043 |
+| Oil filter | PF63E / GM 19330000 | (same) | (same) |
+| Spark plug | 41-114 / GM 12622441 | (same) | (same) |
+
+**★ K2XX divergences from T1XX (READ fresh, NOT carried back):** **brake = DOT 3** (T1XX DOT 4); **ATF 6-spd DEXRON-VI / 8-spd DEXRON-HP** (no 10-speed; T1XX = 8/10 HP/ULV); **coolant ~16 qt** (T1XX ~12–14); **fuel tank 26/34 gal** (T1XX 24/28.3); **rear axle 75W-85 / front 75W-90 given** (T1XX OM punted to dealer); **DEX-COOL with NO GMW3420 number stated** (no color); cabin **CF188** (T1XX CF185); oil filter PF63E/**19330000** (T1XX PF63/12707246). **Oil viscosity SAME as T1XX** (0W-20 V8 / 5W-30 4.3) — the "K2XX maybe 5W-30 across the board" hypothesis was disproven by reading; 2017 already shows 0W-20 on the V8s. EPS (1500), lug 140, transfer DEXRON-VI common. Gated: battery group, drain/oil-filter torque, tire, trans speed-binding.
+
+---
+
 ## Silverado 1500 — DB inventory & per-year EPA engine roster (for bulk)
 **21 rows, all gated** (20× `ai-haiku-4.5`, 2019 never-pulled `None`, 2026 `scraped`). **No EV trap** — Silverado EV is a separate nameplate, absent from the DB; all 21 rows are the gas truck.
 
@@ -75,7 +91,7 @@ Common gen-stable: DEX-COOL GMW3420 (no color), DOT 4, EPS, lug 140, 8-spd DEXRO
 - [x] **2024 diesel column** (LZ0) — `2026-06-22-silverado-diesel`
 - [x] **Duramax 3.0L supplements** — 2024 LZ0 (85137419 B) + 2021 LM2 (84557033C) pulled & extracted. *Confirmed "Chevrolet/GMC" shared doc → also covers Sierra.* (Still pending: HD 6.6L supplement for the Sierra 2500 rows; 2020/2022 LM2 + 2023/2025/2026 LZ0 per-exact-year part #s if needed — values stable within each version.)
 - [x] **T1XX bulk (2019–2026, 8 rows)** — `2026-06-22-silverado-t1xx`; 2019 LD split resolved (new-body T1XX).
-- [ ] **K2XX (2016–2018, 3 rows)** — 4.3 V6 / 5.3 / 6.2; pull a K2XX-era OM (2016–2018); no diesel/2.7T.
+- [x] **K2XX (2016–2018, 3 rows)** — DONE (`2026-06-22-silverado-k2xx`); 2017 OM gen-rep; DOT 3 / 6-8 spd / ~16qt coolant / axle fluids.
 - [ ] **GMT900 (2008, 2009, 2012, 3 rows)** — 4.3/4.8/5.3/6.0(+6.2 from 2009); confirm self-ID + spec density of late-2000s GM OMs.
 - [ ] **GMT800 (2000–2006, 7 rows)** — 4.3/4.8/5.3(+6.0 from 2003); **source-confirmation gate** — confirm pre-2008 OM self-ID before writing, else HOLD/gate.
 - [ ] **Engine→transmission-speed binding** — confirm from an authoritative GM source or leave gated (ATF type already verified; diesel→10-spd confirmed in supplement).
