@@ -3,7 +3,19 @@
 
 Parallel to the Ford/Honda/Nissan/Mazda logs. **GM-group make** (Chevrolet pilot + GMC twin). Source-map findings in `KYR_OEM_Manual_Source_Map.md`. Page citations are OM **printed-page** numbers (PDF page − 1).
 
-> **GM-group status:** **Silverado 1500 ✅ 21/21** · **GMC Sierra 1500 ✅ 15/15** · **Cadillac Escalade T1XX ✅ 5/5** (2021/22/24 + ESV 21/22) = **41 GM vehicles verified across 3 makes.** Next: Escalade older gens; Suburban/Tahoe/Yukon; Buick; Colorado/Canyon.
+> **GM-group status:** **Silverado 1500 ✅ 21/21** · **GMC Sierra 1500 ✅ 15/15** · **Chevy Tahoe ✅ 13/13** · **Chevy Suburban ✅ 13/13** · **Cadillac Escalade T1XX ✅ 5/5** = **67 GM vehicles across 3 makes.** Next: Escalade older gens; GMC Yukon/Yukon XL (Tahoe/Suburban twins); Buick; Colorado/Canyon.
+
+## ✅ CHEVY TAHOE + SUBURBAN — COMPLETE (13/13 each) — Escalade's gas twins
+**T1XX+K2XX (12 rows)** `2026-06-23-tahoe-suburban-modern` (commit 1b1ec423) · **GMT800 (14 rows)** `2026-06-24-tahoe-suburban-gmt800` (commit deb709c4). Combined "Tahoe/Suburban" OMs, each year self-ID'd (2003 scanned). Twin of Escalade confirmed by reading the Tahoe/Suburban OMs — **but they add the 5.3 base V8** (Escalade was 6.2-only) and have **their own fuel tanks**.
+| Gen | Engines | Oil | Cooling | Fuel (Tahoe / Suburban) | Brake | PS | ATF | Spec |
+|---|---|---|---|---|---|---|---|---|
+| GMT800 ’00–’06 | 4.8+5.3 (Tahoe) / 5.3 (Sub); +5.7 carryover ’00 (gated) | 5W-30, 6.0 qt | 14.4 (’00–02) / 13–15 (’04) / 17.2 (’05) / 16.8 (’06) qt | 26 / **32.5→31.0** gal | DOT 3 | Hydraulic | DEXRON-III → **VI (’06)** | starburst (’00–’03) / GM6094M (’04–’06) |
+| K2XX 2020 | 5.3 (L83) + 6.2 (L86) | 0W-20, 8.0 qt | 17.8 qt | 26 / 31.5 gal | DOT 3 | EPS | DEXRON-VI/ULV 6/10-spd | dexos1 |
+| T1XX ’21–’26 | 5.3 (L84) + 6.2 (L87) **+ 3.0 LM2 diesel** | 0W-20 / diesel 0W-20 dexos D | 5.3 15.6 / 6.2 15.1 / diesel 21.9 (SUV) | **24 / 28** gal | **DOT 4** | EPS | DEXRON ULV 10-spd | dexos1 (+dexos D); GMW3420 |
+**Fuel per model, never shared** (Tahoe SWB vs Suburban LWB). Diesel = LM2 SUV variant. Axles + transfer-case fluid TYPE punted to dealer → gated. 2003 V8 gap+cooling+PNs gated (scanned); 2000 5.7L old-body carryover gated.
+**Data-correction check (2006 GMT800 ATF):** re-read the 2006 Silverado OM directly — "Automatic Transmission: DEXRON-VI" → the 2006 Silverado row **was already correct** (per-year ATF logic in the write script); Sierra has no 2006 row. **No fix needed (flag was a false alarm).**
+
+---
 
 ## ✅ CADILLAC ESCALADE — T1XX modern slice (5/5) — `2026-06-23-escalade-t1xx`, commit 2ac2ff0d
 **First Cadillac — GM-sibling ecosystem VALIDATED:** Cadillac OMs serve from `cadillac.com` / `assets.gm.com` (older) + `contentdelivery.ext.gm.com` (modern), browser-UA, plain GET, **no 403**; GM conventions hold (DEX-COOL GMW3420, dexos1, EPS, DOT 4, lug 140). Source: 2021 Escalade OM (84266974B, T1XX gen-rep, self-ID p1) + 2021 LM2 supplement. Rows: Escalade 2021/2022/2024 + Escalade ESV 2021/2022; engines **6.2L V8 (L87) + 3.0L Duramax diesel (LM2 SUV variant)**, unchanged 2021–2024 (EPA).
