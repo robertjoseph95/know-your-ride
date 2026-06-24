@@ -1,7 +1,14 @@
-# KYR — Chevrolet (GM) Owner's-Manual Verification Log
+# KYR — GM-Group (Chevrolet / GMC) Owner's-Manual Verification Log
 ### Know Your Ride Technologies LLC · page-cited, owner-manual-verified
 
-Parallel to the Ford/Honda/Nissan/Mazda logs. **First GM-group pilot.** Source-map findings in `KYR_OEM_Manual_Source_Map.md`. Page citations are OM **printed-page** numbers (PDF page − 1).
+Parallel to the Ford/Honda/Nissan/Mazda logs. **GM-group make** (Chevrolet pilot + GMC twin). Source-map findings in `KYR_OEM_Manual_Source_Map.md`. Page citations are OM **printed-page** numbers (PDF page − 1).
+
+> **GM-group status:** **Silverado 1500 ✅ 21/21** (all 4 gens) · **GMC Sierra 1500 ✅ 15/15** (twin) = **36 GM trucks verified.** Next GM-group: Cadillac/Buick siblings, Suburban/Tahoe/Yukon, Colorado/Canyon, etc.
+
+## ✅ GMC SIERRA 1500 — COMPLETE (15/15, twin of Silverado) — `2026-06-23-sierra`, commit 247eab62
+Each row cited to its **own GMC Sierra OM** (9 reps pulled, all self-ID PASSED in-text incl. "Sierra/Sierra **Denali** 1500"). **Twin cross-check confirmed every platform-shared field matches Silverado per generation** (read from Sierra's OMs, not assumed): GMT800 (2000–2004) = 5W-30 / hydraulic PS / DOT 3 / DEXRON-III 4-spd / starburst→GM6094M; K2XX (2017–2018) = 0W-20 V8 / EPS / DOT 3 / dexos1 / VI-HP 6/8-spd; T1XX (2019–2026) = 0W-20 / EPS / **DOT 4** / dexos1 (+dexos D diesel) / HP-ULV 8/10-spd, diesel **LM2** (2020–2022) / **LZ0** (2023–2026), 4.3 V6 dropped 2022. Roster: 2000 = no 6.0. **No fluid/spec divergence found** — Denali-trim differences (wheels/tires/battery) fall in already-gated fields. Diesel via the shared "Chevrolet/GMC" Duramax supplement. **2003 V8 spark gap + part numbers GATED** (scanned OM, same as Silverado 2003). Engines byte-identical → per-engine values (oil cap, coolant cap, gap, filters) match Silverado.
+
+---
 
 ---
 
@@ -132,4 +139,5 @@ The full sweep is a clean CONFIRM-DON'T-ASSUME case study: brake DOT 3→DOT 4, 
 - [x] **GMT900 (2008, 2009, 2012, 3 rows)** — DONE (`2026-06-23-silverado-gmt900`); per-year OMs (self-ID PASSED); 5W-30, hydraulic PS, DOT 3, GM6094M vs dexos1 per year.
 - [x] **GMT800 (2000–2006, 7 rows)** — DONE (`2026-06-23-silverado-gmt800`); all 7 self-ID PASSED; per-year API-starburst/GM6094M, DEXRON-III/VI, 0.060/0.040 gap; 2003 V8 gap GATED (scanned OM). **→ SILVERADO 1500 COMPLETE 21/21.**
 - [ ] **Engine→transmission-speed binding** — confirm from an authoritative GM source or leave gated (ATF type already verified; diesel→10-spd confirmed in supplement).
-- [ ] **GMC Sierra 1500** (15 rows) — twin pass; ships diesel-complete (shared Duramax supplement). Sierra 2500 HD (4 rows) separate (6.6L Duramax).
+- [x] **GMC Sierra 1500** (15 rows) — DONE (`2026-06-23-sierra`, commit 247eab62); twin confirmed vs Silverado per gen; diesel-complete via shared supplement; 2003 V8 gap gated.
+- [ ] **GM-group next:** Sierra 2500 HD (4 rows, 6.6L Duramax — separate supplement); Cadillac/Buick siblings (inherit GM ecosystem); Suburban/Tahoe/Yukon/Escalade (note LM2 SUV diesel); Colorado/Canyon.
