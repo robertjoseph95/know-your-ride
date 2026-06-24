@@ -3,7 +3,16 @@
 
 Parallel to the Ford/Honda/Nissan/Mazda logs. **GM-group make** (Chevrolet pilot + GMC twin). Source-map findings in `KYR_OEM_Manual_Source_Map.md`. Page citations are OM **printed-page** numbers (PDF page − 1).
 
-> **GM-group status:** **Silverado 1500 ✅ 21/21** (all 4 gens) · **GMC Sierra 1500 ✅ 15/15** (twin) = **36 GM trucks verified.** Next GM-group: Cadillac/Buick siblings, Suburban/Tahoe/Yukon, Colorado/Canyon, etc.
+> **GM-group status:** **Silverado 1500 ✅ 21/21** · **GMC Sierra 1500 ✅ 15/15** · **Cadillac Escalade T1XX ✅ 5/5** (2021/22/24 + ESV 21/22) = **41 GM vehicles verified across 3 makes.** Next: Escalade older gens; Suburban/Tahoe/Yukon; Buick; Colorado/Canyon.
+
+## ✅ CADILLAC ESCALADE — T1XX modern slice (5/5) — `2026-06-23-escalade-t1xx`, commit 2ac2ff0d
+**First Cadillac — GM-sibling ecosystem VALIDATED:** Cadillac OMs serve from `cadillac.com` / `assets.gm.com` (older) + `contentdelivery.ext.gm.com` (modern), browser-UA, plain GET, **no 403**; GM conventions hold (DEX-COOL GMW3420, dexos1, EPS, DOT 4, lug 140). Source: 2021 Escalade OM (84266974B, T1XX gen-rep, self-ID p1) + 2021 LM2 supplement. Rows: Escalade 2021/2022/2024 + Escalade ESV 2021/2022; engines **6.2L V8 (L87) + 3.0L Duramax diesel (LM2 SUV variant)**, unchanged 2021–2024 (EPA).
+**★ SUV-specific values read from Escalade's OWN OM (NOT carried back from pickups):** gas cooling **15.1 qt** (vs pickup 13.3); diesel cooling **21.9 qt SUV** (vs pickup 20.5, from supplement's SUV column); fuel tank **24.0 gal (Escalade) / 28.0 gal (ESV long WB)**; **axles + transfer-case fluid TYPE punted to dealer** in the Escalade OM (the pickup OM gave DEXRON-VI — twin divergence, NOT carried back) → gated. Oil 8.0 qt (6.2) / 7.0 qt (diesel); DEXRON ULV 10-spd; DEF 5.3 gal; oil filter PF63E (gas) / PF66 (diesel).
+**★ Escalade is NOT a pickup-clone** — its own engine history (2000 = 5.7L unique; 2002–05 = 5.3/6.0; 2018–20 = 6.2; 2021+ = 6.2 + LM2-SUV diesel). **GATES:** 2001 phantom row (id 14243 — no 2001 Escalade existed, EPA-confirmed production gap; fabricated ai-haiku purged → clean-gated); Escalade V (SC 6.2) halo. Standard GM gating applies.
+**Data oddity flagged:** negative-ID Seville/DeVille rows (1981–2002, soft-deleted/import artifacts) — separate cleanup.
+**Follow-on:** Escalade GMT800 (2002–2005), K2XX (2018–2020), 5.7L (2000); 2025/2026 (diesel dropped + Escalade V).
+
+---
 
 ## ✅ GMC SIERRA 1500 — COMPLETE (15/15, twin of Silverado) — `2026-06-23-sierra`, commit 247eab62
 Each row cited to its **own GMC Sierra OM** (9 reps pulled, all self-ID PASSED in-text incl. "Sierra/Sierra **Denali** 1500"). **Twin cross-check confirmed every platform-shared field matches Silverado per generation** (read from Sierra's OMs, not assumed): GMT800 (2000–2004) = 5W-30 / hydraulic PS / DOT 3 / DEXRON-III 4-spd / starburst→GM6094M; K2XX (2017–2018) = 0W-20 V8 / EPS / DOT 3 / dexos1 / VI-HP 6/8-spd; T1XX (2019–2026) = 0W-20 / EPS / **DOT 4** / dexos1 (+dexos D diesel) / HP-ULV 8/10-spd, diesel **LM2** (2020–2022) / **LZ0** (2023–2026), 4.3 V6 dropped 2022. Roster: 2000 = no 6.0. **No fluid/spec divergence found** — Denali-trim differences (wheels/tires/battery) fall in already-gated fields. Diesel via the shared "Chevrolet/GMC" Duramax supplement. **2003 V8 spark gap + part numbers GATED** (scanned OM, same as Silverado 2003). Engines byte-identical → per-engine values (oil cap, coolant cap, gap, filters) match Silverado.
