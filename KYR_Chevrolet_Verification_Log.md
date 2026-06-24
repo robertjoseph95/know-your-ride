@@ -87,6 +87,30 @@ Common gen-stable: DEX-COOL GMW3420 (no color), DOT 4, EPS, lug 140, 8-spd DEXRO
 
 ---
 
+## ★ GMT800 BULK (2000–2006) — ✅ WRITTEN + preview-verified + DEPLOYED (`2026-06-23-silverado-gmt800`, commit 9be6aa2b) — SILVERADO 1500 COMPLETE 21/21
+7 rows, **each from its own GM-hosted OM** (self-ID gate PASSED in-text). Per-year EPA roster: **2000** = 4.3/4.8/5.3 (no 6.0); **2001–2006** = +6.0 V8. Engines: VORTEC 4.3 V6, 4.8/5.3/6.0 V8 (8.1 V8 = HD, excluded). Oil cap 4.5 qt (V6) / 6.0 qt (V8s); 5W-30; lug 140; **hydraulic PS** (GM PS fluid 89021184); **DOT 3** (Delco Supreme 11); **4-speed only** (4L60-E/4L65-E); axles 80W-90 front / 75W-90 rear; transfer case ~2.0 qt; fuel tank 26/34 gal; DEX-COOL (no spec#/color).
+
+**★ Per-year / sub-era catches (read from each year's own OM, not interpolated):**
+- **Oil spec:** API-starburst only (**2000–2003**, GM6094M not cited) → **GM6094M** (2004–2006)
+- **ATF:** DEXRON-III (2000–2005) → **DEXRON-VI** (2006)
+- **V8 spark gap:** 0.060 in (2000–2002) → 0.040 in (2004–2006); V6 always 0.060
+- **Cooling cap** per year (~12.6 early → ~16.8 late, config-dependent)
+- **★ 2003 BOUNDARY:** the 2003 OM is a scanned/OCR copy whose technical-data table is illegible → **V8 spark gap & part numbers GATED for 2003** (not inferred from neighboring years), per the gate-if-ambiguous rule. Caps/oil/ATF/PS read cleanly from its legible sections.
+
+---
+
+## ✅ SILVERADO 1500 — COMPLETE (21/21 rows, all 4 generations)
+| Gen | Years | Brake | PS | ATF | Oil visc (V8) | Oil spec |
+|---|---|---|---|---|---|---|
+| GMT800 | 2000–2006 | DOT 3 | Hydraulic | DEXRON-III (VI ’06), 4-spd | 5W-30 | API-starburst (’00–’03) / GM6094M (’04–’06) |
+| GMT900 | 2008/09/12 | DOT 3 | Hydraulic | DEXRON-VI, 4/6-spd | 5W-30 | GM6094M (’08/09) / dexos1 (’12) |
+| K2XX | 2016–2018 | DOT 3 | **EPS** | DEXRON-VI/HP, 6/8-spd | **0W-20** | dexos1 |
+| T1XX | 2019–2026 | **DOT 4** | EPS | DEXRON-HP/ULV, 8/10-spd | 0W-20 | dexos1 (+ dexos D diesel) |
+
+The full sweep is a clean CONFIRM-DON'T-ASSUME case study: brake DOT 3→DOT 4, PS hydraulic→EPS, oil 5W-30→0W-20, oil-spec GM6094M→dexos1, ATF 4-spd DEXRON-III→10-spd DEXRON-ULV — every axis shifted across the generations and was read fresh per era.
+
+---
+
 ## Silverado 1500 — DB inventory & per-year EPA engine roster (for bulk)
 **21 rows, all gated** (20× `ai-haiku-4.5`, 2019 never-pulled `None`, 2026 `scraped`). **No EV trap** — Silverado EV is a separate nameplate, absent from the DB; all 21 rows are the gas truck.
 
@@ -106,6 +130,6 @@ Common gen-stable: DEX-COOL GMW3420 (no color), DOT 4, EPS, lug 140, 8-spd DEXRO
 - [x] **T1XX bulk (2019–2026, 8 rows)** — `2026-06-22-silverado-t1xx`; 2019 LD split resolved (new-body T1XX).
 - [x] **K2XX (2016–2018, 3 rows)** — DONE (`2026-06-22-silverado-k2xx`); 2017 OM gen-rep; DOT 3 / 6-8 spd / ~16qt coolant / axle fluids.
 - [x] **GMT900 (2008, 2009, 2012, 3 rows)** — DONE (`2026-06-23-silverado-gmt900`); per-year OMs (self-ID PASSED); 5W-30, hydraulic PS, DOT 3, GM6094M vs dexos1 per year.
-- [ ] **GMT800 (2000–2006, 7 rows)** — 4.3/4.8/5.3(+6.0 from 2003); **source-confirmation gate** — confirm pre-2008 OM self-ID before writing, else HOLD/gate.
+- [x] **GMT800 (2000–2006, 7 rows)** — DONE (`2026-06-23-silverado-gmt800`); all 7 self-ID PASSED; per-year API-starburst/GM6094M, DEXRON-III/VI, 0.060/0.040 gap; 2003 V8 gap GATED (scanned OM). **→ SILVERADO 1500 COMPLETE 21/21.**
 - [ ] **Engine→transmission-speed binding** — confirm from an authoritative GM source or leave gated (ATF type already verified; diesel→10-spd confirmed in supplement).
 - [ ] **GMC Sierra 1500** (15 rows) — twin pass; ships diesel-complete (shared Duramax supplement). Sierra 2500 HD (4 rows) separate (6.6L Duramax).
