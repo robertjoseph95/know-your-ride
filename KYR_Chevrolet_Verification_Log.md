@@ -74,6 +74,19 @@ Common gen-stable: DEX-COOL GMW3420 (no color), DOT 4, EPS, lug 140, 8-spd DEXRO
 
 ---
 
+## ★ GMT900 BULK (2008, 2009, 2012) — ✅ WRITTEN + preview-verified + DEPLOYED (`2026-06-23-silverado-gmt900`, commit 2c9f2dc9)
+3 rows, **each from its own GM-hosted OM** (self-ID gate PASSED in-text: "20xx Chevrolet Silverado Owner Manual"). Per-year EPA roster: **2008** = 4.3/4.8/5.3/6.0; **2009** = +6.2 (5 engines); **2012** = 4.3/4.8/5.3/6.2 (6.0 dropped).
+
+| Engine | Oil visc | Oil cap | Coolant | Spark gap | Oil filter |
+|---|---|---|---|---|---|
+| 4.3 V6 | 5W-30 | 4.5 qt | 16.5 qt | **0.060 in** | PF47 / 25010792 |
+| 4.8 / 5.3 / 6.0 / 6.2 V8 | 5W-30 | 6.0 qt | 16.8–17.6 qt | 0.040 in | PF48 / 89017524 |
+
+**★ Mid-gen oil-SPEC catch: GM6094M (2008/2009, pre-dexos) vs dexos1 (2012)** — read per year, not assumed. Spark-plug PNs also revise per year (2008 4.3=41-932/V8=41-985; 2009 4.3=41-993/V8=41-985; 2012 4.3=41-101/V8=41-110).
+**★ Era divergences vs K2XX/T1XX (all READ fresh):** **5W-30** (not 0W-20); **HYDRAULIC power steering** (GM PS fluid 89021184) — NOT EPS (this era predates electric steering); **DEXRON-VI ATF** 4-spd (4L60-E) / 6-spd (6L80-E/6L90-E); **DOT 3** brake; oil cap V8 **6.0 qt** / V6 **4.5 qt** (vs K2XX 8.0/6.0); coolant ~16–17 qt; front axle **80W-90** / rear **75W-90**. DEX-COOL (no GMW3420 #, no color). Lug 140; transfer DEXRON-VI 1.6 qt. Gated: battery group, drain/oil-filter torque, tire, trans speed-binding.
+
+---
+
 ## Silverado 1500 — DB inventory & per-year EPA engine roster (for bulk)
 **21 rows, all gated** (20× `ai-haiku-4.5`, 2019 never-pulled `None`, 2026 `scraped`). **No EV trap** — Silverado EV is a separate nameplate, absent from the DB; all 21 rows are the gas truck.
 
@@ -92,7 +105,7 @@ Common gen-stable: DEX-COOL GMW3420 (no color), DOT 4, EPS, lug 140, 8-spd DEXRO
 - [x] **Duramax 3.0L supplements** — 2024 LZ0 (85137419 B) + 2021 LM2 (84557033C) pulled & extracted. *Confirmed "Chevrolet/GMC" shared doc → also covers Sierra.* (Still pending: HD 6.6L supplement for the Sierra 2500 rows; 2020/2022 LM2 + 2023/2025/2026 LZ0 per-exact-year part #s if needed — values stable within each version.)
 - [x] **T1XX bulk (2019–2026, 8 rows)** — `2026-06-22-silverado-t1xx`; 2019 LD split resolved (new-body T1XX).
 - [x] **K2XX (2016–2018, 3 rows)** — DONE (`2026-06-22-silverado-k2xx`); 2017 OM gen-rep; DOT 3 / 6-8 spd / ~16qt coolant / axle fluids.
-- [ ] **GMT900 (2008, 2009, 2012, 3 rows)** — 4.3/4.8/5.3/6.0(+6.2 from 2009); confirm self-ID + spec density of late-2000s GM OMs.
+- [x] **GMT900 (2008, 2009, 2012, 3 rows)** — DONE (`2026-06-23-silverado-gmt900`); per-year OMs (self-ID PASSED); 5W-30, hydraulic PS, DOT 3, GM6094M vs dexos1 per year.
 - [ ] **GMT800 (2000–2006, 7 rows)** — 4.3/4.8/5.3(+6.0 from 2003); **source-confirmation gate** — confirm pre-2008 OM self-ID before writing, else HOLD/gate.
 - [ ] **Engine→transmission-speed binding** — confirm from an authoritative GM source or leave gated (ATF type already verified; diesel→10-spd confirmed in supplement).
 - [ ] **GMC Sierra 1500** (15 rows) — twin pass; ships diesel-complete (shared Duramax supplement). Sierra 2500 HD (4 rows) separate (6.6L Duramax).
