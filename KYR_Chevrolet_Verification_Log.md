@@ -3,7 +3,12 @@
 
 Parallel to the Ford/Honda/Nissan/Mazda logs. **GM-group make** (Chevrolet pilot + GMC twin). Source-map findings in `KYR_OEM_Manual_Source_Map.md`. Page citations are OM **printed-page** numbers (PDF page − 1).
 
-> **GM-group status:** **Silverado 1500 ✅ 21/21** · **GMC Sierra 1500 ✅ 15/15** · **Chevy Tahoe ✅ 13/13** · **Chevy Suburban ✅ 13/13** · **Cadillac Escalade T1XX ✅ 5/5** = **67 GM vehicles across 3 makes.** Next: Escalade older gens; GMC Yukon/Yukon XL (Tahoe/Suburban twins); Buick; Colorado/Canyon.
+> **GM-group status:** **Silverado 1500 ✅ 21/21** · **GMC Sierra 1500 ✅ 15/15** · **Chevy Tahoe ✅ 13/13** · **Chevy Suburban ✅ 13/13** · **GMC Yukon ✅ 11/11** · **Cadillac Escalade T1XX ✅ 5/5** = **78 GM vehicles across 3 makes.** Next: Escalade older gens; Buick; Colorado/Canyon; Sierra 2500 HD.
+
+## ✅ GMC YUKON — COMPLETE (11/11) — Tahoe twin
+**Modern (6 rows)** `2026-06-24-yukon-modern` (commit c454c6ad) · **GMT800 (5 rows)** `2026-06-24-yukon-gmt800` (commit 610862db). Each from the Yukon's own OM (self-ID PASSED). DB has only "Yukon" (SWB) — no Yukon XL rows. **T1XX/K2XX values byte-identical to Tahoe** (cooling 15.6/15.1/21.9 & 17.8; oil 8.0; fuel 24/26 gal Yukon SWB; 0W-20/DOT4|DOT3/EPS/dexos1/DEXRON-ULV; diesel LM2 SUV). **GMT800 (2000–2004): the Tahoe divergence is the 6.0 V8 (Denali) 2001–2004** (Tahoe lacked it; oil cap 6.0 qt). Per-year: starburst (’00–’03) → GM6094M (’04); V8 gap 0.060 (’00–’03) → 0.040 (’04); ATF DEXRON-III; hydraulic PS; DOT 3; 5W-30 6.0 qt; fuel 26 gal. **★ 2003 written NORMALLY** — the Yukon 2003 OM is a legible 3.6 MB text PDF (gap 0.060, no gate), unlike the illegible scanned Silverado/Tahoe 2003 OMs (per-vehicle-source discipline). 2000 5.7L old-body carryover gated.
+
+---
 
 ## ✅ CHEVY TAHOE + SUBURBAN — COMPLETE (13/13 each) — Escalade's gas twins
 **T1XX+K2XX (12 rows)** `2026-06-23-tahoe-suburban-modern` (commit 1b1ec423) · **GMT800 (14 rows)** `2026-06-24-tahoe-suburban-gmt800` (commit deb709c4). Combined "Tahoe/Suburban" OMs, each year self-ID'd (2003 scanned). Twin of Escalade confirmed by reading the Tahoe/Suburban OMs — **but they add the 5.3 base V8** (Escalade was 6.2-only) and have **their own fuel tanks**.
