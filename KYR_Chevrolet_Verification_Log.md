@@ -3,7 +3,21 @@
 
 Parallel to the Ford/Honda/Nissan/Mazda logs. **GM-group make** (Chevrolet pilot + GMC twin). Source-map findings in `KYR_OEM_Manual_Source_Map.md`. Page citations are OM **printed-page** numbers (PDF page − 1).
 
-> **GM-group status:** **Silverado 1500 ✅ 21/21** · **GMC Sierra 1500 ✅ 15/15** · **Chevy Tahoe ✅ 13/13** · **Chevy Suburban ✅ 13/13** · **GMC Yukon ✅ 11/11** · **Cadillac Escalade ✅ 13/16** (3 deferred) = **86 GM vehicles across 3 makes.** Next: Sierra 2500 HD; Buick; Colorado/Canyon. Deferred Escalade: 2005 GMT800 (partial OM only), 2020 K2XX (no GM OM), 2001 phantom.
+> **GM-group status:** **Silverado 1500 ✅ 21/21** · **GMC Sierra 1500 ✅ 15/15** · **Chevy Tahoe ✅ 13/13** · **Chevy Suburban ✅ 13/13** · **GMC Yukon ✅ 11/11** · **Cadillac Escalade ✅ 13/16** · **GMC Sierra 2500 HD ✅ 3/4** = **89 GM vehicles across 3 makes.** Next: Buick; Colorado/Canyon. Deferred: Escalade 2005/2020/2001 · **Sierra 2500 HD 2019 K2XX-HD** (no GM OM).
+
+## ✅ GMC SIERRA 2500 HD — T1XX-HD added (3/4) — `2026-06-26-sierra2500hd-t1xx`, commit 053b5650
+First **HD / 6.6L Duramax** verification — NEW source docs (separate 6.6L supplement), nothing inherited from the 1500s. 3 rows (2020/2021/2022) from the 2021 Sierra 2500HD OM (84744494C) + 2020 6.6L Duramax supplement (L5P); 2020/2022 GM OMs unavailable → 2021 T1XX-HD rep + stability note (engines L8T+L5P confirmed across span). **Per-engine, HD diverges from 1500 on nearly everything:**
+| | Gas 6.6L L8T | Diesel 6.6L Duramax L5P |
+|---|---|---|
+| Oil | 5W-30 dexos1, 8.0 qt | **15W-40 CK-4, 10.0 qt** |
+| Cooling | 15.4 qt | **30.7 qt + 3.7 qt low-temp loop** |
+| Trans | 6-spd (6L90) DEXRON-VI | **Allison** (DEXRON ULV / TES) |
+| Spark | gap 0.037–0.043 | none (glow plugs) |
+| DEF | — | **7.0 gal** |
+
+Common: **DOT 3**, **PS HYDRAULIC** (2.1 qt — HD stays hydraulic, not EPS), lug **140**, transfer 2.4 qt, fuel 36 gal. GATED: HD axles (see dealer), battery, drain/oil-filter torque, tire, transfer-case fluid type. **DEFERRED: 2019 K2XX-HD** (id 38664 — different gen: 6.0 L96 gas + Allison 6-speed; no GM-hosted OM; not written from rep/1500).
+
+---
 
 ## ✅ CADILLAC ESCALADE — older gens added (now 13/16) — `2026-06-25-escalade-oldergen`, commit 8fb1c458
 8 rows from each year's own Escalade OM: **2000** 1st-gen 5.7L Vortec 5700 (5.0 qt oil, 30 gal, starburst, DOT3/hydraulic); **GMT800 2002/2003/2004** (5.3 + 6.0 H.O. V8, 6.0 qt, per-year cooling, starburst→GM6094M at ’04, gap 0.060→0.040 at ’04); **K2XX 2018/2019** (6.2 L86, 0W-20, 8.0 qt, cooling 17.8, DOT3, EPS, dexos1); **T1XX 2025/2026** (6.2 L87, **diesel DROPPED**, 0W-20, cooling 15.1, fuel 24/ESV 28, DOT4, EPS, dexos1). **★ 2003 written NORMALLY** — the Escalade's own 2003 OM is a legible 471pp text PDF (gap 0.060, no gate), unlike the scanned Silverado/Tahoe 2003 (per-vehicle-source discipline; same call as the Yukon 2003). **Per-gen oil-cap shift: 5.7=5.0qt / GMT800 V8=6.0qt / 6.2=8.0qt** (read each, never inherited). GATES: axles+transfer-case fluid-type (punt), Escalade V (LT4 SC 6.2) halo on ’25/’26.

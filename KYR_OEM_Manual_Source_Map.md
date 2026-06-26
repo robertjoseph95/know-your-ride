@@ -66,7 +66,11 @@ Piloted on the Altima L34 (2019–2025). **Nissan's owner's manual publishes the
 **Quick wins next (PDF-verified, clean):** **Chevrolet bulk** (Silverado 21 rows by gen) → **Subaru** (100) → **Hyundai** (110).
 **Then the hard one:** ⚪ **Toyota** (348) — browser-pilot or QRG fallback.
 **Sibling sweeps (cheap once parent is done):** Acura (Honda), **Cadillac/Buick/GMC (Chevy — GM ecosystem now characterized: `contentdelivery.ext.gm.com`, browser-UA, lug-only + spark-gap, DEX-COOL/dexos1)**.
-**Discrete queued pull:** GM **Duramax 3.0L diesel supplement** (separate doc; covers Silverado/Sierra/HD diesels across years — gas OMs punt all diesel specs to it).
+### ★ GM Duramax diesel supplements — separate "MUL" (multi-model, Chevy/GMC shared) docs, on `contentdelivery.ext.gm.com/.../owners_manuals_browse/`
+GM ships diesel specs in a **separate supplement**, NOT the main OM (the gas OM punts all diesel oil/coolant/ATF/capacities/parts to it). Two distinct supplements — **do not confuse them; they're different engines with different specs:**
+- **3.0L Duramax (LM2/LZ0)** — light-duty 1500 + full-size SUVs. Filename `<YY>_MUL_Duramax_Diesel_3.0L_SUP_…`. Oil = **0W-20 dexos D**, ~7.0 qt; DEF ~5.3–5.4 gal; pairs with the 10-speed (DEXRON ULV). **LM2 (SUV) vs LZ0 (pickup)** differ on coolant/DEF/filters (read per config). USED: Silverado/Sierra 1500 (2020+), Tahoe/Suburban/Yukon/Escalade (LM2 SUV).
+- **6.6L Duramax (L5P)** — HD 2500/3500. Filename `<YY>_MUL_Duramax_Diesel_6.6L_SUP_…` (note: 2020 doc uses `6_6L`). Oil = **15W-40 CK-4** (NOT dexos D!), **10.0 qt**; cooling **30.7 qt + 3.7 qt low-temp loop**; DEF **7.0 gal**; **Allison** transmission (DEXRON ULV / Allison TES). USED: Sierra/Silverado 2500HD/3500HD. PILOT-CONFIRMED (Sierra 2500HD T1XX-HD, 2026-06-26).
+**HD trucks are EPA-EXEMPT (>8,500 GVWR)** → engine roster comes from the OM/GM specs, not fueleconomy.gov. **HD ≠ 1500:** HD keeps **hydraulic PS** (2.1 qt) where the 1500s went EPS; gas L8T = 5W-30 (vs 1500 6.2's 0W-20). HD axles punt to dealer (gate).
 
 ---
 *Navigation aid only — no spec data herein. Every fact is cited to the specific OEM manual + page, never to CARFAX or any directory. Companions: [Verification Pipeline Design §2](KYR_Verification_Pipeline_Design.md) · [Source Authority Matrix](KYR_Source_Authority_Matrix.md) · [Verification Sourcing Cost Analysis](KYR_Verification_Sourcing_Cost_Analysis.md). Portal URLs/schemes point-in-time June 2026 — verify on navigation.*
