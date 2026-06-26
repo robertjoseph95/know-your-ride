@@ -3,7 +3,18 @@
 
 Parallel to the Ford/Honda/Nissan/Mazda logs. **GM-group make** (Chevrolet pilot + GMC twin). Source-map findings in `KYR_OEM_Manual_Source_Map.md`. Page citations are OM **printed-page** numbers (PDF page − 1).
 
-> **GM-group status:** **Silverado 1500 ✅ 21/21** · **GMC Sierra 1500 ✅ 15/15** · **Chevy Tahoe ✅ 13/13** · **Chevy Suburban ✅ 13/13** · **GMC Yukon ✅ 11/11** · **Cadillac Escalade ✅ 13/16** · **GMC Sierra 2500 HD ✅ 3/4** · **Buick Enclave ✅ 6/6 + Encore ✅ 2/2** = **97 GM vehicles across 4 makes.** Next: Colorado/Canyon; Encore GX (VSS-F slice). Deferred: Escalade 2005/2020/2001 · Sierra HD 2019 · **Encore 2026 phantom**.
+> **GM-group status:** **Silverado 1500 ✅ 21/21** · **GMC Sierra 1500 ✅ 15/15** · **Chevy Tahoe ✅ 13/13** · **Chevy Suburban ✅ 13/13** · **GMC Yukon ✅ 11/11** · **Cadillac Escalade ✅ 13/16** · **GMC Sierra 2500 HD ✅ 3/4** · **Buick Enclave ✅ 6/6 + Encore ✅ 2/2** · **Chevy Colorado ✅ 8/8 + GMC Canyon ✅ 6/6** = **111 GM vehicles across 4 makes.** Next: Encore GX (VSS-F slice); non-GM pilots (Subaru/Hyundai). Deferred: Escalade 2005/2020/2001 · Sierra HD 2019 · Encore 2026 phantom.
+
+## ✅ MIDSIZE — Chevy Colorado + GMC Canyon (14/14 written) — `2026-06-26-colorado-canyon`, commit e03bb1a4
+GM midsize, fresh engine family. **Most internally layered nameplate of the campaign: three steering/brake regimes across three generations**, each read independently (self-ID ✅):
+| Gen (rows) | Engines / Oil | Cooling | Gap | Brake / PS | Lug |
+|---|---|---|---|---|---|
+| **1st** Colo ’04/05/06 | 2.8 I4 (LK5) 5.0qt + 3.5 I5 (L52) 6.0qt, **5W-30 GM6094M** | 10.4/10.6 qt | 0.042 | **DOT 3 / HYDRAULIC** | **GATED** |
+| **2nd** Colo ’20/21 + Canyon ’20/21/22 | 2.5 I4 (LCV) 0W-20 / 3.6 V6 (LGZ) 5W-30 / **2.8 Duramax (LWN) dexos2 0W-40** | 9.6/11.2/11.1 qt | .037–.043 / .031–.035 / glow | **DOT 3 / EPS** | 140 |
+| **3rd** Colo+Canyon ’24/25/26 | single **2.7T (L3B)** 5W-30, 6.0qt | 11.6 qt | .026–.030 | **DOT 4 / EPS** | 140 |
+**★ Three regimes in one nameplate** — 2023 redesign collapses 2nd-gen's 3 engines → single 2.7T and flips DOT 3→DOT 4; 1st-gen is hydraulic (vs EPS later). **★ Three Duramax oils now distinct: 3.0 LM2/LZ0 = dexos D · 2.8 LWN = dexos2 0W-40 · 6.6 L5P = 15W-40 CK-4** (2.8 read from its own supplement, nothing carried). **★ Twin parity** confirmed by reading both Canyon OMs (2.5/3.6 caps + 2.7T byte-identical to Colorado, not copied). 1st-gen axle fluids (75W-90/80W-90) WRITTEN (OM gives them); modern 4WD axle GATED (punts to dealer). Sources: 2005 Colorado OM (1st gen-rep), 2020 Colorado + 2020 Canyon OM + 2021 2.8L Duramax sup (2nd), 2025 Colorado + 2024 Canyon OM (3rd). GATED: 2005 lug (NOT assumed 140), 2.8 LWN oil cap, oil-filter PNs, battery, tire, ZR2 trim. No phantoms (no 2013/14), no defers.
+
+---
 
 > **★ Three GM reference profiles now characterized** (sanity-check fingerprints for future GM vehicles): **Truck/SUV** (1500 + full-size SUV: EPS modern, DOT 4 T1XX, 0W-20 V8s, dexos1, DEXRON-HP/ULV, lug 140) · **HD** (2500/3500: HYDRAULIC PS, DOT 3, gas L8T 5W-30 + Duramax L5P 15W-40 CK-4 10qt, Allison, lug 140) · **Crossover** (Buick Enclave/Encore: EPS, DOT 4, dexos1, DEXRON-VI, small oil caps 4.2–6.0 qt — applies to Traverse/Acadia/Trax when they come up).
 
