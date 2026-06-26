@@ -3,7 +3,20 @@
 
 Parallel to the Ford/Honda/Nissan/Mazda logs. **GM-group make** (Chevrolet pilot + GMC twin). Source-map findings in `KYR_OEM_Manual_Source_Map.md`. Page citations are OM **printed-page** numbers (PDF page − 1).
 
-> **GM-group status:** **Silverado 1500 ✅ 21/21** · **GMC Sierra 1500 ✅ 15/15** · **Chevy Tahoe ✅ 13/13** · **Chevy Suburban ✅ 13/13** · **GMC Yukon ✅ 11/11** · **Cadillac Escalade ✅ 13/16** · **GMC Sierra 2500 HD ✅ 3/4** = **89 GM vehicles across 3 makes.** Next: Buick; Colorado/Canyon. Deferred: Escalade 2005/2020/2001 · **Sierra 2500 HD 2019 K2XX-HD** (no GM OM).
+> **GM-group status:** **Silverado 1500 ✅ 21/21** · **GMC Sierra 1500 ✅ 15/15** · **Chevy Tahoe ✅ 13/13** · **Chevy Suburban ✅ 13/13** · **GMC Yukon ✅ 11/11** · **Cadillac Escalade ✅ 13/16** · **GMC Sierra 2500 HD ✅ 3/4** · **Buick Enclave ✅ 6/6 + Encore ✅ 2/2** = **97 GM vehicles across 4 makes.** Next: Colorado/Canyon; Encore GX (VSS-F slice). Deferred: Escalade 2005/2020/2001 · Sierra HD 2019 · **Encore 2026 phantom**.
+
+> **★ Three GM reference profiles now characterized** (sanity-check fingerprints for future GM vehicles): **Truck/SUV** (1500 + full-size SUV: EPS modern, DOT 4 T1XX, 0W-20 V8s, dexos1, DEXRON-HP/ULV, lug 140) · **HD** (2500/3500: HYDRAULIC PS, DOT 3, gas L8T 5W-30 + Duramax L5P 15W-40 CK-4 10qt, Allison, lug 140) · **Crossover** (Buick Enclave/Encore: EPS, DOT 4, dexos1, DEXRON-VI, small oil caps 4.2–6.0 qt — applies to Traverse/Acadia/Trax when they come up).
+
+## ✅ BUICK — Enclave + Encore (8/8 written) — `2026-06-26-buick-crossover`, commit a69fa9db
+First Buick / first **GM crossover profile**. Three NEW engine families, each read fresh from its own Buick OM (self-ID ✅; nothing inherited from truck/SUV/HD):
+| Engine (rows) | Oil | Cooling | Gap | Trans | Brake/PS | Lug |
+|---|---|---|---|---|---|---|
+| **3.6 V6 (LFY)** Enclave ’20/21/22/24 | 5W-30 dexos1, 6.0 qt | 15.4/15.5 qt | 0.037–0.043 | 9-spd DEXRON-VI | DOT 4 / EPS | 140 |
+| **2.5T-4 (LK0)** Enclave ’25/26 | 0W-20 dexos1, 5.5 qt | 17.9 qt | 0.026–0.030 | 8-spd DEXRON-VI | DOT 4 / EPS | 140 |
+| **1.4T-4 (LE2)** Encore ’20/21 | 0W-20 dexos1, 4.2 qt | 7.7 qt | 0.024–0.028 | 6-spd DEXRON-VI | DOT 4 / EPS | **100** |
+**★ Enclave engine-era boundary** — 2025 redesign 3.6 V6 → 2.5T-4 (EPA-confirmed, not assumed): resets viscosity/oil-cap/cooling/gap/trans all at once → two rep OMs (2024 3.6 + 2026 2.5T). **★ Encore lug = 100 lb-ft** read from the Encore's own OM (NOT the Enclave 140 — smaller wheels). Source: 2024 BUI Enclave OM (85158970B, 3.6 gen-rep), 2026 BUI Enclave OM (19344861A, 2.5T), 2022 BUI Encore OM (84857911B, 1.4T gen-rep). Oil filters PF63 (3.6) / PF64 (1.4T); 2.5T oil-filter PN gated (not legible). GATED: rear axle (AWD see-dealer), battery, drain/oil-filter torque, tire, spark-plug PNs. **DEFERRED: Encore 2026 (id 9648) phantom** (EPA empty, no US 2026 base Encore); **Encore GX ×5** (separate VSS-F platform, 1.2/1.3L 3-cyl — own slice).
+
+---
 
 ## ✅ GMC SIERRA 2500 HD — T1XX-HD added (3/4) — `2026-06-26-sierra2500hd-t1xx`, commit 053b5650
 First **HD / 6.6L Duramax** verification — NEW source docs (separate 6.6L supplement), nothing inherited from the 1500s. 3 rows (2020/2021/2022) from the 2021 Sierra 2500HD OM (84744494C) + 2020 6.6L Duramax supplement (L5P); 2020/2022 GM OMs unavailable → 2021 T1XX-HD rep + stability note (engines L8T+L5P confirmed across span). **Per-engine, HD diverges from 1500 on nearly everything:**
