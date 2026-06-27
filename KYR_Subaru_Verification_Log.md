@@ -4,7 +4,28 @@
 Parallel to the GM-group / Ford / Honda / Nissan / Mazda logs. Make characterization + reusable
 source pattern in `KYR_OEM_Manual_Source_Map.md` (Subaru section). **Host:** `cdn.subarunet.com/stis/doc/ownerManual/`.
 
-> **Subaru status:** **Outback ✅ 11/20** (modern BS+BT; BH/BP 2000–2009 deferred). DB also has Forester, Crosstrek, Legacy, Impreza, Ascent, WRX, BRZ + Solterra (EV) — pending, reuse the Subaru source pattern.
+> **Subaru status:** **Outback ✅ 11/20** (modern BS+BT; BH/BP 2000–2009 deferred) · **Forester ✅ 8/19** (modern SJ+SK; 2025/26 + 2000–2006 deferred). DB also has Crosstrek, Legacy, Impreza, Ascent, WRX, BRZ + Solterra (EV) — pending, reuse the Subaru source pattern.
+
+> **★ KNOWN FOLLOW-UP (bounded touch-up):** **Outback plug-type / battery / tire enrichment.** The Outback rows GATED those three fields only because the Electrical/Tires spec pages (two sheets past the fluids pages) weren't rendered — the Outback OMs *do* publish them (confirmed via Forester). Re-render those pages from the 2018 + 2020 Outback OMs (still local), write spark_plug_type + battery_group + tire to the 11 Outback rows, redeploy. Separate small task, own attention — not bolted onto another deploy.
+
+## ✅ FORESTER — modern (8/8 modern; 2025/26 + 2000–06 deferred) — `2026-06-27-subaru-forester`, commit dd487488
+Subaru sibling #2. Standalone manual (self-ID = `A82xx` model code + p2 vehicle illustration; body says "Forester" 0× — normal for standalone). Each engine read fresh from rendered spec pages.
+| Era (rows) | Engine | Oil | Coolant | Plug type | Battery | Fuel |
+|---|---|---|---|---|---|---|
+| **SJ 2017–18** | FB25 (port, 10.3:1) | **0W-20, 5.1 qt** | 8.1 qt | SILZKAR7B11 (NGK) | 75D23L | 15.9 gal |
+| **SJ 2017–18** | FA20 **turbo** | **5W-30, 5.4 qt** | 9.5 qt | ILKAR8H6 (NGK) | 75D23L | 15.9 gal |
+| **SK 2019–24** | FB25 (**direct-inj**, 12.0:1) | **0W-20, 4.4 qt** | 9.0 qt | DILKAR7Q8 (NGK) | Q85 | 16.6 gal |
+Common: SUBARU Super Coolant; front diff GL-5 75W-90 (SJ 1.3 NT/1.5 turbo, SK 1.4); rear diff 0.8 qt; brake **FMVSS No. 116, DOT 3 or DOT 4**; **lug 89 lb-ft / 120 N·m** (Forester prints 89 vs Outback 88.5); EPS. **OM publishes (WRITTEN): plug type, battery, tire size/pressure** (P225/60R17 or P225/55R18, per trim). **GATED: spark-plug GAP** (genuinely not printed), CVT fluid (consult dealer), drain/oil-filter torque, oil-filter PN. Sources: 2018 OM `MSA5M1802B` (SJ rep, A8230BE-B) + 2019 OM `MSA5M1902B` (SK rep, A8240BE-B).
+
+**★ Headline catches:**
+- **FB25 port→direct divergence reproduces** (2nd independent confirmation → platform-level FB25 fact): SJ 5.1 qt/8.1 qt cool (10.3:1) → SK 4.4 qt/9.0 qt cool (12.0:1) at the 2019 redesign. Travels to Crosstrek.
+- **FA20 2.0 turbo = its own read** (5W-30/5.4 qt) — distinct from NA 0W-20 and from Outback's FA24.
+- **Pattern refinements:** (1) standalone-manual self-ID = illustration + model code, NOT name-count (Forester says "Forester" 0×, which is normal). (2) Subaru OM **publishes** plug-type/battery/tire (write them); only the gap is genuinely omitted.
+- Per-gen shifts all read: battery 75D23L→Q85, plug SILZKAR7B11→DILKAR7Q8, fuel 15.9→16.6 gal.
+
+**DEFERRED:** **2025/2026** (ids 8614/10234) — no full OM on CDN (only a 216pp partial, no Specifications chapter) **+** new Hybrid variant; gate until full new-gen OM surfaces. **2000–2006** (7 rows) — EJ25 + EJ255 turbo (2004–06), pre-CVT; old Forester doc-number discovery + per-doc self-ID (like Outback BH/BP).
+
+---
 
 ## ✅ OUTBACK — modern (11/11 modern; 9 old-gen deferred) — `2026-06-27-subaru-outback`, commit dcb1183d
 First Subaru / first non-GM make. Each engine read FRESH from the Subaru OM's own (image-rendered) spec pages.
