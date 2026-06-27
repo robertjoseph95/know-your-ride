@@ -4,7 +4,29 @@
 Parallel to the GM-group / Ford / Honda / Nissan / Mazda logs. Make characterization + reusable
 source pattern in `KYR_OEM_Manual_Source_Map.md` (Subaru section). **Host:** `cdn.subarunet.com/stis/doc/ownerManual/`.
 
-> **Subaru status:** **Outback ✅ 11/20** (modern BS+BT; BH/BP 2000–2009 deferred) · **Forester ✅ 8/19** (modern SJ+SK; 2025/26 + 2000–2006 deferred). DB also has Crosstrek, Legacy, Impreza, Ascent, WRX, BRZ + Solterra (EV) — pending, reuse the Subaru source pattern.
+> **Subaru status:** **Outback ✅ 11/20** (modern BS+BT; BH/BP 2000–2009 deferred) · **Forester ✅ 8/19** (modern SJ+SK; 2025/26 + 2000–2006 deferred) · **Crosstrek ✅ 7/7 COMPLETE** (all DB years 2018–2026 written). DB also has Legacy, Impreza, Ascent, WRX, BRZ + Solterra (EV) — pending, reuse the Subaru source pattern. **★ Impreza is Crosstrek's platform twin — self-ID via `impreza≥0 AND crosstrek=0` + filename "01" (mirror of Crosstrek's "07").**
+
+## ✅ CROSSTREK — COMPLETE 7/7 — `2026-06-27-subaru-crosstrek`, commit 18f3ff53
+Subaru sibling #3 — first genuinely NEW engine reads of the line. Self-ID via twin-exclusion (impreza=0 + filename "07" + provenance; A1xxx is the shared Impreza/Crosstrek platform code; illustration = G4-fax, unrenderable → follow-up).
+| Era (rows) | Engine | Oil | Cooling | Plug | Battery |
+|---|---|---|---|---|---|
+| **GU 2018–20** | FB20 (DI 12.5:1) | **0W-20, 4.7 qt** | 8.2 qt | DILKAR7B8 | 75D23L |
+| **GU 2021** | + FB25 (DI 12.0:1) | 0W-20, 4.4 qt | 8.8 qt | DILKAR7Q8 | 75D23L |
+| **3rd 2024–25** | FB20 + FB25 | **0W-16 req** (0W-20 alt), 4.7 qt | 8.4 / 8.9 | DILKAR7Q8 | LN2 |
+| **2026 refresh** | FB25 only (FB20 dropped) | **0W-16 req**, 4.7 qt | **7.9 qt** | DILKAR7Q8 | LN2 |
+Common: SUBARU Super Coolant; diff front 1.4 / rear 0.8 qt GL-5 75W-90 (2026 read, not carried); brake FMVSS No. 116 DOT 3/4; **lug 89 lb-ft / 120 N·m** (read from Crosstrek OM); fuel 16.6 gal; EPS. OM publishes → WRITTEN: plug type, battery, tire (P225/60R17 or 225/55R18). GATED: spark GAP, CVT fluid (consult dealer). Sources: 2020 OM `MSA5M2007C` (A1370BE-C), 2021 OM `MSA5M2107A` (A1410BE-A), 2024 OM `MSA5M2407A` (A1520BE-A), 2026 OM `MSA5M2607B` (A1630BE-B).
+
+**★ New artifacts (none predictable from platform knowledge — the payoff of sequencing Crosstrek after the pattern was proven):**
+- **FB20 = first FB20 on record** (DI; 0W-20/4.7 qt GU, 0W-16/4.7 qt 3rd-gen). Read fresh, not assumed-from-FB25.
+- **0W-16 = new viscosity grade for the campaign** (3rd-gen 2024+, REQUIRED vs 0W-20 alternative).
+- **FB25 oil cap 4.4 (GU) → 4.7 (3rd-gen)** — proven via the FB25-only 2026 OM (the 2024 common-capacity page couldn't disambiguate per-engine).
+- Per-era shifts read: FB20 plug DILKAR7B8→DILKAR7Q8; battery 75D23L→LN2; coolant 8.9 (2024) → 7.9 (2026 refresh).
+- **PHEV (2019–21) + Hybrid (2026): gated variant notes** — gas-side written on generic rows, HV never touched (no electrified DB row).
+- **Self-ID refinement #3** (platform-twin): own-model differential `impreza=0` discriminates Crosstrek from its A1xxx twin — carries directly to the Impreza slice (mirror: crosstrek=0).
+
+**KNOWN FOLLOW-UP:** Crosstrek front-illustration is a CCITT-G4-fax raster unrenderable in this environment (fitz/pdf2image absent) — visual self-ID confirmation deferred; self-ID held via the stronger differential route.
+
+---
 
 > **★ KNOWN FOLLOW-UP (bounded touch-up):** **Outback plug-type / battery / tire enrichment.** The Outback rows GATED those three fields only because the Electrical/Tires spec pages (two sheets past the fluids pages) weren't rendered — the Outback OMs *do* publish them (confirmed via Forester). Re-render those pages from the 2018 + 2020 Outback OMs (still local), write spark_plug_type + battery_group + tire to the 11 Outback rows, redeploy. Separate small task, own attention — not bolted onto another deploy.
 
