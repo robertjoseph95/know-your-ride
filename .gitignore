@@ -66,3 +66,6 @@ oss_import/
 nhtsa_safety_cache.json
 _drainbolt_verify.py
 _vf_raw.json
+
+# Subaru OMs exceed GitHub 100MB limit - kept locally, not committed
+_subaru_outback_*_om.pdf
