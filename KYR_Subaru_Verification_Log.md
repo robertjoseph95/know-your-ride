@@ -4,7 +4,26 @@
 Parallel to the GM-group / Ford / Honda / Nissan / Mazda logs. Make characterization + reusable
 source pattern in `KYR_OEM_Manual_Source_Map.md` (Subaru section). **Host:** `cdn.subarunet.com/stis/doc/ownerManual/`.
 
-> **Subaru status:** **Outback ✅ 11/20** · **Forester ✅ 8/19** · **Crosstrek ✅ 7/7 COMPLETE** · **Impreza ✅ 5/10** · **Legacy ✅ 2/2 COMPLETE** · **Ascent ✅ 4/4 COMPLETE**. **Crosstrek⇄Impreza platform-twin pair AND Legacy⇄Outback combined-manual pair both CLOSED. Mainstream Subaru line DONE (6 nameplates).** DB also has WRX (separate, turbo), BRZ + Solterra (EV) — pending. Old-gen discovery (Outback BH/BP, Forester SF/SG, Impreza GD/GG) + Forester 2025/26 + Outback 2025/26 refresh check still deferred.
+> **Subaru status:** **Outback ✅ 11/20** · **Forester ✅ 8/19** · **Crosstrek ✅ 7/7 COMPLETE** · **Impreza ✅ 5/10** · **Legacy ✅ 2/2 COMPLETE** · **Ascent ✅ 4/4 COMPLETE** · **WRX ✅ 4/10** (modern VA+VB; 2003–08 old-EJ deferred). **WRITABLE SUBARU MAKE COMPLETE — 7 nameplates verified end-to-end.** Pairs closed: Crosstrek⇄Impreza (platform-twin), Legacy⇄Outback (combined-manual), WRX/STI (combined book). DB also has BRZ + Solterra (EV) — pending. **Only remaining Subaru work = old-gen discovery passes** (pre-2015 EJ-era rows across Outback BH/BP, Forester SF/SG, Impreza GD/GG, WRX EJ 2003–08) + Forester 2025/26 + Outback 2025/26 refresh check.
+
+## ✅ WRX — modern 4/4 (2003–08 old-EJ deferred) — `2026-06-27-subaru-wrx`, commit 938e1efc — FINISHES THE WRITABLE SUBARU MAKE
+Separate performance model. Self-ID: VA 2021 = **combined WRX/STI book** (A1760, "05") — base-WRX "Except STI" column isolated; STI (EJ257, hydraulic PS) excluded. VB 2022 (A9020) / 2026 (A9100) = WRX-only.
+| Gen / engine | Oil | Cooling (MT/CVT) | Plug | Tire |
+|---|---|---|---|---|
+| **VA FA20-DIT** (2020–21) | **5W-30, 5.4 qt** | 8.6 / 8.8 | ILKAR8H6 | 235/45R17 |
+| **VB FA24-DIT** (2022) | **0W-20, 4.8 qt** | 9.0 / 9.2 | **SILKFR8D6Y** | 235/45R17 |
+| **VB FA24-DIT** (2026) | 0W-20, 4.8 qt | 9.0 / 9.2 | **SILKFR8A6** | 245/40R18 |
+Common: 6MT gear oil GL-5 75W-90 3.5 qt (written) + CVT (consult dealer, gated); front diff (CVT) 1.5 (VA)/1.3 (VB), rear 0.8; brake FMVSS No.116 DOT 3/4; lug 89; battery 75D23L; EPS (base WRX). Sources: 2021 WRX/STI OM MSA5M2105A, 2022 OM MSA5M2205A, 2026 OM MSA5M2605A.
+
+**★ The body-vs-engine thesis gets a THIRD axis (TUNE):**
+- **FA20-DIT = own engine** (5W-30/5.4 — pure-discovery, NOT the mainstream NA 0W-20).
+- **FA24-DIT cross-check vs mainstream FA24:** **oil/cooling HOLD** (0W-20/4.8, 9.2 CVT = same as Outback; WRX lighter than Ascent's 11.7) but **PLUG MOVES** (SILKFR8D6Y vs mainstream SILKFR8A6) — and drifts **per-year within VB** (2022 D6Y → 2026 A6). → **ENGINE decides oil; BODY decides cooling; TUNE decides plug.** No shortcut produces this; only reading each field does.
+- **Transmission break:** NOT CVT-universal — 6MT gear oil writable + CVT gated, read per row; 2026 still offers 6MT.
+- **VA combined WRX/STI book** — base-WRX column isolated (STI EJ257/hydraulic excluded), the Legacy/Outback discipline applied to a performance pairing.
+
+**DEFER:** 2003–2008 old EJ (EJ205/EJ255, EPA-empty "Impreza WRX" era) → old-doc discovery. STI excluded (no DB row).
+
+---
 
 ## ✅ ASCENT — COMPLETE 4/4 — `2026-06-27-subaru-ascent`, commit f6df22a9
 Subaru sibling #6, 3-row SUV. Standalone manual, **FA24-only** all years. Self-ID: model code **A32xx** (unique block, no twin), filename segment **"00"**. The campaign's purest body-vs-engine isolation (same engine, no twin, no shared book).
