@@ -4,7 +4,25 @@
 Parallel to the GM-group / Ford / Honda / Nissan / Mazda logs. Make characterization + reusable
 source pattern in `KYR_OEM_Manual_Source_Map.md` (Subaru section). **Host:** `cdn.subarunet.com/stis/doc/ownerManual/`.
 
-> **Subaru status:** **Outback ✅ 11/20** (modern BS+BT; BH/BP 2000–2009 deferred) · **Forester ✅ 8/19** (modern SJ+SK; 2025/26 + 2000–2006 deferred) · **Crosstrek ✅ 7/7 COMPLETE** · **Impreza ✅ 5/10** (modern GK + new-gen; 2000–2004 EJ-series deferred; WRX excluded). **Crosstrek⇄Impreza platform-twin pair CLOSED as a matched set.** DB also has Legacy, Ascent, WRX, BRZ + Solterra (EV) — pending, reuse the Subaru source pattern.
+> **Subaru status:** **Outback ✅ 11/20** · **Forester ✅ 8/19** · **Crosstrek ✅ 7/7 COMPLETE** · **Impreza ✅ 5/10** · **Legacy ✅ 2/2 COMPLETE** (real rows; 1990–2002 = neg-id phantoms). **Crosstrek⇄Impreza platform-twin pair AND Legacy⇄Outback combined-manual pair both CLOSED.** Mainstream Subaru line essentially done. DB also has Ascent, WRX, BRZ + Solterra (EV) — pending. Old-gen discovery (Outback BH/BP, Forester SF/SG, Impreza GD/GG) + Forester 2025/26 still deferred.
+
+## ✅ LEGACY — COMPLETE 2/2 — `2026-06-27-subaru-legacy`, commit 2b647b70
+Subaru sibling #5, Outback's combined-manual mate. Read from the **Legacy column** of the combined Legacy+Outback OM `MSA5M2003A-2004A` (2021 = 2020 BT rep + stability note; full 2021 combined OM not on CDN, only 140pp partial 2113A).
+| Engine (2020-21) | Oil | Cooling | Plug |
+|---|---|---|---|
+| **FB25** (DI 12.0:1) | 0W-20, 4.4 qt | 9.5 qt | DILKAR7Q8 |
+| **FA24** (2.4T 10.6:1) | 0W-20, 4.8 qt | 9.2 qt | **SILKFR8A6** |
+Common: SUBARU Super Coolant; diff front 1.3-1.4 / rear 0.8; brake FMVSS No.116 DOT 3/4; **lug 88.5 lb-ft** (combined-book value, NOT the standalone 89); battery LN2; fuel 18.5 gal; EPS. Tire (Legacy sedan): 225/55R17 97V, 33/32 psi.
+
+**★ Column-isolation cross-check (the cleanest "shares a manual ≠ shares the specs" demo):**
+- **Predicted divergence read IDENTICAL:** fuel 18.5 gal (both Legacy sedan & Outback wagon) — read, not assumed.
+- **Actual divergences elsewhere (Legacy column isolated):** tire 225/55R17 (vs Outback 225/65R17), pressure 33/32 (vs 35/33), CVT capacity 11.9/12.3 (vs 12.4/12.6).
+- **Same (per-engine/common):** FB25/FA24 oil+cool, battery LN2, plugs, diff, lug 88.5.
+- **New on record:** FA24 turbo plug **SILKFR8A6 (NGK)**; lug **88.5 in the combined book** (vs 89 standalone).
+
+**No defers** (1990–2002 = neg-id phantoms). **No 3.6 flat-6, no WRX** in scope.
+
+---
 
 ## ✅ IMPREZA — modern 5/5 (2000–2004 EJ deferred) — `2026-06-27-subaru-impreza`, commit 343adc14
 Subaru sibling #4, Crosstrek mirror-twin. Self-ID via mirror differential **`impreza=0 AND crosstrek=0`** + filename **"01"** (model codes A1380/A1530/A1640 = Crosstrek's **+10** in the shared A1xxx block — the differential, not the code prefix, is the gate). Each engine read fresh — **twin predicts, OM decides.**
@@ -46,7 +64,7 @@ Common: SUBARU Super Coolant; diff front 1.4 / rear 0.8 qt GL-5 75W-90 (2026 rea
 
 ---
 
-> **★ KNOWN FOLLOW-UP (bounded touch-up):** **Outback plug-type / battery / tire enrichment.** The Outback rows GATED those three fields only because the Electrical/Tires spec pages (two sheets past the fluids pages) weren't rendered — the Outback OMs *do* publish them (confirmed via Forester). Re-render those pages from the 2018 + 2020 Outback OMs (still local), write spark_plug_type + battery_group + tire to the 11 Outback rows, redeploy. Separate small task, own attention — not bolted onto another deploy.
+> **★ KNOWN FOLLOW-UP (now DATA-IN-HAND — Legacy slice read it):** **Outback plug-type / battery / tire enrichment.** The Outback rows GATED those three fields only because the Electrical/Tires spec page (p532 of the 2020 combined OM) wasn't rendered. **The Legacy slice rendered that exact page** → the BT-Outback values are now read & verified: **battery LN2; plugs FB25 DILKAR7Q8 / FA24 SILKFR8A6; Outback tire 225/65R17 102H or 225/60R18 100H, 35/33 psi; lug 88.5.** (BS-Outback 2016-19 values still need the 2018 combined OM's Electrical/Tires page rendered.) Write spark_plug_type + battery_group + tire to the Outback BT rows (2020-2024) + BS rows after rendering, redeploy. Bounded touch-up, own attention.
 
 ## ✅ FORESTER — modern (8/8 modern; 2025/26 + 2000–06 deferred) — `2026-06-27-subaru-forester`, commit dd487488
 Subaru sibling #2. Standalone manual (self-ID = `A82xx` model code + p2 vehicle illustration; body says "Forester" 0× — normal for standalone). Each engine read fresh from rendered spec pages.
