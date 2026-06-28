@@ -4,7 +4,25 @@
 Parallel to the GM-group / Ford / Honda / Nissan / Mazda logs. Make characterization + reusable
 source pattern in `KYR_OEM_Manual_Source_Map.md` (Subaru section). **Host:** `cdn.subarunet.com/stis/doc/ownerManual/`.
 
-> **Subaru status:** **Outback ✅ 11/20** (modern BS+BT; BH/BP 2000–2009 deferred) · **Forester ✅ 8/19** (modern SJ+SK; 2025/26 + 2000–2006 deferred) · **Crosstrek ✅ 7/7 COMPLETE** (all DB years 2018–2026 written). DB also has Legacy, Impreza, Ascent, WRX, BRZ + Solterra (EV) — pending, reuse the Subaru source pattern. **★ Impreza is Crosstrek's platform twin — self-ID via `impreza≥0 AND crosstrek=0` + filename "01" (mirror of Crosstrek's "07").**
+> **Subaru status:** **Outback ✅ 11/20** (modern BS+BT; BH/BP 2000–2009 deferred) · **Forester ✅ 8/19** (modern SJ+SK; 2025/26 + 2000–2006 deferred) · **Crosstrek ✅ 7/7 COMPLETE** · **Impreza ✅ 5/10** (modern GK + new-gen; 2000–2004 EJ-series deferred; WRX excluded). **Crosstrek⇄Impreza platform-twin pair CLOSED as a matched set.** DB also has Legacy, Ascent, WRX, BRZ + Solterra (EV) — pending, reuse the Subaru source pattern.
+
+## ✅ IMPREZA — modern 5/5 (2000–2004 EJ deferred) — `2026-06-27-subaru-impreza`, commit 343adc14
+Subaru sibling #4, Crosstrek mirror-twin. Self-ID via mirror differential **`impreza=0 AND crosstrek=0`** + filename **"01"** (model codes A1380/A1530/A1640 = Crosstrek's **+10** in the shared A1xxx block — the differential, not the code prefix, is the gate). Each engine read fresh — **twin predicts, OM decides.**
+| Era (rows) | Engine | Oil | Cooling | Plug | Battery | Fuel | Tire |
+|---|---|---|---|---|---|---|---|
+| **GK 2019–21** | FB20 (DI 12.5:1) | **0W-20, 4.7 qt** | 8.2 qt | DILKAR7B8 | 75D23L | 13.2 gal | P205/55R16 |
+| **new-gen 2024** | FB20+FB25 | **0W-16 req**, 4.7 qt | 8.4 / 8.9 | DILKAR7Q8 | Q-85 | 16.6 gal | 205/55R16 |
+| **2026 refresh** | FB20+FB25 (kept) | **0W-16 req**, 4.7 qt | 8.4 / **7.9** | DILKAR7Q8 | Q-85 | 16.6 gal | 205/55R16 |
+Common: SUBARU Super Coolant; diff front 1.4 / rear 0.8 qt GL-5 75W-90; brake FMVSS No. 116 DOT 3/4; **lug 89 lb-ft / 120 N·m** (read from Impreza OM); EPS. OM publishes → WRITTEN: plug type, battery, tire. GATED: spark GAP, CVT fluid. Sources: 2020 OM `MSA5M2001A` (A1380BE-A), 2024 OM `MSA5M2401A` (A1530BE-A), 2026 OM `MSA5M2601A` (A1640BE-A).
+
+**★ Cross-check = the principle this sibling arc was building toward (twin predicts, OM decides):**
+- **Confirmed twin MATCHES:** FB20 0W-20/4.7 (GK); new-gen 0W-16/4.7 + FB25; **2026 FB25-coolant refresh 8.9→7.9 now on BOTH twins** = platform-wide 2026 change, not a Crosstrek one-off.
+- **Caught 4 real twin DIVERGENCES (read, reported not reconciled — proof a cross-check catches as well as confirms):** fuel 13.2(GK)→16.6 (Crosstrek 16.6 throughout) · tire 205/55R16 (Crosstrek 225/60R17) · 2026 keeps FB20+FB25 (Crosstrek dropped FB20) · battery Q-85 (Crosstrek LN2).
+- **Self-ID #3 verified in mirror direction:** codes are Crosstrek **+10** (adjacent A1xxx siblings) → a code-prefix rule would mis-claim every Impreza as a Crosstrek; the `crosstrek=0` differential + filename "01" cut cleanly. WRX excluded (separate model).
+
+**DEFERRED:** 2000–2004 GD/GG EJ-series (EJ22/EJ25, pre-DI/pre-CVT) — old-doc discovery. **EXCLUDED:** WRX/STI (separate model). **Ignored:** 1993–1999 neg-id phantoms. Illustration (likely G4-fax) not rendered → self-ID held via differential.
+
+---
 
 ## ✅ CROSSTREK — COMPLETE 7/7 — `2026-06-27-subaru-crosstrek`, commit 18f3ff53
 Subaru sibling #3 — first genuinely NEW engine reads of the line. Self-ID via twin-exclusion (impreza=0 + filename "07" + provenance; A1xxx is the shared Impreza/Crosstrek platform code; illustration = G4-fax, unrenderable → follow-up).
