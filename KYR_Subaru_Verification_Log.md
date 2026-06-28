@@ -64,7 +64,11 @@ Common: SUBARU Super Coolant; diff front 1.4 / rear 0.8 qt GL-5 75W-90 (2026 rea
 
 ---
 
-> **★ KNOWN FOLLOW-UP (now DATA-IN-HAND — Legacy slice read it):** **Outback plug-type / battery / tire enrichment.** The Outback rows GATED those three fields only because the Electrical/Tires spec page (p532 of the 2020 combined OM) wasn't rendered. **The Legacy slice rendered that exact page** → the BT-Outback values are now read & verified: **battery LN2; plugs FB25 DILKAR7Q8 / FA24 SILKFR8A6; Outback tire 225/65R17 102H or 225/60R18 100H, 35/33 psi; lug 88.5.** (BS-Outback 2016-19 values still need the 2018 combined OM's Electrical/Tires page rendered.) Write spark_plug_type + battery_group + tire to the Outback BT rows (2020-2024) + BS rows after rendering, redeploy. Bounded touch-up, own attention.
+> **✅ OUTBACK ENRICHMENT — COMPLETE** (`2026-06-27-outback-enrichment`, commit 88243b92). All 11 modern Outback rows now carry **plug-type / battery / tire** (previously gated). Surgical UPDATE of 3 parts fields only; oil/cooling/fuel/lug/diff untouched. Spark GAP stays gated. **BS read earned its keep — 3 of 4 fields diverged from BT (read, not carried):**
+> - **BS 2016–19** (2018 OM, Outback column): battery **75D23R**; plugs FB25 **SILZKAR7B11** + 3.6 EZ36 **SILFR6C11**; tire 225/65R17 102H, 35/33 psi.
+> - **BT 2020–26** (2020 OM, Outback column): battery **LN2**; plugs FB25 **DILKAR7Q8** + FA24 **SILKFR8A6**; tire 225/65R17 102H, 35/33 psi.
+> - Divergences caught: battery 75D23R→LN2; **FB25 plug SILZKAR7B11(port)→DILKAR7Q8(direct) — the port→direct boundary moves the PLUG, not just oil cap**; BS 3.6 EZ36 (SILFR6C11) vs BT FA24 (SILKFR8A6). Tire SAME (wagon 225/65R17, NOT Legacy sedan 225/55R17).
+> - **⚠ Open future-slice candidate (logged, not resolved):** BT plug/battery/tire on the 2020-rep basis (same as live BT oil/cooling) → **Outback 2025/26 per-year refresh check** (did the refresh move battery/tire as the Crosstrek/Impreza 2026 refreshes moved coolant?) remains a separate slice that would also re-examine the live oil/cooling for those years.
 
 ## ✅ FORESTER — modern (8/8 modern; 2025/26 + 2000–06 deferred) — `2026-06-27-subaru-forester`, commit dd487488
 Subaru sibling #2. Standalone manual (self-ID = `A82xx` model code + p2 vehicle illustration; body says "Forester" 0× — normal for standalone). Each engine read fresh from rendered spec pages.
