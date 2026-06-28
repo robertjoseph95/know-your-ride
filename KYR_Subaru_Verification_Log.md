@@ -4,7 +4,7 @@
 Parallel to the GM-group / Ford / Honda / Nissan / Mazda logs. Make characterization + reusable
 source pattern in `KYR_OEM_Manual_Source_Map.md` (Subaru section). **Host:** `cdn.subarunet.com/stis/doc/ownerManual/`.
 
-> **Subaru status:** **Outback ✅ 11/20** · **Forester ✅ 8/19** · **Crosstrek ✅ 7/7 COMPLETE** · **Impreza ✅ 5/10** · **Legacy ✅ 2/2 COMPLETE** · **Ascent ✅ 4/4 COMPLETE** · **WRX ✅ 4/10** (modern VA+VB; 2003–08 old-EJ deferred). **WRITABLE SUBARU MAKE COMPLETE — 7 nameplates verified end-to-end.** Pairs closed: Crosstrek⇄Impreza (platform-twin), Legacy⇄Outback (combined-manual), WRX/STI (combined book). DB also has BRZ + Solterra (EV) — pending. **Only remaining Subaru work = old-gen discovery passes** (pre-2015 EJ-era rows across Outback BH/BP, Forester SF/SG, Impreza GD/GG, WRX EJ 2003–08) + Forester 2025/26 + Outback 2025/26 refresh check.
+> **Subaru status:** **Outback ✅ 20/20** (11 modern + 9 EJ-era old-gen) · **Forester ✅ 8/19** · **Crosstrek ✅ 7/7 COMPLETE** · **Impreza ✅ 5/10** · **Legacy ✅ 2/2 COMPLETE** · **Ascent ✅ 4/4 COMPLETE** · **WRX ✅ 4/10** (modern VA+VB; 2003–08 old-EJ deferred). **WRITABLE SUBARU MAKE COMPLETE — 7 nameplates verified end-to-end; first EJ-era old-gen slice (Outback) also COMPLETE.** Pairs closed: Crosstrek⇄Impreza (platform-twin), Legacy⇄Outback (combined-manual), WRX/STI (combined book). DB also has BRZ + Solterra (EV) — pending. **Remaining Subaru work = old-gen discovery passes** (Forester SF/SG, Impreza GD/GG + WRX EJ 2003–08 — the latter reads the very book the Outback old-gen catch isolated) + Forester 2025/26 + Outback 2025/26 refresh check.
 
 ## ✅ WRX — modern 4/4 (2003–08 old-EJ deferred) — `2026-06-27-subaru-wrx`, commit 938e1efc — FINISHES THE WRITABLE SUBARU MAKE
 Separate performance model. Self-ID: VA 2021 = **combined WRX/STI book** (A1760, "05") — base-WRX "Except STI" column isolated; STI (EJ257, hydraulic PS) excluded. VB 2022 (A9020) / 2026 (A9100) = WRX-only.
@@ -126,7 +126,7 @@ Common: SUBARU Super Coolant; front diff GL-5 75W-90 (SJ 1.3 NT/1.5 turbo, SK 1.
 
 ---
 
-## ✅ OUTBACK — modern (11/11 modern; 9 old-gen deferred) — `2026-06-27-subaru-outback`, commit dcb1183d
+## ✅ OUTBACK — modern (11/11) + old-gen EJ-era (9/9) — modern `2026-06-27-subaru-outback` (dcb1183d) · old-gen `2026-06-28-subaru-outback-oldgen` (afffb006)
 First Subaru / first non-GM make. Each engine read FRESH from the Subaru OM's own (image-rendered) spec pages.
 | Era (rows) | Engine | Oil | Coolant | Front diff |
 |---|---|---|---|---|
@@ -142,7 +142,22 @@ Common: SUBARU Super Coolant; rear diff 0.8 qt GL-5 75W-90 (BT Outback rear: 75W
 - **3.6 EZ36 flat-6 = 5W-30** while the 4-cylinders take 0W-20 — engine-specific viscosity, not a nameplate default.
 - **Name-collision trap avoided:** EPA "Impreza Wagon / Outback SPT" = *Impreza Outback Sport* (2.0T), a different vehicle — excluded.
 
-**DEFERRED (gated 2nd pass):** BH/BP 2000–2009 (9 rows: 2000–06, 2008–09) — old Outback doc-number discovery + per-doc self-ID needed (old OMs are legible text, not scanned; the blocker is doc-number→model mapping, not legibility). 2000/2001 fold under "Legacy" in EPA+vPIC → engine roster from OM. Pre-CVT era (conventional 4-spd auto / 5-spd manual) — read its own ATF, NOT CVT.
+### ✅ OUTBACK old-gen EJ-era (9/9: 2000–06, 2008–09) — `2026-06-28-subaru-outback-oldgen`, commit afffb006
+Strict per-year reads (each year's own book), all EJ-series read FRESH (EJ25 ≠ FB25, EZ30 ≠ EZ36).
+| Era (rows) | Engines | Oil (w/filter) | Coolant | Lug |
+|---|---|---|---|---|
+| **BH 2000** | EJ251 2.5 NA | 4.2 qt | 7.2/7.1 | 58–72 |
+| **BH 2001–04** | EJ251 + EZ30D 3.0 H6 | 4.2 / EZ30 **6.0→6.0→5.9→5.6** | 2.5: 7.2/7.1 · EZ30 **8.1(01)→8.4** | 58–72 |
+| **BP 2005–09** | EJ253 + EJ255T + EZ30D | 4.2 / 4.2 / EZ30 5.8 | NA 6.8/6.7 · T 7.7/7.6 · H6 7.6 | 74–89 |
+Common (all read fresh): **5W-30**; **hydraulic PS** 0.7 qt (NOT EPS); **4-spd auto = Dexron III ATF** (9.8 qt; BP turbo+3.0 10.4) + **5-spd MT GL-5 75W-90 3.7 qt** (BP 6MT-turbo 4.3); brake FMVSS 116 DOT 3/4; battery 55D23L (MT)/75D23L (AT); **Outback tire P225/60R16** (column-isolated from Legacy P205/55R16); fuel 16.9 gal; spark **GAP gated** (type written per engine). Plug map — BH: EJ251 BKR6E-11/BKR5E-11, EZ30D PLFR6A-11; BP: EJ253 FR5AP-11, EJ255T SILFR6A, EZ30D ILFR6B (all NGK).
+
+**★★ Headline catch (the campaign's most consequential clean close) — name-collision wrong-vehicle corruption averted:**
+- **2004/2005 first resolved to `MSA5M0401A`/`0501A` = the Impreza/WRX/Outback-Sport combined book, NOT the Outback.** Two of three self-ID signals waved it through — **name-count** passed ("Outback Sport" trim contains "Outback") and **doc-segment** passed (2003's real Outback was seg "01"). Only the **page-2 illustration** (an Impreza, "Wagon and OUTBACK SPORT") **+ engine roster** (EJ251+EJ205+EJ257 = WRX) caught it. Had it shipped, **WRX turbo specs would have been written onto the Outback rows** (and 2004 fuel = wrong-book 15.9 vs real 16.9). Corrected to the real Legacy-based books **`MSA5M0404A`/`0504A`** (EZ30D present, no WRX). **All 9 rows confirmed clean via the EJ205/EJ257-absent test** — not just the two caught.
+- **STRICT per-year paid off twice:** chosen to catch the **EZ30D per-year drift** (oil 6.0→5.9→5.6→5.8, coolant 8.1→8.4→7.6 — every BH year distinct, which it did), the same per-year resolution **also** surfaced the wrong-vehicle books (a rep basis would never have touched 0404A/0504A → corruption ships invisibly).
+- **Lug read per sub-gen:** BH 58–72 → BP 74–89 lb-ft (heavier body — never carried). **XT turbo (EJ255) debut corrected to 2005** (the "2004 turbo" was purely the Impreza-WRX mis-read).
+- **Hardened self-ID rule banked to source map:** combined-book-era self-ID = **illustration + engine-roster, never name-count or doc-segment alone** — flagged as the discriminator (inverted) the Impreza/WRX slice needs, since it reads this exact book.
+
+**STILL DEFERRED:** Outback **2025/2026** per-year refresh check (modern rows carry through 2024); **BR 2010–14** old-gen not yet in scope.
 
 ---
 *Page citations are OM printed-page numbers. Spec tables are image-rendered → read via render-to-image. OM PDFs kept locally (exceed GitHub 100MB limit, gitignored); provenance = doc number + self-ID code above.*
