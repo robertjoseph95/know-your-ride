@@ -3,7 +3,17 @@
 
 Parallel to the Ford/Honda/Nissan/Mazda logs. **GM-group make** (Chevrolet pilot + GMC twin). Source-map findings in `KYR_OEM_Manual_Source_Map.md`. Page citations are OM **printed-page** numbers (PDF page − 1).
 
-> **GM-group status:** **Silverado 1500 ✅ 21/21** · **GMC Sierra 1500 ✅ 15/15** · **Chevy Tahoe ✅ 13/13** · **Chevy Suburban ✅ 13/13** · **GMC Yukon ✅ 11/11** · **Cadillac Escalade ✅ 13/16** · **GMC Sierra 2500 HD ✅ 3/4** · **Buick Enclave ✅ 6/6 + Encore ✅ 2/2** · **Chevy Colorado ✅ 8/8 + GMC Canyon ✅ 6/6** = **111 GM vehicles across 4 makes.** Next: Encore GX (VSS-F slice); non-GM pilots (Subaru/Hyundai). Deferred: Escalade 2005/2020/2001 · Sierra HD 2019 · Encore 2026 phantom.
+> **GM-group status:** **Silverado 1500 ✅ 21/21** · **GMC Sierra 1500 ✅ 15/15** · **Chevy Tahoe ✅ 13/13** · **Chevy Suburban ✅ 13/13** · **GMC Yukon ✅ 11/11** · **Cadillac Escalade ✅ 13/16** · **GMC Sierra 2500 HD ✅ 3/4** · **Buick Enclave ✅ 6/6 + Encore ✅ 2/2 + Encore GX ✅ 5/5** · **Chevy Colorado ✅ 8/8 + GMC Canyon ✅ 6/6** = **116 GM vehicles across 4 makes.** **★ GM GROUP COMPLETE — 4 makes (Chevrolet/GMC/Cadillac/Buick), all 4 reference profiles characterized (Truck-SUV · HD · Crossover · subcompact-VSS-F).** Deferred (gated, pending OM): Escalade 2005/2020/2001 · Sierra HD 2019 · Encore 2026 phantom.
+
+## ✅ BUICK Encore GX (5/5 written) — `2026-06-27-encore-gx`, commit 7983286a — CLOSES THE GM GROUP
+Separate **VSS-F** subcompact platform (NOT the Encore Gen-1 Gamma II — 3-cyl turbos, nothing carried). Parked-and-approved write (verified prior session; pre-write sanity check confirmed all 5 rows still unwritten). **4th GM reference profile = subcompact/VSS-F:** EPS · DOT 4 · dexos1 · 0W-20 · tiny 4.2–4.8 qt oil caps · 3-cyl turbos · CVT/9-spd · **lug 100** (smaller wheels, NOT full-size GM 140).
+| Engine (rows) | Oil | Cooling | Gap | Trans |
+|---|---|---|---|---|
+| **1.2L 3-cyl turbo** (LIH ’22-23 → LBP ’24-26) | 0W-20 dexos1, 4.2 qt | 6.7 qt | 0.024–0.028 | CVT |
+| **1.3L 3-cyl turbo** (L3T) | 0W-20 dexos1, 4.8 qt | 7.8 qt | 0.025–0.030 | CVT (FWD) / 9-spd DEXRON-VI (AWD) |
+**★ LIH→LBP refresh (2024) moved the 1.2L RPO but NO service spec** (oil/cool/gap/visc/lug/fuel/transfer byte-identical pre/post, confirmed by reading BOTH 2022 + 2025 OMs). Provenance per era: 2022 OM (84783953B) → 2022-23; 2025 OM (85602505C) → 2024-26. **2026 GX is EPA-real** (1.2/1.3 present) — written, NOT the base-Encore-2026 phantom (same-nameplate-opposite-verdict). Common: fuel 13.2 gal, transfer case (AWD) 0.24 qt, oil filter PF64. GATED: battery, drain/oil-filter torque, tire, spark-plug PN, CVT product, rear axle. **Trailblazer/Trax share VSS-F → pre-characterized by this profile.**
+
+---
 
 ## ✅ MIDSIZE — Chevy Colorado + GMC Canyon (14/14 written) — `2026-06-26-colorado-canyon`, commit e03bb1a4
 GM midsize, fresh engine family. **Most internally layered nameplate of the campaign: three steering/brake regimes across three generations**, each read independently (self-ID ✅):
