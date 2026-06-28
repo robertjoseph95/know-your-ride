@@ -4,7 +4,30 @@
 Parallel to the GM-group / Ford / Honda / Nissan / Mazda logs. Make characterization + reusable
 source pattern in `KYR_OEM_Manual_Source_Map.md` (Subaru section). **Host:** `cdn.subarunet.com/stis/doc/ownerManual/`.
 
-> **Subaru status:** **Outback ✅ 20/20** (11 modern + 9 EJ-era old-gen) · **Forester ✅ 8/19** · **Crosstrek ✅ 7/7 COMPLETE** · **Impreza ✅ 5/10** · **Legacy ✅ 2/2 COMPLETE** · **Ascent ✅ 4/4 COMPLETE** · **WRX ✅ 4/10** (modern VA+VB; 2003–08 old-EJ deferred). **WRITABLE SUBARU MAKE COMPLETE — 7 nameplates verified end-to-end; first EJ-era old-gen slice (Outback) also COMPLETE.** Pairs closed: Crosstrek⇄Impreza (platform-twin), Legacy⇄Outback (combined-manual), WRX/STI (combined book). DB also has BRZ + Solterra (EV) — pending. **Remaining Subaru work = old-gen discovery passes** (Forester SF/SG, Impreza GD/GG + WRX EJ 2003–08 — the latter reads the very book the Outback old-gen catch isolated) + Forester 2025/26 + Outback 2025/26 refresh check.
+> **Subaru status:** **Outback ✅ 20/20** (11 modern + 9 EJ-era) · **Forester ✅ 8/19** · **Crosstrek ✅ 7/7 COMPLETE** · **Impreza ✅ 10/10 COMPLETE** (5 modern + 5 EJ-era old-gen) · **Legacy ✅ 2/2 COMPLETE** · **Ascent ✅ 4/4 COMPLETE** · **WRX ✅ 8/10** (4 modern VA+VB + 4 EJ-era 2003/04/05/07; **2006 + 2008 deferred** — OM not reachable on Subaru host). **WRITABLE SUBARU MAKE COMPLETE — 7 nameplates; TWO EJ-era old-gen slices COMPLETE (Outback + Impreza/WRX).** Pairs closed: Crosstrek⇄Impreza (platform-twin), Legacy⇄Outback (combined-manual), WRX/STI (combined book). DB also has BRZ + Solterra (EV) — pending. **Remaining Subaru work = Forester SF/SG (2000–06) old-gen** (the last old-gen chunk — standalone book, near-pure reuse of the now-banked EJ characterization) + Forester 2025/26 + Outback 2025/26 refresh check.
+
+## ✅ IMPREZA + WRX EJ-era (paired old-gen) — 9 rows — `2026-06-28-subaru-impreza-wrx-oldgen`, commit 4724e548
+**Impreza EJ-era 5/5 (2000–04) → Impreza COMPLETE 10/10. WRX EJ-era 4/6 (2003/04/05/07; 2006+2008 deferred).** Paired because Impreza + WRX share the combined Impreza/WRX/Outback-Sport/STI book — **the exact book the Outback old-gen catch pre-protected.** The hardened illustration+roster discriminator ran the **inversion cleanly**: WRX-engine-present = RIGHT book → route (select column), not reject. Three-way isolation held: base Impreza (EJ22/EJ25) | WRX-turbo (EJ205/EJ255) | Outback-Sport trim→base Impreza | STI EJ257 excluded (no DB row). No turbo spec on an Impreza row, no Impreza spec on a WRX row.
+
+| Row(s) | Engine(s) | Oil | Coolant (MT/AT) | Plug | Gap |
+|---|---|---|---|---|---|
+| **Impreza 2000–01** (GC) | EJ222 2.2 + EJ251 2.5 | 4.2 / 4.2 | 6.2 / 6.2 | BKR6E-11 (NGK) | **0.039–0.043 ✓WRITE** |
+| **Impreza 2002–04** (GD) | EJ251 2.5 (EJ22 dropped) | 4.2 | **7.4 / 7.3** | BKR6E-11/BKR5E-11 | gated |
+| **WRX 2003–04** | EJ205 2.0T | **4.8** | 8.1 / 8.0 | PFR6G (NGK) | gated |
+| **WRX 2005** | EJ205 2.0T | **4.2** | 8.1 / 8.0 | PFR6G (NGK) | gated |
+| **WRX 2007** | EJ255 2.5T | 4.2 | 8.1 / 8.0 | ILFR6B (NGK) | gated |
+
+Common: fuel **15.9 gal** (vs Outback 16.9); MT 5-spd 3.7 (6-spd is STI); AT **Dexron III** 9.8 (2000–01)/10.0 (2002+); front diff 1.3, rear 0.8 GL-5; **hydraulic PS** 0.7 (NOT EPS); brake FMVSS 116 DOT 3/4; battery 55D23L (MT)/75D23L (AT NA)/65D23L (AT turbo); **lug 58–72 ft-lb both nameplates** (read — lighter than Outback BP 74–89, matches BH); tire base Impreza 195/60R15 (RS 205/55R16) / WRX 215/45R17 / STI 225/45R17 (excluded).
+
+**★ Headline catches:**
+- **WRX turbo oil 4.8 (2003–04) → 4.2 (2005, 2007) — verified-source beats prior knowledge.** The famous community figure is 4.8; the OM states 4.2 in **two independent years**. Wrote 4.2 per the manual; **row note flags "OM-stated, divergent from common 4.8, do NOT correct"** so a future reviewer doesn't "fix" it back. Same discipline as the Outback wrong-vehicle catch — trust what you read, not what you expect.
+- **Impreza coolant GC 6.2 → GD 7.4/7.3** across the 2002 redesign (read fresh). **Impreza EJ251 cool 7.4 ≠ Outback EJ251 cool 7.2** — body decides cooling within a shared engine code.
+- **Spark gap published 2000/01 (0.039–0.043 in), gated 2002+** — first published Subaru gaps in the campaign; the gate is "modern Subaru doesn't publish," NOT "never."
+- **EJ22 + EJ205 fully new reads**; WRX EJ255 ≠ Outback BP EJ255 (different tune); WRX 2.0T (EJ205 2003–05) → 2.5T (EJ255 2007).
+
+**DEFERRED (2, boundary years, OM not reachable on Subaru's own host):** **WRX 2006** (`0601A` 404 cdn + not-found techinfo; seg 00–09 × rev A/B sweep = only Tribeca/Legacy/Outback/Baja; doc-number web search = only non-citable aggregator copies — and 2006 is the EJ205→EJ255 **switch year**, worst to carry); **WRX 2008** (new GE/GH gen; `0801A` 404, `0802A`=Tribeca). Both deferrable-not-forcible; revisit if a Subaru-hosted filename surfaces.
+
+---
 
 ## ✅ WRX — modern 4/4 (2003–08 old-EJ deferred) — `2026-06-27-subaru-wrx`, commit 938e1efc — FINISHES THE WRITABLE SUBARU MAKE
 Separate performance model. Self-ID: VA 2021 = **combined WRX/STI book** (A1760, "05") — base-WRX "Except STI" column isolated; STI (EJ257, hydraulic PS) excluded. VB 2022 (A9020) / 2026 (A9100) = WRX-only.
