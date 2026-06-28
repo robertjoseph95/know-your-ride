@@ -137,8 +137,10 @@ Common: SUBARU Super Coolant; diff front 1.4 / rear 0.8 qt GL-5 75W-90 (2026 rea
 |---|---|---|---|---|---|---|
 | 2000–02 | SF | EJ251 NA | 4.2 | **6.6** | **0.039–0.043 ✓** | BKR6E-11/BKR5E-11 |
 | 2003 | SG | EJ251 NA | 4.2 | **7.3/7.2** | gated | BKR6E-11/BKR5E-11 |
-| 2004 | SG | EJ251 NA + EJ255 XT | 4.2 | NA 7.3/7.2 · **XT 7.8/7.7** | gated | NA BKR6E-11; XT IFLR6B |
+| 2004 | SG | EJ251 NA + EJ255 XT | 4.2 | NA 7.3/7.2 · **XT 7.8/7.7** | gated | NA BKR6E-11; XT ILFR6B* |
 | 2005–06 | SG | **EJ253** NA + EJ255 XT | 4.2 | NA 7.3/7.2 · XT 7.8/7.7 | gated | NA **FR5AP-11**; XT ILFR6B |
+
+*\*2004 XT plug: the 2004 OM literally prints **"IFLR6B"** (a transposition typo — not a valid NGK part); written as **ILFR6B**, the real NGK iridium part Subaru prints for the identical EJ255 engine in 2005–07. OM-typo corrected to the manufacturer's own verified number, noted in the row's provenance.*
 
 Common: fuel **15.9 gal** (=Impreza, not Outback 16.9); MT 3.7; AT **Dexron III** 9.8 (2000/01 "Dexron II or III"); diff 1.3/0.8; **hydraulic PS** 0.7; brake DOT 3/4; battery 55D23L/75D23L; **lug 58–72 ft-lb all years**; tire SF P205/70R15 → SG P215/60R16 (XT P215/55R17 by 2006).
 
