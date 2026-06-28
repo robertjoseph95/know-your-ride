@@ -4,7 +4,7 @@
 Parallel to the GM-group / Ford / Honda / Nissan / Mazda logs. Make characterization + reusable
 source pattern in `KYR_OEM_Manual_Source_Map.md` (Subaru section). **Host:** `cdn.subarunet.com/stis/doc/ownerManual/`.
 
-> **Subaru status:** **Outback ✅ 20/20** (11 modern + 9 EJ-era) · **Forester ✅ 8/19** · **Crosstrek ✅ 7/7 COMPLETE** · **Impreza ✅ 10/10 COMPLETE** (5 modern + 5 EJ-era old-gen) · **Legacy ✅ 2/2 COMPLETE** · **Ascent ✅ 4/4 COMPLETE** · **WRX ✅ 8/10** (4 modern VA+VB + 4 EJ-era 2003/04/05/07; **2006 + 2008 deferred** — OM not reachable on Subaru host). **WRITABLE SUBARU MAKE COMPLETE — 7 nameplates; TWO EJ-era old-gen slices COMPLETE (Outback + Impreza/WRX).** Pairs closed: Crosstrek⇄Impreza (platform-twin), Legacy⇄Outback (combined-manual), WRX/STI (combined book). DB also has BRZ + Solterra (EV) — pending. **Remaining Subaru work = Forester SF/SG (2000–06) old-gen** (the last old-gen chunk — standalone book, near-pure reuse of the now-banked EJ characterization) + Forester 2025/26 + Outback 2025/26 refresh check.
+> **Subaru status:** **Outback ✅ 20/20** (11 modern + 9 EJ-era) · **Forester ✅ 15/19** (8 modern + 7 EJ-era SF/SG; 2025/26 deferred) · **Crosstrek ✅ 7/7 COMPLETE** · **Impreza ✅ 10/10 COMPLETE** (5 modern + 5 EJ-era) · **Legacy ✅ 2/2 COMPLETE** · **Ascent ✅ 4/4 COMPLETE** · **WRX ✅ 8/10** (4 modern + 4 EJ-era; 2006+2008 deferred — OM not reachable). **WRITABLE SUBARU MAKE COMPLETE — 7 nameplates; ✅✅ SUBARU OLD-GEN ARC COMPLETE — all THREE EJ-era slices done (Outback + Impreza/WRX + Forester), 25 EJ-era rows.** Pairs closed: Crosstrek⇄Impreza (platform-twin), Legacy⇄Outback (combined-manual), WRX/STI (combined book). DB also has BRZ + Solterra (EV) — pending. **Remaining Subaru work = Forester 2025/26 (full new-gen OM + Hybrid) + Outback 2025/26 refresh check** (both minor/deferred). **NEXT FRESH MAKE: Hyundai Sonata (unlocks Kia).**
 
 ## ✅ IMPREZA + WRX EJ-era (paired old-gen) — 9 rows — `2026-06-28-subaru-impreza-wrx-oldgen`, commit 4724e548
 **Impreza EJ-era 5/5 (2000–04) → Impreza COMPLETE 10/10. WRX EJ-era 4/6 (2003/04/05/07; 2006+2008 deferred).** Paired because Impreza + WRX share the combined Impreza/WRX/Outback-Sport/STI book — **the exact book the Outback old-gen catch pre-protected.** The hardened illustration+roster discriminator ran the **inversion cleanly**: WRX-engine-present = RIGHT book → route (select column), not reject. Three-way isolation held: base Impreza (EJ22/EJ25) | WRX-turbo (EJ205/EJ255) | Outback-Sport trim→base Impreza | STI EJ257 excluded (no DB row). No turbo spec on an Impreza row, no Impreza spec on a WRX row.
@@ -130,7 +130,27 @@ Common: SUBARU Super Coolant; diff front 1.4 / rear 0.8 qt GL-5 75W-90 (2026 rea
 > - Divergences caught: battery 75D23R→LN2; **FB25 plug SILZKAR7B11(port)→DILKAR7Q8(direct) — the port→direct boundary moves the PLUG, not just oil cap**; BS 3.6 EZ36 (SILFR6C11) vs BT FA24 (SILKFR8A6). Tire SAME (wagon 225/65R17, NOT Legacy sedan 225/55R17).
 > - **⚠ Open future-slice candidate (logged, not resolved):** BT plug/battery/tire on the 2020-rep basis (same as live BT oil/cooling) → **Outback 2025/26 per-year refresh check** (did the refresh move battery/tire as the Crosstrek/Impreza 2026 refreshes moved coolant?) remains a separate slice that would also re-examine the live oil/cooling for those years.
 
-## ✅ FORESTER — modern (8/8 modern; 2025/26 + 2000–06 deferred) — `2026-06-27-subaru-forester`, commit dd487488
+## ✅ FORESTER SF/SG EJ-era (old-gen) — 7/7 (2000–06) — `2026-06-28-subaru-forester-oldgen`, commit 0d79ef06 — CLOSES THE SUBARU OLD-GEN ARC
+**The clean slice (as predicted): standalone book, NO column isolation.** Self-ID confirmed by illustration (HSF code, SG SUV) + dimensions (175.2″) + roster. Segment rotated 3× ("02"→"04"→"03") — resolved by body, never the number (2003 `0304A` = odd seg + name-count 0, the textbook case).
+
+| Year | Gen | Engines | Oil | Coolant (MT/AT) | Gap | Plug |
+|---|---|---|---|---|---|---|
+| 2000–02 | SF | EJ251 NA | 4.2 | **6.6** | **0.039–0.043 ✓** | BKR6E-11/BKR5E-11 |
+| 2003 | SG | EJ251 NA | 4.2 | **7.3/7.2** | gated | BKR6E-11/BKR5E-11 |
+| 2004 | SG | EJ251 NA + EJ255 XT | 4.2 | NA 7.3/7.2 · **XT 7.8/7.7** | gated | NA BKR6E-11; XT IFLR6B |
+| 2005–06 | SG | **EJ253** NA + EJ255 XT | 4.2 | NA 7.3/7.2 · XT 7.8/7.7 | gated | NA **FR5AP-11**; XT ILFR6B |
+
+Common: fuel **15.9 gal** (=Impreza, not Outback 16.9); MT 3.7; AT **Dexron III** 9.8 (2000/01 "Dexron II or III"); diff 1.3/0.8; **hydraulic PS** 0.7; brake DOT 3/4; battery 55D23L/75D23L; **lug 58–72 ft-lb all years**; tire SF P205/70R15 → SG P215/60R16 (XT P215/55R17 by 2006).
+
+**★ Headline finding — the three-axis thesis as a CONTROLLED EXPERIMENT (same EJ251 code, 3 bodies, 3 cooling figures):**
+- **EJ251 cooling: Forester SF 6.6 / SG 7.3–7.2 · Outback 7.2/7.1 · Impreza 6.2 (GC)/7.4 (GD)** — body decides cooling, proven by direct comparison. Engine-decided fields held flat: oil 4.2 + plug BKR6E-11 constant across all three bodies. Fuel (15.9) + tire also body-decided.
+- **EJ255 XT-vs-WRX (the one real turbo test):** Forester XT cooling **7.8/7.7 DIVERGES from WRX 8.1/8.0** (body) while oil 4.2 + plug ILFR6B **match WRX** (engine). Three-axis split holds on the turbo.
+- **SF→SG redesign jumped coolant 6.6→7.3** (same pattern as Impreza GC→GD); **EJ251→EJ253 (2004→05) moved the plug** (BKR6E-11→FR5AP-11) not oil/cool; **gap published SF 2000–02, gated SG 2003+** (tracks generation — confirms across two nameplates the gate is "modern Subaru doesn't," not "never").
+- **No defers** — all 7 reachable/legible/self-ID'd. No flat-6, no EJ205, no STI.
+
+---
+
+## ✅ FORESTER — modern (8/8 modern; 2025/26 deferred) — `2026-06-27-subaru-forester`, commit dd487488
 Subaru sibling #2. Standalone manual (self-ID = `A82xx` model code + p2 vehicle illustration; body says "Forester" 0× — normal for standalone). Each engine read fresh from rendered spec pages.
 | Era (rows) | Engine | Oil | Coolant | Plug type | Battery | Fuel |
 |---|---|---|---|---|---|---|
