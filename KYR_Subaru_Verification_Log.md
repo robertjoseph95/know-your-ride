@@ -4,7 +4,25 @@
 Parallel to the GM-group / Ford / Honda / Nissan / Mazda logs. Make characterization + reusable
 source pattern in `KYR_OEM_Manual_Source_Map.md` (Subaru section). **Host:** `cdn.subarunet.com/stis/doc/ownerManual/`.
 
-> **Subaru status:** **Outback ✅ 11/20** · **Forester ✅ 8/19** · **Crosstrek ✅ 7/7 COMPLETE** · **Impreza ✅ 5/10** · **Legacy ✅ 2/2 COMPLETE** (real rows; 1990–2002 = neg-id phantoms). **Crosstrek⇄Impreza platform-twin pair AND Legacy⇄Outback combined-manual pair both CLOSED.** Mainstream Subaru line essentially done. DB also has Ascent, WRX, BRZ + Solterra (EV) — pending. Old-gen discovery (Outback BH/BP, Forester SF/SG, Impreza GD/GG) + Forester 2025/26 still deferred.
+> **Subaru status:** **Outback ✅ 11/20** · **Forester ✅ 8/19** · **Crosstrek ✅ 7/7 COMPLETE** · **Impreza ✅ 5/10** · **Legacy ✅ 2/2 COMPLETE** · **Ascent ✅ 4/4 COMPLETE**. **Crosstrek⇄Impreza platform-twin pair AND Legacy⇄Outback combined-manual pair both CLOSED. Mainstream Subaru line DONE (6 nameplates).** DB also has WRX (separate, turbo), BRZ + Solterra (EV) — pending. Old-gen discovery (Outback BH/BP, Forester SF/SG, Impreza GD/GG) + Forester 2025/26 + Outback 2025/26 refresh check still deferred.
+
+## ✅ ASCENT — COMPLETE 4/4 — `2026-06-27-subaru-ascent`, commit f6df22a9
+Subaru sibling #6, 3-row SUV. Standalone manual, **FA24-only** all years. Self-ID: model code **A32xx** (unique block, no twin), filename segment **"00"**. The campaign's purest body-vs-engine isolation (same engine, no twin, no shared book).
+| Era | Oil | Cooling | Battery | Plug | Tire | Fuel |
+|---|---|---|---|---|---|---|
+| **pre-refresh 2020–22** | 0W-20, 4.8 qt | **11.7 qt** | 75D23L | SILKFR8A6 | 245/60R18 105H | 19.3 gal |
+| **2026 (post-refresh)** | 0W-20, 4.8 qt | 11.7 qt | **LN2** | SILKFR8A6 | 245/60R18 105H | 19.3 gal |
+Common: SUBARU Super Coolant; diff front 1.3 / rear 0.8 GL-5 75W-90; brake FMVSS No.116 DOT 3/4; **lug 89 lb-ft**; EPS. Sources: 2021 OM `MSA5M2100A` (A3220BE-A), 2026 OM `MSA5M2600A` (A3270BE-A).
+
+**★ BODY-vs-ENGINE split (campaign's purest demo):**
+- **FA24 engine-bound fields HELD across bodies:** 0W-20, 4.8 qt oil, plug SILKFR8A6, lug 89 — identical to Outback/Legacy FA24.
+- **★ COOLING is BODY-bound — DIVERGED 9.2 qt (Outback) → 11.7 qt (Ascent), +2.5 qt** = the largest same-engine cross-body divergence in the campaign (heavier 3-row body). Plus fuel 19.3 (vs 18.5) and tire 245/60R18 (vs 225/65R17).
+- **★ FA24 STAYS 0W-20** — did NOT follow FB20/FB25 to 0W-16 → 0W-16 is an FB-new-gen-specific fact, not Subaru-wide (mirror of the spark-plug-travels-with-injection-era rule).
+- **2026 refresh moved exactly ONE field:** battery 75D23L → LN2; cooling/oil/fuel/tire/lug all held (refresh-boundary discipline: didn't assume nothing changed, didn't assume everything did).
+
+**No defers** (Ascent is 2019+). No 2nd engine, no electrified rows.
+
+---
 
 ## ✅ LEGACY — COMPLETE 2/2 — `2026-06-27-subaru-legacy`, commit 2b647b70
 Subaru sibling #5, Outback's combined-manual mate. Read from the **Legacy column** of the combined Legacy+Outback OM `MSA5M2003A-2004A` (2021 = 2020 BT rep + stability note; full 2021 combined OM not on CDN, only 140pp partial 2113A).
