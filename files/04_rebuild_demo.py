@@ -72,6 +72,70 @@ def _ver(src):
     return 0
 
 
+GATE_TABLES = ("oil_change", "parts", "fluids", "torque_specs", "engine_specs", "maintenance")
+
+
+def _assert_gate_sources(cur):
+    """D1 (2026-07-02): the 2025/26 SCRAPE is blacklisted by SOURCE, not by year --
+    OM/gov-verified rows ship regardless of model year. Hard gate: a source that
+    looks scraped/AI-generated must never compute ver=1, whatever the whitelist
+    branch says (defends against future _ver() edits loosening the blacklist)."""
+    for t in GATE_TABLES:
+        cur.execute(f"SELECT DISTINCT source FROM {t}")
+        for (s,) in cur.fetchall():
+            sl = (s or "").strip().lower()
+            if ("ai-" in sl or "haiku" in sl or sl == "scraped" or "classifier" in sl) and _ver(s) == 1:
+                raise SystemExit(f"INTEGRITY GATE: blacklisted source computes ver=1 in {t}: {s!r}")
+
+
+def _strip_unverified(vlist):
+    """C1 (2026-07-02): ver:0 spec VALUES must not ship. Render-time gating alone left
+    fabricated values readable in the public blob (and visible via the ungated card/
+    placard paths). Unverified oil/parts/fluids collapse to a bare {ver:0} shell --
+    specSoon() still renders off the flag; unverified torque/maint rows drop outright
+    (their renderers filter per-row anyway); maint_parts orphaned by dropped rows are
+    pruned; internal provenance keys (source / last_verified_at) are scrubbed from
+    every nested object. Verified (ver:1) objects ship every field they always did."""
+    n = {"oil": 0, "parts": 0, "fluids": 0, "torque_rows": 0, "maint_rows": 0, "maint_parts": 0}
+
+    def scrub(o):
+        if isinstance(o, dict):
+            o.pop("source", None)
+            o.pop("last_verified_at", None)
+            for x in o.values():
+                scrub(x)
+        elif isinstance(o, list):
+            for x in o:
+                scrub(x)
+
+    for v in vlist:
+        for k in ("oil", "parts", "fluids"):
+            o = v.get(k)
+            if isinstance(o, dict) and not o.get("ver"):
+                v[k] = {"ver": 0}
+                n[k] += 1
+        for k, cnt in (("torque", "torque_rows"), ("maint", "maint_rows")):
+            arr = v.get(k)
+            if isinstance(arr, list):
+                kept = [x for x in arr if x.get("ver")]
+                n[cnt] += len(arr) - len(kept)
+                if kept:
+                    v[k] = kept
+                else:
+                    v.pop(k, None)
+        mp = v.get("maint_parts")
+        if isinstance(mp, list):
+            ids = {m.get("id") for m in v.get("maint", [])}
+            kept = [p for p in mp if p.get("mid") in ids]
+            n["maint_parts"] += len(mp) - len(kept)
+            if kept:
+                v["maint_parts"] = kept
+            else:
+                v.pop("maint_parts", None)
+        scrub(v)
+    return n
+
+
 def build_data(cur):
     cur.execute("SELECT id,year,make,model,engine,trim FROM vehicles ORDER BY make,year,model")
     veh = {}
@@ -95,7 +159,7 @@ def build_data(cur):
     if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ev_specs'").fetchone():
         each("ev_specs", lambda d, r: d.update(ev={
             "batt": r["battery_kwh"], "use": r["usable_kwh"],
-            "charge": r["max_charge_kw"], "range": r["range_miles"], "src": r["source"]}))
+            "charge": r["max_charge_kw"], "range": r["range_miles"]}))
 
     each("parts", lambda d, r: d.update(parts={
         "plug_type": r["spark_plug_type"], "plug_gap": r["spark_plug_gap"],
@@ -1704,10 +1768,21 @@ def main():
 
     print("Building data from DB...")
     vlist, dtc, fixes, with_comps, fuseTsbsByCode = build_data(cur)
+    _assert_gate_sources(cur)
     conn.close()
+
+    strip = _strip_unverified(vlist)
+    print("Integrity strip (C1): oil={oil} parts={parts} fluids={fluids} shells; "
+          "torque_rows={torque_rows} maint_rows={maint_rows} maint_parts={maint_parts} dropped".format(**strip))
 
     data_json = json.dumps({"v": vlist, "dtc": dtc, "fixes": fixes, "fuseTsbsByCode": fuseTsbsByCode}, separators=(",", ":"))
     data_json = data_json.replace("</", "<\\/")        # can't break out of <script>
+    # Payload guards (C1/F2): fail the build before any file is written. Do NOT add a
+    # 'scraped' guard here -- that word appears legitimately inside NHTSA complaint prose.
+    if '"source":' in data_json or "last_verified_at" in data_json:
+        raise SystemExit("PAYLOAD GUARD: internal provenance key in shipped payload")
+    if "ai-haiku" in data_json or "oilchangediy" in data_json:
+        raise SystemExit("PAYLOAD GUARD: forbidden tag in shipped payload")
     print(f"Data JSON: {len(data_json)/1024/1024:.2f} MB  | vehicles={len(vlist)}  with complaints={with_comps}")
 
     # back up the existing demo (keep only the 5 most recent .bak files; each is ~31 MB)
