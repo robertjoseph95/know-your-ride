@@ -54,6 +54,12 @@ node_modules/
 .claude/settings.local.json
 .claude/*.lock
 
+# ── CLAUDE.md project-context files (internal process/provenance —
+#    must never ship into this PUBLIC repo) ────────────────────────
+CLAUDE.md
+**/CLAUDE.md
+.claude.local.md
+
 # ── OS cruft ─────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
@@ -69,3 +75,25 @@ _vf_raw.json
 
 # Subaru OMs exceed GitHub 100MB limit - kept locally, not committed
 _subaru_outback_*_om.pdf
+
+# ── OEM manual PDFs + business/DoD docs (source material / private — NEVER commit) ──
+#    All PDFs/docx are verification source material or private docs; none are shipped.
+#    (2026-07-02 audit F9/F13/F14: 449MB of copyrighted GM manuals were tracked here.)
+*.pdf
+*.docx
+_OM*_full.txt
+_pilot_manuals/
+_mazda_manuals/
+
+# ── Misplaced clone + independently-deployed demo projects (0 tracked files each) ──
+UsersRobertreposskills/
+kyr-military-demo/
+kyr-af-demo/
+
+# ── files/ pipeline: bulk doc/binary junk only — the build scripts stay tracked ──
+files/Army Docs/
+files/Air Force Docs/
+files/*.pdf
+
+# ── Canonical DB: explicit (also covered by *.db) — intentionally local-only ──
+wrench_vehicles.db
