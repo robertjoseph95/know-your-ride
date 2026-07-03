@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-07-01-hyundai-elantra">
+<meta name="kyr-version" content="2026-07-02-integrity-strip">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -760,7 +760,7 @@ body{background:var(--bg)}
   </div>
 </div>
 
-<script src="/data.07ef914c.js"></script>
+<script src="/data.be60f45b.js"></script>
 <script>
 
 const DB=__D__;
@@ -1227,7 +1227,7 @@ function renderPlacard(v){
   var o=v.oil||{},p=v.parts||{},d=o.drain||{},ev=v.ev,rc=(v.recalls||[]).length;
   var psi=p.psi_f?(p.psi_f+(p.psi_r&&p.psi_r!=p.psi_f?'/'+p.psi_r:'')+' PSI'):'';
   var rows=plRow('TIRE / PSI',(p.tire||'See manual')+(psi?'  &middot;  '+psi:''));
-  var isEV=!!ev||(!o.visc&&v.id>=0);
+  var isEV=!!ev; /* C1: EV-ness = ev_specs presence; missing visc no longer implies EV (ver:0 oil ships as a bare shell) */
   if(isEV&&ev){
     rows+=plRow('BATTERY',ev.batt?ev.batt+' kWh':'See manual');
     rows+=plRow('EPA RANGE',ev.range?Math.round(ev.range)+' mi':'See manual');
@@ -1280,7 +1280,7 @@ function renderGarage(){
   const grid=document.getElementById('vgrid');
   if(!vs.length){grid.innerHTML='<div class="no-res">// NO MATCH &mdash; TRY FEWER WORDS, OR PICK A MAKE &amp; YEAR ABOVE</div>';return;}
   grid.innerHTML=vs.map(v=>{
-    const o=v.oil,p=v.parts,r=v.rel,s=v.safety,rc=(v.recalls||[]).length,m=v.mpg&&v.mpg[0],isEV=(v.id>=0)&&(!o||!o.visc),ic=(v.notes||[]).filter(function(n){return n.type==='known_issue';}).length;
+    const o=v.oil,p=v.parts,r=v.rel,s=v.safety,rc=(v.recalls||[]).length,m=v.mpg&&v.mpg[0],isEV=!!v.ev,ic=(v.notes||[]).filter(function(n){return n.type==='known_issue';}).length;
     const bdg=[];if(v.id<0)bdg.push('<span class="bdg bdg-partial">Partial data - pre-2003</span>');
     if(o&&o.visc)bdg.push('<span class="bdg bdg-o">'+o.visc+'</span>');
     if(isEV)bdg.push('<span class="bdg bdg-ev">EV</span>');
