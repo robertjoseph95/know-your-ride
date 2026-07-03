@@ -15,9 +15,10 @@ except Exception:
 def _pro_gate(handler):
     """Self-contained server-side Pro gate (NO sibling import -- Vercel's Python builder
     bundles only the entry file, so `import _gate` fails silently and would gate everyone).
-    Pro if a session token resolves to a subscriber email, or an X-KYR-Email header resolves
-    to PRO_WHITELIST / sub:{email}=='active' / a live Stripe active subscription. The browser
-    localStorage 'kyr_pro' flag is ignored entirely."""
+    Pro ONLY if a session token (Authorization: Bearer / cookie) resolves to an email that is
+    PRO_WHITELIST / sub:{email}=='active' / a live Stripe active subscription. The X-KYR-Email
+    header fallback was REMOVED 2026-07-02 (unauthenticated Pro bypass + email enumeration);
+    the browser localStorage 'kyr_pro' flag is ignored entirely."""
     import os, http.cookies
     headers = getattr(handler, "headers", None)
     if headers is None:
@@ -56,9 +57,6 @@ def _pro_gate(handler):
             email = r.get("session:" + tok) or None
         except Exception:
             email = None
-    if not email:
-        e = headers.get("X-KYR-Email") or headers.get("x-kyr-email") or ""
-        email = e.strip().lower() or None
     if not email or "@" not in email:
         return (False, None)
     email = email.strip().lower()
