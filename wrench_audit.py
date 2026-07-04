@@ -1,6 +1,8 @@
-import sqlite3, json
+import sqlite3, json, os
 
-DB = r"C:\Users\Robert\OneDrive\Desktop\Wrench App Data\wrench_vehicles.db"
+# Repo-relative so the audit reads the canonical in-tree DB, not a frozen absolute
+# copy (2026-07-04: removed a hardcoded OneDrive path during the off-OneDrive migration).
+DB = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wrench_vehicles.db")
 conn = sqlite3.connect(DB)
 c = conn.cursor()
 
