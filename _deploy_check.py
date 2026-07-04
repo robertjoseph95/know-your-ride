@@ -16,6 +16,18 @@ import subprocess, re, sys, os, fnmatch
 MAX_BYTES = 20 * 1024 * 1024
 BLOB_GLOB = "wrench_deploy/data.*.js"
 
+# Content guard (Track 2 item 6): structural KEYS only -- never bare words -- so
+# NHTSA-complaint prose ("...the paint scraped...") cannot trip it. '"source":' == 0
+# subsumes any "source":"scraped"/"ai-*" value, which is why there is deliberately no
+# bare-word 'scraped' check (2026-07-03 lesson: inspect DATA, not prose).
+BLOB_FORBIDDEN = [
+    ('"source":',        'internal provenance key'),
+    ('last_verified_at', 'internal provenance key'),
+    ('"src":',           'internal source field'),
+    ('ai-haiku',         'AI source tag leaked into shipped data'),
+    ('oilchangediy',     'wrong-product affiliate tag'),
+]
+
 
 def sh(*args):
     return subprocess.run(["git", *args], capture_output=True, text=True)
@@ -69,6 +81,26 @@ def in_head(path):
     return sh("cat-file", "-e", "HEAD:" + path).returncode == 0
 
 
+def content_guard(entries):
+    """Scan staged SHIPPED artifacts for forbidden content (structural keys, not prose).
+    Belt-and-suspenders with 04_rebuild_demo.py's build-time payload guards: this is the
+    commit-time backstop for a hand-edited or mis-built blob."""
+    out = []
+    for code, path in entries:
+        if code == "D":
+            continue
+        if fnmatch.fnmatch(path, BLOB_GLOB):
+            blob = sh("show", ":" + path).stdout
+            for needle, why in BLOB_FORBIDDEN:
+                n = blob.count(needle)
+                if n:
+                    out.append("shipped blob %s contains %d x %r (%s)" % (path, n, needle, why))
+        elif path.startswith("wrench_deploy/") and (path.endswith(".js") or path.endswith(".html")):
+            if sh("show", ":" + path).stdout.count("oilchangediy"):
+                out.append("shipped %s contains the wrong-product affiliate tag 'oilchangediy'" % path)
+    return out
+
+
 def main():
     fails = []
     entries = staged_entries()
@@ -91,6 +123,8 @@ def main():
 
     for link in gitlinks():
         fails.append("nested-repo gitlink staged (mode 160000): %s" % link)
+
+    fails += content_guard(entries)
 
     idx = "wrench_deploy/index.html"
     if any(p == idx and c != "D" for c, p in entries):
