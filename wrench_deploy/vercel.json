@@ -5,7 +5,6 @@
     "api/identify-part.py": { "maxDuration": 30 }
   },
   "rewrites": [
-    { "source": "/requirements.txt", "destination": "/_blocked_build_input" },
     { "source": "/api/youtube/:year/:make/:model/:service", "destination": "/api/youtube?year=:year&make=:make&model=:model&service=:service" },
     { "source": "/api/guide/:vehicle_id/:service", "destination": "/api/guide?vehicle_id=:vehicle_id&service=:service" },
     { "source": "/api/obd/:path*", "destination": "/api/obd" },
