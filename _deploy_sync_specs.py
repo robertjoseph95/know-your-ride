@@ -14,7 +14,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))   # portable: the dir this scr
 DEP = os.path.join(ROOT, "wrench_deploy")
 IDX = os.path.join(DEP, "index.html")
 DEMO = os.path.join(ROOT, "wrench_demo.html")
-ANCHOR = '<link rel="preconnect" href="https://fonts.googleapis.com">'
+ANCHOR = '<style>/*WRENCH_SELFHOST_FONTS*/'   # head/body splice point (was the Google-Fonts preconnect; fonts self-hosted 2026-07-05)
 
 NEW_VER = os.environ.get("KYR_NEW_VER", "").strip()
 if not NEW_VER:

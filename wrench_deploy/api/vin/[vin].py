@@ -11,6 +11,10 @@ On no decode: {"error": "VIN not found"} (200), matching the old behavior so the
 client shows "No decode result for that VIN."
 """
 
+try:  # Sentry server-side error monitoring (F-D3); inert until SENTRY_DSN is set
+    import os as _os, sentry_sdk as _sentry; _sentry.init(dsn=_os.environ.get("SENTRY_DSN"))
+except Exception: pass
+
 from http.server import BaseHTTPRequestHandler
 import json
 import os

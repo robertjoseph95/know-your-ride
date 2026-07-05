@@ -3,3 +3,6 @@ anthropic==0.105.2
 requests==2.34.2
 stripe==15.2.0
 upstash-redis==1.7.0
+# Server-side error monitoring (F-D3, 2026-07-05). 2.x major pin; lock the exact
+# installed patch after the deploy confirms it (per the "update + test" convention).
+sentry-sdk>=2,<3

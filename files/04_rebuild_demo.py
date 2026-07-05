@@ -1514,6 +1514,7 @@ GA_SCRIPT = """<!-- Google tag (gtag.js) -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
+  gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied'});
   gtag('js', new Date());
   gtag('config', 'G-7RE1GC9S5Q');
 </script>
@@ -1832,9 +1833,8 @@ def main():
     html = inject_logo(html)
     html = inject_footer(html)
     html = inject_dtc_disclaimer(html)
-    # Trim unused Google Fonts weight (Manrope 300 is never referenced in CSS) — audit LOW perf.
-    html = html.replace("family=Manrope:wght@300;400;500;600;700;800",
-                        "family=Manrope:wght@400;500;600;700;800")
+    # (Fonts are self-hosted as of 2026-07-05 — the Google Fonts <link> + its Manrope-300
+    # weight-trim were removed; see the /*WRENCH_SELFHOST_FONTS*/ @font-face block.)
     # Expand the AI-guide banner to cite the owner/service manual (audit LOW 3.3-B). Migration
     # replace because inject_guides is idempotent and won't update already-injected text.
     # (Apostrophe-free wording: the banner lives inside a single-quoted JS string.)
@@ -1847,7 +1847,7 @@ def main():
     # on the normal success path; they only fire if an upstream template string changed.)
     assert SENTINEL in html, "Complaints tab sentinel missing -- inject_tab did not apply"
     assert "const __D__=" in html, "embedded dataset missing after rebuild"
-    assert "family=Manrope:wght@400;500;600;700;800" in html, "Manrope-300 weight trim did not apply"
+    assert "/*WRENCH_SELFHOST_FONTS*/" in html, "self-hosted @font-face block missing"
     assert "always verify specs against your owner manual" in html, "AI-guide banner migration did not apply"
 
     # 3) refresh the badge

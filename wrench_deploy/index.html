@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-07-05-reqs-404">
+<meta name="kyr-version" content="2026-07-05-airgap-monitoring">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -31,9 +31,13 @@
   } catch(e){}
 })();
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>/*WRENCH_SELFHOST_FONTS*/
+@font-face{font-family:'Manrope';font-style:normal;font-weight:400 800;font-display:swap;src:url('/fonts/manrope.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'JetBrains Mono';font-style:normal;font-weight:400 700;font-display:swap;src:url('/fonts/jetbrainsmono.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Saira Condensed';font-style:normal;font-weight:500;font-display:swap;src:url('/fonts/sairacondensed-500.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Saira Condensed';font-style:normal;font-weight:600;font-display:swap;src:url('/fonts/sairacondensed-600.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Saira Condensed';font-style:normal;font-weight:700;font-display:swap;src:url('/fonts/sairacondensed-700.woff2') format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+</style>
 <style>
 
 :root{--bg:#15171c;--panel:#1e222b;--p2:#232833;--p3:#2b313c;--border:#333a45;--b2:#3f4654;--text:#e8e8e6;--dim:#8a8f98;--faint:#585e68;--accent:#ff6b00;--a2:#ffb800;--green:#4ade80;--red:#ef4444;--blue:#60a5fa;--purple:#a78bfa;--placard:#cdd0d4}
@@ -481,6 +485,7 @@ body{background:var(--bg)}
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
+  gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied'});
   gtag('js', new Date());
   gtag('config', 'G-7RE1GC9S5Q');
 </script>
@@ -1717,9 +1722,10 @@ else{note.style.color='var(--red)';note.textContent=(x&&x.error)||'Could not del
 </script>
 <div id="kyr-consent" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:10000;background:var(--panel);border-top:1px solid var(--border);padding:11px 16px;font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--dim);align-items:center;gap:12px;justify-content:center;flex-wrap:wrap"><span>We use analytics to improve Know Your Ride. No personal data is sold. <a href="/privacy.html" style="color:var(--accent);text-decoration:none">Privacy Policy</a></span><button onclick="kyrConsentOk()" style="background:var(--accent);color:#000;border:none;border-radius:6px;padding:6px 14px;font-weight:700;font-size:11px;cursor:pointer;font-family:\'JetBrains Mono\',monospace">Got it</button></div>
 <script>/*WRENCH_CONSENT*/
-(function(){try{if(localStorage.getItem('kyrCookieConsent')==='1')return;}catch(e){}
+(function(){function grant(){try{if(window.gtag)gtag('consent','update',{'analytics_storage':'granted'});}catch(e){}}
+try{if(localStorage.getItem('kyrCookieConsent')==='1'){grant();return;}}catch(e){}
 function show(){var el=document.getElementById('kyr-consent');if(el)el.style.display='flex';}
-window.kyrConsentOk=function(){var el=document.getElementById('kyr-consent');if(el)el.style.display='none';try{localStorage.setItem('kyrCookieConsent','1');}catch(e){}};
+window.kyrConsentOk=function(){var el=document.getElementById('kyr-consent');if(el)el.style.display='none';try{localStorage.setItem('kyrCookieConsent','1');}catch(e){}grant();};
 if(document.readyState!=='loading')show();else document.addEventListener('DOMContentLoaded',show);
 })();
 </script>
