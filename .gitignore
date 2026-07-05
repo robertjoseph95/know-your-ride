@@ -54,10 +54,12 @@ node_modules/
 .claude/settings.local.json
 .claude/*.lock
 
-# ── CLAUDE.md project-context files (internal process/provenance —
-#    must never ship into this PUBLIC repo) ────────────────────────
-CLAUDE.md
-**/CLAUDE.md
+# ── CLAUDE.md project context ────────────────────────────────────
+#    Root CLAUDE.md is COMMITTED (shared, sanitized methodology). Scoped +
+#    local files stay untracked (internal process / sensitive ops notes).
+wrench_deploy/CLAUDE.md
+files/CLAUDE.md
+CLAUDE.local.md
 .claude.local.md
 
 # ── OS cruft ─────────────────────────────────────────────────────
