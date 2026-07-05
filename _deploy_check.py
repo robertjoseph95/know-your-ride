@@ -116,7 +116,13 @@ def main():
             # slice and must pass; only NEW KYR_ docs (private business/DoD material) block.
             fails.append("new private KYR_ doc staged (%s): %s "
                          "(tracked provenance logs allowed; new KYR_ docs blocked)" % (code, path))
-        if not fnmatch.fnmatch(path, BLOB_GLOB):
+        # >20MB is blocked EXCEPT two known-legitimate large artifacts: the deploy blob
+        # (wrench_deploy/data.*.js) and the canonical single-file source wrench_demo.html
+        # (~26MB, mostly the inline __D__ data blob). The wrench_demo.html exemption is
+        # SCAFFOLDING pending the Track 4 template-split (audit maintainability rec) -- once
+        # the UI source is split from the data blob and is small, DELETE this exact-path
+        # exemption so the 20MB guard fully re-applies.
+        if not fnmatch.fnmatch(path, BLOB_GLOB) and path != "wrench_demo.html":
             sz = staged_size(path)
             if sz > MAX_BYTES:
                 fails.append("oversize staged file %.1fMB (>20MB): %s" % (sz / 1e6, path))
