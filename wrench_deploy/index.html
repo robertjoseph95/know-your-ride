@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-07-02-progate-fix">
+<meta name="kyr-version" content="2026-07-05-audit-remainders">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -793,7 +793,7 @@ function renderComplaints(v){
 
 /*WRENCH_VIN*/
 function titleCase(s){return String(s||'').toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase();});}
-function decodeVIN(){if(!kyrPro()&&kyrFreeUsed('vin')>=1){var _o=document.getElementById('vin-result');if(_o){_o.className='vin-result';_o.innerHTML=proUnlock('VIN decode is a Pro feature','You have used your free VIN decode.');}return;}
+function decodeVIN(){/* B4b 2026-07-05: VIN decode is unlimited-free (the free acquisition hook) - gate + free-counter removed. proUnlock/kyrFreeUsed machinery stays intact for the 3 real Pro features. */
   var el=document.getElementById('vin-input'), out=document.getElementById('vin-result');
   var vin=(el.value||'').trim().toUpperCase();
   if(vin.length!==17){out.className='vin-result err';out.innerHTML='VIN must be exactly 17 characters (got '+vin.length+').';return;}
@@ -802,7 +802,7 @@ function decodeVIN(){if(!kyrPro()&&kyrFreeUsed('vin')>=1){var _o=document.getEle
     if(!r.ok)throw new Error('HTTP '+r.status);return r.json();
   }).then(function(d){
     if(!d||!d.make){out.className='vin-result err';out.innerHTML='No decode result for that VIN.';return;}
-    if(!kyrPro())kyrUseFree('vin');loadRecalls(d);var disp=htmlEsc(titleCase(d.make)+' '+d.model);
+    loadRecalls(d);var disp=htmlEsc(titleCase(d.make)+' '+d.model);
     var match=DB.v.find(function(v){return v.year==d.year && v.make.toLowerCase()===String(d.make||'').toLowerCase() && v.model.toLowerCase()===String(d.model||'').toLowerCase();});
     if(match){out.className='vin-result ok';out.innerHTML=' '+htmlEsc(d.year)+' '+disp+' - opening full specs...';openModal(match.id);}
     else{
@@ -1650,7 +1650,6 @@ document.addEventListener('DOMContentLoaded',function(){
         <ul class="pp-list pro">
           <li>AI repair guides (step-by-step)</li>
           <li>DIY YouTube videos</li>
-          <li>Unlimited VIN decode</li>
           <li>Know Your Part photo scanning</li>
           <li>Full maintenance schedules</li>
           <li>Regional service costs</li>
