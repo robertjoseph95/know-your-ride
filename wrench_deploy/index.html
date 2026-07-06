@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-07-05-airgap-monitoring">
+<meta name="kyr-version" content="2026-07-06-my-garage">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -601,6 +601,31 @@ body{background:var(--bg)}
 .kyr-pl-more{margin-top:10px;font-size:10px;letter-spacing:.06em;color:var(--accent);cursor:pointer;text-align:center;font-family:'JetBrains Mono',monospace}
 .kyr-pl-more:hover{text-decoration:underline}
 </style>
+<style>/*WRENCH_GARAGE_STRIP_v1*/
+.kyr-gs{max-width:840px;margin:0 auto;padding:2px 16px 4px}
+.kyr-gs-head{font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:9px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.kyr-gs-count{color:var(--dim);font-weight:600;letter-spacing:.04em}
+.kyr-gs-pro{color:var(--accent);cursor:pointer;font-weight:700}
+.kyr-gs-pro:hover{text-decoration:underline}
+.kyr-gs-empty{font-family:'Manrope',sans-serif;font-size:13px;color:var(--dim);background:var(--p2);border:1px dashed var(--border);border-radius:10px;padding:11px 14px}
+.kyr-gs-row{display:flex;gap:10px;flex-wrap:wrap}
+.kyr-gcard{display:flex;align-items:stretch;background:var(--p2,#1c1c1c);border:1px solid var(--border);border-radius:10px;overflow:hidden;min-width:210px;flex:1 1 210px;max-width:300px}
+.kyr-gc-main{flex:1 1 auto;padding:9px 12px;cursor:pointer;min-width:0}
+.kyr-gc-main:hover{background:rgba(255,255,255,.03)}
+.kyr-gc-name{font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kyr-gc-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kyr-gc-mi{flex:0 0 auto;display:flex;align-items:center;padding:0 11px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);cursor:pointer;border-left:1px solid var(--border);white-space:nowrap}
+.kyr-gc-mi:hover{background:rgba(255,184,0,.08)}
+.kyr-gc-x{flex:0 0 auto;background:none;border:none;border-left:1px solid var(--border);color:var(--faint);font-size:16px;line-height:1;padding:0 11px;cursor:pointer}
+.kyr-gc-x:hover{color:var(--red,#ef4444);background:rgba(239,68,68,.08)}
+.kyr-g-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:#1b1d22;color:#fff;border:1px solid var(--accent);border-radius:10px;padding:12px 16px;font-family:'Manrope',sans-serif;font-size:13px;max-width:90vw;box-shadow:0 10px 30px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:9999;display:flex;align-items:center;gap:14px}
+.kyr-g-toast.show{opacity:1;transform:translateX(-50%) translateY(0);pointer-events:auto}
+.kyr-g-toast .x{cursor:pointer;color:var(--faint);font-size:15px}
+.m-gstar{background:none;border:none;cursor:pointer;font-size:22px;line-height:1;color:var(--faint);padding:0 8px;transition:color .15s,transform .1s;align-self:center}
+.m-gstar.on{color:var(--accent)}
+.m-gstar:hover{transform:scale(1.14)}
+</style>
+  <div id="kyr-garage-strip" class="kyr-gs"></div>
   <div id="kyr-hero-search" class="kyr-hs">
     <div class="kyr-hs-inner">
       <div class="kyr-hs-title">Find Your Vehicle</div>
@@ -758,6 +783,7 @@ body{background:var(--bg)}
     <div class="m-top">
       <button class="m-back" onclick="backToSearch()">&#8592; Change Vehicle</button>
       <div class="m-title" id="m-title">-</div>
+      <button class="m-gstar" id="m-gstar" type="button" aria-pressed="false" aria-label="Save to Garage" title="Save to Garage" onclick="kyrGarageToggle()">&#9734;</button>
       <div class="m-close" tabindex="0" role="button" aria-label="Close" onclick="closeModal()">&#10005;</div>
     </div>
     <div class="m-tabs" id="m-tab-bar"></div>
@@ -1497,7 +1523,7 @@ function openModal(vid,tab){
   curTab=tab||'oil';renderMTabs(v);renderMBody(v);
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
-  __kyrCurV=vid;kyrModalOpenURL(vid);
+  __kyrCurV=vid;kyrModalOpenURL(vid);if(window.kyrGarageSyncStar)kyrGarageSyncStar(vid);
 }
 
 function renderMTabs(v){
@@ -1822,7 +1848,7 @@ if(document.readyState!=='loading')show();else document.addEventListener('DOMCon
     var acc=$('nav-account');if(acc)acc.innerHTML='My Account'+(pro?' <span style="color:#ff6b00">&#9733;</span>':'');
     if(authed){if($('acct-email'))$('acct-email').textContent=email||'';if($('acct-plan'))$('acct-plan').innerHTML=pro?'Pro <span class="kyr-badge-pro">PRO</span>':'Free';}
   };
-  function applyAuthed(email,tier){try{localStorage.setItem('kyr_email',email||'');}catch(e){}if(tier==='pro'){try{localStorage.setItem('kyr_pro','1');}catch(e){}}kyrUpdateNav(true,email,tier);var rb=$('kyr-relink');if(rb)rb.style.display='none';}
+  function applyAuthed(email,tier){try{localStorage.setItem('kyr_email',email||'');}catch(e){}if(tier==='pro'){try{localStorage.setItem('kyr_pro','1');}catch(e){}}kyrUpdateNav(true,email,tier);var rb=$('kyr-relink');if(rb)rb.style.display='none';if(window.kyrGarage)kyrGarage.onAuth(tier);}
   window.kyrSignupSubmit=function(){
     var email=($('su-email').value||'').trim().toLowerCase(),pw=$('su-pw').value||'',pw2=$('su-pw2').value||'',m=$('su-msg');
     m.className='kyr-auth-msg err';
@@ -1848,13 +1874,147 @@ if(document.readyState!=='loading')show();else document.addEventListener('DOMCon
         else{m.className='kyr-auth-msg err';m.textContent='Incorrect email or password.';$('li-pw').value='';}
       }).catch(function(){btn.disabled=false;m.className='kyr-auth-msg err';m.textContent='Could not reach the server. Please try again.';});
   };
-  window.kyrLogout=function(){var t=tok();function done(){setTok('');try{localStorage.removeItem('kyr_email');localStorage.removeItem('kyr_pro');localStorage.removeItem('kyr_pro_until');}catch(e){}kyrUpdateNav(false);location.reload();}
+  window.kyrLogout=function(){var t=tok();function done(){setTok('');try{localStorage.removeItem('kyr_email');localStorage.removeItem('kyr_pro');localStorage.removeItem('kyr_pro_until');}catch(e){}if(window.kyrGarage)kyrGarage.onLogout();kyrUpdateNav(false);location.reload();}
     if(!t){done();return;}fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout',token:t})}).then(done).catch(done);};
   function init(){var t=tok();if(!t){kyrUpdateNav(false);return;}
     fetch('/api/auth?action=me',{headers:{'Authorization':'Bearer '+t}}).then(function(r){return r.json();}).then(function(d){if(d&&d.ok){applyAuthed(d.email,d.tier);}else{setTok('');kyrUpdateNav(false);}}).catch(function(){kyrUpdateNav(false);});}
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll();});
   ['kyr-signup-overlay','kyr-login-overlay','kyr-account-overlay'].forEach(function(id){var o=document.getElementById(id);if(o)o.addEventListener('click',function(e){if(e.target===o)closeAll();});});
   if(document.readyState!=='loading')init();else document.addEventListener('DOMContentLoaded',init);
+})();
+</script>
+<script>
+/*WRENCH_GARAGE_v1*/ // My-Garage: local-first (kyr_garage) for all users; write-through to /api/garage when signed in.
+(function(){
+  var LS='kyr_garage';
+  function $(id){return document.getElementById(id);}
+  function tok(){try{return localStorage.getItem('kyr_session')||'';}catch(e){return '';}}
+  function authed(){return !!tok();}
+  function isPro(){try{return typeof kyrPro==='function'&&kyrPro();}catch(e){return false;}}
+  function capNow(){return isPro()?5:2;}
+  function curV(){try{return (typeof __kyrCurV!=='undefined')?__kyrCurV:null;}catch(e){return null;}}
+  function veh(vid){try{return (typeof VEH!=='undefined')?VEH[vid]:null;}catch(e){return null;}}
+  function load(){try{var a=JSON.parse(localStorage.getItem(LS)||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
+  function store(a){try{localStorage.setItem(LS,JSON.stringify(a));}catch(e){}}
+  function keyOf(v){return (v.id!=null&&v.id!=='')?('id:'+v.id):(v.vin?('vin:'+String(v.vin).toUpperCase()):('x:'+v.year+'|'+v.make+'|'+v.model));}
+  function findIdx(a,v){var k=keyOf(v);for(var i=0;i<a.length;i++){if(keyOf(a[i])===k)return i;}return -1;}
+  function mid(v){return v.id!=null?String(v.id):(v.vin?('vin-'+v.vin):null);}
+  function rec(v){return {id:(v.id!=null?v.id:null),year:v.year,make:v.make,model:v.model,engine:v.engine||null,trim:v.trim||null,vin:v.vin||null,added_at:Math.floor(Date.now()/1000),mileage:null};}
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function api(body,cb){var t=tok();if(!t){if(cb)cb(null);return;}
+    fetch('/api/garage',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify(body)})
+      .then(function(r){return r.json().then(function(d){return {s:r.status,d:d};});})
+      .then(function(o){if(cb)cb(o);}).catch(function(){if(cb)cb(null);});}
+
+  function toast(msg,sticky){
+    var n=$('kyr-g-toast');
+    if(!n){n=document.createElement('div');n.id='kyr-g-toast';n.className='kyr-g-toast';document.body.appendChild(n);}
+    n.innerHTML='<span></span><span class="x" role="button" aria-label="Dismiss">&#10005;</span>';
+    n.firstChild.innerHTML=msg;
+    n.querySelector('.x').onclick=function(){n.classList.remove('show');};
+    n.classList.add('show');
+    if(n._t){clearTimeout(n._t);n._t=null;}
+    if(!sticky)n._t=setTimeout(function(){n.classList.remove('show');},5000);
+  }
+  function capMsg(){
+    if(!authed())return 'Garage full (2) &#8212; sign in to sync, Go Pro for 5.';
+    if(isPro())return 'Garage full (5) &#8212; remove a vehicle to add another.';
+    return 'Garage full (2) &#8212; Go Pro to save up to 5 &#8594;';
+  }
+
+  function syncStar(vid){
+    var b=$('m-gstar');if(!b)return;
+    var v=veh(vid);if(!v){b.style.display='none';return;}
+    b.style.display='';
+    var on=findIdx(load(),v)>=0;
+    b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');
+    b.title=on?'In your garage - click to remove':'Save to Garage';b.innerHTML=on?'&#9733;':'&#9734;';
+  }
+  window.kyrGarageSyncStar=syncStar;
+
+  function render(){
+    var wrap=$('kyr-garage-strip');if(!wrap)return;
+    var a=load();
+    var head='<div class="kyr-gs-head">YOUR GARAGE'
+      +(a.length?' <span class="kyr-gs-count">'+a.length+' of '+capNow()+'</span>':'')
+      +(a.length&&!isPro()?' <a class="kyr-gs-pro" role="button" tabindex="0" onclick="if(typeof openPricing===\'function\')openPricing()">Go Pro for 5 &#8594;</a>':'')
+      +'</div>';
+    if(!a.length){wrap.innerHTML=head+'<div class="kyr-gs-empty">&#9733; Save a vehicle to start your garage</div>';return;}
+    var cards=a.map(function(v,i){
+      var miTxt=(v.mileage!=null&&v.mileage!=='')?(Number(v.mileage).toLocaleString()+' mi'):'+ mileage';
+      return '<div class="kyr-gcard">'
+        +'<div class="kyr-gc-main" role="button" tabindex="0" onclick="kyrGarageOpen('+(v.id!=null?v.id:'null')+')">'
+        +'<div class="kyr-gc-name">'+esc(v.year+' '+v.make+' '+v.model)+'</div>'
+        +'<div class="kyr-gc-sub">'+esc(v.engine||v.trim||'-')+'</div></div>'
+        +'<div class="kyr-gc-mi" role="button" tabindex="0" title="Edit mileage" onclick="kyrGarageMi('+i+')">'+esc(miTxt)+'</div>'
+        +'<button class="kyr-gc-x" type="button" title="Remove from garage" onclick="kyrGarageDel('+i+')">&#215;</button>'
+        +'</div>';
+    }).join('');
+    wrap.innerHTML=head+'<div class="kyr-gs-row">'+cards+'</div>';
+  }
+  window.kyrGarageRender=render;
+
+  window.kyrGarageToggle=function(){
+    var vid=curV();if(vid==null)return;var v=veh(vid);if(!v)return;
+    var a=load();var i=findIdx(a,v);
+    if(i>=0){var rm=a[i];a.splice(i,1);store(a);render();syncStar(vid);
+      if(authed())api({action:'remove',vehicle_id:(rm.id!=null?rm.id:rm.vin)});return;}
+    if(a.length>=capNow()){toast(capMsg());return;}
+    var nr=rec(v);a.push(nr);store(a);render();syncStar(vid);
+    if(authed())api({action:'add',vehicle:nr},function(o){
+      if(o&&o.s>=400&&o.s!==409&&o.d){ // 409 = already on server (fine); other 4xx => roll back local
+        var b=load();var j=findIdx(b,nr);if(j>=0){b.splice(j,1);store(b);render();syncStar(vid);}
+        toast((o.d.error)||'Could not save to your garage.');
+      }
+    });
+  };
+  window.kyrGarageOpen=function(id){if(id!=null&&typeof openModal==='function')openModal(id);};
+  window.kyrGarageDel=function(i){var a=load();if(i<0||i>=a.length)return;var v=a[i];a.splice(i,1);store(a);render();var cv=curV();if(cv!=null)syncStar(cv);
+    if(authed())api({action:'remove',vehicle_id:(v.id!=null?v.id:v.vin)});};
+  window.kyrGarageMi=function(i){
+    var a=load();if(i<0||i>=a.length)return;
+    var cur=(a[i].mileage!=null?a[i].mileage:'');
+    var val=window.prompt('Current mileage for '+a[i].year+' '+a[i].make+' '+a[i].model+' (whole miles):',cur);
+    if(val===null)return;
+    val=String(val).replace(/[^0-9]/g,'');
+    if(val==='')return;
+    var mi=parseInt(val,10);
+    if(isNaN(mi)||mi<0||mi>1500000){toast('Enter a whole number between 0 and 1,500,000.');return;}
+    a[i].mileage=mi;store(a);render();
+    // Direct edit OVERWRITES server unconditionally so a typo'd-high odometer is correctable;
+    // max() applies only at first-login merge, never here.
+    if(authed())api({action:'mileage',vehicle_id:(a[i].id!=null?a[i].id:a[i].vin),mileage:mi});
+  };
+
+  window.kyrGarage={
+    onLogout:function(){try{localStorage.removeItem(LS);}catch(e){}render();var cv=curV();if(cv!=null)syncStar(cv);},
+    onAuth:function(tier){
+      if(!authed())return;
+      api({action:'list'},function(o){
+        if(!o||!o.d||!o.d.ok)return; // offline / failed: keep local untouched, retry on next authed load
+        var server=o.d.vehicles||[],sMile=o.d.mileage||{},sCap=o.d.cap||capNow();
+        var local=load();
+        var sKeys={};server.forEach(function(v){sKeys[keyOf(v)]=1;});
+        var merged=server.slice();
+        var lOnly=local.filter(function(v){return !sKeys[keyOf(v)];});
+        lOnly.sort(function(x,y){return (y.added_at||0)-(x.added_at||0);}); // newest local first
+        var dropped=0;
+        lOnly.forEach(function(v){if(merged.length<sCap){merged.push(v);api({action:'add',vehicle:v});}else{dropped++;}});
+        var lMile={};local.forEach(function(v){if(v.mileage!=null)lMile[keyOf(v)]=parseInt(v.mileage,10);});
+        merged.forEach(function(v){
+          var sk=mid(v),sm=(sk!=null&&sMile[sk]!=null)?parseInt(sMile[sk],10):null,lm=(lMile[keyOf(v)]!=null?lMile[keyOf(v)]:null),mx=null;
+          if(sm!=null&&lm!=null)mx=Math.max(sm,lm);else if(sm!=null)mx=sm;else if(lm!=null)mx=lm;
+          v.mileage=mx;
+          if(mx!=null&&(sm==null||mx>sm))api({action:'mileage',vehicle_id:(v.id!=null?v.id:v.vin),mileage:mx}); // merge = max()
+        });
+        store(merged);render();var cv=curV();if(cv!=null)syncStar(cv);
+        if(dropped>0)toast(dropped+' vehicle'+(dropped>1?'s':'')+' couldn&#8217;t sync &#8212; garage full at '+sCap+'. '+(isPro()?'Remove one to add more.':'Go Pro for 5 &#8594;'),true);
+      });
+    }
+  };
+
+  function boot(){render();}
+  if(document.readyState!=='loading')boot();else document.addEventListener('DOMContentLoaded',boot);
 })();
 </script>
 <style id="kyr-sl-css">

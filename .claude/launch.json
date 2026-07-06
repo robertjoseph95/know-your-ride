@@ -1,0 +1,29 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "kyr-deploy",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8732", "--directory", "C:/Users/Robert/repos/know-your-ride/wrench_deploy"],
+      "port": 8732
+    },
+    {
+      "name": "kyr-g4",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8741", "--directory", "C:/Users/Robert/repos/know-your-ride/wrench_deploy"],
+      "port": 8741
+    },
+    {
+      "name": "kyr-demo",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8752", "--directory", "C:/Users/Robert/repos/know-your-ride"],
+      "port": 8752
+    },
+    {
+      "name": "kyr-af",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8139", "--directory", "C:/Users/Robert/repos/know-your-ride/kyr-af-demo"],
+      "port": 8139
+    }
+  ]
+}

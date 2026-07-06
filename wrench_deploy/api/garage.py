@@ -17,7 +17,8 @@ Vehicle record shape:
   { id, year, make, model, engine?, trim?, vin?, added_at }
   - id is the wrench vehicle_id (int), or null for VIN-only records that have no DB match.
 
-Free tier: 0 saved vehicles. Pro tier: 3 saved vehicles.
+Free tier (signed in): 2 saved vehicles. Pro tier: 5 saved vehicles.
+Saving is a free-with-account benefit (not Pro-gated); Pro raises the cap 2 -> 5.
 """
 
 try:  # Sentry server-side error monitoring (F-D3); inert until SENTRY_DSN is set
@@ -36,7 +37,7 @@ except Exception:
     Redis = None
 
 PRO_VEHICLE_CAP = 5
-FREE_VEHICLE_CAP = 1
+FREE_VEHICLE_CAP = 2
 VIN_RE = re.compile(r"^[A-HJ-NPR-Z0-9]{17}$")  # No I/O/Q in real VINs.
 
 
@@ -156,9 +157,6 @@ class handler(BaseHTTPRequestHandler):
 
     def _add(self, r, email, tier, vehicle):
         cap = _cap_for(tier)
-        if cap <= 0:
-            return self._send(402, {"ok": False, "error": "My Garage is a Pro feature. Upgrade to save vehicles."})
-
         # Normalize the record. id may be None (VIN-only); year/make/model are required if no VIN.
         vin = str(vehicle.get("vin") or "").strip().upper()
         if vin and not VIN_RE.match(vin):
