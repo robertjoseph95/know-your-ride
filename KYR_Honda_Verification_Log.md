@@ -5,7 +5,7 @@
 
 ---
 
-## 2012 Honda Civic (id 11768) — 9th gen (2012–2015) — ✅ WRITTEN + LIVE (deploy 635d6087)
+## 2012 Honda Civic (id 11768) — 9th gen (2012–2015) — ✅ WRITTEN + LIVE (deploy 473370a4)
 **Source:** 2013 Honda Civic Sedan Owner's Manual — `techinfo.honda.com/rjanisis/pubs/om/r31313/r31313om.pdf` (self-ID "2013 Civic Sedan" p1). Same generation as 2012.
 
 | Field | Value | Page |

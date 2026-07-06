@@ -8,7 +8,7 @@ Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the
 
 > **Hyundai status:** **Sonata ✅ 5/14** (NF + LF + DN8 clusters; 9 deferred) · **Elantra ✅ 4/13** (2017/2020 AD + 2021/2022 CN7; 9 deferred). Make source characterized + engine families on record; **Elantra cashed the foundation cheaply + confirmed the twin thesis across a body-class boundary.** DB also has Santa Fe 13, Tucson 10, Accent, Tiburon, Palisade, Kona, Venue, Veloster, Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** SUV siblings (Tucson/Santa Fe/Kona/Palisade) or Elantra-N/turbo-trim targeted pulls.
 
-## ✅ ELANTRA — 4/13 (2017/2020 AD + 2021/2022 CN7) — `2026-07-01-hyundai-elantra`, commit 076fc1cb — SECOND HYUNDAI (cashes the foundation)
+## ✅ ELANTRA — 4/13 (2017/2020 AD + 2021/2022 CN7) — `2026-07-01-hyundai-elantra`, commit 8a754d96 — SECOND HYUNDAI (cashes the foundation)
 Compact sibling; the source foundation transferred cheaply (host + self-ID + gates). Multi-engine (base OM only). HEV + separate-OM trims gated.
 
 | Row | Engines | Oil | Visc | Coolant | Trans |
@@ -35,7 +35,7 @@ Common: **EPS** (no PS fluid) · brake DOT 3/4 (AD) → DOT 4 (CN7) · **lug 79�
 
 ---
 
-## ✅ SONATA — pilot 5/14 (2005/06 NF + 2018 LF + 2021 DN8 + 2024 DN8-FL) — `2026-07-01-hyundai-sonata`, commit df2f8d07 — FIRST HYUNDAI
+## ✅ SONATA — pilot 5/14 (2005/06 NF + 2018 LF + 2021 DN8 + 2024 DN8-FL) — `2026-07-01-hyundai-sonata`, commit 1da532c0 — FIRST HYUNDAI
 Fresh make, recon-first. Multi-engine per row (turbos/N-Line = trims within the year's row). HEV = gated variant (own OM slug `sonata-hybrid`).
 
 | Row | Engines | Oil (drain+filter) | Visc | Coolant | Trans |

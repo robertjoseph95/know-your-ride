@@ -6,7 +6,7 @@ source pattern in `KYR_OEM_Manual_Source_Map.md` (Subaru section). **Host:** `cd
 
 > **Subaru status:** **Outback ✅ 20/20** (11 modern + 9 EJ-era) · **Forester ✅ 15/19** (8 modern + 7 EJ-era SF/SG; 2025/26 deferred) · **Crosstrek ✅ 7/7 COMPLETE** · **Impreza ✅ 10/10 COMPLETE** (5 modern + 5 EJ-era) · **Legacy ✅ 2/2 COMPLETE** · **Ascent ✅ 4/4 COMPLETE** · **WRX ✅ 8/10** (4 modern + 4 EJ-era; 2006+2008 deferred — OM not reachable). **WRITABLE SUBARU MAKE COMPLETE — 7 nameplates; ✅✅ SUBARU OLD-GEN ARC COMPLETE — all THREE EJ-era slices done (Outback + Impreza/WRX + Forester), 25 EJ-era rows.** Pairs closed: Crosstrek⇄Impreza (platform-twin), Legacy⇄Outback (combined-manual), WRX/STI (combined book). DB also has BRZ + Solterra (EV) — pending. **Remaining Subaru work = Forester 2025/26 (full new-gen OM + Hybrid) + Outback 2025/26 refresh check** (both minor/deferred). **NEXT FRESH MAKE: Hyundai Sonata (unlocks Kia).**
 
-## ✅ IMPREZA + WRX EJ-era (paired old-gen) — 9 rows — `2026-06-28-subaru-impreza-wrx-oldgen`, commit 4724e548
+## ✅ IMPREZA + WRX EJ-era (paired old-gen) — 9 rows — `2026-06-28-subaru-impreza-wrx-oldgen`, commit b17cca4d
 **Impreza EJ-era 5/5 (2000–04) → Impreza COMPLETE 10/10. WRX EJ-era 4/6 (2003/04/05/07; 2006+2008 deferred).** Paired because Impreza + WRX share the combined Impreza/WRX/Outback-Sport/STI book — **the exact book the Outback old-gen catch pre-protected.** The hardened illustration+roster discriminator ran the **inversion cleanly**: WRX-engine-present = RIGHT book → route (select column), not reject. Three-way isolation held: base Impreza (EJ22/EJ25) | WRX-turbo (EJ205/EJ255) | Outback-Sport trim→base Impreza | STI EJ257 excluded (no DB row). No turbo spec on an Impreza row, no Impreza spec on a WRX row.
 
 | Row(s) | Engine(s) | Oil | Coolant (MT/AT) | Plug | Gap |
@@ -29,7 +29,7 @@ Common: fuel **15.9 gal** (vs Outback 16.9); MT 5-spd 3.7 (6-spd is STI); AT **D
 
 ---
 
-## ✅ WRX — modern 4/4 (2003–08 old-EJ deferred) — `2026-06-27-subaru-wrx`, commit 938e1efc — FINISHES THE WRITABLE SUBARU MAKE
+## ✅ WRX — modern 4/4 (2003–08 old-EJ deferred) — `2026-06-27-subaru-wrx`, commit 07d53859 — FINISHES THE WRITABLE SUBARU MAKE
 Separate performance model. Self-ID: VA 2021 = **combined WRX/STI book** (A1760, "05") — base-WRX "Except STI" column isolated; STI (EJ257, hydraulic PS) excluded. VB 2022 (A9020) / 2026 (A9100) = WRX-only.
 | Gen / engine | Oil | Cooling (MT/CVT) | Plug | Tire |
 |---|---|---|---|---|
@@ -48,7 +48,7 @@ Common: 6MT gear oil GL-5 75W-90 3.5 qt (written) + CVT (consult dealer, gated);
 
 ---
 
-## ✅ ASCENT — COMPLETE 4/4 — `2026-06-27-subaru-ascent`, commit f6df22a9
+## ✅ ASCENT — COMPLETE 4/4 — `2026-06-27-subaru-ascent`, commit bbf61447
 Subaru sibling #6, 3-row SUV. Standalone manual, **FA24-only** all years. Self-ID: model code **A32xx** (unique block, no twin), filename segment **"00"**. The campaign's purest body-vs-engine isolation (same engine, no twin, no shared book).
 | Era | Oil | Cooling | Battery | Plug | Tire | Fuel |
 |---|---|---|---|---|---|---|
@@ -66,7 +66,7 @@ Common: SUBARU Super Coolant; diff front 1.3 / rear 0.8 GL-5 75W-90; brake FMVSS
 
 ---
 
-## ✅ LEGACY — COMPLETE 2/2 — `2026-06-27-subaru-legacy`, commit 2b647b70
+## ✅ LEGACY — COMPLETE 2/2 — `2026-06-27-subaru-legacy`, commit c306b1e3
 Subaru sibling #5, Outback's combined-manual mate. Read from the **Legacy column** of the combined Legacy+Outback OM `MSA5M2003A-2004A` (2021 = 2020 BT rep + stability note; full 2021 combined OM not on CDN, only 140pp partial 2113A).
 | Engine (2020-21) | Oil | Cooling | Plug |
 |---|---|---|---|
@@ -84,7 +84,7 @@ Common: SUBARU Super Coolant; diff front 1.3-1.4 / rear 0.8; brake FMVSS No.116 
 
 ---
 
-## ✅ IMPREZA — modern 5/5 (2000–2004 EJ deferred) — `2026-06-27-subaru-impreza`, commit 343adc14
+## ✅ IMPREZA — modern 5/5 (2000–2004 EJ deferred) — `2026-06-27-subaru-impreza`, commit d62a6eb1
 Subaru sibling #4, Crosstrek mirror-twin. Self-ID via mirror differential **`impreza=0 AND crosstrek=0`** + filename **"01"** (model codes A1380/A1530/A1640 = Crosstrek's **+10** in the shared A1xxx block — the differential, not the code prefix, is the gate). Each engine read fresh — **twin predicts, OM decides.**
 | Era (rows) | Engine | Oil | Cooling | Plug | Battery | Fuel | Tire |
 |---|---|---|---|---|---|---|---|
@@ -102,7 +102,7 @@ Common: SUBARU Super Coolant; diff front 1.4 / rear 0.8 qt GL-5 75W-90; brake FM
 
 ---
 
-## ✅ CROSSTREK — COMPLETE 7/7 — `2026-06-27-subaru-crosstrek`, commit 18f3ff53
+## ✅ CROSSTREK — COMPLETE 7/7 — `2026-06-27-subaru-crosstrek`, commit a60df057
 Subaru sibling #3 — first genuinely NEW engine reads of the line. Self-ID via twin-exclusion (impreza=0 + filename "07" + provenance; A1xxx is the shared Impreza/Crosstrek platform code; illustration = G4-fax, unrenderable → follow-up).
 | Era (rows) | Engine | Oil | Cooling | Plug | Battery |
 |---|---|---|---|---|---|
@@ -124,13 +124,13 @@ Common: SUBARU Super Coolant; diff front 1.4 / rear 0.8 qt GL-5 75W-90 (2026 rea
 
 ---
 
-> **✅ OUTBACK ENRICHMENT — COMPLETE** (`2026-06-27-outback-enrichment`, commit 88243b92). All 11 modern Outback rows now carry **plug-type / battery / tire** (previously gated). Surgical UPDATE of 3 parts fields only; oil/cooling/fuel/lug/diff untouched. Spark GAP stays gated. **BS read earned its keep — 3 of 4 fields diverged from BT (read, not carried):**
+> **✅ OUTBACK ENRICHMENT — COMPLETE** (`2026-06-27-outback-enrichment`, commit 76aeb0ba). All 11 modern Outback rows now carry **plug-type / battery / tire** (previously gated). Surgical UPDATE of 3 parts fields only; oil/cooling/fuel/lug/diff untouched. Spark GAP stays gated. **BS read earned its keep — 3 of 4 fields diverged from BT (read, not carried):**
 > - **BS 2016–19** (2018 OM, Outback column): battery **75D23R**; plugs FB25 **SILZKAR7B11** + 3.6 EZ36 **SILFR6C11**; tire 225/65R17 102H, 35/33 psi.
 > - **BT 2020–26** (2020 OM, Outback column): battery **LN2**; plugs FB25 **DILKAR7Q8** + FA24 **SILKFR8A6**; tire 225/65R17 102H, 35/33 psi.
 > - Divergences caught: battery 75D23R→LN2; **FB25 plug SILZKAR7B11(port)→DILKAR7Q8(direct) — the port→direct boundary moves the PLUG, not just oil cap**; BS 3.6 EZ36 (SILFR6C11) vs BT FA24 (SILKFR8A6). Tire SAME (wagon 225/65R17, NOT Legacy sedan 225/55R17).
 > - **⚠ Open future-slice candidate (logged, not resolved):** BT plug/battery/tire on the 2020-rep basis (same as live BT oil/cooling) → **Outback 2025/26 per-year refresh check** (did the refresh move battery/tire as the Crosstrek/Impreza 2026 refreshes moved coolant?) remains a separate slice that would also re-examine the live oil/cooling for those years.
 
-## ✅ FORESTER SF/SG EJ-era (old-gen) — 7/7 (2000–06) — `2026-06-28-subaru-forester-oldgen`, commit 0d79ef06 — CLOSES THE SUBARU OLD-GEN ARC
+## ✅ FORESTER SF/SG EJ-era (old-gen) — 7/7 (2000–06) — `2026-06-28-subaru-forester-oldgen`, commit 495904db — CLOSES THE SUBARU OLD-GEN ARC
 **The clean slice (as predicted): standalone book, NO column isolation.** Self-ID confirmed by illustration (HSF code, SG SUV) + dimensions (175.2″) + roster. Segment rotated 3× ("02"→"04"→"03") — resolved by body, never the number (2003 `0304A` = odd seg + name-count 0, the textbook case).
 
 | Year | Gen | Engines | Oil | Coolant (MT/AT) | Gap | Plug |
@@ -152,7 +152,7 @@ Common: fuel **15.9 gal** (=Impreza, not Outback 16.9); MT 3.7; AT **Dexron III*
 
 ---
 
-## ✅ FORESTER — modern (8/8 modern; 2025/26 deferred) — `2026-06-27-subaru-forester`, commit dd487488
+## ✅ FORESTER — modern (8/8 modern; 2025/26 deferred) — `2026-06-27-subaru-forester`, commit 8a285731
 Subaru sibling #2. Standalone manual (self-ID = `A82xx` model code + p2 vehicle illustration; body says "Forester" 0× — normal for standalone). Each engine read fresh from rendered spec pages.
 | Era (rows) | Engine | Oil | Coolant | Plug type | Battery | Fuel |
 |---|---|---|---|---|---|---|
@@ -171,7 +171,7 @@ Common: SUBARU Super Coolant; front diff GL-5 75W-90 (SJ 1.3 NT/1.5 turbo, SK 1.
 
 ---
 
-## ✅ OUTBACK — modern (11/11) + old-gen EJ-era (9/9) — modern `2026-06-27-subaru-outback` (dcb1183d) · old-gen `2026-06-28-subaru-outback-oldgen` (afffb006)
+## ✅ OUTBACK — modern (11/11) + old-gen EJ-era (9/9) — modern `2026-06-27-subaru-outback` (70492d94) · old-gen `2026-06-28-subaru-outback-oldgen` (ea1dbd70)
 First Subaru / first non-GM make. Each engine read FRESH from the Subaru OM's own (image-rendered) spec pages.
 | Era (rows) | Engine | Oil | Coolant | Front diff |
 |---|---|---|---|---|
@@ -187,7 +187,7 @@ Common: SUBARU Super Coolant; rear diff 0.8 qt GL-5 75W-90 (BT Outback rear: 75W
 - **3.6 EZ36 flat-6 = 5W-30** while the 4-cylinders take 0W-20 — engine-specific viscosity, not a nameplate default.
 - **Name-collision trap avoided:** EPA "Impreza Wagon / Outback SPT" = *Impreza Outback Sport* (2.0T), a different vehicle — excluded.
 
-### ✅ OUTBACK old-gen EJ-era (9/9: 2000–06, 2008–09) — `2026-06-28-subaru-outback-oldgen`, commit afffb006
+### ✅ OUTBACK old-gen EJ-era (9/9: 2000–06, 2008–09) — `2026-06-28-subaru-outback-oldgen`, commit ea1dbd70
 Strict per-year reads (each year's own book), all EJ-series read FRESH (EJ25 ≠ FB25, EZ30 ≠ EZ36).
 | Era (rows) | Engines | Oil (w/filter) | Coolant | Lug |
 |---|---|---|---|---|

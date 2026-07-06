@@ -5,7 +5,7 @@ Parallel to the Ford/Honda/Nissan/Mazda logs. **GM-group make** (Chevrolet pilot
 
 > **GM-group status:** **Silverado 1500 ✅ 21/21** · **GMC Sierra 1500 ✅ 15/15** · **Chevy Tahoe ✅ 13/13** · **Chevy Suburban ✅ 13/13** · **GMC Yukon ✅ 11/11** · **Cadillac Escalade ✅ 13/16** · **GMC Sierra 2500 HD ✅ 3/4** · **Buick Enclave ✅ 6/6 + Encore ✅ 2/2 + Encore GX ✅ 5/5** · **Chevy Colorado ✅ 8/8 + GMC Canyon ✅ 6/6** = **116 GM vehicles across 4 makes.** **★ GM GROUP COMPLETE — 4 makes (Chevrolet/GMC/Cadillac/Buick), all 4 reference profiles characterized (Truck-SUV · HD · Crossover · subcompact-VSS-F).** Deferred (gated, pending OM): Escalade 2005/2020/2001 · Sierra HD 2019 · Encore 2026 phantom.
 
-## ✅ BUICK Encore GX (5/5 written) — `2026-06-27-encore-gx`, commit 7983286a — CLOSES THE GM GROUP
+## ✅ BUICK Encore GX (5/5 written) — `2026-06-27-encore-gx`, commit dae9065d — CLOSES THE GM GROUP
 Separate **VSS-F** subcompact platform (NOT the Encore Gen-1 Gamma II — 3-cyl turbos, nothing carried). Parked-and-approved write (verified prior session; pre-write sanity check confirmed all 5 rows still unwritten). **4th GM reference profile = subcompact/VSS-F:** EPS · DOT 4 · dexos1 · 0W-20 · tiny 4.2–4.8 qt oil caps · 3-cyl turbos · CVT/9-spd · **lug 100** (smaller wheels, NOT full-size GM 140).
 | Engine (rows) | Oil | Cooling | Gap | Trans |
 |---|---|---|---|---|
@@ -15,7 +15,7 @@ Separate **VSS-F** subcompact platform (NOT the Encore Gen-1 Gamma II — 3-cyl 
 
 ---
 
-## ✅ MIDSIZE — Chevy Colorado + GMC Canyon (14/14 written) — `2026-06-26-colorado-canyon`, commit e03bb1a4
+## ✅ MIDSIZE — Chevy Colorado + GMC Canyon (14/14 written) — `2026-06-26-colorado-canyon`, commit 8e41dba9
 GM midsize, fresh engine family. **Most internally layered nameplate of the campaign: three steering/brake regimes across three generations**, each read independently (self-ID ✅):
 | Gen (rows) | Engines / Oil | Cooling | Gap | Brake / PS | Lug |
 |---|---|---|---|---|---|
@@ -28,7 +28,7 @@ GM midsize, fresh engine family. **Most internally layered nameplate of the camp
 
 > **★ Three GM reference profiles now characterized** (sanity-check fingerprints for future GM vehicles): **Truck/SUV** (1500 + full-size SUV: EPS modern, DOT 4 T1XX, 0W-20 V8s, dexos1, DEXRON-HP/ULV, lug 140) · **HD** (2500/3500: HYDRAULIC PS, DOT 3, gas L8T 5W-30 + Duramax L5P 15W-40 CK-4 10qt, Allison, lug 140) · **Crossover** (Buick Enclave/Encore: EPS, DOT 4, dexos1, DEXRON-VI, small oil caps 4.2–6.0 qt — applies to Traverse/Acadia/Trax when they come up).
 
-## ✅ BUICK — Enclave + Encore (8/8 written) — `2026-06-26-buick-crossover`, commit a69fa9db
+## ✅ BUICK — Enclave + Encore (8/8 written) — `2026-06-26-buick-crossover`, commit 2d84ee8a
 First Buick / first **GM crossover profile**. Three NEW engine families, each read fresh from its own Buick OM (self-ID ✅; nothing inherited from truck/SUV/HD):
 | Engine (rows) | Oil | Cooling | Gap | Trans | Brake/PS | Lug |
 |---|---|---|---|---|---|---|
@@ -39,7 +39,7 @@ First Buick / first **GM crossover profile**. Three NEW engine families, each re
 
 ---
 
-## ✅ GMC SIERRA 2500 HD — T1XX-HD added (3/4) — `2026-06-26-sierra2500hd-t1xx`, commit 053b5650
+## ✅ GMC SIERRA 2500 HD — T1XX-HD added (3/4) — `2026-06-26-sierra2500hd-t1xx`, commit 062afb83
 First **HD / 6.6L Duramax** verification — NEW source docs (separate 6.6L supplement), nothing inherited from the 1500s. 3 rows (2020/2021/2022) from the 2021 Sierra 2500HD OM (84744494C) + 2020 6.6L Duramax supplement (L5P); 2020/2022 GM OMs unavailable → 2021 T1XX-HD rep + stability note (engines L8T+L5P confirmed across span). **Per-engine, HD diverges from 1500 on nearly everything:**
 | | Gas 6.6L L8T | Diesel 6.6L Duramax L5P |
 |---|---|---|
@@ -53,19 +53,19 @@ Common: **DOT 3**, **PS HYDRAULIC** (2.1 qt — HD stays hydraulic, not EPS), lu
 
 ---
 
-## ✅ CADILLAC ESCALADE — older gens added (now 13/16) — `2026-06-25-escalade-oldergen`, commit 8fb1c458
+## ✅ CADILLAC ESCALADE — older gens added (now 13/16) — `2026-06-25-escalade-oldergen`, commit 77ca762a
 8 rows from each year's own Escalade OM: **2000** 1st-gen 5.7L Vortec 5700 (5.0 qt oil, 30 gal, starburst, DOT3/hydraulic); **GMT800 2002/2003/2004** (5.3 + 6.0 H.O. V8, 6.0 qt, per-year cooling, starburst→GM6094M at ’04, gap 0.060→0.040 at ’04); **K2XX 2018/2019** (6.2 L86, 0W-20, 8.0 qt, cooling 17.8, DOT3, EPS, dexos1); **T1XX 2025/2026** (6.2 L87, **diesel DROPPED**, 0W-20, cooling 15.1, fuel 24/ESV 28, DOT4, EPS, dexos1). **★ 2003 written NORMALLY** — the Escalade's own 2003 OM is a legible 471pp text PDF (gap 0.060, no gate), unlike the scanned Silverado/Tahoe 2003 (per-vehicle-source discipline; same call as the Yukon 2003). **Per-gen oil-cap shift: 5.7=5.0qt / GMT800 V8=6.0qt / 6.2=8.0qt** (read each, never inherited). GATES: axles+transfer-case fluid-type (punt), Escalade V (LT4 SC 6.2) halo on ’25/’26.
 **DEFERRED (stay gated, logged pending — NOT written, NOT rep-substituted):** 2005 GMT800 (id 18105 — only a 912KB partial OM exists on every GM host) · 2020 K2XX (id 291 — 2018/2019 OMs found on contentdelivery, 2020 does not surface) · 2001 phantom (no such vehicle).
 
 ---
 
 ## ✅ GMC YUKON — COMPLETE (11/11) — Tahoe twin
-**Modern (6 rows)** `2026-06-24-yukon-modern` (commit c454c6ad) · **GMT800 (5 rows)** `2026-06-24-yukon-gmt800` (commit 610862db). Each from the Yukon's own OM (self-ID PASSED). DB has only "Yukon" (SWB) — no Yukon XL rows. **T1XX/K2XX values byte-identical to Tahoe** (cooling 15.6/15.1/21.9 & 17.8; oil 8.0; fuel 24/26 gal Yukon SWB; 0W-20/DOT4|DOT3/EPS/dexos1/DEXRON-ULV; diesel LM2 SUV). **GMT800 (2000–2004): the Tahoe divergence is the 6.0 V8 (Denali) 2001–2004** (Tahoe lacked it; oil cap 6.0 qt). Per-year: starburst (’00–’03) → GM6094M (’04); V8 gap 0.060 (’00–’03) → 0.040 (’04); ATF DEXRON-III; hydraulic PS; DOT 3; 5W-30 6.0 qt; fuel 26 gal. **★ 2003 written NORMALLY** — the Yukon 2003 OM is a legible 3.6 MB text PDF (gap 0.060, no gate), unlike the illegible scanned Silverado/Tahoe 2003 OMs (per-vehicle-source discipline). 2000 5.7L old-body carryover gated.
+**Modern (6 rows)** `2026-06-24-yukon-modern` (commit 4a1b21fe) · **GMT800 (5 rows)** `2026-06-24-yukon-gmt800` (commit f1b77fb4). Each from the Yukon's own OM (self-ID PASSED). DB has only "Yukon" (SWB) — no Yukon XL rows. **T1XX/K2XX values byte-identical to Tahoe** (cooling 15.6/15.1/21.9 & 17.8; oil 8.0; fuel 24/26 gal Yukon SWB; 0W-20/DOT4|DOT3/EPS/dexos1/DEXRON-ULV; diesel LM2 SUV). **GMT800 (2000–2004): the Tahoe divergence is the 6.0 V8 (Denali) 2001–2004** (Tahoe lacked it; oil cap 6.0 qt). Per-year: starburst (’00–’03) → GM6094M (’04); V8 gap 0.060 (’00–’03) → 0.040 (’04); ATF DEXRON-III; hydraulic PS; DOT 3; 5W-30 6.0 qt; fuel 26 gal. **★ 2003 written NORMALLY** — the Yukon 2003 OM is a legible 3.6 MB text PDF (gap 0.060, no gate), unlike the illegible scanned Silverado/Tahoe 2003 OMs (per-vehicle-source discipline). 2000 5.7L old-body carryover gated.
 
 ---
 
 ## ✅ CHEVY TAHOE + SUBURBAN — COMPLETE (13/13 each) — Escalade's gas twins
-**T1XX+K2XX (12 rows)** `2026-06-23-tahoe-suburban-modern` (commit 1b1ec423) · **GMT800 (14 rows)** `2026-06-24-tahoe-suburban-gmt800` (commit deb709c4). Combined "Tahoe/Suburban" OMs, each year self-ID'd (2003 scanned). Twin of Escalade confirmed by reading the Tahoe/Suburban OMs — **but they add the 5.3 base V8** (Escalade was 6.2-only) and have **their own fuel tanks**.
+**T1XX+K2XX (12 rows)** `2026-06-23-tahoe-suburban-modern` (commit 7c51e8a8) · **GMT800 (14 rows)** `2026-06-24-tahoe-suburban-gmt800` (commit c0967d74). Combined "Tahoe/Suburban" OMs, each year self-ID'd (2003 scanned). Twin of Escalade confirmed by reading the Tahoe/Suburban OMs — **but they add the 5.3 base V8** (Escalade was 6.2-only) and have **their own fuel tanks**.
 | Gen | Engines | Oil | Cooling | Fuel (Tahoe / Suburban) | Brake | PS | ATF | Spec |
 |---|---|---|---|---|---|---|---|---|
 | GMT800 ’00–’06 | 4.8+5.3 (Tahoe) / 5.3 (Sub); +5.7 carryover ’00 (gated) | 5W-30, 6.0 qt | 14.4 (’00–02) / 13–15 (’04) / 17.2 (’05) / 16.8 (’06) qt | 26 / **32.5→31.0** gal | DOT 3 | Hydraulic | DEXRON-III → **VI (’06)** | starburst (’00–’03) / GM6094M (’04–’06) |
@@ -76,7 +76,7 @@ Common: **DOT 3**, **PS HYDRAULIC** (2.1 qt — HD stays hydraulic, not EPS), lu
 
 ---
 
-## ✅ CADILLAC ESCALADE — T1XX modern slice (5/5) — `2026-06-23-escalade-t1xx`, commit 2ac2ff0d
+## ✅ CADILLAC ESCALADE — T1XX modern slice (5/5) — `2026-06-23-escalade-t1xx`, commit 47186719
 **First Cadillac — GM-sibling ecosystem VALIDATED:** Cadillac OMs serve from `cadillac.com` / `assets.gm.com` (older) + `contentdelivery.ext.gm.com` (modern), browser-UA, plain GET, **no 403**; GM conventions hold (DEX-COOL GMW3420, dexos1, EPS, DOT 4, lug 140). Source: 2021 Escalade OM (84266974B, T1XX gen-rep, self-ID p1) + 2021 LM2 supplement. Rows: Escalade 2021/2022/2024 + Escalade ESV 2021/2022; engines **6.2L V8 (L87) + 3.0L Duramax diesel (LM2 SUV variant)**, unchanged 2021–2024 (EPA).
 **★ SUV-specific values read from Escalade's OWN OM (NOT carried back from pickups):** gas cooling **15.1 qt** (vs pickup 13.3); diesel cooling **21.9 qt SUV** (vs pickup 20.5, from supplement's SUV column); fuel tank **24.0 gal (Escalade) / 28.0 gal (ESV long WB)**; **axles + transfer-case fluid TYPE punted to dealer** in the Escalade OM (the pickup OM gave DEXRON-VI — twin divergence, NOT carried back) → gated. Oil 8.0 qt (6.2) / 7.0 qt (diesel); DEXRON ULV 10-spd; DEF 5.3 gal; oil filter PF63E (gas) / PF66 (diesel).
 **★ Escalade is NOT a pickup-clone** — its own engine history (2000 = 5.7L unique; 2002–05 = 5.3/6.0; 2018–20 = 6.2; 2021+ = 6.2 + LM2-SUV diesel). **GATES:** 2001 phantom row (id 14243 — no 2001 Escalade existed, EPA-confirmed production gap; fabricated ai-haiku purged → clean-gated); Escalade V (SC 6.2) halo. Standard GM gating applies.
@@ -85,7 +85,7 @@ Common: **DOT 3**, **PS HYDRAULIC** (2.1 qt — HD stays hydraulic, not EPS), lu
 
 ---
 
-## ✅ GMC SIERRA 1500 — COMPLETE (15/15, twin of Silverado) — `2026-06-23-sierra`, commit 247eab62
+## ✅ GMC SIERRA 1500 — COMPLETE (15/15, twin of Silverado) — `2026-06-23-sierra`, commit 02e8bdaa
 Each row cited to its **own GMC Sierra OM** (9 reps pulled, all self-ID PASSED in-text incl. "Sierra/Sierra **Denali** 1500"). **Twin cross-check confirmed every platform-shared field matches Silverado per generation** (read from Sierra's OMs, not assumed): GMT800 (2000–2004) = 5W-30 / hydraulic PS / DOT 3 / DEXRON-III 4-spd / starburst→GM6094M; K2XX (2017–2018) = 0W-20 V8 / EPS / DOT 3 / dexos1 / VI-HP 6/8-spd; T1XX (2019–2026) = 0W-20 / EPS / **DOT 4** / dexos1 (+dexos D diesel) / HP-ULV 8/10-spd, diesel **LM2** (2020–2022) / **LZ0** (2023–2026), 4.3 V6 dropped 2022. Roster: 2000 = no 6.0. **No fluid/spec divergence found** — Denali-trim differences (wheels/tires/battery) fall in already-gated fields. Diesel via the shared "Chevrolet/GMC" Duramax supplement. **2003 V8 spark gap + part numbers GATED** (scanned OM, same as Silverado 2003). Engines byte-identical → per-engine values (oil cap, coolant cap, gap, filters) match Silverado.
 
 ---
@@ -124,11 +124,11 @@ Each row cited to its **own GMC Sierra OM** (9 reps pulled, all self-ID PASSED i
 7. **CONFIRM-DON'T-ASSUME catches:** (a) the **2.7L turbo uses 5W-30 while the V8s use 0W-20** — the thinner oil is the *V8*, counterintuitive; (b) **EPS confirmed by reading the steering section** (the Maxima lesson — full-size trucks are exactly where hydraulic-vs-electric varies); (c) coolant color **never stated** → DEX-COOL/GMW3420 recorded, "orange" omitted.
 8. **GM-group siblings** (GMC Sierra, Cadillac Escalade, Buick, etc.) should inherit this exact ecosystem (`contentdelivery.ext.gm.com`, browser-UA, lug-only + spark-gap, DEX-COOL, dexos1) — characterize one sibling before its bulk.
 
-**Pilot write:** single vehicle (2024 Silverado 1500, id 13016, gas). Multi-value strings for engine-divergent fields; fabricated ai-haiku purged; gated fields left pending. Preview-verified (`ver===1` on oil/fluids/parts/torque): per-engine oil 5W-30 vs 0W-20, spark gap renders, EPS, DEX-COOL GMW3420, DOT 4, lug 140; diesel/battery/trans-speed gated. Deployed **`2026-06-22-silverado-pilot`** (commit `4a1c06f9`).
+**Pilot write:** single vehicle (2024 Silverado 1500, id 13016, gas). Multi-value strings for engine-divergent fields; fabricated ai-haiku purged; gated fields left pending. Preview-verified (`ver===1` on oil/fluids/parts/torque): per-engine oil 5W-30 vs 0W-20, spark gap renders, EPS, DEX-COOL GMW3420, DOT 4, lug 140; diesel/battery/trans-speed gated. Deployed **`2026-06-22-silverado-pilot`** (commit `f7764318`).
 
 ---
 
-## ★ T1XX BULK (2019–2026) — ✅ WRITTEN + preview-verified + DEPLOYED (`2026-06-22-silverado-t1xx`, commit 97600e97)
+## ★ T1XX BULK (2019–2026) — ✅ WRITTEN + preview-verified + DEPLOYED (`2026-06-22-silverado-t1xx`, commit a297817f)
 All 8 current-gen rows done (2024 pilot + 7 bulk: 2019, 2020, 2021, 2022, 2023, 2025, 2026).
 **Sources:** 2021 Silverado 1500 OM (84550389C, early-T1XX rep incl. 4.3 V6) + 2024 OM (85516379C) — gas values cross-confirmed identical for shared engines. + 2021 LM2 Duramax sup (84557033C) + 2024 LZ0 Duramax sup (85137419 B).
 
@@ -145,7 +145,7 @@ Common gen-stable: DEX-COOL GMW3420 (no color), DOT 4, EPS, lug 140, 8-spd DEXRO
 
 ---
 
-## ★ K2XX BULK (2016–2018) — ✅ WRITTEN + preview-verified + DEPLOYED (`2026-06-22-silverado-k2xx`, commit 9c098e12)
+## ★ K2XX BULK (2016–2018) — ✅ WRITTEN + preview-verified + DEPLOYED (`2026-06-22-silverado-k2xx`, commit 9833e51f)
 3 rows from the **2017 Silverado 1500 OM** (23476161A, K2XX gen-rep, self-ID p1), applied across 2016–2018 (engines EPA-confirmed byte-identical: 4.3 V6 LV3/LV1, 5.3 V8 L83, 6.2 V8 L86; no 2.7T, no diesel). No GM-hosted 2016 full OM reachable → representative-OM application (same method as F-150 13th gen / T1XX); honest provenance in source string. **NOTE: combined 1500+2500/3500 OM** — the 6.0L V8 / hydraulic PS belong to the HD; the 1500 fields below were isolated.
 
 | Field | 4.3 V6 | 5.3 V8 (L83) | 6.2 V8 (L86) |
@@ -161,7 +161,7 @@ Common gen-stable: DEX-COOL GMW3420 (no color), DOT 4, EPS, lug 140, 8-spd DEXRO
 
 ---
 
-## ★ GMT900 BULK (2008, 2009, 2012) — ✅ WRITTEN + preview-verified + DEPLOYED (`2026-06-23-silverado-gmt900`, commit 2c9f2dc9)
+## ★ GMT900 BULK (2008, 2009, 2012) — ✅ WRITTEN + preview-verified + DEPLOYED (`2026-06-23-silverado-gmt900`, commit b1bc0408)
 3 rows, **each from its own GM-hosted OM** (self-ID gate PASSED in-text: "20xx Chevrolet Silverado Owner Manual"). Per-year EPA roster: **2008** = 4.3/4.8/5.3/6.0; **2009** = +6.2 (5 engines); **2012** = 4.3/4.8/5.3/6.2 (6.0 dropped).
 
 | Engine | Oil visc | Oil cap | Coolant | Spark gap | Oil filter |
@@ -174,7 +174,7 @@ Common gen-stable: DEX-COOL GMW3420 (no color), DOT 4, EPS, lug 140, 8-spd DEXRO
 
 ---
 
-## ★ GMT800 BULK (2000–2006) — ✅ WRITTEN + preview-verified + DEPLOYED (`2026-06-23-silverado-gmt800`, commit 9be6aa2b) — SILVERADO 1500 COMPLETE 21/21
+## ★ GMT800 BULK (2000–2006) — ✅ WRITTEN + preview-verified + DEPLOYED (`2026-06-23-silverado-gmt800`, commit fe32ad3f) — SILVERADO 1500 COMPLETE 21/21
 7 rows, **each from its own GM-hosted OM** (self-ID gate PASSED in-text). Per-year EPA roster: **2000** = 4.3/4.8/5.3 (no 6.0); **2001–2006** = +6.0 V8. Engines: VORTEC 4.3 V6, 4.8/5.3/6.0 V8 (8.1 V8 = HD, excluded). Oil cap 4.5 qt (V6) / 6.0 qt (V8s); 5W-30; lug 140; **hydraulic PS** (GM PS fluid 89021184); **DOT 3** (Delco Supreme 11); **4-speed only** (4L60-E/4L65-E); axles 80W-90 front / 75W-90 rear; transfer case ~2.0 qt; fuel tank 26/34 gal; DEX-COOL (no spec#/color).
 
 **★ Per-year / sub-era catches (read from each year's own OM, not interpolated):**
@@ -219,5 +219,5 @@ The full sweep is a clean CONFIRM-DON'T-ASSUME case study: brake DOT 3→DOT 4, 
 - [x] **GMT900 (2008, 2009, 2012, 3 rows)** — DONE (`2026-06-23-silverado-gmt900`); per-year OMs (self-ID PASSED); 5W-30, hydraulic PS, DOT 3, GM6094M vs dexos1 per year.
 - [x] **GMT800 (2000–2006, 7 rows)** — DONE (`2026-06-23-silverado-gmt800`); all 7 self-ID PASSED; per-year API-starburst/GM6094M, DEXRON-III/VI, 0.060/0.040 gap; 2003 V8 gap GATED (scanned OM). **→ SILVERADO 1500 COMPLETE 21/21.**
 - [ ] **Engine→transmission-speed binding** — confirm from an authoritative GM source or leave gated (ATF type already verified; diesel→10-spd confirmed in supplement).
-- [x] **GMC Sierra 1500** (15 rows) — DONE (`2026-06-23-sierra`, commit 247eab62); twin confirmed vs Silverado per gen; diesel-complete via shared supplement; 2003 V8 gap gated.
+- [x] **GMC Sierra 1500** (15 rows) — DONE (`2026-06-23-sierra`, commit 02e8bdaa); twin confirmed vs Silverado per gen; diesel-complete via shared supplement; 2003 V8 gap gated.
 - [ ] **GM-group next:** Sierra 2500 HD (4 rows, 6.6L Duramax — separate supplement); Cadillac/Buick siblings (inherit GM ecosystem); Suburban/Tahoe/Yukon/Escalade (note LM2 SUV diesel); Colorado/Canyon.
