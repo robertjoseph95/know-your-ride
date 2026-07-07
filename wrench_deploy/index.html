@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-07-06-my-garage">
+<meta name="kyr-version" content="2026-07-07-due-state">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -1406,7 +1406,7 @@ function renderMaint(v){
     var parts=mp.filter(function(p){return p.mid===s.id;});
     var ch='';
     if(s.tmin||s.tool||s.diff){var EM=String.fromCodePoint,cc=[];if(s.tmin)cc.push(EM(9201,65039)+' '+s.tmin+' min');if(s.tool)cc.push(EM(128295)+' '+(s.tool==='None'?'No tools':s.tool));if(s.diff)cc.push(EM(11088)+' '+s.diff);ch='<div style="margin-top:4px;font-size:11px;color:var(--dim);font-weight:500">'+cc.join(' '+EM(183)+' ')+'</div>';}
-    h+='<tr><td style="font-weight:700">'+s.desc+affMaintBtn(v,s.desc)+ch+'</td><td class="pn" style="color:var(--accent)">'+(s.mi?s.mi.toLocaleString()+' mi':'&mdash;')+'</td><td class="pn" style="color:var(--dim)">'+(s.mo?s.mo+' mo':'&mdash;')+'</td></tr>';
+    h+='<tr><td style="font-weight:700">'+s.desc+affMaintBtn(v,s.desc)+ch+(window.kyrDue?kyrDue.itemTagFor(v.id,s):'')+'</td><td class="pn" style="color:var(--accent)">'+(s.mi?s.mi.toLocaleString()+' mi':'&mdash;')+'</td><td class="pn" style="color:var(--dim)">'+(s.mo?s.mo+' mo':'&mdash;')+'</td></tr>';
     if(parts.length){
       h+='<tr><td colspan="3" style="padding:0 11px 10px;background:var(--p2)"><div style="display:flex;flex-wrap:wrap;gap:6px;padding-top:6px">';
       parts.forEach(function(p){
@@ -1535,7 +1535,7 @@ function switchMTab(tab,vid){curTab=tab;var v=VEH[vid];renderMTabs(v);renderMBod
 
 function renderMBody(v){
   var fns={oil:renderOilShop,parts:renderPartsTieredYTG,fluids:renderFluids,maint:renderMaintGated,perf:renderPerf,safety:renderSafety,issues:renderIssues,warranty:renderWarrantyKbb,comps:renderComplaints,log:renderServiceLog,costs:(typeof renderExpenses==='function'?renderExpenses:function(){return '';})};
-  document.getElementById('m-body').innerHTML=fns[curTab](v);if(curTab==='log'&&typeof kyrSlLoad==='function')kyrSlLoad();if(curTab==='costs'&&typeof kyrExpLoad==='function')kyrExpLoad();
+  document.getElementById('m-body').innerHTML=fns[curTab](v);if(curTab==='log'&&typeof kyrSlLoad==='function')kyrSlLoad();if(curTab==='costs'&&typeof kyrExpLoad==='function')kyrExpLoad();if(curTab==='maint'&&window.kyrDue)kyrDue.ensure(v.id,function(){if(curTab==='maint'){var _b=document.getElementById('m-body');if(_b)_b.innerHTML=renderMaintGated(v);}});
 }
 
 function closeModalUI(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';__kyrCurV=null;}
@@ -1945,12 +1945,13 @@ if(document.readyState!=='loading')show();else document.addEventListener('DOMCon
       return '<div class="kyr-gcard">'
         +'<div class="kyr-gc-main" role="button" tabindex="0" onclick="kyrGarageOpen('+(v.id!=null?v.id:'null')+')">'
         +'<div class="kyr-gc-name">'+esc(v.year+' '+v.make+' '+v.model)+'</div>'
-        +'<div class="kyr-gc-sub">'+esc(v.engine||v.trim||'-')+'</div></div>'
+        +'<div class="kyr-gc-sub">'+esc(v.engine||v.trim||'-')+'</div><span class="kyr-gc-badge" id="kyr-gcb-'+(v.id!=null?v.id:'x')+'"></span></div>'
         +'<div class="kyr-gc-mi" role="button" tabindex="0" title="Edit mileage" onclick="kyrGarageMi('+i+')">'+esc(miTxt)+'</div>'
         +'<button class="kyr-gc-x" type="button" title="Remove from garage" onclick="kyrGarageDel('+i+')">&#215;</button>'
         +'</div>';
     }).join('');
     wrap.innerHTML=head+'<div class="kyr-gs-row">'+cards+'</div>';
+    if(window.kyrDue){a.forEach(function(v){kyrDue.ensure(v.id,function(){var el=document.getElementById('kyr-gcb-'+(v.id!=null?v.id:'x'));if(el)el.innerHTML=kyrDue.badgeHTML(v.id);});});}
   }
   window.kyrGarageRender=render;
 
@@ -2071,7 +2072,8 @@ if(document.readyState!=='loading')show();else document.addEventListener('DOMCon
 
   var TYPES=['Engine Oil & Filter Change','Tire Rotation','Brake Pad Replacement (Front)','Brake Pad Replacement (Rear)','Air Filter Replacement','Cabin Air Filter Replacement','Spark Plug Replacement','Transmission Service','Coolant Flush','Battery Replacement','Wiper Blade Replacement','Alignment','Tire Replacement','Brake Fluid Flush','Power Steering Service','Fuel Filter Replacement','Serpentine Belt Replacement','Timing Belt / Chain Service','Suspension / Struts','Inspection / Multi-Point Check','Other'];
   var EV_HIDE=['Engine Oil & Filter Change','Air Filter Replacement','Spark Plug Replacement','Transmission Service','Fuel Filter Replacement','Serpentine Belt Replacement','Timing Belt / Chain Service','Power Steering Service'];
-  var INTERVAL={'Engine Oil & Filter Change':5000,'Tire Rotation':6000,'Air Filter Replacement':20000,'Cabin Air Filter Replacement':20000,'Spark Plug Replacement':60000,'Transmission Service':40000,'Coolant Flush':50000,'Brake Fluid Flush':30000,'Fuel Filter Replacement':30000,'Serpentine Belt Replacement':70000,'Timing Belt / Chain Service':90000,'Wiper Blade Replacement':12000,'Tire Replacement':40000};
+  /* INTERVAL map removed 2026-07-07: the generic-defaults due-logic (violated the Integrity Gate)
+     is replaced by the verified per-vehicle engine in the WRENCH_DUE module (kyrDue.nextDueLine). */
   function isEV(v){var s=((v&&v.engine)||'')+' '+((v&&v.model)||'')+' '+((v&&v.trim)||'');return /electric|\bev\b|\bbev\b/i.test(s);}
 
   var STATE={entries:[],count:0,isPro:false,limit:3};
@@ -2092,15 +2094,12 @@ if(document.readyState!=='loading')show();else document.addEventListener('DOMCon
       .then(function(r){return r.json().then(function(d){return {s:r.status,d:d};});}).then(function(o){
         if(o.s===401){box.innerHTML='<div class="kyr-sl-empty">Your session expired.<br><a class="kyr-auth-link" onclick="kyrOpenLogin&&kyrOpenLogin()">Sign in</a> to view your service log.</div>';return;}
         var d=o.d||{}; STATE.entries=d.entries||[]; STATE.count=d.count||0; STATE.isPro=!!d.isPro; STATE.limit=d.limit||3;
+        if(window.kyrDue){kyrDue.setLog(curVid(),STATE.entries);if(typeof kyrGarageRender==='function')kyrGarageRender();}
         kyrSlRender();
       }).catch(function(){box.innerHTML='<div class="kyr-sl-empty">Could not load your service log. Please try again.</div>';});
   };
 
-  function nextDue(x){
-    var iv=INTERVAL[x.service_type];
-    if(!iv) return 'No reminder available for this service type.';
-    return 'Next due ~'+nf(Number(x.mileage)+iv)+' mi (every '+nf(iv)+' mi)';
-  }
+  function nextDue(x){ return (window.kyrDue)?kyrDue.nextDueLine(curVid(),x):''; }
   window.kyrSlRender=function(){
     var box=$('kyr-sl-list'); if(!box)return;
     var e=STATE.entries||[];
@@ -2180,6 +2179,137 @@ if(document.readyState!=='loading')show();else document.addEventListener('DOMCon
   ['kyr-sl-form-overlay'].forEach(function(id){var o=document.getElementById(id);if(o)o.addEventListener('click',function(e){if(e.target===o)kyrSlCloseForm();});});
 })();
 </script>
+<script>
+/*WRENCH_DUE_v1*/ // Verified DUE-STATE engine: per-vehicle OEM intervals (blob) x garage mileage x service-log. Client-only; no new endpoints/keys (ruling 4).
+(function(){
+  function tok(){try{return localStorage.getItem('kyr_session')||'';}catch(e){return '';}}
+  function authed(){return !!tok();}
+  function veh(vid){try{return (typeof VEH!=='undefined')?VEH[vid]:null;}catch(e){return null;}}
+  function nf(n){try{return Number(n).toLocaleString('en-US');}catch(e){return String(n);}}
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  // SERVICE_MATCH (ruling 3): conservative service_type <-> OEM-schedule matcher. ORDERED so
+  // cabin-filter is tested BEFORE air-filter; `not` withholds a match (air-filter actively excludes
+  // cabin; transmission excludes CVT/DCT variants, since the log vocabulary offers only a generic
+  // "Transmission Service"). No match beats wrong match. NO brake-pads key (condition-based ->
+  // matching would manufacture false DUEs). Extending this map requires a review PAUSE.
+  var SERVICE_MATCH=[
+    {key:'oil',          types:['Engine Oil & Filter Change'],   re:/engine oil|oil.{0,10}filter/i},
+    {key:'cabin-filter', types:['Cabin Air Filter Replacement'], re:/cabin (air )?filter/i},
+    {key:'air-filter',   types:['Air Filter Replacement'],       re:/air ?filter/i, not:/cabin/i},
+    {key:'spark-plug',   types:['Spark Plug Replacement'],       re:/spark plug/i},
+    {key:'coolant',      types:['Coolant Flush'],                re:/coolant|antifreeze/i},
+    {key:'brake-fluid',  types:['Brake Fluid Flush'],            re:/brake fluid/i},
+    {key:'transmission', types:['Transmission Service'],         re:/transmission (fluid|service)|trans(mission)? fluid/i, not:/cvt|dct|dual.?clutch|automated.manual/i},
+    {key:'timing',       types:['Timing Belt / Chain Service'],  re:/timing (belt|chain)/i},
+    {key:'fuel-filter',  types:['Fuel Filter Replacement'],      re:/fuel filter/i},
+    {key:'tire-rotation',types:['Tire Rotation'],                re:/tire rotation|rotate tires/i}
+  ];
+  function keyOfDesc(desc){var s=String(desc||'');for(var i=0;i<SERVICE_MATCH.length;i++){var m=SERVICE_MATCH[i];if(m.re.test(s)&&!(m.not&&m.not.test(s)))return m.key;}return null;}
+  function keyOfType(t){for(var i=0;i<SERVICE_MATCH.length;i++){if(SERVICE_MATCH[i].types.indexOf(t)>=0)return SERVICE_MATCH[i].key;}return null;}
+
+  var SLCACHE={};
+  function fetchLog(vid,cb){var t=tok();if(!t){cb(null);return;}
+    fetch('/api/service-log',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({action:'list',vehicle_id:vid})})
+      .then(function(r){return r.json();}).then(function(d){cb((d&&d.entries)||[]);}).catch(function(){cb(null);});}
+  function ensure(vid,cb){if(SLCACHE[vid]||!authed()){cb&&cb();return;}fetchLog(vid,function(e){if(e!=null)SLCACHE[vid]=e;cb&&cb();});}
+
+  function garageMi(vid){try{var a=JSON.parse(localStorage.getItem('kyr_garage')||'[]');for(var i=0;i<a.length;i++){if(a[i].id===vid)return (a[i].mileage!=null&&a[i].mileage!==''?parseInt(a[i].mileage,10):null);}}catch(e){}return null;}
+  function parseDate(s){var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(s||''));return m?new Date(+m[1],+m[2]-1,+m[3]):null;}
+  function addMonths(d,mo){var x=new Date(d.getTime());x.setMonth(x.getMonth()+mo);return x;}
+  function today(){var n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate());}
+  function fmtDate(d){try{return d.toLocaleDateString('en-US',{month:'short',year:'numeric'});}catch(e){return '';}}
+  var SOON_MI=500,SOON_DAYS=30,SEV={OK:0,SOON:1,DUE:2};
+
+  function compute(vid){
+    var v=veh(vid); if(!v||!v.maint||!v.maint.length) return {cls:'NONE'};
+    var entries=SLCACHE[vid]||[], gm=garageMi(vid), maxLog=null;
+    entries.forEach(function(e){var n=Number(e.mileage);if(!isNaN(n)&&(maxLog==null||n>maxLog))maxLog=n;});
+    var curMi=(gm!=null?gm:maxLog);
+    var ivItems=[],monItems=[];
+    v.maint.forEach(function(s){ if((s.mi&&s.mi>0)||(s.mo&&s.mo>0))ivItems.push(s); else monItems.push(s); });
+    if(!ivItems.length){var oilish=monItems.some(function(s){return /oil.?life/i.test(s.desc||'');});return {cls:'MONITOR',monitorKind:oilish?'oil':'general'};}
+    var items=[],any=false,worst=null,lead=null;
+    ivItems.forEach(function(s){
+      var k=keyOfDesc(s.desc); if(!k)return;
+      var matched=entries.filter(function(e){return keyOfType(e.service_type)===k;}); if(!matched.length)return;
+      var aMi=null,aDate=null;
+      matched.forEach(function(e){var n=Number(e.mileage);if(!isNaN(n)&&(aMi==null||n>aMi))aMi=n;var d=parseDate(e.date);if(d&&(aDate==null||d>aDate))aDate=d;});
+      var miState=null,miDue=null,tState=null,tDue=null;
+      if(s.mi&&s.mi>0&&curMi!=null&&aMi!=null&&curMi>=aMi){miDue=aMi+s.mi;miState=curMi>=miDue?'DUE':((miDue-curMi)<=SOON_MI?'SOON':'OK');}
+      if(s.mo&&s.mo>0&&aDate){tDue=addMonths(aDate,s.mo);var days=Math.round((tDue-today())/86400000);tState=today()>=tDue?'DUE':(days<=SOON_DAYS?'SOON':'OK');}
+      if(miState==null&&tState==null)return;
+      any=true;
+      var st=(SEV[miState||'OK']>=SEV[tState||'OK'])?(miState||tState):(tState||miState);
+      var axis=(miState&&tState)?(SEV[miState]>=SEV[tState]?'mi':'time'):(miState?'mi':'time');
+      var it={desc:s.desc,key:k,state:st,axis:axis,dueMi:miDue,dueDate:tDue};
+      items.push(it);
+      if(worst==null||SEV[st]>SEV[worst]){worst=st;lead=it;}
+    });
+    if(!any)return {cls:'NO_ANCHOR',nudge:(gm==null?'mileage':'log')};
+    return {cls:'HAS_DUE',worst:worst,lead:lead,items:items};
+  }
+
+  var NAME={'oil':'Oil','cabin-filter':'Cabin filter','air-filter':'Air filter','spark-plug':'Spark plugs','coolant':'Coolant','brake-fluid':'Brake fluid','transmission':'Transmission','timing':'Timing belt','fuel-filter':'Fuel filter','tire-rotation':'Tire rotation'};
+  function leadStr(it){
+    var miStr=(it.dueMi!=null)?('~'+nf(it.dueMi)+' mi'):null, tStr=(it.dueDate)?('by '+fmtDate(it.dueDate)):null;
+    if(it.axis==='time'&&tStr)return tStr+(miStr?(' (or '+miStr+')'):'');
+    if(miStr)return miStr+(tStr?(' (or '+tStr+')'):'');
+    return tStr||'';
+  }
+
+  window.kyrDue={
+    _match:SERVICE_MATCH, keyOfDesc:keyOfDesc, keyOfType:keyOfType, compute:compute, ensure:ensure,
+    setLog:function(vid,e){SLCACHE[vid]=e||[];}, invalidate:function(vid){delete SLCACHE[vid];},
+    badgeHTML:function(vid){
+      var d=compute(vid);
+      if(d.cls==='HAS_DUE'){
+        if(d.worst==='DUE'){var extra=d.items.filter(function(i){return i.state==='DUE';}).length-1;return '<span class="kyr-due kyr-due-now">&#9888; '+esc(NAME[d.lead.key]||d.lead.key)+' due'+(extra>0?(' +'+extra):'')+'</span>';}
+        if(d.worst==='SOON')return '<span class="kyr-due kyr-due-soon">'+esc(NAME[d.lead.key]||d.lead.key)+' due soon</span>';
+        return '';
+      }
+      if(d.cls==='NO_ANCHOR'&&authed())return '<span class="kyr-due kyr-due-nudge">'+(d.nudge==='mileage'?'Add mileage to see due dates':'Log a service to see due dates')+'</span>';
+      if(d.cls==='MONITOR')return '<span class="kyr-due kyr-due-monitor">Monitor-based</span>';
+      return '';
+    },
+    itemTagFor:function(vid,s){
+      var hasIv=(s.mi&&s.mi>0)||(s.mo&&s.mo>0);
+      if(!hasIv)return /oil.?life/i.test(s.desc||'')?'<div class="kyr-mt kyr-mt-mon">Per your in-car oil-life monitor</div>':'<div class="kyr-mt kyr-mt-mon">Condition-based &mdash; follow your in-car monitor</div>';
+      var d=compute(vid), it=(d.items||[]).filter(function(i){return i.desc===s.desc;})[0];
+      if(it){if(it.state==='DUE')return '<div class="kyr-mt kyr-mt-now">DUE &middot; '+leadStr(it)+'</div>';if(it.state==='SOON')return '<div class="kyr-mt kyr-mt-soon">Due soon &middot; '+leadStr(it)+'</div>';return '<div class="kyr-mt kyr-mt-ok">Next '+leadStr(it)+'</div>';}
+      if(!authed())return '<div class="kyr-mt kyr-mt-hint">Sign in and log this service to track it</div>';
+      if(keyOfDesc(s.desc))return '<div class="kyr-mt kyr-mt-hint">Log this service to track it</div>';
+      return '';
+    },
+    nextDueLine:function(vid,entry){
+      var v=veh(vid); if(!v||!v.maint)return '';
+      var k=keyOfType(entry.service_type); if(!k)return 'No verified interval for this service type.';
+      var s=null; v.maint.forEach(function(x){if(!s&&((x.mi&&x.mi>0)||(x.mo&&x.mo>0))&&keyOfDesc(x.desc)===k)s=x;});
+      if(!s)return 'No fixed interval &mdash; follow your in-car maintenance monitor.';
+      var em=Number(entry.mileage),d=parseDate(entry.date),parts=[];
+      if(s.mi&&s.mi>0&&!isNaN(em))parts.push('~'+nf(em+s.mi)+' mi');
+      if(s.mo&&s.mo>0&&d)parts.push('by '+fmtDate(addMonths(d,s.mo)));
+      if(!parts.length)return '';
+      var cad=[]; if(s.mi)cad.push(nf(s.mi)+' mi'); if(s.mo)cad.push(s.mo+' mo');
+      return 'Next due '+parts.join(' or ')+' &middot; per '+esc(v.make)+' schedule (every '+cad.join(' / ')+')';
+    }
+  };
+})();
+</script>
+<style>/*WRENCH_DUE_CSS*/
+.kyr-gc-badge{display:block;margin-top:5px}
+.kyr-due{display:inline-block;font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;line-height:1;padding:3px 7px;border-radius:5px;letter-spacing:.01em}
+.kyr-due-now{background:rgba(239,68,68,.15);color:#ff6b6b;border:1px solid rgba(239,68,68,.35)}
+.kyr-due-soon{background:rgba(255,184,0,.14);color:#ffb800;border:1px solid rgba(255,184,0,.32)}
+.kyr-due-nudge{background:var(--p2);color:var(--dim);border:1px solid var(--border);font-weight:600}
+.kyr-due-monitor{background:var(--p2);color:var(--faint);border:1px solid var(--border);font-weight:600}
+.kyr-mt{margin-top:5px;font-family:'Manrope',sans-serif;font-size:11px;font-weight:700;display:inline-block;padding:2px 7px;border-radius:5px}
+.kyr-mt-now{background:rgba(239,68,68,.15);color:#ff6b6b}
+.kyr-mt-soon{background:rgba(255,184,0,.14);color:#ffb800}
+.kyr-mt-ok{background:rgba(52,199,89,.12);color:var(--green,#34c759)}
+.kyr-mt-mon{background:var(--p2);color:var(--dim);font-weight:600}
+.kyr-mt-hint{background:transparent;color:var(--faint);font-weight:500;padding-left:0}
+</style>
 <style id="kyr-ex-css">
 .kyr-ex-head{display:flex;align-items:center;justify-content:space-between;margin:4px 0 14px;flex-wrap:wrap;gap:10px}
 .kyr-ex-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:6px}
