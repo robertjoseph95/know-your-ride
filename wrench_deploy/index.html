@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-07-07-due-state">
+<meta name="kyr-version" content="2026-07-10-stripe-bind">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -1689,6 +1689,22 @@ document.addEventListener('DOMContentLoaded',function(){
           <a class="pp-btn annual" href="/api/subscribe?plan=annual"><span class="pp-badge">Most Popular - Save 33%</span>Annual - $23.99/year</a>
           <a class="pp-btn monthly" href="/api/subscribe?plan=monthly">Monthly - $2.99/month</a>
         </div>
+        <script>/* KYR_SUB_BIND: mirror the localStorage session token into a short-lived
+          cookie right before the /api/subscribe navigation, so the endpoint can bind
+          Stripe Checkout to the signed-in account (plain link navigations carry no
+          Authorization header). Signed-out users are unaffected (anonymous checkout). */
+          document.addEventListener('click', function (e) {
+            var a = e.target && e.target.closest ? e.target.closest('a[href^="/api/subscribe"]') : null;
+            if (!a) return;
+            try {
+              var t = localStorage.getItem('kyr_session');
+              // Secure only on HTTPS: production is HTTPS (flag kept), but the local
+              // http://localhost preview would silently drop a Secure cookie, hiding
+              // the binding during the PAUSE-gate check.
+              var sec = (location.protocol === 'https:') ? '; secure' : '';
+              if (t) { document.cookie = 'kyr_session=' + encodeURIComponent(t) + '; path=/api; samesite=lax; max-age=600' + sec; }
+            } catch (_e) {}
+          });</script>
       </div>
     </div>
     <div class="pp-promo">

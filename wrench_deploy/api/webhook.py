@@ -66,7 +66,11 @@ class handler(BaseHTTPRequestHandler):
             evid = str(event.get("id") or "")
             if r is not None and evid and r.get("evt:" + evid):
                 return self._send(200, {"received": True, "duplicate": True})
-            email = self._email_for(stripe, obj)
+            # Prefer the KYR account email bound at checkout creation (subscribe.py:
+            # client_reference_id / metadata.kyr_email, propagated onto the Subscription
+            # via subscription_data.metadata) over the Stripe payer email, so paying
+            # under a different email still unlocks Pro on the right account.
+            email = self._bound_email(obj) or self._email_for(stripe, obj)
             if email and r:
                 if etype in INACTIVE_EVENTS:
                     r.set("sub:" + email, "inactive", ex=60 * 60 * 24 * 40)
@@ -82,6 +86,21 @@ class handler(BaseHTTPRequestHandler):
         # Always 200 so Stripe doesn't retry on our bookkeeping hiccups; verify-subscription
         # re-checks Stripe directly (the source of truth) if a cache write was ever missed.
         return self._send(200, {"received": True})
+
+    def _bound_email(self, obj):
+        """KYR account email bound to the Stripe object at checkout creation, or None.
+        Priority: client_reference_id (Checkout Session), then metadata.kyr_email
+        (Checkout Session AND Subscription objects, the latter via
+        subscription_data.metadata). Lowercased to match the sub:{email} convention.
+        Returns None for unbound/legacy checkouts so _email_for keeps working."""
+        v = str(obj.get("client_reference_id") or "").strip().lower()
+        if v and "@" in v:
+            return v
+        meta = obj.get("metadata") or {}
+        v = str(meta.get("kyr_email") or "").strip().lower()
+        if v and "@" in v:
+            return v
+        return None
 
     def _email_for(self, stripe, obj):
         det = obj.get("customer_details") or {}
