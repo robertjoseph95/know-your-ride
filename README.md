@@ -111,8 +111,13 @@ cp wrench_demo.html wrench_deploy/index.html
 **To deploy: commit your changes and `git push` to `main`.** That's it.
 
 ```bash
-git add -A
+# Targeted add ONLY. The working tree holds untracked copyrighted OEM text and
+# private business/DoD docs; `git add -A` / `git add .` would ship them into this
+# PUBLIC repo. Stage each intended path explicitly and verify before pushing.
+git add wrench_deploy/index.html wrench_demo.html   # + any other paths you changed
+git status                                          # confirm nothing unintended is staged
 git commit -m "your message"
+git show --stat HEAD                                # verify the commit's file list
 git push origin main
 ```
 

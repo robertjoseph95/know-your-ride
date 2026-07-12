@@ -83,9 +83,28 @@ _subaru_outback_*_om.pdf
 #    (2026-07-02 audit F9/F13/F14: 449MB of copyrighted GM manuals were tracked here.)
 *.pdf
 *.docx
+#    OM plain-text extractions: the _OM* glob missed the real filenames
+#    (_CADESC2021_full.txt, _TS2021_full.txt, _duramax30_full.txt, _silverado_2024_full.txt, ...)
+#    plus the _*_caps.txt capacity dumps — all copyrighted OM text (2026-07-11 audit review).
 _OM*_full.txt
+_*_full.txt
+_*_caps.txt
 _pilot_manuals/
 _mazda_manuals/
+
+# ── Private business / strategy / DoD docs (untracked — NEVER commit). Listed
+#    INDIVIDUALLY, not `KYR_*`: the KYR_*_Verification_Log.md + KYR_OEM_Manual_Source_Map.md
+#    provenance docs are intentionally TRACKED and must stay committable.
+KYR_Investor_Pitch.md
+KYR_Military_Scalability_Assessment.md
+KYR_DOT_SBIR_FY26_Fit_Analysis.md
+KYR_LWI_Meeting_Notes.md
+KYR_LWI_Meeting_Brief.md
+KYR_Standalone_FSM_Sourcing.md
+KYR_Verification_Sourcing_Cost_Analysis.md
+KYR_Data_Rights_Marking_Guide.md
+KYR_Mazda3_Curated_Specs_Needed*.csv
+KYR_Researcher_Batch2_Honda_Acura.csv
 
 # ── Misplaced clone + independently-deployed demo projects (0 tracked files each) ──
 UsersRobertreposskills/
