@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-07-12-consumer-reports">
+<meta name="kyr-version" content="2026-07-12-known-issues-gate">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -791,7 +791,7 @@ body{background:var(--bg)}
   </div>
 </div>
 
-<script src="/data.8850f54f.js"></script>
+<script src="/data.d31fadbd.js"></script>
 <script>
 
 const DB=__D__;
@@ -1315,7 +1315,7 @@ function renderGarage(){
   const grid=document.getElementById('vgrid');
   if(!vs.length){grid.innerHTML='<div class="no-res">// NO MATCH &mdash; TRY FEWER WORDS, OR PICK A MAKE &amp; YEAR ABOVE</div>';return;}
   grid.innerHTML=vs.map(v=>{
-    const o=v.oil,p=v.parts,r=v.rel,s=v.safety,rc=(v.recalls||[]).length,m=v.mpg&&v.mpg[0],isEV=!!v.ev,ic=(v.notes||[]).filter(function(n){return n.type==='known_issue';}).length;
+    const o=v.oil,p=v.parts,r=v.rel,s=v.safety,rc=(v.recalls||[]).length,m=v.mpg&&v.mpg[0],isEV=!!v.ev;
     const bdg=[];if(v.id<0)bdg.push('<span class="bdg bdg-partial">Partial data - pre-2003</span>');
     if(o&&o.visc)bdg.push('<span class="bdg bdg-o">'+o.visc+'</span>');
     if(isEV)bdg.push('<span class="bdg bdg-ev">EV</span>');
@@ -1323,7 +1323,7 @@ function renderGarage(){
     if(s&&s.overall)bdg.push('<span class="bdg bdg-s">&#9733;'+s.overall+'</span>');
     if(rc>0)bdg.push('<span class="bdg bdg-r">'+rc+' RECALL'+(rc>1?'S':'')+'</span>');
     if(v.maint&&v.maint.length)bdg.push('<span class="bdg bdg-m">'+v.maint.length+' SCHEDULES</span>');
-    return '<div class="vcard" tabindex="0" role="button" aria-label="'+v.year+' '+v.make+' '+v.model+'" onclick="openModal('+v.id+')"><div class="vc-head"><div><div class="vc-name">'+v.year+' '+v.make+' '+v.model+'</div><div class="vc-sub">'+(v.engine||v.trim||'&mdash;')+'</div>'+(ic>0?'<div tabindex="0" role="button" aria-label="View known issues" onclick="event.stopPropagation();openModal('+v.id+',\'issues\')" style="margin-top:6px;display:inline-block;background:rgba(255,184,0,.12);color:var(--a2,#ffb800);border:1px solid rgba(255,184,0,.3);font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;cursor:pointer">&#9888;&#65039; '+ic+' known issue'+(ic>1?'s':'')+' documented</div>':'')+'</div></div><div class="vc-badges">'+bdg.join('')+'</div><div class="vc-stats"><div><div class="vcs-l">OIL</div><div class="vcs-v">'+(o&&o.visc||'&mdash;')+'</div></div><div><div class="vcs-l">RELIABILITY</div><div class="vcs-v">'+(r&&r.score?r.score.toFixed(0)+'%':'&mdash;')+'</div></div><div><div class="vcs-l">MPG COMB</div><div class="vcs-v">'+(m&&m.comb||'&mdash;')+'</div></div></div></div>';
+    return '<div class="vcard" tabindex="0" role="button" aria-label="'+v.year+' '+v.make+' '+v.model+'" onclick="openModal('+v.id+')"><div class="vc-head"><div><div class="vc-name">'+v.year+' '+v.make+' '+v.model+'</div><div class="vc-sub">'+(v.engine||v.trim||'&mdash;')+'</div>'+'</div></div><div class="vc-badges">'+bdg.join('')+'</div><div class="vc-stats"><div><div class="vcs-l">OIL</div><div class="vcs-v">'+(o&&o.visc||'&mdash;')+'</div></div><div><div class="vcs-l">RELIABILITY</div><div class="vcs-v">'+(r&&r.score?r.score.toFixed(0)+'%':'&mdash;')+'</div></div><div><div class="vcs-l">MPG COMB</div><div class="vcs-v">'+(m&&m.comb||'&mdash;')+'</div></div></div></div>';
   }).join('');
 }
 
@@ -1379,15 +1379,13 @@ function renderParts(v){
 }
 
 function renderIssues(v){
-  var n=(v.notes||[]).filter(function(x){return x.type==='known_issue';});
-  if(!n.length)return '<p class="empty-note">No known issues documented for this vehicle.</p>';
-  var h='<div class="sec-head">Known Issues ('+n.length+')</div>';
-  h+='<p style="color:var(--dim);font-size:12px;line-height:1.5;margin-bottom:12px">Documented model-specific problems to watch for. The mileage trigger indicates when the issue typically begins.</p>';
-  h+=n.map(function(x){
-    var trig=x.from_mi?'<span style="display:inline-block;background:var(--a2,#ffb800);color:#000;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 9px;border-radius:4px">WATCH FROM '+x.from_mi.toLocaleString()+' MI</span>':'<span style="display:inline-block;background:var(--red,#ef4444);color:#fff;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 9px;border-radius:4px">ALL MILEAGES</span>';
-    return '<div class="recall-card park"><div class="rc-comp" style="color:var(--red)">'+x.title+'</div><div style="margin:7px 0">'+trig+'</div><div class="rc-text">'+x.body+'</div></div>';
-  }).join('');
-  return h;
+  /* P0-4 gate (2026-07-12): AI/null-source vehicle_notes no longer ship. Honest empty
+     state until the TSB/recall-derived rebuild (option D) lands. */
+  var lk='color:var(--accent);cursor:pointer;text-decoration:underline';
+  return '<p class="empty-note">No verified model-specific issues on file. See '
+    +'<span tabindex="0" role="button" style="'+lk+'" onclick="switchMTab(\'warranty\','+v.id+')">Warranty &amp; Recalls</span> and '
+    +'<span tabindex="0" role="button" style="'+lk+'" onclick="switchMTab(\'comps\','+v.id+')">Consumer Reports</span>'
+    +' for manufacturer and NHTSA data.</p>';
 }
 function renderFluids(v){
   var f=v.fluids,t=(v.torque||[]).filter(function(x){return x.ver;}),h='';
@@ -1531,8 +1529,7 @@ function openModal(vid,tab){
 }
 
 function renderMTabs(v){
-  var ic=(v.notes||[]).filter(function(n){return n.type==='known_issue';}).length;
-  document.getElementById('m-tab-bar').innerHTML=MTABS.map(function(t,i){var lbl=MLABELS[i];if(t==='issues'&&ic>0)lbl+=' <span style="display:inline-block;background:var(--red,#ef4444);color:#fff;font-size:9px;font-weight:800;line-height:1;padding:2px 6px;border-radius:9px;vertical-align:middle">'+ic+'</span>';return '<div class="m-tab '+(t===curTab?'active':'')+'" tabindex="0" role="button" onclick="switchMTab(\''+t+'\','+v.id+')"><span class="m-tab-n">'+('0'+(i+1)).slice(-2)+'</span>'+lbl+'</div>';}).join('');
+  document.getElementById('m-tab-bar').innerHTML=MTABS.map(function(t,i){var lbl=MLABELS[i];return '<div class="m-tab '+(t===curTab?'active':'')+'" tabindex="0" role="button" onclick="switchMTab(\''+t+'\','+v.id+')"><span class="m-tab-n">'+('0'+(i+1)).slice(-2)+'</span>'+lbl+'</div>';}).join('');
 }
 
 function switchMTab(tab,vid){curTab=tab;var v=VEH[vid];renderMTabs(v);renderMBody(v);}

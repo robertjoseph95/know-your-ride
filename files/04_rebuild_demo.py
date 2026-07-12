@@ -211,10 +211,12 @@ def build_data(cur):
         {"comp": r["component"], "ft": r["torque_ft_lbs"], "nm": r["torque_nm"], "notes": r["notes"],
          "ver": _ver(r["source"] if "source" in r.keys() else None)}))
 
-    # vehicle_notes (known issues, jack points, DIY tips) -> rendered in the Parts tab
-    if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='vehicle_notes'").fetchone():
-        each("vehicle_notes", lambda d, r: d.setdefault("notes", []).append(
-            {"type": r["note_type"], "title": r["title"], "body": r["body"], "from_mi": r["applies_from_miles"]}))
+    # vehicle_notes GATED (P0-4 proper, 2026-07-12 ruling E): 100% of the table is
+    # non-authoritative (859 google-ai-* + 340 null-source rows; zero OM/gov citations),
+    # asserting failure mileages, repair costs, and OM-contradicting intervals -- so NO
+    # notes-derived content ships. Rows stay in the DB for internal reference (same as
+    # complaints narratives). The Known Issues tab shows an honest empty state until the
+    # TSB/recall-derived rebuild (option D, queued after the CI verifier block).
 
     each("recalls", lambda d, r: d.setdefault("recalls", []).append(
         {"camp": r["campaign_number"], "comp": r["component"], "sum": r["summary"],
