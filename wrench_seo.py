@@ -134,15 +134,21 @@ def write_page(path, body_html):
         f.write(body_html)
 
 
-def page(title, desc, canonical, inner, jsonld=None):
+def page(title, desc, canonical, inner, jsonld=None, noindex=False):
     head_extra = ""
     if jsonld:
         head_extra = ('<script type="application/ld+json">'
                       + json.dumps(jsonld, ensure_ascii=True, separators=(",", ":"))
                       + "</script>\n")
+    # P0-1 containment (2026-07-11 audit): vehicle spec pages serve unverified /
+    # AI-sourced values, so they are noindex'd until regenerated from verified-only
+    # data. Crawl stays ALLOWED (robots.txt) so bots can see this tag and delist;
+    # a Disallow would block the crawl and leave stale entries indexed.
+    robots = '<meta name="robots" content="noindex, nofollow">\n' if noindex else ""
     return (
         "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
         "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
+        f"{robots}"
         f"<title>{esc(title)}</title>\n<meta name=\"description\" content=\"{esc(desc)}\">\n"
         f"<link rel=\"canonical\" href=\"{canonical}\">\n"
         f"<meta property=\"og:title\" content=\"{esc(title)}\">\n"
@@ -727,12 +733,13 @@ def main():
 
         inner.append("<a class=\"cta\" href=\"https://knowyourride.net/\">See full specs, parts &amp; repair guides &rarr;</a>")
         inner.append("<p class=\"muted\">Part of the free Know Your Ride vehicle maintenance reference. "
-                     "Figures are sourced from EPA, NHTSA and manufacturer data and are for general "
-                     "reference - always confirm with your owner's manual.</p>")
+                     "Figures are for general reference only and may be unofficial or incomplete - "
+                     "always confirm against your vehicle's owner's manual before servicing.</p>")
 
+        # P0-1 containment: noindex (unverified specs) + omit vehicle pages from the
+        # sitemap until they are regenerated from verified-only data.
         write_page(os.path.join(OUT, "vehicles", slug, "index.html"),
-                   page(title, desc, canonical, "\n".join(inner), jsonld))
-        sitemap.append(canonical)
+                   page(title, desc, canonical, "\n".join(inner), jsonld, noindex=True))
         n_veh += 1
 
     # ----- DTC pages -----
