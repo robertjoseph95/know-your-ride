@@ -144,6 +144,16 @@ def main():
             if full not in staged_paths and not tracked(full):
                 fails.append("index.html references %s but it is neither staged nor tracked (desync risk)" % ref)
 
+    # P0-2 (2026-07-11): a staged Pro-guide specs.json MUST be generator-produced -- carry the
+    # _meta.generated_by=_gen_guide_specs.py marker -- never the old fabricated file or a hand-edit.
+    # Same pattern as the blob content-guard: inspect the staged bytes via `git show :path`.
+    specs = "wrench_deploy/api/specs.json"
+    if any(p == specs and c != "D" for c, p in entries):
+        blob = sh("show", ":" + specs).stdout
+        if '"generated_by"' not in blob or '"_gen_guide_specs.py"' not in blob:
+            fails.append("specs.json staged without the _meta.generated_by=_gen_guide_specs.py "
+                         "marker -- regenerate via _gen_guide_specs.py, never hand-edit")
+
     if fails:
         print("DEPLOY GUARD: FAIL")
         for f in fails:

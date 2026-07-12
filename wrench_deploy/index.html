@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-07-11-engine-strip">
+<meta name="kyr-version" content="2026-07-11-guide-integrity">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -1007,6 +1007,7 @@ function ghLoad(btn){
   fetch('/api/guide/'+encodeURIComponent(vid)+'/'+encodeURIComponent(svc),{headers:{'Authorization':'Bearer '+(localStorage.getItem('kyr_session')||'')}}).then(function(r){return r.json();}).then(function(d){
     if(d.error){box.innerHTML='<div class="gh-hint gh-err">'+htmlEsc(d.error)+'</div>';return;}
     if(d.safety_blocked){box.innerHTML='<div class="gh-safety">&#9888; '+htmlEsc(d.message)+'</div>';return;}
+    if(d.unverified){box.innerHTML='<div class="gh-hint">'+htmlEsc(d.message||'This vehicle has not completed owner\'s-manual verification yet - guides are generated from verified specs only.')+'</div>';return;}
     if(!d.guide){box.innerHTML='<div class="gh-hint">No guide available.</div>';return;}
     box.innerHTML=(kyrPro()?('<div class="gh-guide">'+ghMd(d.guide)+'</div>'+affGuideParts(vid,svc)):('<div class="gh-guide pro-fade">'+ghMd(d.guide)+'</div>'+proUnlock('Unlock the full step-by-step guide','Preview shown - Pro unlocks the complete guide.')))+(d.cached?'<div class="gh-cache">cached</div>':'');
   }).catch(function(){

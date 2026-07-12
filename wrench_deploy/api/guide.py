@@ -153,7 +153,7 @@ def build_specs(v, service):
     if "oil" in s:
         if o.get("viscosity"): spec["Oil viscosity"] = o["viscosity"]
         if o.get("oil_type"): spec["Oil type"] = o["oil_type"]
-        if o.get("capacity"): spec["Oil capacity (with filter)"] = f"{o['capacity']} qt"
+        if o.get("capacity"): spec["Oil capacity (with filter)"] = str(o["capacity"])  # OM-verified capacity is a formatted string ("6.0 qt / 5.7 L (...)"); no unit append
         if o.get("oem_spec"): spec["OEM oil spec"] = o["oem_spec"]
         if o.get("drain_socket"): spec["Drain plug socket"] = f"{o['drain_socket']} mm"
         if o.get("drain_thread"): spec["Drain plug thread"] = o["drain_thread"]
@@ -217,8 +217,15 @@ class handler(BaseHTTPRequestHandler):
         if not key:
             return self._send(500, {"guide": None, "error": "server not configured (ANTHROPIC_API_KEY)"})
         v = _specs().get(str(vid))
-        if not v:
-            return self._send(404, {"guide": None, "error": "vehicle not found"})
+        if not v or not v.get("label"):   # also skips the top-level _meta provenance key
+            # P0-2 Option C: specs.json now carries ONLY owner's-manual-verified vehicles
+            # (~290), so any other id -- including real but unverified vehicles -- gets an
+            # honest "not verified yet" response instead of a fabricated guide or a bare 404.
+            # This branch returns BEFORE the cache path: unverified responses are never cached.
+            return self._send(200, {"guide": None, "unverified": True, "label": None,
+                                    "message": ("We only generate repair guides from owner's-manual-verified "
+                                                "specifications, and this vehicle hasn't completed verification "
+                                                "yet. Coverage grows weekly -- check back soon.")})
         label = v.get("label")
         if any(k in service.lower() for k in SAFETY):
             return self._send(200, {"guide": None, "safety_blocked": True, "label": label,
