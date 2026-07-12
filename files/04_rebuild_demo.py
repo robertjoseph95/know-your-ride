@@ -96,7 +96,7 @@ def _strip_unverified(vlist):
     (their renderers filter per-row anyway); maint_parts orphaned by dropped rows are
     pruned; internal provenance keys (source / last_verified_at) are scrubbed from
     every nested object. Verified (ver:1) objects ship every field they always did."""
-    n = {"oil": 0, "parts": 0, "fluids": 0, "torque_rows": 0, "maint_rows": 0, "maint_parts": 0}
+    n = {"oil": 0, "parts": 0, "fluids": 0, "torque_rows": 0, "maint_rows": 0, "maint_parts": 0, "ver0_shells": 0}
 
     def scrub(o):
         if isinstance(o, dict):
@@ -107,6 +107,27 @@ def _strip_unverified(vlist):
         elif isinstance(o, list):
             for x in o:
                 scrub(x)
+
+    def enforce_ver0(o):
+        # P1-1 (2026-07-11) generic invariant: ANY object carrying ver:0 ships as a bare
+        # {ver:0} shell -- no value-bearing keys. Category-AGNOSTIC, so engines (571 rows,
+        # all unverified -> hp/tq/disp/config were leaking into the public blob) and any
+        # FUTURE gated table are covered with no per-category exception. Runs AFTER the tuned
+        # logic above (oil/parts/fluids already shelled; torque/maint ver:0 rows dropped), so
+        # it only collapses what those did not handle. Shelling (not dropping) engine rows
+        # keeps v.engines non-empty, so the UI still shows "specs pending factory verification"
+        # rather than "no performance data" (index.html renderMBody).
+        if isinstance(o, dict):
+            if "ver" in o and not o.get("ver") and len(o) > 1:
+                o.clear()
+                o["ver"] = 0
+                n["ver0_shells"] += 1
+                return
+            for x in o.values():
+                enforce_ver0(x)
+        elif isinstance(o, list):
+            for x in o:
+                enforce_ver0(x)
 
     for v in vlist:
         for k in ("oil", "parts", "fluids"):
@@ -133,6 +154,7 @@ def _strip_unverified(vlist):
             else:
                 v.pop("maint_parts", None)
         scrub(v)
+        enforce_ver0(v)   # generic ver:0 shell pass -> engines + any future gated category
     return n
 
 
@@ -1774,7 +1796,22 @@ def main():
 
     strip = _strip_unverified(vlist)
     print("Integrity strip (C1): oil={oil} parts={parts} fluids={fluids} shells; "
-          "torque_rows={torque_rows} maint_rows={maint_rows} maint_parts={maint_parts} dropped".format(**strip))
+          "torque_rows={torque_rows} maint_rows={maint_rows} maint_parts={maint_parts} dropped; "
+          "ver0_shells={ver0_shells} (engines + any other ver:0 object)".format(**strip))
+
+    # P1-1 (2026-07-11) build guard: verify the generic ver:0 invariant held -- no object may
+    # ship ver:0 alongside value-bearing keys. Category-agnostic defense-in-depth; fails the
+    # build before any file is written if a future gated table reintroduces the engine leak.
+    def _ver0_leak(o):
+        if isinstance(o, dict):
+            if "ver" in o and not o.get("ver") and len(o) > 1:
+                return True
+            return any(_ver0_leak(x) for x in o.values())
+        if isinstance(o, list):
+            return any(_ver0_leak(x) for x in o)
+        return False
+    if any(_ver0_leak(v) for v in vlist):
+        raise SystemExit("PAYLOAD GUARD: ver:0 object shipped with value-bearing keys (P1-1)")
 
     data_json = json.dumps({"v": vlist, "dtc": dtc, "fixes": fixes, "fuseTsbsByCode": fuseTsbsByCode}, separators=(",", ":"))
     data_json = data_json.replace("</", "<\\/")        # can't break out of <script>
