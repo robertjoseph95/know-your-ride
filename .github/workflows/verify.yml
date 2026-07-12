@@ -1,0 +1,27 @@
+# KYR shipped-surfaces verifier (CI subset). Runs every tracked-artifact invariant from
+# docs/shipped-surfaces-ledger.md on each push/PR to main. No secrets, no network calls,
+# no DB (the canonical wrench_vehicles.db is deliberately local-only; DB-tier checks run
+# in the local deploy ritual instead). ADVISORY by design: no branch protection requires
+# this check, so a red run never blocks a push -- it flags visibly and gets fixed.
+name: verify-shipped-surfaces
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify shipped surfaces (CI subset)
+        run: python _verify_shipped.py --ci

@@ -37,9 +37,14 @@ served by Vercel) plus the spec-verification campaign workspace (local-only file
 2. `python files/04_rebuild_demo.py` (rebuild + compute `ver`)
 3. Preview: MCP server "kyr-demo" port 8752 → reload with a fresh cache-buster (the `__D__.v` blob caches in browser memory). **PAUSE for user check.**
 4. `KYR_NEW_VER=<version> python _deploy_sync_specs.py`
-5. Commit with targeted `git add` (NEVER `git add -A`)
-6. Confirm live: `curl -s "https://knowyourride.net/?cb=<rand>" | grep kyr-version` (~2–4 min Vercel build)
-7. Update `KYR_OEM_Manual_Source_Map.md` + the make's `KYR_<Make>_Verification_Log.md`
+5. `python _verify_shipped.py` — the shipped-surfaces verifier (full local suite incl. the
+   DB-tier checks) **must print PASS before staging anything**. It executes every invariant
+   in `docs/shipped-surfaces-ledger.md`. CI re-runs the artifact subset on push
+   (`.github/workflows/verify.yml`) — advisory: a red run never blocks a push, but fix it
+   immediately, don't let a red X sit on main.
+6. Commit with targeted `git add` (NEVER `git add -A`)
+7. Confirm live: `curl -s "https://knowyourride.net/?cb=<rand>" | grep kyr-version` (~2–4 min Vercel build)
+8. Update `KYR_OEM_Manual_Source_Map.md` + the make's `KYR_<Make>_Verification_Log.md`
 
 ## Workflow discipline
 - Slices are **PAUSE-gated**: inventory → source recon **PAUSE** → engine map **PAUSE** → reads **PAUSE (present log)** → write/deploy **only on explicit user go**.
