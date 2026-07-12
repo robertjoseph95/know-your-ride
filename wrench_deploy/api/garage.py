@@ -72,17 +72,56 @@ def _session_email(r, token):
         return None
 
 
-def _tier(email, r):
+def _is_pro(r, email):
+    """Canonical email-based Pro model, identical to expenses.py / service-log.py /
+    the paid AI-endpoint gate: PRO_WHITELIST, then sub:{email} cache, then user record
+    tier, then live Stripe (cached back). Copy-pasted per endpoint because Vercel's
+    Python builder bundles only the entry file, so a shared import fails silently."""
     if email in _whitelist():
-        return "pro"
+        return True
     try:
-        raw = r.get("user:" + email)
-        if raw:
-            rec = json.loads(raw)
-            return rec.get("tier", "free")
+        v = r.get("sub:" + email)
+        if v == "active":
+            return True
+        if v == "inactive":
+            return False
     except Exception:
         pass
-    return "free"
+    try:
+        raw = r.get("user:" + email)
+        if raw and json.loads(raw).get("tier") == "pro":
+            return True
+    except Exception:
+        pass
+    key = os.environ.get("STRIPE_SECRET_KEY", "")
+    if key:
+        try:
+            import stripe
+            stripe.api_key = key
+            for c in stripe.Customer.list(email=email, limit=20).data:
+                for status in ("active", "trialing"):
+                    if stripe.Subscription.list(customer=c.id, status=status, limit=1).data:
+                        try:
+                            r.set("sub:" + email, "active", ex=60 * 60 * 6)
+                        except Exception:
+                            pass
+                        return True
+            try:
+                r.set("sub:" + email, "inactive", ex=60 * 30)
+            except Exception:
+                pass
+        except Exception:
+            pass
+    return False
+
+
+def _tier(email, r):
+    # Garage cap must follow the SAME entitlement as every other paid feature.
+    # This previously checked only the whitelist + user:{email}.tier, but the Stripe
+    # webhook writes sub:{email} and NEVER user.tier -- so a paying subscriber was
+    # wrongly capped at the free limit (2). Delegate to the canonical _is_pro chain
+    # (which consults sub:{email} + live Stripe). 2026-07-11 audit P1-5.
+    return "pro" if _is_pro(r, email) else "free"
 
 
 def _cap_for(tier):
@@ -137,25 +176,29 @@ class handler(BaseHTTPRequestHandler):
             return self._send(401, {"ok": False, "error": "Sign in required."})
 
         action = str(body.get("action") or "").strip().lower()
-        tier = _tier(email, r)
-
+        # Pro entitlement (_tier -> _is_pro, which can hit live Stripe on a sub: cache
+        # miss) is resolved LAZILY inside the handlers that use it (list, add), so
+        # remove/mileage never pay for a billing lookup they don't need -- matching the
+        # expenses.py / service-log.py pattern.
         if action == "list":
-            return self._list(r, email, tier)
+            return self._list(r, email)
         if action == "add":
-            return self._add(r, email, tier, body.get("vehicle") or {})
+            return self._add(r, email, body.get("vehicle") or {})
         if action == "remove":
-            return self._remove(r, email, tier, body.get("vehicle_id"))
+            return self._remove(r, email, body.get("vehicle_id"))
         if action == "mileage":
             return self._mileage(r, email, body.get("vehicle_id"), body.get("mileage"))
         return self._send(400, {"ok": False, "error": "Unknown action."})
 
-    def _list(self, r, email, tier):
+    def _list(self, r, email):
+        tier = _tier(email, r)
         vehicles = _load_vehicles(r, email)
         return self._send(200, {
             "ok": True, "tier": tier, "cap": _cap_for(tier),
             "vehicles": vehicles, "mileage": _mileage_map(r, email, vehicles)})
 
-    def _add(self, r, email, tier, vehicle):
+    def _add(self, r, email, vehicle):
+        tier = _tier(email, r)
         cap = _cap_for(tier)
         # Normalize the record. id may be None (VIN-only); year/make/model are required if no VIN.
         vin = str(vehicle.get("vin") or "").strip().upper()
@@ -195,7 +238,7 @@ class handler(BaseHTTPRequestHandler):
             return self._send(503, {"ok": False, "error": "Could not save your garage."})
         return self._send(200, {"ok": True, "vehicles": vehicles, "mileage": _mileage_map(r, email, vehicles)})
 
-    def _remove(self, r, email, tier, vehicle_id):
+    def _remove(self, r, email, vehicle_id):
         try:
             vid = int(vehicle_id)
         except Exception:
