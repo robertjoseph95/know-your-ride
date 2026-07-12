@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-07-11-guide-integrity">
+<meta name="kyr-version" content="2026-07-12-consumer-reports">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -559,7 +559,7 @@ body{background:var(--bg)}
     <div class="brand-lockup"><svg class="brand-ico" viewBox="0 0 512 512" role="img" aria-label="Know Your Ride"><rect width="512" height="512" rx="96" fill="#09090b"/><g transform="rotate(-20 330 140)"><rect x="316" y="80" width="46" height="190" rx="23" fill="#fdba74"/><rect x="290" y="36" width="100" height="100" rx="28" fill="#fdba74"/><rect x="324" y="28" width="32" height="66" rx="14" fill="#09090b"/></g><rect x="134" y="172" width="268" height="290" rx="18" fill="#f5e6d3"/><rect x="116" y="156" width="268" height="290" rx="22" fill="#f97316"/><rect x="116" y="156" width="32" height="290" rx="16" fill="#c2560a"/><text x="274" y="330" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="76" fill="#fff7ed">P0420</text></svg><div class="brand">KNOW YOUR RIDE<em>.</em></div></div>
     <div class="tagline">Your pocket owner's manual for every car</div>
   </div>
-  <div class="db-badge">3667 VEHICLES - 49 MAKES - 12196 DTC CODES - 1040 WITH COMPLAINTS</div>
+  <div class="db-badge">3667 VEHICLES - 49 MAKES - 12196 DTC CODES - 1040 WITH CONSUMER REPORTS</div>
 </div>
 
 <div id="kyr-relink" style="display:none;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;background:rgba(255,107,0,0.1);border:1px solid var(--accent);padding:10px 20px;font-size:13px;line-height:1.4"><span id="kyr-relink-msg">Re-link your Pro account to restore full access &mdash; enter your email below</span><input type="email" id="kyr-relink-email" placeholder="you@example.com" autocomplete="email" spellcheck="false" style="padding:6px 10px;border:1px solid var(--accent);border-radius:4px;background:#fff;color:#111;font-size:13px;min-width:180px"><button type="button" id="kyr-relink-btn" onclick="kyrRelinkSubmit()" style="padding:6px 14px;border:none;border-radius:4px;background:var(--accent);color:#fff;font-weight:700;font-size:12px;letter-spacing:.04em;cursor:pointer">RE-LINK PRO</button><button type="button" id="kyr-relink-x" onclick="kyrRelinkDismiss()" aria-label="Dismiss" style="background:none;border:none;color:var(--accent);font-size:18px;line-height:1;cursor:pointer;padding:0 4px">&times;</button></div>
@@ -791,7 +791,7 @@ body{background:var(--bg)}
   </div>
 </div>
 
-<script src="/data.6fc7aa09.js"></script>
+<script src="/data.8850f54f.js"></script>
 <script>
 
 const DB=__D__;
@@ -802,23 +802,26 @@ const YEARS=[...new Set(DB.v.map(v=>v.year))].sort((a,b)=>b-a);
 
 /*WRENCH_COMPLAINTS_TAB*/
 function renderComplaints(v){
-  var c=v.comps||[];
-  if(!c.length)return '<p class="empty-note">No NHTSA complaints on record.</p>';
-  var hdr='NHTSA Complaints'+(v.comp_n?' ('+v.comp_n+' total'+(v.comp_n>c.length?', '+c.length+' most recent shown':'')+')':'');
-  var h='<div class="sec-head">'+hdr+'</div>';
-  h+=c.map(function(x){
+  var a=v.comps_agg;
+  if(!a&&!v.comp_n)return '<p class="empty-note">No NHTSA consumer reports on record.</p>';
+  var h='<div class="sec-head">Consumer Reports (NHTSA)'+(v.comp_n?' ('+v.comp_n+' total)':'')+'</div>';
+  h+='<div class="dtc-disclaimer">&#9888; Unverified consumer-submitted reports to NHTSA, not confirmed defects.</div>';
+  if(a){
     var f='';
-    if(x.crash)f+='<span class="bdg bdg-r">CRASH</span> ';
-    if(x.fire)f+='<span class="bdg bdg-r">FIRE</span> ';
-    if(x.inj)f+='<span class="bdg bdg-r">'+x.inj+' INJ</span> ';
-    if(x.deaths)f+='<span class="bdg bdg-r">'+x.deaths+' DEATH</span> ';
-    return '<div class="recall-card'+((x.crash||x.fire||x.deaths)?' park':'')+'">'
-      +(x.comp?'<div class="rc-comp">'+htmlEsc(x.comp)+'</div>':'')
-      +'<div class="rc-camp">'+htmlEsc(x.date||'')+(x.num?' &middot; #'+htmlEsc(x.num):'')+'</div>'
-      +(f?'<div style="margin:6px 0">'+f+'</div>':'')
-      +(x.sum?'<div class="rc-text">'+htmlEsc(x.sum)+'</div>':'')
-      +'</div>';
-  }).join('');
+    if(a.crash)f+='<span class="bdg bdg-r">'+a.crash+' CRASH</span> ';
+    if(a.fire)f+='<span class="bdg bdg-r">'+a.fire+' FIRE</span> ';
+    if(a.inj)f+='<span class="bdg bdg-r">'+a.inj+' INJURIES</span> ';
+    if(a.deaths)f+='<span class="bdg bdg-r">'+a.deaths+' DEATHS</span> ';
+    if(f)h+='<div style="margin:8px 0 10px">'+f+'</div>';
+    if(a.by_comp&&a.by_comp.length){
+      h+='<div class="recall-card"><div class="rc-comp">Most-reported components</div>'
+        +a.by_comp.map(function(x){return '<div class="rc-camp">'+htmlEsc(x[0])+' &middot; '+x[1]+' report'+(x[1]>1?'s':'')+'</div>';}).join('')
+        +'</div>';
+    }
+    if(a.first||a.last)h+='<div class="rc-camp" style="margin-top:8px">Reports span '+htmlEsc(a.first||'?')+' to '+htmlEsc(a.last||'?')+'</div>';
+  }
+  var url='https://www.nhtsa.gov/vehicle/'+v.year+'/'+encodeURIComponent((v.make||'').toUpperCase())+'/'+encodeURIComponent((v.model||'').toUpperCase());
+  h+='<a class="cta" style="margin-top:10px" target="_blank" rel="noopener" href="'+url+'">Read the full reports at NHTSA.gov &rarr;</a>';
   return h;
 }
 
@@ -1482,7 +1485,7 @@ function renderWarranty(v){
 }
 
 var MTABS=['oil','parts','fluids','maint','perf','safety','issues','warranty','comps','log','costs'];
-var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG','Safety & Rel.','Known Issues','Warranty & Recalls','Complaints','Service Log','Costs'];
+var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG','Safety & Rel.','Known Issues','Warranty & Recalls','Consumer Reports','Service Log','Costs'];
 var curTab='oil';
 
 /*WRENCH_DEEPLINK_v27*/ // shareable/refreshable URLs: ?v=<id> opens a vehicle, ?tab=, ?code=<DTC>
@@ -1729,7 +1732,9 @@ document.addEventListener('DOMContentLoaded',function(){
     <a href="mailto:hello@knowyourride.net">Contact</a>
   </div>
   <div class="kyr-footer-note">
-    Vehicle data sourced from NHTSA and EPA (U.S. Government, public domain). Know Your Ride is not affiliated with NHTSA, EPA, or any vehicle manufacturer.
+    Structured vehicle data from NHTSA (recalls, safety ratings, consumer-report counts) and EPA/FuelEconomy.gov (U.S. DOE/ORNL) &mdash; U.S. Government works.
+    Consumer-report figures are counts of unverified consumer submissions to NHTSA, not confirmed defects.
+    Know Your Ride is not affiliated with NHTSA, EPA, or any vehicle manufacturer.
     As an Amazon Associate, I earn from qualifying purchases. All specifications are for reference only &mdash; always verify against your owner's manual or factory service manual before performing any repair.
   </div>
 </footer>

@@ -12,11 +12,13 @@ This version:
   * Rebuilds the embedded __D__ data from the (now enriched) DB so the new
     engine strings (script 01) and MPG / EV-range (script 02) show up.
   * Preserves maintenance + maintenance_parts.
-  * Embeds a CAPPED set of complaints per vehicle (CAP, most-recent) and
-    injects a real "Complaints" modal tab (mirrors the recalls renderer,
-    reusing existing CSS) so script 03's data is actually visible.
+  * Embeds per-vehicle complaint AGGREGATES ONLY (P0-4, 2026-07-12): total count,
+    top components, crash/fire/injury/death totals, date range. Raw NHTSA narrative
+    text never ships (unverified consumer reports; contains email/phone/VIN-like
+    strings despite NHTSA redaction). The "Consumer Reports (NHTSA)" tab renders
+    the aggregates + a link to the NHTSA vehicle page.
   * Keeps the file ~latin-1 (the demo is cp1252, NOT utf-8) and escapes
-    "</" in the JSON so a complaint containing "</script>" can't break out.
+    "</" in the JSON so embedded text can't break out of the <script>.
   * Idempotent: re-runs refresh data+badge; the JS tab is injected once.
 
 Run: python 04_rebuild_demo.py
@@ -34,7 +36,6 @@ HERE     = os.path.dirname(os.path.abspath(__file__))
 ROOT     = os.path.dirname(HERE)                       # "Wrench App Data"
 DB_PATH  = os.path.join(ROOT, "wrench_vehicles.db")
 OUT_FILE = os.path.join(ROOT, "wrench_demo.html")
-CAP      = 15                                          # complaints embedded per vehicle
 SENTINEL = "/*WRENCH_COMPLAINTS_TAB*/"
 
 
@@ -273,24 +274,44 @@ def build_data(cur):
         {"mid": r["maintenance_id"], "type": r["part_type"], "brand": r["brand"],
          "pn": r["part_number"], "desc": r["description"], "qty": r["qty"]}))
 
-    # complaints: cap to CAP most-recent per vehicle, keep total count.
-    # NOTE: these complaint narratives are NHTSA ODI data — PUBLIC DOMAIN U.S. Government
-    # records (NHTSA pre-redacts complainant identity/VIN). They ship in the public data
-    # file (data.<hash>.js); attribution is in the footer + privacy.html.
+    # complaints: AGGREGATES ONLY ship (P0-4, 2026-07-12). Raw narratives are unverified
+    # consumer-submitted reports and — despite NHTSA's redaction — the free text contains
+    # email/phone/VIN-like strings typed in by complainants, so NO narrative text ships.
+    # Per vehicle: total count (comp_n), top components, crash/fire/injury/death totals,
+    # and the incident date range. Narratives stay in the DB for internal reference; the
+    # UI labels this "Consumer Reports (NHTSA)" and links to the NHTSA vehicle page.
     with_comps = 0
     if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='complaints'").fetchone():
         raw = {}
-        cur.execute("SELECT vehicle_id,complaint_number,component,summary,incident_date,crash,fire,injury,deaths FROM complaints")
+        cur.execute("SELECT vehicle_id,component,incident_date,crash,fire,injury,deaths FROM complaints")
         for r in cur.fetchall():
             if r["vehicle_id"] in veh:
                 raw.setdefault(r["vehicle_id"], []).append(r)
         for vid, rows in raw.items():
             rows.sort(key=lambda r: date_key(r["incident_date"]), reverse=True)
+            by_comp, crash, fire, inj, deaths = {}, 0, 0, 0, 0
+            for r in rows:
+                comp = (r["component"] or "OTHER").strip() or "OTHER"
+                by_comp[comp] = by_comp.get(comp, 0) + 1
+                crash += 1 if r["crash"] else 0
+                fire += 1 if r["fire"] else 0
+                inj += int(r["injury"] or 0)
+                deaths += int(r["deaths"] or 0)
+            top = sorted(by_comp.items(), key=lambda kv: (-kv[1], kv[0]))[:6]  # deterministic
             veh[vid]["comp_n"] = len(rows)
-            veh[vid]["comps"] = [{
-                "num": r["complaint_number"], "comp": r["component"], "sum": r["summary"],
-                "date": r["incident_date"], "crash": r["crash"], "fire": r["fire"],
-                "inj": r["injury"], "deaths": r["deaths"]} for r in rows[:CAP]]
+            agg = {
+                "by_comp": [[k, n] for k, n in top],
+                "crash": crash, "fire": fire, "inj": inj, "deaths": deaths,
+            }
+            # Date range: NHTSA data contains placeholder dates (e.g. 01/01/1965); only
+            # dates plausibly within the vehicle's life (model year - 2 onward) count.
+            yr = veh[vid].get("year") or 0
+            floor = max(1990, yr - 2)
+            good = [r["incident_date"] for r in rows
+                    if r["incident_date"] and date_key(r["incident_date"])[0] >= floor]
+            if good:                       # rows sorted newest-first
+                agg["last"], agg["first"] = good[0], good[-1]
+            veh[vid]["comps_agg"] = agg
             with_comps += 1
 
     cur.execute("SELECT code,description FROM dtc_codes ORDER BY code")
@@ -315,63 +336,13 @@ def build_data(cur):
                     "secondary": r["secondary_location"],
                 }
 
-    # Fuse / relay / junction-box mentions: NHTSA TSBs and complaints, attached per vehicle (cap 5).
-    # The user asked us to search the TSB table, but in the shipping DB only complaints have
-    # populated summary text — both sources are unioned so the feature works today and grows
-    # automatically once TSB text is enriched.
-    FUSE_LIKE = "(summary LIKE '%fuse%' OR summary LIKE '%relay%' OR summary LIKE '%junction box%' OR summary LIKE '%fuse box%' OR summary LIKE '%fuse panel%')"
-    FUSE_LIKE_T = "(title LIKE '%fuse%' OR title LIKE '%relay%' OR title LIKE '%junction box%' OR component LIKE '%fuse%' OR component LIKE '%relay%' OR component LIKE '%junction box%' OR summary LIKE '%fuse%' OR summary LIKE '%relay%' OR summary LIKE '%junction box%')"
-
-    fuse_hits = {}
-    cur.execute(f"SELECT vehicle_id, tsb_number, title, summary FROM tsb WHERE {FUSE_LIKE_T}")
-    for r in cur.fetchall():
-        if r["vehicle_id"] in veh:
-            fuse_hits.setdefault(r["vehicle_id"], []).append({
-                "num": r["tsb_number"], "title": r["title"] or "", "sum": (r["summary"] or "")[:240]
-            })
-
-    if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='complaints'").fetchone():
-        cur.execute(f"SELECT vehicle_id, complaint_number, component, summary FROM complaints WHERE {FUSE_LIKE}")
-        for r in cur.fetchall():
-            if r["vehicle_id"] in veh and len(fuse_hits.get(r["vehicle_id"], [])) < 8:
-                fuse_hits.setdefault(r["vehicle_id"], []).append({
-                    "num": r["complaint_number"], "title": r["component"] or "",
-                    "sum": (r["summary"] or "")[:240]
-                })
-
-    for vid, rows in fuse_hits.items():
-        veh[vid]["fuse_tsbs"] = rows[:5]
-
-    # DTC-code → fuse-related TSBs/complaints map: look for codes mentioned alongside fuse/relay text.
+    # Fuse/relay TSB+complaint excerpts (fuse_tsbs / fuseTsbsByCode) RETIRED (P0-4, 2026-07-12):
+    # nothing in the shipped JS ever read either key (0 code references in both HTML files),
+    # and the complaint-sourced entries carried the same unverified narrative text this pass
+    # removes. ~3,800 dead strings dropped from the payload. fuseTsbsByCode ships as {} so any
+    # hypothetical consumer sees an empty map, never undefined. Rebuild from the DB (tsb /
+    # complaints tables) if a fuse-locator feature ever actually lands in the UI.
     fuseTsbsByCode = {}
-    import re as _re
-    code_re = _re.compile(r"\b([BU]\d{4}|P0340|P0335|P0500)\b", _re.I)
-    seen = {}
-    cur.execute(f"SELECT tsb_number, title, summary FROM tsb WHERE {FUSE_LIKE_T}")
-    for r in cur.fetchall():
-        blob = " ".join([r["title"] or "", r["summary"] or ""])
-        for m in code_re.findall(blob):
-            c = m.upper()
-            key = (c, r["tsb_number"])
-            if key in seen: continue
-            seen[key] = 1
-            fuseTsbsByCode.setdefault(c, []).append({
-                "num": r["tsb_number"], "title": r["title"] or "", "sum": (r["summary"] or "")[:240]
-            })
-    if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='complaints'").fetchone():
-        cur.execute(f"SELECT complaint_number, component, summary FROM complaints WHERE {FUSE_LIKE}")
-        for r in cur.fetchall():
-            blob = " ".join([r["component"] or "", r["summary"] or ""])
-            for m in code_re.findall(blob):
-                c = m.upper()
-                key = (c, r["complaint_number"])
-                if key in seen: continue
-                seen[key] = 1
-                if len(fuseTsbsByCode.get(c, [])) >= 6: continue
-                fuseTsbsByCode.setdefault(c, []).append({
-                    "num": r["complaint_number"], "title": r["component"] or "",
-                    "sum": (r["summary"] or "")[:240]
-                })
 
     return list(veh.values()), dtc, fixes, with_comps, fuseTsbsByCode
 
@@ -379,23 +350,26 @@ def build_data(cur):
 # ── JS injected for the Complaints tab (reuses existing CSS classes) ──────────
 RENDER_FN = SENTINEL + """
 function renderComplaints(v){
-  var c=v.comps||[];
-  if(!c.length)return '<p class="empty-note">No NHTSA complaints on record.</p>';
-  var hdr='NHTSA Complaints'+(v.comp_n?' ('+v.comp_n+' total'+(v.comp_n>c.length?', '+c.length+' most recent shown':'')+')':'');
-  var h='<div class="sec-head">'+hdr+'</div>';
-  h+=c.map(function(x){
+  var a=v.comps_agg;
+  if(!a&&!v.comp_n)return '<p class="empty-note">No NHTSA consumer reports on record.</p>';
+  var h='<div class="sec-head">Consumer Reports (NHTSA)'+(v.comp_n?' ('+v.comp_n+' total)':'')+'</div>';
+  h+='<div class="dtc-disclaimer">&#9888; Unverified consumer-submitted reports to NHTSA, not confirmed defects.</div>';
+  if(a){
     var f='';
-    if(x.crash)f+='<span class="bdg bdg-r">CRASH</span> ';
-    if(x.fire)f+='<span class="bdg bdg-r">FIRE</span> ';
-    if(x.inj)f+='<span class="bdg bdg-r">'+x.inj+' INJ</span> ';
-    if(x.deaths)f+='<span class="bdg bdg-r">'+x.deaths+' DEATH</span> ';
-    return '<div class="recall-card'+((x.crash||x.fire||x.deaths)?' park':'')+'">'
-      +(x.comp?'<div class="rc-comp">'+x.comp+'</div>':'')
-      +'<div class="rc-camp">'+(x.date||'')+(x.num?' &middot; #'+x.num:'')+'</div>'
-      +(f?'<div style="margin:6px 0">'+f+'</div>':'')
-      +(x.sum?'<div class="rc-text">'+x.sum+'</div>':'')
-      +'</div>';
-  }).join('');
+    if(a.crash)f+='<span class="bdg bdg-r">'+a.crash+' CRASH</span> ';
+    if(a.fire)f+='<span class="bdg bdg-r">'+a.fire+' FIRE</span> ';
+    if(a.inj)f+='<span class="bdg bdg-r">'+a.inj+' INJURIES</span> ';
+    if(a.deaths)f+='<span class="bdg bdg-r">'+a.deaths+' DEATHS</span> ';
+    if(f)h+='<div style="margin:8px 0 10px">'+f+'</div>';
+    if(a.by_comp&&a.by_comp.length){
+      h+='<div class="recall-card"><div class="rc-comp">Most-reported components</div>'
+        +a.by_comp.map(function(x){return '<div class="rc-camp">'+htmlEsc(x[0])+' &middot; '+x[1]+' report'+(x[1]>1?'s':'')+'</div>';}).join('')
+        +'</div>';
+    }
+    if(a.first||a.last)h+='<div class="rc-camp" style="margin-top:8px">Reports span '+htmlEsc(a.first||'?')+' to '+htmlEsc(a.last||'?')+'</div>';
+  }
+  var url='https://www.nhtsa.gov/vehicle/'+v.year+'/'+encodeURIComponent((v.make||'').toUpperCase())+'/'+encodeURIComponent((v.model||'').toUpperCase());
+  h+='<a class="cta" style="margin-top:10px" target="_blank" rel="noopener" href="'+url+'">Read the full reports at NHTSA.gov &rarr;</a>';
   return h;
 }
 """
@@ -1889,7 +1863,7 @@ def main():
 
     # 3) refresh the badge
     makes = len(set(v["make"] for v in vlist))
-    badge = f"{len(vlist)} VEHICLES · {makes} MAKES · {len(dtc)} DTC CODES · {with_comps} WITH COMPLAINTS"
+    badge = f"{len(vlist)} VEHICLES · {makes} MAKES · {len(dtc)} DTC CODES · {with_comps} WITH CONSUMER REPORTS"
     html = re.sub(r'(<div class="db-badge">)[^<]*(</div>)', lambda m: m.group(1) + badge + m.group(2), html, count=1)
     html = ascii_polish(html)   # truly last: guarantee pure ASCII outside data (badge included)
 
