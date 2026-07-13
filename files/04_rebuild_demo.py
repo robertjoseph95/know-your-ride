@@ -253,17 +253,15 @@ def build_data(cur):
     each("warranty", lambda d, r: d.setdefault("warranty", {}).__setitem__(
         r["warranty_type"], {"mo": r["months"], "mi": r["miles"], "notes": r["notes"]}))
 
-    each("reliability", lambda d, r: d.update(rel={
-        "score": r["overall_score"], "rating": r["rating"], "complaints": r["complaint_count"],
-        "crashes": r["crash_count"], "fires": r["fire_count"], "injuries": r["injury_count"],
-        "issue": r["top_issue"]}))
-
-    cur.execute("SELECT vehicle_id,service_type,cost_low,cost_high,cost_average,labor_hours_low,labor_hours_high FROM service_costs WHERE region='national'")
-    for r in cur.fetchall():
-        if r["vehicle_id"] in veh:
-            veh[r["vehicle_id"]].setdefault("costs", {})[r["service_type"]] = {
-                "lo": r["cost_low"], "hi": r["cost_high"], "avg": r["cost_average"],
-                "hr_lo": r["labor_hours_low"], "hr_hi": r["labor_hours_high"]}
+    # GATED (Block-1 paid-feature integrity, 2026-07-13): `rel` and `costs` DO NOT ship.
+    #  - reliability.overall_score/rating is an unsourced computed heuristic (0 complaints ->
+    #    95 "Excellent"), rendered as an authoritative rating with no licensed source. Same
+    #    class as the known-issues gate: fails THE LAW, so it is absent from the blob.
+    #  - service_costs is CarMD-derived (a blacklisted third-party API), has no provenance
+    #    column, and only the 'national' region is populated -- it was sold as a Pro
+    #    "Regional service costs" feature. Money-for-unverified-data: gated out entirely.
+    # DB rows stay (reliability / service_costs tables) for a future authoritative rebuild;
+    # they are simply never emitted. The shipped-surfaces verifier asserts both are ABSENT.
 
     # maintenance + parts (the original 04 dropped these)
     each("maintenance", lambda d, r: d.setdefault("maint", []).append(
@@ -319,14 +317,12 @@ def build_data(cur):
     cur.execute("SELECT code,description FROM dtc_codes ORDER BY code")
     dtc = {r["code"]: r["description"] for r in cur.fetchall()}
 
-    # CarMD-style fix probabilities: ranked fixes per code (probability %, avg cost, severity)
+    # GATED (Block-1, 2026-07-13): DTC "fix rates" DO NOT ship. The probability_pct / avg_cost
+    # numbers come from dtc_fix_rates, a CarMD-derived (blacklisted third-party API) table with
+    # no provenance. The DTC *definitions* (`dtc` dict above, from dtc_codes = SAE/generic
+    # taxonomy) are a separate, legitimate surface and are unaffected. `dtcFixes()`/`clTopFix()`
+    # read DB.fixes defensively ((DB.fixes&&DB.fixes[code])||[]) so an empty map renders nothing.
     fixes = {}
-    if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='dtc_fix_rates'").fetchone():
-        cur.execute("SELECT code,fix_description,probability_pct,avg_cost_usd,severity FROM dtc_fix_rates ORDER BY code,rank")
-        for r in cur.fetchall():
-            fixes.setdefault(r["code"], []).append({
-                "fix": r["fix_description"], "prob": r["probability_pct"],
-                "cost": r["avg_cost_usd"], "sev": r["severity"]})
 
     # Fuse panel locations (populated by wrench_fuse_locations.py via Claude API).
     if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='fuse_locations'").fetchone():

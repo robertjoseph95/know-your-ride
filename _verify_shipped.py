@@ -102,6 +102,23 @@ def s1_4_narratives_gone(a):
     if a.D.get("fuseTsbsByCode") != {}: out.append("fuseTsbsByCode is not {}")
     return out
 
+def s1_9_paid_feature_gate(a):
+    # Block-1 paid-feature integrity (2026-07-13): three unverified surfaces must be ABSENT
+    # from the shipped blob -- the same default-deny whitelist pattern as the notes/narrative
+    # gates. `costs` = CarMD-derived, national-only, sold as "Regional service costs".
+    # `rel`   = unsourced computed reliability score rendered as an authoritative rating.
+    # `fixes` = CarMD DTC fix-rate probabilities/costs (the `dtc` definitions map is separate
+    #           and legitimate, so only `fixes` is asserted empty, not `dtc`).
+    out = []
+    nc = sum(1 for v in a.D["v"] if "costs" in v)
+    nr = sum(1 for v in a.D["v"] if "rel" in v)
+    if nc: out.append("%d vehicle(s) ship costs{} (CarMD service_costs gate breached)" % nc)
+    if nr: out.append("%d vehicle(s) ship rel{} (unsourced reliability score gate breached)" % nr)
+    if a.D.get("fixes") != {}:
+        out.append("fixes is not {} (%d code(s) -- CarMD DTC fix-rates gate breached)"
+                   % len(a.D.get("fixes") or {}))
+    return out
+
 def s1_5_hash_and_reference(a):
     out = []
     if len(a.blob_paths) != 1:
@@ -458,6 +475,7 @@ CHECKS = [
     ("S1.2-forbidden-strings",   "FAIL", "CI", s1_2_forbidden_strings),
     ("S1.3/S6.1-notes-gate",     "FAIL", "CI", s1_3_notes_gate),
     ("S1.4-narratives-gone",     "FAIL", "CI", s1_4_narratives_gone),
+    ("S1.9-paid-feature-gate",   "FAIL", "CI", s1_9_paid_feature_gate),
     ("S1.5-hash-and-reference",  "FAIL", "CI", s1_5_hash_and_reference),
     ("S1.6-size-budget",         "WARN", "CI", s1_6_size_budget),
     ("S2.1-noindex",             "FAIL", "CI", s2_1_noindex),

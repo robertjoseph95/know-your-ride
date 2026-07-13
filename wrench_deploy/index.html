@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-07-12-known-issues-gate">
+<meta name="kyr-version" content="2026-07-13-paid-feature-integrity">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -658,7 +658,6 @@ body{background:var(--bg)}
       <option value="make">Sort: Make</option>
       <option value="year-new">Sort: Newest</option>
       <option value="year-old">Sort: Oldest</option>
-      <option value="rel">Sort: Reliability</option>
     </select>
     <div class="g-count" id="g-count">- VEHICLES</div>
   </div>
@@ -723,7 +722,7 @@ body{background:var(--bg)}
     <div class="about-brand">KNOW YOUR RIDE<em>.</em></div>
     <div class="about-tag">Your pocket owner's manual for every car</div>
     <div class="about-url" style="margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:14px"><a href="https://knowyourride.net/" style="color:var(--accent);text-decoration:none" target="_blank" rel="noopener">knowyourride.net</a> <span style="color:var(--faint);font-size:11px">// official site</span></div>
-    <p class="about-sub">A pocket owner's manual for every car. Maintenance schedules, step-by-step repair guides, OBD code lookups, and real cost data - all in one app.</p>
+    <p class="about-sub">A pocket owner's manual for every car. Owner's-manual-verified maintenance schedules, step-by-step repair guides, and DTC code lookups - all in one app.</p>
   </div>
   <div class="stats-row">
     <div class="astat"><div class="astat-n">3,654</div><div class="astat-l">Vehicles</div></div>
@@ -739,10 +738,9 @@ body{background:var(--bg)}
     <div class="feat"><h3>FLUIDS &amp; TORQUE</h3><p>Transmission, brake, coolant, power steering, differential fluids, and full torque specs.</p></div>
     <div class="feat"><h3>FUEL ECONOMY</h3><p>EPA city/hwy/combined MPG, annual fuel cost, and EV range/MPGe per drivetrain config.</p></div>
     <div class="feat"><h3>SAFETY RATINGS</h3><p>NHTSA 5-star ratings across 6 crash categories plus rollover risk percentage.</p></div>
-    <div class="feat"><h3>RELIABILITY SCORES</h3><p>Reliability score with complaint, crash, fire, and injury counts from NHTSA.</p></div>
+    <div class="feat"><h3>CONSUMER REPORTS</h3><p>NHTSA complaint aggregates: top components, plus crash, fire, and injury totals with the incident date range.</p></div>
     <div class="feat"><h3>WARRANTY COVERAGE</h3><p>All warranty types: bumper-to-bumper, powertrain, corrosion, roadside, hybrid, and EV battery.</p></div>
     <div class="feat"><h3>RECALL DATABASE</h3><p>1,557 vehicles with active NHTSA recall data, remedy text, and park-it flags.</p></div>
-    <div class="feat"><h3>SERVICE COSTS</h3><p>National average cost ranges and labor hours for 16 service types.</p></div>
     <div class="feat"><h3>DTC CODE LOOKUP</h3><p>12,196 OBD-II codes searchable by full code or prefix across all 4 systems.</p></div>
     <div class="feat"><h3>49 MAKES &middot; 45 YEARS</h3><p>1981-2026 coverage across mainstream, luxury, performance, and discontinued brands.</p></div>
   </div>
@@ -791,7 +789,7 @@ body{background:var(--bg)}
   </div>
 </div>
 
-<script src="/data.d31fadbd.js"></script>
+<script src="/data.f51c3d49.js"></script>
 <script>
 
 const DB=__D__;
@@ -1178,10 +1176,9 @@ function renderMaintGated(v){
   // (costs are a Pro feature). The clone nulls costs so renderMaint won't render them;
   // we append a blurred preview + unlock overlay instead.
   var n=(v.maint||[]).length;
-  var clone=Object.assign({},v,{maint:(v.maint||[]).slice(0,3),costs:null});
+  var clone=Object.assign({},v,{maint:(v.maint||[]).slice(0,3)});
   var h=renderMaint(clone);
   if(n>3)h+=proUnlock('Unlock the full maintenance schedule','Showing 3 of '+n+' service intervals. Pro unlocks the complete schedule.');
-  if(v.costs)h+='<div class="sec-head">Service Costs &mdash; National Average</div><div class="pro-fade" aria-hidden="true">'+costsTableHTML(v)+'</div>'+proUnlock('Unlock regional service costs','Pro shows low, high, average &amp; labor-hour pricing for every service.');
   return h;
 }
 function kyrInitPaywall(){var p=new URLSearchParams(location.search);if(p.get('success')==='true'){kyrSetPro();kyrToast('Welcome to Pro. All features unlocked.');history.replaceState({},'',location.pathname);}else if(p.get('canceled')==='true'){history.replaceState({},'',location.pathname);}var b=document.getElementById('go-pro-btn');if(b&&kyrPro()){b.classList.add('is-pro');b.innerHTML='&#9733; Pro';b.onclick=null;}}
@@ -1310,12 +1307,11 @@ function renderGarage(){
   if(sort==='year-new')vs.sort((a,b)=>b.year-a.year);
   else if(sort==='year-old')vs.sort((a,b)=>a.year-b.year);
   else if(sort==='make')vs.sort((a,b)=>a.make.localeCompare(b.make)||b.year-a.year);
-  else if(sort==='rel')vs.sort((a,b)=>(b.rel&&b.rel.score||0)-(a.rel&&a.rel.score||0));
   document.getElementById('g-count').textContent=vs.length+' VEHICLES';
   const grid=document.getElementById('vgrid');
   if(!vs.length){grid.innerHTML='<div class="no-res">// NO MATCH &mdash; TRY FEWER WORDS, OR PICK A MAKE &amp; YEAR ABOVE</div>';return;}
   grid.innerHTML=vs.map(v=>{
-    const o=v.oil,p=v.parts,r=v.rel,s=v.safety,rc=(v.recalls||[]).length,m=v.mpg&&v.mpg[0],isEV=!!v.ev;
+    const o=v.oil,p=v.parts,s=v.safety,rc=(v.recalls||[]).length,m=v.mpg&&v.mpg[0],isEV=!!v.ev;
     const bdg=[];if(v.id<0)bdg.push('<span class="bdg bdg-partial">Partial data - pre-2003</span>');
     if(o&&o.visc)bdg.push('<span class="bdg bdg-o">'+o.visc+'</span>');
     if(isEV)bdg.push('<span class="bdg bdg-ev">EV</span>');
@@ -1323,7 +1319,7 @@ function renderGarage(){
     if(s&&s.overall)bdg.push('<span class="bdg bdg-s">&#9733;'+s.overall+'</span>');
     if(rc>0)bdg.push('<span class="bdg bdg-r">'+rc+' RECALL'+(rc>1?'S':'')+'</span>');
     if(v.maint&&v.maint.length)bdg.push('<span class="bdg bdg-m">'+v.maint.length+' SCHEDULES</span>');
-    return '<div class="vcard" tabindex="0" role="button" aria-label="'+v.year+' '+v.make+' '+v.model+'" onclick="openModal('+v.id+')"><div class="vc-head"><div><div class="vc-name">'+v.year+' '+v.make+' '+v.model+'</div><div class="vc-sub">'+(v.engine||v.trim||'&mdash;')+'</div>'+'</div></div><div class="vc-badges">'+bdg.join('')+'</div><div class="vc-stats"><div><div class="vcs-l">OIL</div><div class="vcs-v">'+(o&&o.visc||'&mdash;')+'</div></div><div><div class="vcs-l">RELIABILITY</div><div class="vcs-v">'+(r&&r.score?r.score.toFixed(0)+'%':'&mdash;')+'</div></div><div><div class="vcs-l">MPG COMB</div><div class="vcs-v">'+(m&&m.comb||'&mdash;')+'</div></div></div></div>';
+    return '<div class="vcard" tabindex="0" role="button" aria-label="'+v.year+' '+v.make+' '+v.model+'" onclick="openModal('+v.id+')"><div class="vc-head"><div><div class="vc-name">'+v.year+' '+v.make+' '+v.model+'</div><div class="vc-sub">'+(v.engine||v.trim||'&mdash;')+'</div>'+'</div></div><div class="vc-badges">'+bdg.join('')+'</div><div class="vc-stats"><div><div class="vcs-l">OIL</div><div class="vcs-v">'+(o&&o.visc||'&mdash;')+'</div></div><div><div class="vcs-l">RECALLS</div><div class="vcs-v">'+(rc||'&mdash;')+'</div></div><div><div class="vcs-l">MPG COMB</div><div class="vcs-v">'+(m&&m.comb||'&mdash;')+'</div></div></div></div>';
   }).join('');
 }
 
@@ -1418,16 +1414,11 @@ function renderMaint(v){
     }
   });
   h+='</tbody></table>';
-  if(v.costs)h+='<div class="sec-head">Service Costs &mdash; National Average</div>'+costsTableHTML(v);
   return h;
 }
-// Regional service-cost table (Pro feature). Returns the <table> only so callers can place
-// the heading and, for free users, wrap the table in a .pro-fade lock overlay.
-function costsTableHTML(v){
-  var serviceMap={oil_change:'Oil Change',oil_change_synthetic:'Oil Change (Synthetic)',air_filter_replacement:'Air Filter',cabin_filter_replacement:'Cabin Filter',battery_replacement:'Battery',brake_pad_replacement:'Brake Pads',brake_rotor_replacement:'Brake Rotors',spark_plug_replacement:'Spark Plugs',tire_rotation:'Tire Rotation',wheel_alignment:'Wheel Alignment',transmission_fluid_change:'Trans. Fluid',coolant_flush:'Coolant Flush',serpentine_belt_replacement:'Serpentine Belt',wiper_blade_replacement:'Wiper Blades',timing_belt_replacement:'Timing Belt',turbo_service:'Turbo Service'};
-  var maxC=Math.max.apply(null,Object.values(v.costs).map(function(x){return x.hi||0;}).concat([1]));
-  return '<table class="tbl"><thead><tr><th>Service</th><th>Low</th><th>High</th><th>Avg</th><th>Labor</th></tr></thead><tbody>'+Object.entries(v.costs).map(function(e){var k=e[0],x=e[1];return '<tr><td style="font-weight:700">'+(serviceMap[k]||k.replace(/_/g,' '))+'</td><td style="color:var(--green)">$'+(x.lo||'&mdash;')+'</td><td style="color:var(--dim)">$'+(x.hi||'&mdash;')+'</td><td><span style="font-weight:700;color:var(--accent)">$'+(x.avg||'&mdash;')+'</span><span class="costs-bar"><span class="costs-fill" style="width:'+Math.round((x.avg||0)/maxC*100)+'%"></span></span></td><td class="pn" style="color:var(--faint)">'+(x.hr_lo&&x.hr_hi?x.hr_lo+'&ndash;'+x.hr_hi+' hr':'')+'</td></tr>';}).join('')+'</tbody></table>';
-}
+// Service-cost table REMOVED (Block-1 paid-feature integrity, 2026-07-13): the underlying
+// service_costs data was CarMD-derived (blacklisted), unattributed, and national-only while
+// sold as "Regional service costs" -- it no longer ships in the blob, so this renderer is gone.
 
 function renderPerf(v){
   var h='';
@@ -1449,7 +1440,7 @@ function renderPerf(v){
 }
 
 function renderSafety(v){
-  var h='',s=v.safety,r=v.rel;
+  var h='',s=v.safety;
   if(s){
     h+='<div class="sec-head">NHTSA Safety Ratings</div>';
     h+='<div class="saf-row"><div class="saf-lbl" style="font-weight:700;color:var(--text)">Overall</div>'+sstr(s.overall)+'</div>';
@@ -1461,12 +1452,10 @@ function renderSafety(v){
     h+='<div class="saf-row"><div class="saf-lbl">Side Pole</div>'+sstr(s.pole)+'</div>';
     if(s.roll_pct)h+='<div style="font-family:\'JetBrains Mono\',monospace;font-size:10px;color:var(--faint);margin-top:8px">Rollover risk: '+(s.roll_pct*100).toFixed(1)+'%</div>';
   }
-  if(r){
-    var rc=r.rating==='Excellent'?'var(--green)':r.rating==='Good'?'var(--accent)':r.rating==='Poor'?'var(--red)':'var(--dim)';
-    h+='<div class="sec-head">Reliability</div><div style="display:flex;align-items:baseline;gap:12px;margin-bottom:16px"><div class="rel-score-big">'+(r.score?r.score.toFixed(0):'&mdash;')+'</div><div><div style="font-size:14px;font-weight:700;color:'+rc+'">'+(r.rating||'&mdash;')+'</div><div style="font-family:\'JetBrains Mono\',monospace;font-size:9px;color:var(--faint);letter-spacing:.1em">RELIABILITY SCORE</div></div></div>';
-    h+='<div class="spec-grid">'+specRow('Complaints',fmt(r.complaints),'rd')+specRow('Crash Reports',fmt(r.crashes))+specRow('Fire Reports',fmt(r.fires))+specRow('Injury Reports',fmt(r.injuries))+(r.issue?'<div class="spec-item" style="grid-column:1/-1"><div class="sp-l">Top Issue</div><div class="sp-v" style="font-size:12px">'+r.issue+'</div></div>':'')+'</div>';
-  }
-  if(!s&&!r)return '<p class="empty-note">No safety or reliability data available.</p>';
+  // Reliability section REMOVED (Block-1, 2026-07-13): the `rel` score/rating was an unsourced
+  // computed heuristic rendered as an authoritative rating -- gated out of the blob. The raw
+  // NHTSA crash/fire/injury aggregates it duplicated live in the Consumer Reports tab (comps_agg).
+  if(!s)return '<p class="empty-note">No NHTSA safety ratings on file for this vehicle. See <a href="#" onclick="switchMTab(\'comps\','+v.id+');return false;">Consumer Reports</a> and <a href="#" onclick="switchMTab(\'warranty\','+v.id+');return false;">Warranty &amp; Recalls</a>.</p>';
   return h;
 }
 
@@ -1586,7 +1575,7 @@ function clRenderPins(){var el=document.getElementById('cl-pinned');if(!el)retur
     var det='';
     if(p.open){
       det='<div class="cl-chip-det"><div class="cl-chip-det-desc">'+d+'</div>'
-        +'<div class="cl-chip-det-row"><span class="cl-chip-det-lbl">Most likely</span><span class="cl-chip-det-cause">'+(f&&f.fix?htmlEsc(f.fix):'&mdash;')+'</span></div>';
+        +(f&&f.fix?'<div class="cl-chip-det-row"><span class="cl-chip-det-lbl">Most likely</span><span class="cl-chip-det-cause">'+htmlEsc(f.fix)+'</span></div>':'');
       if(f&&f.sev)det+='<div class="cl-chip-det-row"><span class="cl-chip-det-lbl">Urgency</span><span style="color:'+dtcSevColor(f.sev)+';font-weight:600;text-transform:capitalize">'+htmlEsc(f.sev)+'</span></div>';
       det+='</div>';
     }
@@ -1670,7 +1659,7 @@ document.addEventListener('DOMContentLoaded',function(){
         <ul class="pp-list">
           <li>Vehicle lookup &amp; basic specs</li>
           <li>Oil specs &amp; basic parts</li>
-          <li>DTC code lookup + fix rates</li>
+          <li>DTC code lookup</li>
           <li>Recalls &amp; safety ratings</li>
           <li>Fuel economy</li>
           <li>Amazon parts links &amp; KBB value</li>
@@ -1683,8 +1672,7 @@ document.addEventListener('DOMContentLoaded',function(){
           <li>AI repair guides (step-by-step)</li>
           <li>DIY YouTube videos</li>
           <li>Know Your Part photo scanning</li>
-          <li>Full maintenance schedules</li>
-          <li>Regional service costs</li>
+          <li>Owner's-manual-verified maintenance schedules &mdash; 290 vehicles and growing</li>
         </ul>
         <div class="pp-btns">
           <a class="pp-btn annual" href="/api/subscribe?plan=annual"><span class="pp-badge">Most Popular - Save 33%</span>Annual - $23.99/year</a>

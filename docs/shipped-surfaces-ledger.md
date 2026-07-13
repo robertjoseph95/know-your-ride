@@ -29,9 +29,13 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
      `oilchangediy`. *(C1/F2)*
   3. [CI][FAIL] Zero vehicle-level `notes[]`. *(Known-issues gate)*
   4. [CI][FAIL] Zero `comps[]` / `fuse_tsbs[]` arrays; `fuseTsbsByCode == {}`. *(Consumer-reports fix)*
+  4b. [CI][FAIL] Zero vehicle-level `costs{}` and zero `rel{}`; top-level `fixes == {}`.
+     *(Block-1 paid-feature gate, 2026-07-13: `costs` = CarMD/national-only, sold as
+     "Regional service costs"; `rel` = unsourced computed reliability score; `fixes` =
+     CarMD DTC fix-rate probabilities/costs. The `dtc` definitions map is separate and stays.)*
   5. [CI][FAIL] Blob filename hash == md5-8 of file content; `index.html` references exactly
      one `data.<hash>.js` and that file exists in the repo. *(Desync/404 class)*
-  6. [CI][WARN] Payload size budget: warn > 16 MB (was 25.7 pre-fix; 13.3 today).
+  6. [CI][WARN] Payload size budget: warn > 16 MB (was 25.7 pre-fix; ~10.7 after Block-1).
   7. [DB][FAIL] Verified-value equivalence: rebuilding the data JSON from the canonical DB
      reproduces the committed blob (requires a `--check` mode on the rebuild; see design).
   8. [DB][FAIL] `_assert_gate_sources` over the live DB: no blacklisted source computes `ver=1`.
