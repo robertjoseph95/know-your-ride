@@ -118,13 +118,42 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
   6. [CI][FAIL] **Incident-date phrasing** — approved `Incident dates through {Month Year}` present;
      banned `data through` / `retrieved` / `updated as of` / `reported through` absent (the field is
      `dateOfIncident`, and `pull_log` covers only 127/1040, so no ingest guarantee may be implied).
-  7. [CI][FAIL] **No TSB content** — top-level blob keys ⊆ `{v, dtc, fixes}`; no vehicle carries a
-     TSB-family key (`tsb`/`bulletin`/`manufacturer_documented`/`service_action`/`fuseTsbsByCode`/…);
-     and the teal `No matching manufacturer guidance found` empty-state is present. *(Mechanically
-     enforces "Phase 1 implies no TSB coverage.")*
+  7. [CI][FAIL] **TSB gate — no *unverified* TSB content** (evolved from "no TSB content" in
+     Block D-1). Top-level blob keys ⊆ `{v, dtc, fixes}`; raw TSB-family keys
+     (`tsb`/`bulletin`/`manufacturer_documented`/`service_action`/`fuseTsbsByCode`/…) still forbidden.
+     A per-vehicle **`guidance`** object is the ONE allowed door and ships only if every entry is a
+     complete human-verification record: full stub (`tsb`/`url`/`vhash`/`vby`/`vat`), an **official
+     NHTSA host** URL, a `topic` that **actually ships in that vehicle's `comps_agg.topics`**,
+     whitelisted keys only (`{topic,tsb,date,comp,sym,act,applies,url,vby,vat,vhash}`), and short
+     KYR descriptors (≤220 chars, ≤2 sentences, one line — never abstract prose). The teal
+     `No matching manufacturer guidance found` empty-state string must remain in the source.
+     *(Default-deny intact: an unverified pairing is structurally incapable of shipping.)*
   8. [DB][FAIL] **Retrieval date matches DB** — every shipped `comps_agg.through` equals the
      DB-derived clamped max incident month for that year/make/model, and is not a hardcoded literal
      (values must vary and match the recomputation).
+
+**Manufacturer-communication pairing pipeline (Block D-1).** Local-only `tsb_pairings` table +
+`_tsb_pairing.py` CLI (`init` / `add` / `list` / `recheck` / `candidates`). A pairing is created
+only as a COMPLETE verification record — the CLI enforces topic-ships / official-host / length
+bounds / bulletin-on-file before writing, and fetches+hashes the reviewed NHTSA document. The
+generator emits a `guidance` blob object only from complete, non-superseded rows (never NHTSA
+abstract prose or a PDF). `recheck` refetches each `source_url` and flags a hash mismatch as
+`superseded` (supersession/rot detection), which drops the guidance from the next build. The 394
+import-cap-truncated vehicles are flagged in `tsb_truncated` for D-2 targeting — never surfaced in
+the UI (per ruling: never claim completeness, no per-vehicle caveat). D-2 = the content campaign
+(verifying bulletins one at a time); D-1 makes it structurally safe to run incrementally.
+**Shipped pipeline-only (2026-07-14): zero guidance objects in the blob; the gate holds vacuously.**
+The first production pairing must be topic-exact and deliberate (it sets the D-2 precedent), not
+chosen because a topic happens to clear the display threshold.
+
+**OPEN QUESTION for D-2 (banked, not solved).** The display threshold constrains pairability: a
+bulletin whose true NHTSA component doesn't clear ≥3 records / ≥10% of `n` has **no shipping
+complaint topic to pair to** (e.g. Subaru 12-251-23 is a LATCHES/LOCKS/LINKAGES bulletin, but for
+the 2020 Ascent that topic is below threshold — so an exact pairing has nowhere to attach). D-2
+needs a ruling on whether a *human-verified* pairing justifies surfacing its own topic below the
+customer-reported threshold (i.e. show the manufacturer-guidance lane for a topic that isn't a
+"Frequently reported" customer topic), or whether pairings are confined to already-shipping topics.
+Until ruled, the gate confines pairings to shipping topics (`S5.7-tsb-gate` invariant 7).
 
 ## S6. Known-issues gate — absent `notes[]` + empty-state markup
 - **Ships:** nothing (the gate). `renderIssues` shows the honest empty state with cross-links;

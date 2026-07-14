@@ -326,20 +326,45 @@ def s5_6_incident_date_phrasing(a):
                 out.append("%s: banned date phrasing %r present" % (name, bad))
     return out
 
-def s5_7_no_tsb_content(a):
-    # Phase 1 ships ZERO TSB / manufacturer-guidance content. Default-deny: top-level blob keys
-    # are whitelisted; no vehicle carries a TSB-family key; and the teal empty-state that stands
-    # in for guidance must be present (proof the lane exists but is honestly empty).
+GUIDE_KEYS = {"topic", "tsb", "date", "comp", "sym", "act", "applies", "url", "vby", "vat", "vhash"}
+GUIDE_STUB = ("tsb", "url", "vhash", "vby", "vat")   # the verification stub; missing any -> not a pairing
+GUIDE_HOSTS = ("static.nhtsa.gov", "www.nhtsa.gov", "nhtsa.gov")
+GUIDE_TEXT_MAX = 220                                  # sym/act bound; longer / multi-sentence -> prose reject
+
+def s5_7_tsb_gate(a):
+    # Block D-1: "no UNVERIFIED TSB content." Default-deny still holds -- top-level keys are
+    # whitelisted and raw TSB-family keys stay forbidden -- but a per-vehicle `guidance` object may
+    # ship IFF every entry is a COMPLETE human-verification record: a full stub, an official NHTSA
+    # source, a topic that actually ships for the vehicle, whitelisted keys only, and short KYR
+    # descriptors (never abstract prose). The teal empty-state string must remain in the source.
     out = []
     top_extra = set(a.D.keys()) - {"v", "dtc", "fixes"}
     if top_extra:
         out.append("blob has non-whitelisted top-level key(s) %s" % sorted(top_extra))
     hits = 0
     for v in a.D["v"]:
-        bad = TSB_KEYS & set(v.keys())
+        bad = TSB_KEYS & set(v.keys())            # raw TSB-family keys remain forbidden
         if bad:
-            out.append("vehicle %s carries TSB-family key(s) %s" % (v.get("id"), sorted(bad))); hits += 1
-        if hits >= 5: break
+            out.append("vehicle %s carries raw TSB-family key(s) %s" % (v.get("id"), sorted(bad))); hits += 1
+        ships = {t for t, _ in (v.get("comps_agg") or {}).get("topics", [])}
+        for g in (v.get("guidance") or []):
+            miss = [k for k in GUIDE_STUB if not g.get(k)]
+            if miss:
+                out.append("vehicle %s guidance missing verification stub %s" % (v.get("id"), miss)); hits += 1
+            extra = set(g) - GUIDE_KEYS
+            if extra:
+                out.append("vehicle %s guidance has non-whitelisted key(s) %s" % (v.get("id"), sorted(extra))); hits += 1
+            host = re.sub(r"^https?://", "", str(g.get("url", ""))).split("/")[0].lower()
+            if host not in GUIDE_HOSTS:
+                out.append("vehicle %s guidance url host %r not an official NHTSA host" % (v.get("id"), host)); hits += 1
+            if g.get("topic") not in ships:
+                out.append("vehicle %s guidance topic %r does not ship in comps_agg.topics" % (v.get("id"), g.get("topic"))); hits += 1
+            for f in ("sym", "act"):
+                s = str(g.get(f, ""))
+                if len(s) > GUIDE_TEXT_MAX or s.count(".") > 2 or "\n" in s:
+                    out.append("vehicle %s guidance %s is prose-shaped (bound %d, <=2 sentences, one line)" % (v.get("id"), f, GUIDE_TEXT_MAX)); hits += 1
+        if hits >= 8:
+            break
     for name, txt in (("index.html", a.index), ("wrench_demo.html", a.demo_markup)):
         if "No matching manufacturer guidance found" not in txt:
             out.append("%s: manufacturer-guidance teal empty-state missing" % name)
@@ -634,7 +659,7 @@ CHECKS = [
     ("S5.4-agg-pii",             "WARN", "CI", s5_4_agg_pii),
     ("S5.5-labeled-count",       "FAIL", "CI", s5_5_labeled_count),
     ("S5.6-incident-date-copy",  "FAIL", "CI", s5_6_incident_date_phrasing),
-    ("S5.7-no-tsb-content",      "FAIL", "CI", s5_7_no_tsb_content),
+    ("S5.7-tsb-gate",            "FAIL", "CI", s5_7_tsb_gate),
     ("S6.2-no-documented-framing","FAIL", "CI", s6_2_no_documented_framing),
     ("S6.3-empty-state",         "FAIL", "CI", s6_3_empty_state),
     ("S7.1-footer-required",     "FAIL", "CI", s7_1_footer_required),

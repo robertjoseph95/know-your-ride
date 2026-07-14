@@ -338,6 +338,34 @@ def build_data(cur):
                 veh[vid]["comps_agg"] = agg
                 with_comps += 1
 
+    # Manufacturer-documented guidance (Block D-1, 2026-07-13): emit a `guidance` object ONLY
+    # from COMPLETE, non-superseded human-verification records in tsb_pairings, and ONLY when the
+    # verifier-chosen complaint_topic actually ships for the vehicle (belt-and-suspenders over the
+    # capture-CLI gate). Ships a KYR-written short symptom/action + applicability + the NHTSA
+    # document link + a verification stub -- NEVER NHTSA abstract prose or a bulletin PDF. The
+    # shipped-surfaces verifier (S5.7) rejects any guidance object lacking a valid stub.
+    with_guidance = 0
+    if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='tsb_pairings'").fetchone():
+        REQ = ("tsb_number", "source_url", "source_hash", "verified_by", "verified_at")
+        for r in cur.execute("""SELECT vehicle_id,complaint_topic,tsb_number,bulletin_date,component,
+                                applies_note,symptom,service_action,source_url,source_hash,
+                                verified_by,verified_at FROM tsb_pairings WHERE superseded=0"""):
+            d = dict(zip(("vehicle_id", "topic", "tsb", "date", "comp", "applies", "sym", "act",
+                          "url", "vhash", "vby", "vat"), r))
+            v = veh.get(d["vehicle_id"])
+            if not v:
+                continue
+            ships = {t for t, _ in (v.get("comps_agg") or {}).get("topics", [])}
+            if d["topic"] not in ships:          # topic must reach the user for this vehicle
+                continue
+            if not all(d.get(k) for k in ("tsb", "url", "vhash", "vby", "vat", "sym", "act")):
+                continue                         # incomplete record -> not emitted (default-deny)
+            v.setdefault("guidance", []).append({
+                "topic": d["topic"], "tsb": d["tsb"], "date": d["date"], "comp": d["comp"],
+                "sym": d["sym"], "act": d["act"], "applies": d["applies"], "url": d["url"],
+                "vby": d["vby"], "vat": d["vat"], "vhash": d["vhash"][:12]})
+            with_guidance += 1
+
     cur.execute("SELECT code,description FROM dtc_codes ORDER BY code")
     dtc = {r["code"]: r["description"] for r in cur.fetchall()}
 

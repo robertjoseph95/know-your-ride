@@ -152,6 +152,13 @@ body{background:var(--bg)}
 .cc-vin{display:inline-block;margin-top:8px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
 .cc-vin:hover{text-decoration:underline}
 .cc-disc{margin:12px 0;padding:11px 13px;background:#3a2e00;border:1px solid #e0a23b;border-radius:8px;color:#ffd97a;font-size:11.5px;line-height:1.55}
+.cc-guide{padding:10px 0;border-top:1px solid var(--border)}
+.cc-guide:first-child{border-top:none;padding-top:2px}
+.cc-guide-rel{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:#1fb6a6;margin-bottom:7px}
+.cc-guide-row{font-size:12.5px;color:var(--text);line-height:1.5;margin-bottom:6px}
+.cc-guide-lbl{display:block;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:2px}
+.cc-guide-app{font-size:11.5px;color:var(--dim);line-height:1.5;margin-bottom:5px}
+.cc-guide-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);margin-bottom:4px}
 .cl-layout{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}
 .cl-panel{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:18px;position:sticky;top:74px}
 .cl-title{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:.02em;margin-bottom:12px}
@@ -793,9 +800,24 @@ function renderComplaints(v){
   var fl=[];if(a.crash)fl.push(a.crash+' crash');if(a.fire)fl.push(a.fire+' fire');if(a.inj)fl.push(a.inj+' injury');if(a.deaths)fl.push(a.deaths+' death');
   if(fl.length)h+='<div class="cc-flag">&#9888; NHTSA complaint records for this model year include '+fl.join(', ')+' report(s). These are unverified owner allegations.</div>';
   h+='</div>';
-  // Lane 2 -- manufacturer-documented guidance (teal empty-state trust signal; NO TSB data ships)
-  h+='<div class="cc-lane cc-lane-mfr"><div class="cc-lane-h">Manufacturer-documented guidance</div>'
-    +'<div class="cc-note">No matching manufacturer guidance found. KYR will only pair a bulletin after a human verifies the official manufacturer document and every year, engine, trim, build-date, and VIN restriction.</div></div>';
+  // Lane 2 -- manufacturer-documented guidance. Renders human-verified pairings (v.guidance) when
+  // present; otherwise the honest teal empty-state trust signal. Each pairing carries KYR-written
+  // descriptors + the NHTSA document link (never raw abstract prose or a PDF).
+  var g=(v.guidance||[]);
+  h+='<div class="cc-lane cc-lane-mfr"><div class="cc-lane-h">Manufacturer-documented guidance</div>';
+  if(!g.length){
+    h+='<div class="cc-note">No matching manufacturer guidance found. KYR will only pair a bulletin after a human verifies the official manufacturer document and every year, engine, trim, build-date, and VIN restriction.</div>';
+  }else{
+    h+=g.map(function(x){return '<div class="cc-guide">'
+      +'<div class="cc-guide-rel">Related to '+htmlEsc(ccTitle(x.topic))+'</div>'
+      +'<div class="cc-guide-row"><span class="cc-guide-lbl">Manufacturer-documented symptom</span>'+htmlEsc(x.sym)+'</div>'
+      +'<div class="cc-guide-row"><span class="cc-guide-lbl">Manufacturer-documented service action</span>'+htmlEsc(x.act)+'</div>'
+      +'<div class="cc-guide-app">'+htmlEsc(x.applies)+'</div>'
+      +'<div class="cc-guide-meta">Bulletin '+htmlEsc(x.tsb)+(x.date?' &middot; '+htmlEsc(x.date):'')+' &middot; verified '+htmlEsc(x.vat)+'</div>'
+      +'<a class="cc-vin" href="'+htmlEsc(x.url)+'" target="_blank" rel="noopener">Read the manufacturer document at NHTSA.gov &rarr;</a>'
+      +'</div>';}).join('');
+  }
+  h+='</div>';
   // Lane 3 -- related safety recall (separate provenance state; never proof of a complaint's cause)
   var rc=(v.recalls||[]).length;
   h+='<div class="cc-lane cc-lane-recall"><div class="cc-lane-h">Related safety recalls</div>';
