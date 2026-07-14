@@ -55,12 +55,15 @@ CREATE TABLE IF NOT EXISTS tsb_truncated (vehicle_id INTEGER PRIMARY KEY, tsb_co
 
 SPLIT = re.compile(r",(?! )")
 def topics_for(cur, vehicle_id):
-    """Recompute the SHIPPING complaint topics for a vehicle exactly as the generator does
-    (year/make/model distinct-ODI union, normalized, >=3 and >=10% of n). The gate uses this
-    to enforce that a chosen pairing topic actually reaches the user for this vehicle."""
+    """Recompute the vehicle's complaint topics on the year/make/model distinct-ODI union, exactly
+    as the generator normalizes them. Returns (full_counts, ship, n): `full_counts` = every topic
+    the vehicle genuinely has (topic -> distinct-ODI count), `ship` = the subset clearing the
+    customer-lane threshold (>=3 AND >=10% of n). A pairing may attach to any REAL topic (2026-07-14
+    ruling) -- not only shipping ones -- because verified manufacturer evidence outranks a sparse
+    count; the count is surfaced honestly and unemphasized."""
     row = cur.execute("SELECT year,make,model FROM vehicles WHERE id=?", (vehicle_id,)).fetchone()
     if not row:
-        return set(), 0
+        return {}, set(), 0
     ids = [r[0] for r in cur.execute("SELECT id FROM vehicles WHERE year IS ? AND make IS ? AND model IS ?", row)]
     odi = {}
     q = "SELECT complaint_number,component FROM complaints WHERE vehicle_id IN (%s)" % ",".join("?" * len(ids))
@@ -77,7 +80,7 @@ def topics_for(cur, vehicle_id):
         for t in seen:
             tc[t] = tc.get(t, 0) + 1
     ship = {t for t, c in tc.items() if c >= 3 and n and c / n >= 0.10}
-    return ship, n
+    return tc, ship, n
 
 def fetch_hash(url):
     req = urllib.request.Request(url, headers={"User-Agent": UA})
@@ -106,11 +109,17 @@ def cmd_add(cur, con, args):
     if miss:
         sys.exit("INCOMPLETE pairing -- missing required field(s): %s (nothing written)" % miss)
     vid = int(spec["vehicle_id"])
-    # 1) topic must actually ship for this vehicle
-    ship, n = topics_for(cur, vid)
-    if spec["complaint_topic"] not in ship:
-        sys.exit("GATE: topic %r does not ship in this vehicle's complaint topics %s (n=%d). Refused."
-                 % (spec["complaint_topic"], sorted(ship), n))
+    # 1) topic must be a REAL complaint component for this vehicle (any threshold; a verified
+    #    pairing may surface a below-threshold topic). Garbage / non-existent topics are refused.
+    full, ship, n = topics_for(cur, vid)
+    topic = spec["complaint_topic"]
+    if topic not in full:
+        sys.exit("GATE: topic %r is not a real complaint component for vehicle %d (n=%d; topics: %s). Refused."
+                 % (topic, vid, n, sorted(full)))
+    if topic not in ship:
+        print("  note: %r is BELOW the customer-lane threshold (%d of %d records, %.0f%%). It will "
+              "surface as a pairing-led card with an unemphasized count, no frequency framing."
+              % (topic, full[topic], n, 100 * full[topic] / n if n else 0))
     # 2) source must be an official NHTSA host
     host = re.sub(r"^https?://", "", spec["source_url"]).split("/")[0].lower()
     if host not in OFFICIAL_HOSTS:
@@ -168,8 +177,11 @@ def cmd_recheck(cur, con, args):
 
 def cmd_candidates(cur, con, args):
     vid = args.vehicle
-    ship, n = topics_for(cur, vid)
-    print("vehicle %d ships topics %s (n=%d complaints)" % (vid, sorted(ship), n))
+    full, ship, n = topics_for(cur, vid)
+    print("vehicle %d: n=%d complaints" % (vid, n))
+    print("  SHIPPING topics (>=3 & >=10%%): %s" % sorted(ship))
+    below = sorted((t for t in full if t not in ship), key=lambda t: -full[t])[:10]
+    print("  pairable below-threshold topics: %s" % [(t, full[t]) for t in below])
     trunc = cur.execute("SELECT 1 FROM tsb_truncated WHERE vehicle_id=?", (vid,)).fetchone()
     print("truncated at import cap (internal):", "YES" if trunc else "no")
     ADMIN = ("newsletter", "handover", "warranty administration", "courtesy transportation",

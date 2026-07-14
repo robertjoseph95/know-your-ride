@@ -326,17 +326,24 @@ def s5_6_incident_date_phrasing(a):
                 out.append("%s: banned date phrasing %r present" % (name, bad))
     return out
 
-GUIDE_KEYS = {"topic", "tsb", "date", "comp", "sym", "act", "applies", "url", "vby", "vat", "vhash"}
+GUIDE_KEYS = {"topic", "tsb", "date", "comp", "sym", "act", "applies", "url",
+              "tcount", "n", "vby", "vat", "vhash"}
 GUIDE_STUB = ("tsb", "url", "vhash", "vby", "vat")   # the verification stub; missing any -> not a pairing
 GUIDE_HOSTS = ("static.nhtsa.gov", "www.nhtsa.gov", "nhtsa.gov")
 GUIDE_TEXT_MAX = 220                                  # sym/act bound; longer / multi-sentence -> prose reject
+# A verified pairing may surface a topic BELOW the customer-reported threshold (2026-07-14 ruling),
+# but only as a distinct card state that leads with the manufacturer evidence -- it may NOT carry
+# frequency framing (that belongs to the >=3/>=10% customer lane alone).
+FREQ_FRAMING = ("frequently reported", "frequently", "most reported", "most-reported",
+                "commonly reported", "frequent")
 
 def s5_7_tsb_gate(a):
-    # Block D-1: "no UNVERIFIED TSB content." Default-deny still holds -- top-level keys are
-    # whitelisted and raw TSB-family keys stay forbidden -- but a per-vehicle `guidance` object may
-    # ship IFF every entry is a COMPLETE human-verification record: a full stub, an official NHTSA
-    # source, a topic that actually ships for the vehicle, whitelisted keys only, and short KYR
-    # descriptors (never abstract prose). The teal empty-state string must remain in the source.
+    # Block D-1 (+ 2026-07-14 threshold ruling): "no UNVERIFIED TSB content." Default-deny holds --
+    # top-level keys whitelisted, raw TSB-family keys forbidden -- but a per-vehicle `guidance`
+    # object may ship IFF every entry is a COMPLETE human-verification record: full stub, official
+    # NHTSA source, whitelisted keys only, short non-prose KYR descriptors, and NO frequency framing
+    # (a pairing may surface a below-threshold topic, but never as "frequently reported"). The topic
+    # need NOT be a threshold-clearing customer topic; its honest count is enforced DB-side (S5.9).
     out = []
     top_extra = set(a.D.keys()) - {"v", "dtc", "fixes"}
     if top_extra:
@@ -346,7 +353,6 @@ def s5_7_tsb_gate(a):
         bad = TSB_KEYS & set(v.keys())            # raw TSB-family keys remain forbidden
         if bad:
             out.append("vehicle %s carries raw TSB-family key(s) %s" % (v.get("id"), sorted(bad))); hits += 1
-        ships = {t for t, _ in (v.get("comps_agg") or {}).get("topics", [])}
         for g in (v.get("guidance") or []):
             miss = [k for k in GUIDE_STUB if not g.get(k)]
             if miss:
@@ -357,12 +363,15 @@ def s5_7_tsb_gate(a):
             host = re.sub(r"^https?://", "", str(g.get("url", ""))).split("/")[0].lower()
             if host not in GUIDE_HOSTS:
                 out.append("vehicle %s guidance url host %r not an official NHTSA host" % (v.get("id"), host)); hits += 1
-            if g.get("topic") not in ships:
-                out.append("vehicle %s guidance topic %r does not ship in comps_agg.topics" % (v.get("id"), g.get("topic"))); hits += 1
-            for f in ("sym", "act"):
+            if not isinstance(g.get("tcount"), int) or not isinstance(g.get("n"), int):
+                out.append("vehicle %s guidance tcount/n must be integers (honest labeled count)" % v.get("id")); hits += 1
+            for f in ("sym", "act", "topic"):
                 s = str(g.get(f, ""))
+                low = s.lower()
                 if len(s) > GUIDE_TEXT_MAX or s.count(".") > 2 or "\n" in s:
                     out.append("vehicle %s guidance %s is prose-shaped (bound %d, <=2 sentences, one line)" % (v.get("id"), f, GUIDE_TEXT_MAX)); hits += 1
+                if any(fr in low for fr in FREQ_FRAMING):
+                    out.append("vehicle %s guidance %s carries frequency framing (pairing card must not)" % (v.get("id"), f)); hits += 1
         if hits >= 8:
             break
     for name, txt in (("index.html", a.index), ("wrench_demo.html", a.demo_markup)):
@@ -632,6 +641,50 @@ def s5_8_incident_date_matches_db(a):
         out.append("comps_agg.through is invariant across %d vehicles (looks hardcoded, not DB-derived)" % checked)
     return out
 
+def s5_9_guidance_count(a):
+    """DB-tier (2026-07-14 threshold ruling): a verified pairing may surface a BELOW-threshold topic,
+    but its count must be honest. Every shipped guidance object's `topic` must be a real normalized
+    complaint component for the vehicle's year/make/model, and `tcount`/`n` must equal the DB-derived
+    distinct-ODI counts. Recomputed independently. Vacuous when zero guidance ships (pipeline-only)."""
+    have = [v for v in a.D["v"] if v.get("guidance")]
+    if not have:
+        return []
+    con = _db(a); cur = con.cursor()
+    ymm = {vid: (y, mk, md) for vid, y, mk, md in cur.execute("SELECT id,year,make,model FROM vehicles")}
+    rows_by_key = {}
+    for vid, cn, comp in cur.execute("SELECT vehicle_id,complaint_number,component FROM complaints"):
+        key = ymm.get(vid)
+        if key:
+            rows_by_key.setdefault(key, {})[cn] = comp
+    con.close()
+    csplit = re.compile(r",(?! )")
+    def counts(key):
+        odi = rows_by_key.get(key, {})
+        tc = {}
+        for comp in odi.values():
+            seen = set()
+            for part in csplit.split(comp or ""):
+                t = part.split(", ")[0].strip()
+                if t and t != "UNKNOWN OR OTHER":
+                    seen.add(t)
+            for t in seen:
+                tc[t] = tc.get(t, 0) + 1
+        return tc, len(odi)
+    out = []
+    for v in have:
+        tc, n = counts((v.get("year"), v.get("make"), v.get("model")))
+        for g in v["guidance"]:
+            t = g.get("topic")
+            if t not in tc:
+                out.append("vehicle %s guidance topic %r is not a real complaint component for this vehicle" % (v.get("id"), t))
+            elif g.get("tcount") != tc[t]:
+                out.append("vehicle %s guidance tcount=%s but DB=%s for %r" % (v.get("id"), g.get("tcount"), tc[t], t))
+            if g.get("n") != n:
+                out.append("vehicle %s guidance n=%s but DB=%s" % (v.get("id"), g.get("n"), n))
+            if len(out) >= 5:
+                return out
+    return out
+
 # ---------------------------------------------------------------- registry / main
 
 CHECKS = [
@@ -672,6 +725,7 @@ CHECKS = [
     ("S1.8-gate-sources",        "FAIL", "DB", s1_8_gate_sources),
     ("S4.4-specs-regen",         "FAIL", "DB", s4_4_specs_regen),
     ("S5.8-incident-date-db",    "FAIL", "DB", s5_8_incident_date_matches_db),
+    ("S5.9-guidance-count-db",   "FAIL", "DB", s5_9_guidance_count),
     ("S8.3-count-reconciliation","WARN", "DB", s8_3_count_reconciliation),
 ]
 

@@ -279,6 +279,7 @@ def build_data(cur):
     # narrative ships. Per model-year identity: distinct-ODI total (n), normalized NHTSA topic
     # counts, crash/fire/injury/death totals, and a month-granularity incident cutoff (through).
     with_comps = 0
+    ymm_topic_counts = {}   # (year,make,model) -> {topic: distinct-ODI count}; FULL map for pairings
     if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='complaints'").fetchone():
         # Component normalization (Block-3 ruling A, deterministic "KYR grouping of NHTSA
         # reports"): NHTSA joins multiple components with a bare comma, but canonical names
@@ -322,6 +323,7 @@ def build_data(cur):
                 inj += int(r["injury"] or 0)
                 deaths += int(r["deaths"] or 0)
             topics = sorted(topic_odi.items(), key=lambda kv: (-kv[1], kv[0]))[:6]  # deterministic
+            ymm_topic_counts[key] = dict(topic_odi)   # FULL map (incl. below-threshold) for pairings
             agg = {"n": n, "topics": [[t, c] for t, c in topics],
                    "crash": crash, "fire": fire, "inj": inj, "deaths": deaths}
             # Incident cutoff: NHTSA rows carry placeholder dates (01/01/1901, 01/01/1965); only
@@ -338,15 +340,15 @@ def build_data(cur):
                 veh[vid]["comps_agg"] = agg
                 with_comps += 1
 
-    # Manufacturer-documented guidance (Block D-1, 2026-07-13): emit a `guidance` object ONLY
-    # from COMPLETE, non-superseded human-verification records in tsb_pairings, and ONLY when the
-    # verifier-chosen complaint_topic actually ships for the vehicle (belt-and-suspenders over the
-    # capture-CLI gate). Ships a KYR-written short symptom/action + applicability + the NHTSA
-    # document link + a verification stub -- NEVER NHTSA abstract prose or a bulletin PDF. The
-    # shipped-surfaces verifier (S5.7) rejects any guidance object lacking a valid stub.
+    # Manufacturer-documented guidance (Block D-1, 2026-07-13; threshold ruling 2026-07-14): emit a
+    # `guidance` object ONLY from COMPLETE, non-superseded human-verification records. A verified
+    # pairing is categorically stronger evidence than a complaint count, so it MAY surface a topic
+    # BELOW the customer-reported display threshold -- but as a distinct card state that leads with
+    # the manufacturer evidence, never with frequency framing. We ship the topic's HONEST distinct-
+    # ODI count (`tcount`) + `n` so the teal lane can show "X of N ... mention {topic}" unemphasized
+    # (or omit at 0). Ships KYR descriptors + NHTSA link only -- never abstract prose or a PDF.
     with_guidance = 0
     if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='tsb_pairings'").fetchone():
-        REQ = ("tsb_number", "source_url", "source_hash", "verified_by", "verified_at")
         for r in cur.execute("""SELECT vehicle_id,complaint_topic,tsb_number,bulletin_date,component,
                                 applies_note,symptom,service_action,source_url,source_hash,
                                 verified_by,verified_at FROM tsb_pairings WHERE superseded=0"""):
@@ -355,14 +357,15 @@ def build_data(cur):
             v = veh.get(d["vehicle_id"])
             if not v:
                 continue
-            ships = {t for t, _ in (v.get("comps_agg") or {}).get("topics", [])}
-            if d["topic"] not in ships:          # topic must reach the user for this vehicle
-                continue
-            if not all(d.get(k) for k in ("tsb", "url", "vhash", "vby", "vat", "sym", "act")):
+            if not all(d.get(k) for k in ("tsb", "url", "vhash", "vby", "vat", "sym", "act", "topic")):
                 continue                         # incomplete record -> not emitted (default-deny)
+            key = (v.get("year"), v.get("make"), v.get("model"))
+            tcount = ymm_topic_counts.get(key, {}).get(d["topic"], 0)
+            n = (v.get("comps_agg") or {}).get("n", 0)
             v.setdefault("guidance", []).append({
                 "topic": d["topic"], "tsb": d["tsb"], "date": d["date"], "comp": d["comp"],
                 "sym": d["sym"], "act": d["act"], "applies": d["applies"], "url": d["url"],
+                "tcount": tcount, "n": n,
                 "vby": d["vby"], "vat": d["vat"], "vhash": d["vhash"][:12]})
             with_guidance += 1
 

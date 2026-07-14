@@ -119,18 +119,23 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
      banned `data through` / `retrieved` / `updated as of` / `reported through` absent (the field is
      `dateOfIncident`, and `pull_log` covers only 127/1040, so no ingest guarantee may be implied).
   7. [CI][FAIL] **TSB gate — no *unverified* TSB content** (evolved from "no TSB content" in
-     Block D-1). Top-level blob keys ⊆ `{v, dtc, fixes}`; raw TSB-family keys
-     (`tsb`/`bulletin`/`manufacturer_documented`/`service_action`/`fuseTsbsByCode`/…) still forbidden.
-     A per-vehicle **`guidance`** object is the ONE allowed door and ships only if every entry is a
-     complete human-verification record: full stub (`tsb`/`url`/`vhash`/`vby`/`vat`), an **official
-     NHTSA host** URL, a `topic` that **actually ships in that vehicle's `comps_agg.topics`**,
-     whitelisted keys only (`{topic,tsb,date,comp,sym,act,applies,url,vby,vat,vhash}`), and short
-     KYR descriptors (≤220 chars, ≤2 sentences, one line — never abstract prose). The teal
-     `No matching manufacturer guidance found` empty-state string must remain in the source.
+     Block D-1; threshold ruling 2026-07-14). Top-level blob keys ⊆ `{v, dtc, fixes}`; raw
+     TSB-family keys (`tsb`/`bulletin`/`manufacturer_documented`/`service_action`/`fuseTsbsByCode`/…)
+     still forbidden. A per-vehicle **`guidance`** object is the ONE allowed door and ships only if
+     every entry is a complete human-verification record: full stub (`tsb`/`url`/`vhash`/`vby`/`vat`),
+     an **official NHTSA host** URL, whitelisted keys only
+     (`{topic,tsb,date,comp,sym,act,applies,url,tcount,n,vby,vat,vhash}`), `tcount`/`n` integers, short
+     KYR descriptors (≤220 chars, ≤2 sentences, one line — never abstract prose), and **no frequency
+     framing** in `sym`/`act`/`topic`. The topic need NOT be a threshold-clearing customer topic (a
+     verified pairing may surface a below-threshold topic); its count honesty is enforced DB-side (9).
+     The teal `No matching manufacturer guidance found` empty-state string must remain in the source.
      *(Default-deny intact: an unverified pairing is structurally incapable of shipping.)*
   8. [DB][FAIL] **Retrieval date matches DB** — every shipped `comps_agg.through` equals the
      DB-derived clamped max incident month for that year/make/model, and is not a hardcoded literal
      (values must vary and match the recomputation).
+  9. [DB][FAIL] **Guidance count matches DB** — every shipped `guidance.topic` is a real normalized
+     complaint component for the vehicle, and `tcount`/`n` equal the DB-derived distinct-ODI counts
+     (a below-threshold pairing may surface its topic, but never with a fabricated count).
 
 **Manufacturer-communication pairing pipeline (Block D-1).** Local-only `tsb_pairings` table +
 `_tsb_pairing.py` CLI (`init` / `add` / `list` / `recheck` / `candidates`). A pairing is created
@@ -146,14 +151,25 @@ the UI (per ruling: never claim completeness, no per-vehicle caveat). D-2 = the 
 The first production pairing must be topic-exact and deliberate (it sets the D-2 precedent), not
 chosen because a topic happens to clear the display threshold.
 
-**OPEN QUESTION for D-2 (banked, not solved).** The display threshold constrains pairability: a
-bulletin whose true NHTSA component doesn't clear ≥3 records / ≥10% of `n` has **no shipping
-complaint topic to pair to** (e.g. Subaru 12-251-23 is a LATCHES/LOCKS/LINKAGES bulletin, but for
-the 2020 Ascent that topic is below threshold — so an exact pairing has nowhere to attach). D-2
-needs a ruling on whether a *human-verified* pairing justifies surfacing its own topic below the
-customer-reported threshold (i.e. show the manufacturer-guidance lane for a topic that isn't a
-"Frequently reported" customer topic), or whether pairings are confined to already-shipping topics.
-Until ruled, the gate confines pairings to shipping topics (`S5.7-tsb-gate` invariant 7).
+**RESOLVED (2026-07-14 ruling).** A human-verified pairing MAY surface its own topic **below** the
+customer-reported display threshold — a verified manufacturer document a human confirmed applies to
+this exact vehicle is categorically stronger evidence than a sparse count, and shouldn't be
+suppressed because complaints happen to be few. This also removes the pressure that pushed the
+Ascent pairing toward a threshold-clearing topic. Constraints, verifier-enforced:
+- a below-threshold pairing is a **distinct card state** that leads with the manufacturer evidence,
+  not the count; it may never carry "Frequently reported to NHTSA" or any frequency framing
+  (`S5.7-tsb-gate`: `FREQ_FRAMING` forbidden in guidance `sym`/`act`/`topic`);
+- its count, if shown, is honestly labeled and **unemphasized** — "{tcount} of {n} NHTSA complaint
+  records mention {topic}." — and **omitted at tcount = 0** (showing "0 of N" would undercut the
+  evidence). *(Implemented: shown unemphasized when ≥1, omitted at 0 — reads more transparently than
+  a blanket omit.)*
+- the count must be **honest**: `S5.9-guidance-count` (DB-tier) asserts the topic is a real
+  normalized complaint component for the vehicle and `tcount`/`n` equal the DB-derived values;
+- the **orange (customer) lane threshold is unchanged** — a topic with no verified pairing still
+  needs ≥3 records and ≥10% to appear at all.
+The gate no longer requires a guidance topic to be a shipping customer topic (that requirement was
+removed from `S5.7-tsb-gate` invariant 7); it requires a complete verification record, an official
+source, no frequency framing, and a DB-honest count.
 
 ## S6. Known-issues gate — absent `notes[]` + empty-state markup
 - **Ships:** nothing (the gate). `renderIssues` shows the honest empty state with cross-links;
