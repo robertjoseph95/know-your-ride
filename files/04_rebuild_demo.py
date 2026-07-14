@@ -36,7 +36,6 @@ HERE     = os.path.dirname(os.path.abspath(__file__))
 ROOT     = os.path.dirname(HERE)                       # "Wrench App Data"
 DB_PATH  = os.path.join(ROOT, "wrench_vehicles.db")
 OUT_FILE = os.path.join(ROOT, "wrench_demo.html")
-SENTINEL = "/*WRENCH_COMPLAINTS_TAB*/"
 
 
 def pj(val):
@@ -274,45 +273,70 @@ def build_data(cur):
         {"mid": r["maintenance_id"], "type": r["part_type"], "brand": r["brand"],
          "pn": r["part_number"], "desc": r["description"], "qty": r["qty"]}))
 
-    # complaints: AGGREGATES ONLY ship (P0-4, 2026-07-12). Raw narratives are unverified
-    # consumer-submitted reports and — despite NHTSA's redaction — the free text contains
-    # email/phone/VIN-like strings typed in by complainants, so NO narrative text ships.
-    # Per vehicle: total count (comp_n), top components, crash/fire/injury/death totals,
-    # and the incident date range. Narratives stay in the DB for internal reference; the
-    # UI labels this "Consumer Reports (NHTSA)" and links to the NHTSA vehicle page.
+    # complaints: NORMALIZED AGGREGATES ONLY ship (P0-4 2026-07-12; Common Customer Complaints
+    # spec 2026-07-13). Raw narratives are unverified consumer allegations and (despite NHTSA
+    # redaction) the free text contains complainant-entered email/phone/VIN strings, so NO
+    # narrative ships. Per model-year identity: distinct-ODI total (n), normalized NHTSA topic
+    # counts, crash/fire/injury/death totals, and a month-granularity incident cutoff (through).
     with_comps = 0
     if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='complaints'").fetchone():
-        raw = {}
-        cur.execute("SELECT vehicle_id,component,incident_date,crash,fire,injury,deaths FROM complaints")
+        # Component normalization (Block-3 ruling A, deterministic "KYR grouping of NHTSA
+        # reports"): NHTSA joins multiple components with a bare comma, but canonical names
+        # keep an internal ", " (e.g. "FUEL SYSTEM, GASOLINE"). So split ONLY on comma-not-
+        # followed-by-space -- NEVER naive comma-split -- then roll each token up to its NHTSA
+        # parent category (drop the ", SUBCATEGORY" tail). "UNKNOWN OR OTHER" is NHTSA's
+        # catch-all: it still counts toward n (the denominator) but is never shown as a topic.
+        _CSPLIT = re.compile(r",(?! )")
+        def _topics(component):
+            out = set()
+            for part in _CSPLIT.split(component or ""):
+                part = part.strip()
+                if part:
+                    out.add(part.split(", ")[0].strip())
+            out.discard("UNKNOWN OR OTHER")
+            return out
+        # Aggregate on the (year, make, model) identity with a DISTINCT-ODI UNION, then project
+        # the result onto every engine-variant vehicle id sharing that identity. NHTSA files
+        # complaints per year/make/model, not per engine, and some models carry duplicate ids
+        # (e.g. 2020/2021 RAM 1500 = Hemi + EcoDiesel) whose complaint sets overlap -- a naive
+        # per-id count double-counts the shared ODI numbers.
+        ymm_rows, ymm_ids = {}, {}
+        for vid, v in veh.items():
+            ymm_ids.setdefault((v.get("year"), v.get("make"), v.get("model")), []).append(vid)
+        cur.execute("SELECT vehicle_id,complaint_number,component,incident_date,crash,fire,injury,deaths FROM complaints")
         for r in cur.fetchall():
-            if r["vehicle_id"] in veh:
-                raw.setdefault(r["vehicle_id"], []).append(r)
-        for vid, rows in raw.items():
-            rows.sort(key=lambda r: date_key(r["incident_date"]), reverse=True)
-            by_comp, crash, fire, inj, deaths = {}, 0, 0, 0, 0
+            v = veh.get(r["vehicle_id"])
+            if not v:
+                continue
+            key = (v.get("year"), v.get("make"), v.get("model"))
+            ymm_rows.setdefault(key, {})[r["complaint_number"]] = r   # dedup by ODI = union
+        for key, odi_map in ymm_rows.items():
+            rows = list(odi_map.values())
+            n = len(rows)                                     # distinct-ODI denominator (Y)
+            topic_odi, crash, fire, inj, deaths = {}, 0, 0, 0, 0
             for r in rows:
-                comp = (r["component"] or "OTHER").strip() or "OTHER"
-                by_comp[comp] = by_comp.get(comp, 0) + 1
+                for t in _topics(r["component"]):             # each ODI counted once per topic
+                    topic_odi[t] = topic_odi.get(t, 0) + 1
                 crash += 1 if r["crash"] else 0
                 fire += 1 if r["fire"] else 0
                 inj += int(r["injury"] or 0)
                 deaths += int(r["deaths"] or 0)
-            top = sorted(by_comp.items(), key=lambda kv: (-kv[1], kv[0]))[:6]  # deterministic
-            veh[vid]["comp_n"] = len(rows)
-            agg = {
-                "by_comp": [[k, n] for k, n in top],
-                "crash": crash, "fire": fire, "inj": inj, "deaths": deaths,
-            }
-            # Date range: NHTSA data contains placeholder dates (e.g. 01/01/1965); only
-            # dates plausibly within the vehicle's life (model year - 2 onward) count.
-            yr = veh[vid].get("year") or 0
+            topics = sorted(topic_odi.items(), key=lambda kv: (-kv[1], kv[0]))[:6]  # deterministic
+            agg = {"n": n, "topics": [[t, c] for t, c in topics],
+                   "crash": crash, "fire": fire, "inj": inj, "deaths": deaths}
+            # Incident cutoff: NHTSA rows carry placeholder dates (01/01/1901, 01/01/1965); only
+            # dates within the model's plausible life (model year - 2 onward) count. Ship a MONTH
+            # max ("YYYY-MM"); the UI renders "Incident dates through {Month Year}".
+            yr = key[0] or 0
             floor = max(1990, yr - 2)
-            good = [r["incident_date"] for r in rows
-                    if r["incident_date"] and date_key(r["incident_date"])[0] >= floor]
-            if good:                       # rows sorted newest-first
-                agg["last"], agg["first"] = good[0], good[-1]
-            veh[vid]["comps_agg"] = agg
-            with_comps += 1
+            months = [date_key(r["incident_date"])[:2] for r in rows
+                      if r["incident_date"] and date_key(r["incident_date"])[0] >= floor]
+            if months:
+                y, m = max(months)
+                agg["through"] = "%04d-%02d" % (y, m)
+            for vid in ymm_ids.get(key, []):
+                veh[vid]["comps_agg"] = agg
+                with_comps += 1
 
     cur.execute("SELECT code,description FROM dtc_codes ORDER BY code")
     dtc = {r["code"]: r["description"] for r in cur.fetchall()}
@@ -334,60 +358,11 @@ def build_data(cur):
                     "secondary": r["secondary_location"],
                 }
 
-    # Fuse/relay TSB+complaint excerpts (fuse_tsbs / fuseTsbsByCode) RETIRED (P0-4, 2026-07-12):
-    # nothing in the shipped JS ever read either key (0 code references in both HTML files),
-    # and the complaint-sourced entries carried the same unverified narrative text this pass
-    # removes. ~3,800 dead strings dropped from the payload. fuseTsbsByCode ships as {} so any
-    # hypothetical consumer sees an empty map, never undefined. Rebuild from the DB (tsb /
-    # complaints tables) if a fuse-locator feature ever actually lands in the UI.
-    fuseTsbsByCode = {}
-
-    return list(veh.values()), dtc, fixes, with_comps, fuseTsbsByCode
-
-
-# ── JS injected for the Complaints tab (reuses existing CSS classes) ──────────
-RENDER_FN = SENTINEL + """
-function renderComplaints(v){
-  var a=v.comps_agg;
-  if(!a&&!v.comp_n)return '<p class="empty-note">No NHTSA consumer reports on record.</p>';
-  var h='<div class="sec-head">Consumer Reports (NHTSA)'+(v.comp_n?' ('+v.comp_n+' total)':'')+'</div>';
-  h+='<div class="dtc-disclaimer">&#9888; Unverified consumer-submitted reports to NHTSA, not confirmed defects.</div>';
-  if(a){
-    var f='';
-    if(a.crash)f+='<span class="bdg bdg-r">'+a.crash+' CRASH</span> ';
-    if(a.fire)f+='<span class="bdg bdg-r">'+a.fire+' FIRE</span> ';
-    if(a.inj)f+='<span class="bdg bdg-r">'+a.inj+' INJURIES</span> ';
-    if(a.deaths)f+='<span class="bdg bdg-r">'+a.deaths+' DEATHS</span> ';
-    if(f)h+='<div style="margin:8px 0 10px">'+f+'</div>';
-    if(a.by_comp&&a.by_comp.length){
-      h+='<div class="recall-card"><div class="rc-comp">Most-reported components</div>'
-        +a.by_comp.map(function(x){return '<div class="rc-camp">'+htmlEsc(x[0])+' &middot; '+x[1]+' report'+(x[1]>1?'s':'')+'</div>';}).join('')
-        +'</div>';
-    }
-    if(a.first||a.last)h+='<div class="rc-camp" style="margin-top:8px">Reports span '+htmlEsc(a.first||'?')+' to '+htmlEsc(a.last||'?')+'</div>';
-  }
-  var url='https://www.nhtsa.gov/vehicle/'+v.year+'/'+encodeURIComponent((v.make||'').toUpperCase())+'/'+encodeURIComponent((v.model||'').toUpperCase());
-  h+='<a class="cta" style="margin-top:10px" target="_blank" rel="noopener" href="'+url+'">Read the full reports at NHTSA.gov &rarr;</a>';
-  return h;
-}
-"""
-
-
-def inject_tab(html):
-    """Add the Complaints tab to the demo JS (idempotent)."""
-    if SENTINEL in html:
-        return html
-    html = html.replace("function switchTab(name){", RENDER_FN + "\nfunction switchTab(name){", 1)
-    html = html.replace(
-        "var MTABS=['oil','parts','fluids','maint','perf','safety','warranty'];",
-        "var MTABS=['oil','parts','fluids','maint','perf','safety','warranty','comps'];", 1)
-    html = html.replace(
-        "var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG','Safety & Rel.','Warranty & Recalls'];",
-        "var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG','Safety & Rel.','Warranty & Recalls','Complaints'];", 1)
-    html = html.replace(
-        "var fns={oil:renderOil,parts:renderParts,fluids:renderFluids,maint:renderMaint,perf:renderPerf,safety:renderSafety,warranty:renderWarranty};",
-        "var fns={oil:renderOil,parts:renderParts,fluids:renderFluids,maint:renderMaint,perf:renderPerf,safety:renderSafety,warranty:renderWarranty,comps:renderComplaints};", 1)
-    return html
+    # Fuse/relay TSB+complaint excerpts (fuse_tsbs / fuseTsbsByCode) fully REMOVED (Block-3,
+    # 2026-07-13): the root key previously shipped as {} but nothing ever read it, and shipping
+    # ANY TSB-derived root key contradicts "Phase 1 implies no TSB coverage." The key is now
+    # absent from the blob; the shipped-surfaces verifier asserts its absence (default-deny).
+    return list(veh.values()), dtc, fixes, with_comps
 
 
 # ── VIN decode UI (calls the same-origin proxy in wrench_serve.py) ────────────
@@ -1646,7 +1621,7 @@ def main():
     cur = conn.cursor()
 
     print("Building data from DB...")
-    vlist, dtc, fixes, with_comps, fuseTsbsByCode = build_data(cur)
+    vlist, dtc, fixes, with_comps = build_data(cur)
     _assert_gate_sources(cur)
     conn.close()
 
@@ -1669,7 +1644,7 @@ def main():
     if any(_ver0_leak(v) for v in vlist):
         raise SystemExit("PAYLOAD GUARD: ver:0 object shipped with value-bearing keys (P1-1)")
 
-    data_json = json.dumps({"v": vlist, "dtc": dtc, "fixes": fixes, "fuseTsbsByCode": fuseTsbsByCode}, separators=(",", ":"))
+    data_json = json.dumps({"v": vlist, "dtc": dtc, "fixes": fixes}, separators=(",", ":"))
     data_json = data_json.replace("</", "<\\/")        # can't break out of <script>
     # Payload guards (C1/F2): fail the build before any file is written. Do NOT add a
     # 'scraped' guard here -- that word appears legitimately inside NHTSA complaint prose.
@@ -1701,7 +1676,6 @@ def main():
     html = html[:start] + "const __D__=" + data_json + ";\n" + html[sci:]
 
     # 2) inject the Complaints tab + VIN decode + feature UIs (once each)
-    html = inject_tab(html)
     html = inject_vin(html)
     html = inject_parttiers(html)
     html = inject_youtube(html)
@@ -1737,16 +1711,20 @@ def main():
     # Build-integrity guards: a .replace(old, new, 1) silently no-ops if `old` ever drifts,
     # which would ship a degraded build with no error. Fail loudly instead. (These all hold
     # on the normal success path; they only fire if an upstream template string changed.)
-    assert SENTINEL in html, "Complaints tab sentinel missing -- inject_tab did not apply"
     assert "const __D__=" in html, "embedded dataset missing after rebuild"
     assert "/*WRENCH_SELFHOST_FONTS*/" in html, "self-hosted @font-face block missing"
     assert "always verify specs against your owner manual" in html, "AI-guide banner migration did not apply"
 
     # 3) refresh the badge (lead with the verified number, not the fleet total: verified =
     #    vehicles carrying owner's-manual-verified curated specs, oil.ver==1 as the anchor.
-    #    "WITH CONSUMER REPORTS" must remain in the badge per shipped-surfaces S5.3.)
+    #    The hero badge stays "WITH CONSUMER REPORTS" (the neutral P0-4 term): it is
+#    uncontextualized top-line copy and must not frame the product around defect-
+#    reporting. The Safety-section header is "Common Customer Complaints", where the
+#    three caveat lanes contextualize it. Count = distinct year/make/model identities
+#    with complaint data (not projected variant ids). "WITH CONSUMER REPORTS" per S5.3.)
     verified = sum(1 for v in vlist if isinstance(v.get("oil"), dict) and v["oil"].get("ver") == 1)
-    badge = f"{len(vlist)} SEARCHABLE · {verified} OWNER'S-MANUAL-VERIFIED · {len(dtc)} DTC CODES · {with_comps} WITH CONSUMER REPORTS"
+    ymm_with_comps = len({(v.get("year"), v.get("make"), v.get("model")) for v in vlist if v.get("comps_agg")})
+    badge = f"{len(vlist)} SEARCHABLE · {verified} OWNER'S-MANUAL-VERIFIED · {len(dtc)} DTC CODES · {ymm_with_comps} WITH CONSUMER REPORTS"
     html = re.sub(r'(<div class="db-badge">)[^<]*(</div>)', lambda m: m.group(1) + badge + m.group(2), html, count=1)
     html = ascii_polish(html)   # truly last: guarantee pure ASCII outside data (badge included)
 
@@ -1756,7 +1734,6 @@ def main():
     size = os.path.getsize(OUT_FILE)
     print("\n--- Done ---------------------------")
     print(f"Output: {OUT_FILE}  ({size/1024/1024:.2f} MB)")
-    print(f"Complaints tab injected: {'yes' if SENTINEL in html else 'already present'}")
 
 
 if __name__ == "__main__":

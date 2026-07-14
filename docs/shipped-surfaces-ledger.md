@@ -28,7 +28,8 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
   2. [CI][FAIL] Forbidden strings absent: `"source":`, `last_verified_at`, `ai-haiku`,
      `oilchangediy`. *(C1/F2)*
   3. [CI][FAIL] Zero vehicle-level `notes[]`. *(Known-issues gate)*
-  4. [CI][FAIL] Zero `comps[]` / `fuse_tsbs[]` arrays; `fuseTsbsByCode == {}`. *(Consumer-reports fix)*
+  4. [CI][FAIL] Zero `comps[]` / `fuse_tsbs[]` arrays; **`fuseTsbsByCode` root key ABSENT**
+     (Block-3 flipped this from "== {}" to "absent" — a TSB-derived root key may not ship at all).
   4b. [CI][FAIL] Zero vehicle-level `costs{}` and zero `rel{}`; top-level `fixes == {}`.
      *(Block-1 paid-feature gate, 2026-07-13: `costs` = CarMD/national-only, sold as
      "Regional service costs"; `rel` = unsourced computed reliability score; `fixes` =
@@ -90,23 +91,40 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
   4. [DB][FAIL] Regeneration equivalence: running `_gen_guide_specs.py` against the canonical
      DB reproduces the committed file byte-for-byte (determinism makes this exact).
 
-## S5. Consumer-reports aggregates — `comps_agg` in the blob + tab/hero copy
-- **Ships:** per-vehicle `{by_comp[[component,count]…≤6], crash, fire, inj, deaths, first?,
-  last?}` + `comp_n`; "Consumer Reports (NHTSA)" tab with disclaimer + NHTSA link; hero badge
-  "N WITH CONSUMER REPORTS".
-- **Generator:** `files/04_rebuild_demo.py` (aggregation + hero badge line);
-  renderer persisted in `wrench_demo.html`.
-- **Current guards:** the aggregation code itself; no output check.
+## S5. Common Customer Complaints — `comps_agg` in the blob + Safety-tab card
+- **Ships:** per-vehicle `{n, topics[[label,count]…≤6], crash, fire, inj, deaths, through?}` —
+  normalized NHTSA component topics (distinct-ODI, KYR grouping), a distinct-ODI denominator
+  `n`, and a month-granularity incident cutoff `through` ("YYYY-MM"). Rendered as three provenance
+  lanes inside **Safety** (customer-reported / manufacturer-documented teal empty-state / recall);
+  hero badge "N WITH CONSUMER REPORTS". **No TSB / manufacturer-guidance data ships (Phase 1).**
+- **Generator:** `files/04_rebuild_demo.py` — component normalization (split on comma-not-
+  followed-by-space, roll up to NHTSA parent; never naive-split), year/make/model distinct-ODI
+  union projected onto engine-variant ids (fixes 2020/2021 RAM 1500 double-count), month cutoff,
+  hero badge line. Renderer + 3-lane copy persisted in `wrench_demo.html` (the fossil `inject_tab`
+  injector was deleted — the tab is fully hand-authored).
+- **Current guards:** S5.1–S5.8 below.
 - **Invariants:**
-  1. [CI][FAIL] `comps_agg` schema whitelist: keys ⊆ `{by_comp, crash, fire, inj, deaths,
-     first, last}` — any extra key (e.g. a narrative field) fails. *(Complaint narratives
-     can never return under a new name in this subtree)*
-  2. [CI][FAIL] Markup contains the disclaimer string `Unverified consumer-submitted reports
-     to NHTSA` and the tab label `Consumer Reports` (not `Complaints`).
-  3. [CI][FAIL] Hero badge says `WITH CONSUMER REPORTS`, never `WITH COMPLAINTS`.
-  4. [CI][WARN] PII sweep over the `comps_agg` subtree only: zero email/phone/VIN-like
-     matches. (Whole-blob sweep stays WARN: recall-remedy text legitimately contains
-     manufacturer 1-800 numbers.)
+  1. [CI][FAIL] `comps_agg` schema whitelist: keys ⊆ `{n, topics, crash, fire, inj, deaths,
+     through}`; each topic is a `[label, int]` pair (no narrative, no nested guidance object).
+  2. [CI][FAIL] Markup ships the `Common Customer Complaints` heading + the permanent NHTSA
+     disclaimer (`Complaints are reports submitted to NHTSA, not verified defects`); the obsolete
+     standalone `Consumer Reports` tab label is absent.
+  3. [CI][FAIL] Hero badge says `WITH CONSUMER REPORTS`, never a bare `WITH COMPLAINTS`.
+  4. [CI][WARN] PII sweep over the `comps_agg` subtree only: zero email/phone/VIN-like matches.
+  5. [CI][FAIL] **Labeled count** — the render carries `NHTSA complaint records mention {topic}`
+     (label + denominator); no bare ratio may ship. No forbidden framing (confirmed/known defect,
+     guaranteed/usual fix, NHTSA-recommended/free repair) — matched affirmatively, so the honest
+     `not confirmed defects` footer is allowed.
+  6. [CI][FAIL] **Incident-date phrasing** — approved `Incident dates through {Month Year}` present;
+     banned `data through` / `retrieved` / `updated as of` / `reported through` absent (the field is
+     `dateOfIncident`, and `pull_log` covers only 127/1040, so no ingest guarantee may be implied).
+  7. [CI][FAIL] **No TSB content** — top-level blob keys ⊆ `{v, dtc, fixes}`; no vehicle carries a
+     TSB-family key (`tsb`/`bulletin`/`manufacturer_documented`/`service_action`/`fuseTsbsByCode`/…);
+     and the teal `No matching manufacturer guidance found` empty-state is present. *(Mechanically
+     enforces "Phase 1 implies no TSB coverage.")*
+  8. [DB][FAIL] **Retrieval date matches DB** — every shipped `comps_agg.through` equals the
+     DB-derived clamped max incident month for that year/make/model, and is not a hardcoded literal
+     (values must vary and match the recomputation).
 
 ## S6. Known-issues gate — absent `notes[]` + empty-state markup
 - **Ships:** nothing (the gate). `renderIssues` shows the honest empty state with cross-links;

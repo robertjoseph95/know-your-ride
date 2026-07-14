@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-07-13-obd-and-claims">
+<meta name="kyr-version" content="2026-07-13-common-complaints">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -157,6 +157,28 @@ body{background:var(--bg)}
 .costs-bar{width:80px;height:5px;background:var(--border);border-radius:100px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:8px}
 .costs-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--a2));border-radius:100px}
 .empty-note{color:var(--faint);font-size:12px;font-style:italic;padding:8px 0}
+.cc-head{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:.02em;color:var(--text);margin:2px 0 4px}
+.cc-sub{color:var(--dim);font-size:13px;line-height:1.55;margin-bottom:10px;max-width:640px}
+.cc-date{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:12px}
+.cc-lane{border:1px solid var(--border);border-left-width:4px;border-radius:8px;padding:12px 14px;margin-bottom:12px;background:var(--panel)}
+.cc-lane-cust{border-left-color:#5b8def}
+.cc-lane-mfr{border-left-color:#1fb6a6}
+.cc-lane-recall{border-left-color:var(--red)}
+.cc-lane-h{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:9px}
+.cc-topic{padding:9px 0;border-top:1px solid var(--border)}
+.cc-topic:first-child{border-top:none;padding-top:2px}
+.cc-hidden{display:none}
+.cc-topic-name{font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.cc-topic-count{font-size:12.5px;color:var(--dim);margin-top:3px;line-height:1.45}
+.cc-freq{font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0a1f1c;background:#1fb6a6;padding:2px 7px;border-radius:100px}
+.cc-note{font-size:12.5px;color:var(--dim);line-height:1.55}
+.cc-group{font-size:11px;color:var(--faint);font-style:italic;margin-top:9px;line-height:1.45}
+.cc-flag{font-size:11.5px;color:#ffd97a;margin-top:10px;line-height:1.5}
+.cc-showall{display:block;width:100%;min-height:44px;margin-top:10px;background:transparent;color:var(--accent);border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer}
+.cc-showall:hover{border-color:var(--accent)}
+.cc-vin{display:inline-block;margin-top:8px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
+.cc-vin:hover{text-decoration:underline}
+.cc-disc{margin:12px 0;padding:11px 13px;background:#3a2e00;border:1px solid #e0a23b;border-radius:8px;color:#ffd97a;font-size:11.5px;line-height:1.55}
 .cl-layout{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}
 .cl-panel{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:18px;position:sticky;top:74px}
 .cl-title{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:.02em;margin-bottom:12px}
@@ -532,7 +554,7 @@ body{background:var(--bg)}
     <div class="brand-lockup"><svg class="brand-ico" viewBox="0 0 512 512" role="img" aria-label="Know Your Ride"><rect width="512" height="512" rx="96" fill="#09090b"/><g transform="rotate(-20 330 140)"><rect x="316" y="80" width="46" height="190" rx="23" fill="#fdba74"/><rect x="290" y="36" width="100" height="100" rx="28" fill="#fdba74"/><rect x="324" y="28" width="32" height="66" rx="14" fill="#09090b"/></g><rect x="134" y="172" width="268" height="290" rx="18" fill="#f5e6d3"/><rect x="116" y="156" width="268" height="290" rx="22" fill="#f97316"/><rect x="116" y="156" width="32" height="290" rx="16" fill="#c2560a"/><text x="274" y="330" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="76" fill="#fff7ed">P0420</text></svg><div class="brand">KNOW YOUR RIDE<em>.</em></div></div>
     <div class="tagline">Your pocket owner's manual</div>
   </div>
-  <div class="db-badge">3667 SEARCHABLE - 290 OWNER'S-MANUAL-VERIFIED - 12196 DTC CODES - 1040 WITH CONSUMER REPORTS</div>
+  <div class="db-badge">3667 SEARCHABLE - 290 OWNER'S-MANUAL-VERIFIED - 12196 DTC CODES - 1038 WITH CONSUMER REPORTS</div>
 </div>
 
 <div id="kyr-relink" style="display:none;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;background:rgba(255,107,0,0.1);border:1px solid var(--accent);padding:10px 20px;font-size:13px;line-height:1.4"><span id="kyr-relink-msg">Re-link your Pro account to restore full access &mdash; enter your email below</span><input type="email" id="kyr-relink-email" placeholder="you@example.com" autocomplete="email" spellcheck="false" style="padding:6px 10px;border:1px solid var(--accent);border-radius:4px;background:#fff;color:#111;font-size:13px;min-width:180px"><button type="button" id="kyr-relink-btn" onclick="kyrRelinkSubmit()" style="padding:6px 14px;border:none;border-radius:4px;background:var(--accent);color:#fff;font-weight:700;font-size:12px;letter-spacing:.04em;cursor:pointer">RE-LINK PRO</button><button type="button" id="kyr-relink-x" onclick="kyrRelinkDismiss()" aria-label="Dismiss" style="background:none;border:none;color:var(--accent);font-size:18px;line-height:1;cursor:pointer;padding:0 4px">&times;</button></div>
@@ -744,7 +766,7 @@ body{background:var(--bg)}
   </div>
 </div>
 
-<script src="/data.f51c3d49.js"></script>
+<script src="/data.6406f289.js"></script>
 <script>
 
 const DB=__D__;
@@ -754,28 +776,57 @@ const MAKES=[...new Set(DB.v.map(v=>v.make))].sort();
 const YEARS=[...new Set(DB.v.map(v=>v.year))].sort((a,b)=>b-a);
 
 /*WRENCH_COMPLAINTS_TAB*/
+// Common Customer Complaints (Block-3, 2026-07-13) -- three provenance lanes, never blended:
+// customer-reported (NHTSA complaints) / manufacturer-documented (teal, empty in Phase 1) /
+// recall. Counts read comps_agg.{n,topics,through,...} normalized in the generator; the label
+// carries its denominator (never a bare ratio); the date is generated, never hardcoded.
+var CC_MON=['','January','February','March','April','May','June','July','August','September','October','November','December'];
+function ccMonth(s){var p=(s||'').split('-');if(p.length!==2)return '';var m=parseInt(p[1],10);return (CC_MON[m]||'')+' '+p[0];}
+function ccTitle(s){return String(s||'').toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase();}).replace(/\(esc\)/,'(ESC)');}
+function ccDisclaimer(){return '<div class="cc-disc">Complaints are reports submitted to NHTSA, not verified defects, and counts are not failure rates. Manufacturer bulletins are service guidance, not recalls or guarantees. Applicability can depend on trim, engine, build date, or VIN. Check your VIN for recalls and have the symptom diagnosed before repairs.</div>';}
+function ccSources(v){var url='https://www.nhtsa.gov/vehicle/'+v.year+'/'+encodeURIComponent((v.make||'').toUpperCase())+'/'+encodeURIComponent((v.model||'').toUpperCase());return '<a class="cta" style="margin-top:10px" target="_blank" rel="noopener" href="'+url+'">See the NHTSA record for this vehicle &rarr;</a>';}
+function ccShowAll(vid){var box=document.getElementById('cc-topics-'+vid);if(!box)return;var hid=box.querySelectorAll('.cc-hidden');for(var i=0;i<hid.length;i++)hid[i].classList.remove('cc-hidden');var b=document.getElementById('cc-showall-'+vid);if(b)b.style.display='none';}
 function renderComplaints(v){
   var a=v.comps_agg;
-  if(!a&&!v.comp_n)return '<p class="empty-note">No NHTSA consumer reports on record.</p>';
-  var h='<div class="sec-head">Consumer Reports (NHTSA)'+(v.comp_n?' ('+v.comp_n+' total)':'')+'</div>';
-  h+='<div class="dtc-disclaimer">&#9888; Unverified consumer-submitted reports to NHTSA, not confirmed defects.</div>';
-  if(a){
-    var f='';
-    if(a.crash)f+='<span class="bdg bdg-r">'+a.crash+' CRASH</span> ';
-    if(a.fire)f+='<span class="bdg bdg-r">'+a.fire+' FIRE</span> ';
-    if(a.inj)f+='<span class="bdg bdg-r">'+a.inj+' INJURIES</span> ';
-    if(a.deaths)f+='<span class="bdg bdg-r">'+a.deaths+' DEATHS</span> ';
-    if(f)h+='<div style="margin:8px 0 10px">'+f+'</div>';
-    if(a.by_comp&&a.by_comp.length){
-      h+='<div class="recall-card"><div class="rc-comp">Most-reported components</div>'
-        +a.by_comp.map(function(x){return '<div class="rc-camp">'+htmlEsc(x[0])+' &middot; '+x[1]+' report'+(x[1]>1?'s':'')+'</div>';}).join('')
-        +'</div>';
-    }
-    if(a.first||a.last)h+='<div class="rc-camp" style="margin-top:8px">Reports span '+htmlEsc(a.first||'?')+' to '+htmlEsc(a.last||'?')+'</div>';
+  var h='<div class="cc-head">Common Customer Complaints</div>';
+  h+='<div class="cc-sub">Topics most often reported in NHTSA safety complaints for this model year, paired with related manufacturer service guidance where available.</div>';
+  if(!a||!a.n){
+    h+='<div class="empty-note">KYR does not currently have NHTSA complaint coverage for this vehicle. This is not a statement that no concerns exist.</div>';
+    return h+ccDisclaimer()+ccSources(v);
   }
-  var url='https://www.nhtsa.gov/vehicle/'+v.year+'/'+encodeURIComponent((v.make||'').toUpperCase())+'/'+encodeURIComponent((v.model||'').toUpperCase());
-  h+='<a class="cta" style="margin-top:10px" target="_blank" rel="noopener" href="'+url+'">Read the full reports at NHTSA.gov &rarr;</a>';
-  return h;
+  var N=a.n;
+  if(a.through)h+='<div class="cc-date">Incident dates through '+ccMonth(a.through)+'</div>';
+  // Lane 1 -- customer-reported concerns
+  h+='<div class="cc-lane cc-lane-cust"><div class="cc-lane-h">Customer-reported concerns</div>';
+  if(N<5){
+    h+='<div class="cc-note">Limited NHTSA complaint data ('+N+' complaint record'+(N>1?'s':'')+' on file). Topics are not ranked below five reports.</div>';
+  }else{
+    var qual=(a.topics||[]).filter(function(t){return t[1]>=3&&(t[1]/N)>=0.10;}).slice(0,6);
+    if(!qual.length){
+      h+='<div class="cc-note">No complaint pattern currently meets KYR\'s display threshold for this model year.</div>';
+    }else{
+      h+='<div id="cc-topics-'+v.id+'">'+qual.map(function(t,i){
+        return '<div class="cc-topic'+(i>=3?' cc-hidden':'')+'">'
+          +'<div class="cc-topic-name">'+htmlEsc(ccTitle(t[0]))+'<span class="cc-freq">Frequently reported to NHTSA</span></div>'
+          +'<div class="cc-topic-count">'+t[1]+' of '+N+' NHTSA complaint records mention '+htmlEsc(ccTitle(t[0]))+'</div>'
+          +'</div>';
+      }).join('')+'</div>';
+      if(qual.length>3)h+='<button class="cc-showall" id="cc-showall-'+v.id+'" onclick="ccShowAll('+v.id+')">Show all complaint topics</button>';
+      h+='<div class="cc-group">Topics are KYR groupings of NHTSA component categories; a report may mention more than one topic.</div>';
+    }
+  }
+  var fl=[];if(a.crash)fl.push(a.crash+' crash');if(a.fire)fl.push(a.fire+' fire');if(a.inj)fl.push(a.inj+' injury');if(a.deaths)fl.push(a.deaths+' death');
+  if(fl.length)h+='<div class="cc-flag">&#9888; NHTSA complaint records for this model year include '+fl.join(', ')+' report(s). These are unverified owner allegations.</div>';
+  h+='</div>';
+  // Lane 2 -- manufacturer-documented guidance (teal empty-state trust signal; NO TSB data ships)
+  h+='<div class="cc-lane cc-lane-mfr"><div class="cc-lane-h">Manufacturer-documented guidance</div>'
+    +'<div class="cc-note">No matching manufacturer guidance found. KYR will only pair a bulletin after a human verifies the official manufacturer document and every year, engine, trim, build-date, and VIN restriction.</div></div>';
+  // Lane 3 -- related safety recall (separate provenance state; never proof of a complaint's cause)
+  var rc=(v.recalls||[]).length;
+  h+='<div class="cc-lane cc-lane-recall"><div class="cc-lane-h">Related safety recalls</div>';
+  h+='<div class="cc-note">'+(rc?(rc+' NHTSA recall'+(rc>1?'s':'')+' on record for this model year (listed under Warranty &amp; Recalls). A recall is a separate official action and does not explain any specific complaint.'):'No NHTSA recalls on record for this model year.')+'</div>';
+  h+='<a class="cc-vin" href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener">Check your VIN for recalls at NHTSA.gov &rarr;</a></div>';
+  return h+ccDisclaimer()+ccSources(v);
 }
 
 /*WRENCH_VIN*/
@@ -1355,7 +1406,7 @@ function renderSafety(v){
   // Reliability section REMOVED (Block-1, 2026-07-13): the `rel` score/rating was an unsourced
   // computed heuristic rendered as an authoritative rating -- gated out of the blob. The raw
   // NHTSA crash/fire/injury aggregates it duplicated live in the Consumer Reports tab (comps_agg).
-  if(!s)return '<p class="empty-note">No NHTSA safety ratings on file for this vehicle. See <a href="#" onclick="switchMTab(\'comps\','+v.id+');return false;">Consumer Reports</a> and <a href="#" onclick="switchMTab(\'warranty\','+v.id+');return false;">Warranty &amp; Recalls</a>.</p>';
+  if(!s)return '<div class="sec-head">NHTSA Safety Ratings</div><p class="empty-note">No NHTSA safety ratings on file for this vehicle. Warranty, recalls, and customer complaints for this model year appear below.</p>';
   return h;
 }
 
@@ -1371,8 +1422,12 @@ function renderWarranty(v){
   return h;
 }
 
-var MTABS=['oil','parts','fluids','maint','perf','safety','issues','warranty','comps','log','costs'];
-var MLABELS=['Oil / Drain','Parts','Fluids & Torque','Maintenance','Perf & MPG','Safety & Rel.','Known Issues','Warranty & Recalls','Consumer Reports','Service Log','Costs'];
+// 4-tab consolidation (Block-3, 2026-07-13): Overview (oil/parts/fluids/perf-MPG) - Maintenance
+// (schedule + due + guides) - History (service log + costs) - Safety (NHTSA ratings + warranty/
+// recalls + Common Customer Complaints). The empty Known Issues tab is retired; the standalone
+// Consumer Reports tab folds into Safety.
+var MTABS=['overview','maint','history','safety'];
+var MLABELS=['Overview','Maintenance','History','Safety'];
 var curTab='oil';
 
 /*WRENCH_DEEPLINK_v27*/ // shareable/refreshable URLs: ?v=<id> opens a vehicle, ?tab=, ?code=<DTC>
@@ -1411,7 +1466,7 @@ function kyrApplyURL(){
 function openModal(vid,tab){
   var v=VEH[vid];if(!v)return;
   document.getElementById('m-title').innerHTML=v.year+' '+v.make+' <em>'+v.model+'</em>';try{sessionStorage.setItem('kyr_last_vehicle',vid);}catch(e){}var __sc=document.getElementById('kyr-sample');if(__sc)__sc.style.display='none';
-  curTab=tab||'oil';renderMTabs(v);renderMBody(v);
+  curTab=tab||'overview';renderMTabs(v);renderMBody(v);
   document.getElementById('overlay').classList.add('open');
   document.body.style.overflow='hidden';
   __kyrCurV=vid;kyrModalOpenURL(vid);if(window.kyrGarageSyncStar)kyrGarageSyncStar(vid);
@@ -1423,9 +1478,15 @@ function renderMTabs(v){
 
 function switchMTab(tab,vid){curTab=tab;var v=VEH[vid];renderMTabs(v);renderMBody(v);}
 
+function ccSecHead(t){return '<div class="sec-head" style="margin-top:20px">'+t+'</div>';}
+function renderOverview(v){return renderOilShop(v)+renderPartsTieredYTG(v)+renderFluids(v)+renderPerf(v);}
+function renderHistory(v){var ex=(typeof renderExpenses==='function')?renderExpenses(v):'';return ccSecHead('Service Log').replace('margin-top:20px','margin-top:2px')+renderServiceLog(v)+ccSecHead('Cost Tracking')+ex;}
+function renderSafetyTab(v){return renderSafety(v)+ccSecHead('Warranty &amp; Recalls')+renderWarrantyKbb(v)+'<div style="height:22px"></div>'+renderComplaints(v);}
 function renderMBody(v){
-  var fns={oil:renderOilShop,parts:renderPartsTieredYTG,fluids:renderFluids,maint:renderMaintGated,perf:renderPerf,safety:renderSafety,issues:renderIssues,warranty:renderWarrantyKbb,comps:renderComplaints,log:renderServiceLog,costs:(typeof renderExpenses==='function'?renderExpenses:function(){return '';})};
-  document.getElementById('m-body').innerHTML=fns[curTab](v);if(curTab==='log'&&typeof kyrSlLoad==='function')kyrSlLoad();if(curTab==='costs'&&typeof kyrExpLoad==='function')kyrExpLoad();if(curTab==='maint'&&window.kyrDue)kyrDue.ensure(v.id,function(){if(curTab==='maint'){var _b=document.getElementById('m-body');if(_b)_b.innerHTML=renderMaintGated(v);}});
+  var fns={overview:renderOverview,maint:renderMaintGated,history:renderHistory,safety:renderSafetyTab};
+  document.getElementById('m-body').innerHTML=(fns[curTab]||renderOverview)(v);
+  if(curTab==='history'){if(typeof kyrSlLoad==='function')kyrSlLoad();if(typeof kyrExpLoad==='function')kyrExpLoad();}
+  if(curTab==='maint'&&window.kyrDue)kyrDue.ensure(v.id,function(){if(curTab==='maint'){var _b=document.getElementById('m-body');if(_b)_b.innerHTML=renderMaintGated(v);}});
 }
 
 function closeModalUI(){document.getElementById('overlay').classList.remove('open');document.body.style.overflow='';__kyrCurV=null;}

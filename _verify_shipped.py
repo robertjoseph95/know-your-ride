@@ -99,7 +99,9 @@ def s1_4_narratives_gone(a):
     nf = sum(1 for v in a.D["v"] if v.get("fuse_tsbs"))
     if nc: out.append("%d vehicle(s) ship comps[] narrative arrays" % nc)
     if nf: out.append("%d vehicle(s) ship fuse_tsbs[]" % nf)
-    if a.D.get("fuseTsbsByCode") != {}: out.append("fuseTsbsByCode is not {}")
+    # Block-3: the dead fuseTsbsByCode root key is fully REMOVED (was {}); it must be ABSENT,
+    # not empty -- a TSB-derived root key shipping at all contradicts "Phase 1 = no TSB coverage."
+    if "fuseTsbsByCode" in a.D: out.append("fuseTsbsByCode root key is present (must be absent)")
     return out
 
 def s1_9_paid_feature_gate(a):
@@ -244,7 +246,12 @@ def s4_3_specs_size(a):
     sz = os.path.getsize(a.specs_path) if os.path.exists(a.specs_path) else 0
     return ["specs.json is %d KB (budget 500 KB; the fabricated legacy file was ~1 MB)" % (sz // 1024)] if sz > 500 * 1024 else []
 
-AGG_KEYS = {"by_comp", "crash", "fire", "inj", "deaths", "first", "last"}
+# Common Customer Complaints projection (Block-3, 2026-07-13). Default-deny whitelist: only
+# these keys may appear on comps_agg. Any new key (esp. a TSB/manufacturer-guidance field) fails.
+AGG_KEYS = {"n", "topics", "crash", "fire", "inj", "deaths", "through"}
+# Manufacturer-guidance / TSB key names that must NEVER appear anywhere in the blob (Phase 1).
+TSB_KEYS = {"tsb", "tsbs", "bulletin", "bulletins", "manufacturer_documented", "mfr_guidance",
+            "service_action", "fuseTsbsByCode", "fuse_tsbs"}
 
 def s5_1_agg_whitelist(a):
     out = []
@@ -254,16 +261,24 @@ def s5_1_agg_whitelist(a):
         extra = set(agg) - AGG_KEYS
         if extra:
             out.append("vehicle %s comps_agg carries non-whitelisted key(s) %s" % (v.get("id"), sorted(extra)))
+        # topics must be [str, int] pairs -- no narrative text, no nested guidance objects
+        for t in (agg.get("topics") or []):
+            if not (isinstance(t, list) and len(t) == 2 and isinstance(t[0], str) and isinstance(t[1], int)):
+                out.append("vehicle %s comps_agg topic is not a [label,int] pair: %r" % (v.get("id"), t)); break
         if len(out) >= 5: break
     return out
 
-def s5_2_reports_labels(a):
+def s5_2_complaints_surface(a):
+    # Common Customer Complaints heading + the permanent NHTSA disclaimer must ship; the old
+    # standalone "Consumer Reports" tab label must NOT (it folded into Safety).
     out = []
     for name, txt in (("index.html", a.index), ("wrench_demo.html", a.demo_markup)):
-        if "Unverified consumer-submitted reports to NHTSA" not in txt:
-            out.append("%s: consumer-reports disclaimer missing" % name)
-        if "'Consumer Reports','Service Log'" not in txt:
-            out.append("%s: comps tab label is not 'Consumer Reports'" % name)
+        if "Common Customer Complaints" not in txt:
+            out.append("%s: 'Common Customer Complaints' heading missing" % name)
+        if "Complaints are reports submitted to NHTSA, not verified defects" not in txt:
+            out.append("%s: permanent complaint disclaimer missing" % name)
+        if "'Consumer Reports','Service Log'" in txt:
+            out.append("%s: obsolete standalone 'Consumer Reports' tab label still present" % name)
     return out
 
 def s5_3_hero_badge(a):
@@ -272,7 +287,62 @@ def s5_3_hero_badge(a):
         if "WITH CONSUMER REPORTS" not in txt:
             out.append("%s: hero badge lost 'WITH CONSUMER REPORTS'" % name)
         if "WITH COMPLAINTS" in txt:
-            out.append("%s: hero badge regressed to 'WITH COMPLAINTS'" % name)
+            out.append("%s: hero badge regressed to 'WITH COMPLAINTS' (P0-4: keep the neutral term)" % name)
+    return out
+
+# Forbidden complaint framing (design "Disallowed labels"). Matched only as AFFIRMATIVE claims:
+# the negations "not confirmed defects" (footer) / "not verified defects" (disclaimer) are the
+# honest phrasing this feature relies on, so a preceding "not " must not trip the check.
+FORBIDDEN_LABELS = tuple(re.compile(r"(?<!not )" + p) for p in
+    ("confirmed defect", "common failure", "known defect", "usually fixes",
+     "guaranteed fix", "nhtsa-recommended repair", "free repair"))
+# Date phrasing that implies an ingest guarantee we cannot make (only 127/1040 have pull_log).
+BANNED_DATE = ("data through", "retrieved", "updated as of", "reported through")
+
+def s5_5_labeled_count(a):
+    # The complaint count must always carry its label + denominator ("X of Y NHTSA complaint
+    # records mention TOPIC"); a bare ratio may never ship. Assert the labeled render template
+    # is present and no forbidden framing label appears in either shipped HTML.
+    out = []
+    for name, txt in (("index.html", a.index), ("wrench_demo.html", a.demo_markup)):
+        if "NHTSA complaint records mention " not in txt:
+            out.append("%s: labeled complaint-count template missing (bare ratio risk)" % name)
+        low = txt.lower()
+        for rx in FORBIDDEN_LABELS:
+            if rx.search(low):
+                out.append("%s: forbidden complaint framing %r present" % (name, rx.pattern))
+    return out
+
+def s5_6_incident_date_phrasing(a):
+    # Approved phrasing only. "Incident dates through {Month Year}" is generated; the banned
+    # strings imply an ingest guarantee (the field is dateOfIncident, and pull_log is sparse).
+    out = []
+    for name, txt in (("index.html", a.index), ("wrench_demo.html", a.demo_markup)):
+        if "Incident dates through " not in txt:
+            out.append("%s: approved 'Incident dates through' phrasing missing" % name)
+        low = txt.lower()
+        for bad in BANNED_DATE:
+            if bad in low:
+                out.append("%s: banned date phrasing %r present" % (name, bad))
+    return out
+
+def s5_7_no_tsb_content(a):
+    # Phase 1 ships ZERO TSB / manufacturer-guidance content. Default-deny: top-level blob keys
+    # are whitelisted; no vehicle carries a TSB-family key; and the teal empty-state that stands
+    # in for guidance must be present (proof the lane exists but is honestly empty).
+    out = []
+    top_extra = set(a.D.keys()) - {"v", "dtc", "fixes"}
+    if top_extra:
+        out.append("blob has non-whitelisted top-level key(s) %s" % sorted(top_extra))
+    hits = 0
+    for v in a.D["v"]:
+        bad = TSB_KEYS & set(v.keys())
+        if bad:
+            out.append("vehicle %s carries TSB-family key(s) %s" % (v.get("id"), sorted(bad))); hits += 1
+        if hits >= 5: break
+    for name, txt in (("index.html", a.index), ("wrench_demo.html", a.demo_markup)):
+        if "No matching manufacturer guidance found" not in txt:
+            out.append("%s: manufacturer-guidance teal empty-state missing" % name)
     return out
 
 PII_RES = (re.compile(r"\b[\w.+-]+@[\w-]+\.\w{2,}\b"),
@@ -367,7 +437,8 @@ def s8_1_version_stamp(a):
 
 DRIFT_MARKERS = ('id="kyr-sample"', "No verified model-specific issues on file",
                  "U.S. DOE/ORNL", "not confirmed defects",
-                 "Unverified consumer-submitted reports to NHTSA", "WITH CONSUMER REPORTS")
+                 "Common Customer Complaints", "No matching manufacturer guidance found",
+                 "WITH CONSUMER REPORTS")
 
 def s8_2_two_file_drift(a):
     out = []
@@ -491,6 +562,51 @@ def s8_3_count_reconciliation(a):
         out.append("blob oil ver:1 count %d wildly off DB union %d" % (blob_oil, len(union)))
     return out
 
+def s5_8_incident_date_matches_db(a):
+    """The shipped comps_agg.through must equal the DB-derived clamped max incident month for
+    that year/make/model identity -- and must NOT be a hardcoded literal (values must vary and
+    match the DB). Recompute independently from the complaints table."""
+    con = _db(a)
+    cur = con.cursor()
+    ymm = {}
+    for vid, y, mk, md in cur.execute("SELECT id,year,make,model FROM vehicles"):
+        ymm[vid] = (y, mk, md)
+    dbmax = {}   # (y,mk,md) -> (year, month) of clamped max incident date
+    for vid, dt in cur.execute("SELECT vehicle_id, incident_date FROM complaints"):
+        key = ymm.get(vid)
+        if not key or not dt:
+            continue
+        try:
+            m, d, yr = dt.split("/"); yr = int(yr); m = int(m)
+        except Exception:
+            continue
+        floor = max(1990, (key[0] or 0) - 2)
+        if yr < floor:
+            continue
+        cur_best = dbmax.get(key)
+        if cur_best is None or (yr, m) > cur_best:
+            dbmax[key] = (yr, m)
+    con.close()
+    out = []
+    seen_through = set()
+    checked = 0
+    for v in a.D["v"]:
+        agg = v.get("comps_agg")
+        if not agg or "through" not in agg:
+            continue
+        seen_through.add(agg["through"])
+        key = (v.get("year"), v.get("make"), v.get("model"))
+        want = dbmax.get(key)
+        want_s = ("%04d-%02d" % want) if want else None
+        if want_s and agg["through"] != want_s:
+            out.append("vehicle %s comps_agg.through=%s but DB-derived=%s" % (v.get("id"), agg["through"], want_s))
+        checked += 1
+        if len(out) >= 5:
+            break
+    if checked and len(seen_through) < 2:
+        out.append("comps_agg.through is invariant across %d vehicles (looks hardcoded, not DB-derived)" % checked)
+    return out
+
 # ---------------------------------------------------------------- registry / main
 
 CHECKS = [
@@ -513,9 +629,12 @@ CHECKS = [
     ("S4.2-specs-whitelist",     "FAIL", "CI", s4_2_specs_whitelist),
     ("S4.3-specs-size",          "WARN", "CI", s4_3_specs_size),
     ("S5.1-agg-whitelist",       "FAIL", "CI", s5_1_agg_whitelist),
-    ("S5.2-reports-labels",      "FAIL", "CI", s5_2_reports_labels),
+    ("S5.2-complaints-surface",  "FAIL", "CI", s5_2_complaints_surface),
     ("S5.3-hero-badge",          "FAIL", "CI", s5_3_hero_badge),
     ("S5.4-agg-pii",             "WARN", "CI", s5_4_agg_pii),
+    ("S5.5-labeled-count",       "FAIL", "CI", s5_5_labeled_count),
+    ("S5.6-incident-date-copy",  "FAIL", "CI", s5_6_incident_date_phrasing),
+    ("S5.7-no-tsb-content",      "FAIL", "CI", s5_7_no_tsb_content),
     ("S6.2-no-documented-framing","FAIL", "CI", s6_2_no_documented_framing),
     ("S6.3-empty-state",         "FAIL", "CI", s6_3_empty_state),
     ("S7.1-footer-required",     "FAIL", "CI", s7_1_footer_required),
@@ -527,6 +646,7 @@ CHECKS = [
     ("S1.7-gate-equivalence",    "FAIL", "DB", s1_7_gate_equivalence),
     ("S1.8-gate-sources",        "FAIL", "DB", s1_8_gate_sources),
     ("S4.4-specs-regen",         "FAIL", "DB", s4_4_specs_regen),
+    ("S5.8-incident-date-db",    "FAIL", "DB", s5_8_incident_date_matches_db),
     ("S8.3-count-reconciliation","WARN", "DB", s8_3_count_reconciliation),
 ]
 
