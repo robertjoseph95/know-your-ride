@@ -132,13 +132,15 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
   1. [CI][FAIL] Required strings present: `U.S. DOE/ORNL`, `not confirmed defects`,
      `not affiliated with NHTSA`.
   2. [CI][FAIL] Forbidden blanket claim absent: `(U.S. Government, public domain)`.
-  3. [CI][WARN] *(deferred, P1-6 — not yet fixed)*: `No subscriptions, no paywalls` absent
-     while Pro plans are sold. **WARN→FAIL flip condition (definition-of-done):** this check
-     is promoted to FAIL in the same commit that ships the P1-6 marketing-copy reconciliation
-     (the string removed or rewritten to truthful copy). Until then it WARNS on every run —
-     deliberately visible noise. It may NOT be silenced any other way; if the copy fix hasn't
-     shipped within a reasonable window, the WARN escalates to a scheduled work item, not a
-     suppression.
+  3. [CI][**FAIL**] `No subscriptions, no paywalls` absent while Pro plans are sold.
+     **P1-6 CLOSED (Block-2, 2026-07-13):** the copy was rewritten to truthful free-core +
+     optional-Pro framing and this check flipped WARN→FAIL in the same commit, per the
+     definition-of-done. Absence is now a hard invariant; the string may never return.
+  4. [CI][FAIL] **OBD-II panel fully absent** — no `obd-panel` / `OBD-II Live Diagnostics` /
+     `obdConnect` / `/*WRENCH_OBD*/` / `/api/obd` in either HTML file; `wrench_deploy/api/obd.py`
+     does not exist; `vercel.json` does not route `/api/obd`; and the DTC Code Lookup pane
+     (`id="pane-codes"`) still survives. *(Block-2 OBD removal: dead stub feature — no companion
+     app ever shipped — quarantined at every surface incl. the generator's fossil injectors.)*
 
 ## S8. Cross-cutting
 1. [CI][FAIL] `index.html` `kyr-version` matches `^\d{4}-\d{2}-\d{2}-[a-z0-9-]+$`.

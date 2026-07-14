@@ -455,112 +455,6 @@ def inject_vin(html):
     return html
 
 
-# ── OBD-II live diagnostics panel (talks to /api/obd/* in wrench_serve.py) ────
-OBD_STYLE = """<style>
-.obd-panel{margin-bottom:14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.obd-head{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--text);user-select:none}
-.obd-head:hover{background:var(--p2,#111)}
-.obd-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--red);margin-right:8px;vertical-align:middle;transition:.2s}
-.obd-dot.on{background:var(--green);box-shadow:0 0 8px var(--green)}
-.obd-caret{transition:transform .2s;color:var(--faint)}
-.obd-caret.open{transform:rotate(90deg)}
-.obd-body{padding:0 14px 14px}
-.obd-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
-#obd-connect-btn{background:var(--accent);color:#000;border:none;border-radius:8px;padding:9px 16px;font-weight:700;font-size:12px;cursor:pointer;text-transform:uppercase}
-#obd-connect-btn:hover{opacity:.88}
-.obd-btn2{background:transparent;color:var(--dim);border:1px solid var(--border);border-radius:8px;padding:9px 14px;font-size:12px;cursor:pointer}
-.obd-btn2:hover{color:var(--text);border-color:var(--accent)}
-.obd-status{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--faint);margin-left:4px}
-.obd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:8px}
-.obd-metric{background:var(--p2,#111);border:1px solid var(--border);border-radius:8px;padding:10px}
-.obd-m-val{font-size:20px;font-weight:700;color:var(--accent);font-family:'JetBrains Mono',monospace}
-.obd-m-unit{font-size:11px;color:var(--faint)}
-.obd-m-lbl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:4px}
-.obd-msg{margin-top:10px;font-size:12px;color:var(--dim);line-height:1.5}
-.obd-msg.err{color:var(--red)} .obd-msg.ok{color:var(--green)}
-.obd-msg code{background:var(--p2,#111);padding:2px 6px;border-radius:4px}
-.obd-dtc{margin-top:8px;border:1px solid var(--border);border-left:3px solid var(--red);border-radius:8px;padding:10px;background:var(--p2,#111)}
-.obd-dtc .c{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--red)}
-.obd-urg{display:inline-block;font-size:9px;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.08em;margin-left:8px;font-weight:700}
-</style>
-"""
-
-OBD_PANEL = """<div class="obd-panel">
-  <div class="obd-head" onclick="obdToggle()">
-    <span><span class="obd-dot" id="obd-dot"></span>OBD-II Live Diagnostics</span>
-    <span class="obd-caret" id="obd-caret">&#9656;</span>
-  </div>
-  <div class="obd-body" id="obd-body" style="display:none">
-    <div class="obd-actions">
-      <button id="obd-connect-btn" onclick="obdConnect()">Connect OBD-II</button>
-      <button class="obd-btn2" onclick="obdReadDTCs()">Read Codes</button>
-      <button class="obd-btn2" onclick="obdClear()">Clear Codes</button>
-      <span class="obd-status" id="obd-status">Not connected</span>
-    </div>
-    <div class="obd-grid" id="obd-live"></div>
-    <div id="obd-dtcs"></div>
-    <div id="obd-msg" class="obd-msg"></div>
-  </div>
-</div>
-"""
-
-OBD_JS = """/*WRENCH_OBD*/
-var __obdTimer=null;
-function obdToggle(){
-  var b=document.getElementById('obd-body'),c=document.getElementById('obd-caret');
-  var open=b.style.display==='none';
-  b.style.display=open?'block':'none';c.classList.toggle('open',open);
-  if(!open&&__obdTimer){clearInterval(__obdTimer);__obdTimer=null;}
-}
-function obdMsg(html,cls){var m=document.getElementById('obd-msg');m.className='obd-msg'+(cls?' '+cls:'');m.innerHTML=html||'';}
-function obdDown(){obdMsg('Local server not reachable. Start it with <code>python wrench_serve.py</code> and open <code>http://localhost:8000/</code> (OBD-II only works through the local server).','err');if(__obdTimer){clearInterval(__obdTimer);__obdTimer=null;}}
-function obdStat(on,txt){document.getElementById('obd-dot').classList.toggle('on',!!on);document.getElementById('obd-status').textContent=txt;}
-function obdConnect(){
-  obdMsg('Connecting to adapter…');
-  fetch('/api/obd/connect').then(function(r){return r.json();}).then(function(d){
-    if(d.available===false){obdStat(false,'Unavailable');obdMsg('python-obd is not installed on the server. Run <code>pip install obd</code>, then restart <code>wrench_serve.py</code>.','err');return;}
-    if(d.connected){obdStat(true,'Connected · '+(d.status||'OBD'));obdMsg('');obdLive();obdReadDTCs();if(__obdTimer)clearInterval(__obdTimer);__obdTimer=setInterval(obdLive,2000);}
-    else{obdStat(false,'No adapter');obdMsg(d.error||'No ELM327 adapter found. Pair it (it appears as a COM port) and try again.','err');}
-  }).catch(obdDown);
-}
-function obdLive(){
-  fetch('/api/obd/live').then(function(r){return r.json();}).then(function(d){
-    if(!d.connected){obdStat(false,'Disconnected');if(__obdTimer){clearInterval(__obdTimer);__obdTimer=null;}return;}
-    var L=[['rpm','RPM'],['speed','Speed'],['coolant_temp','Coolant'],['throttle','Throttle'],['fuel_level','Fuel'],['engine_load','Load'],['intake_temp','Intake'],['maf','MAF']];
-    document.getElementById('obd-live').innerHTML=L.map(function(x){
-      var m=(d.data&&d.data[x[0]])||{};var v=(m.value===null||m.value===undefined)?'&mdash;':m.value;
-      return '<div class="obd-metric"><div><span class="obd-m-val">'+v+'</span> <span class="obd-m-unit">'+(m.unit||'')+'</span></div><div class="obd-m-lbl">'+x[1]+'</div></div>';
-    }).join('');
-  }).catch(obdDown);
-}
-function obdUrgColor(u){u=(u||'').toLowerCase();if(u.indexOf('high')>=0||u.indexOf('severe')>=0||u.indexOf('critical')>=0)return 'var(--red)';if(u.indexOf('med')>=0||u.indexOf('moder')>=0)return '#e0a23b';if(u.indexOf('low')>=0||u.indexOf('minor')>=0)return 'var(--green)';return 'var(--faint)';}
-function obdReadDTCs(){
-  fetch('/api/obd/dtcs').then(function(r){return r.json();}).then(function(d){
-    if(!d.connected)return;
-    var box=document.getElementById('obd-dtcs');
-    var all=(d.active||[]).map(function(x){x._t='Active';return x;}).concat((d.pending||[]).map(function(x){x._t='Pending';return x;}));
-    if(!all.length){box.innerHTML='<div class="obd-msg ok">&#10003; No trouble codes found.</div>';return;}
-    box.innerHTML='<div style="font-family:\\'JetBrains Mono\\',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin:10px 0 2px">// '+all.length+' Trouble Code'+(all.length>1?'s':'')+' &mdash; matched to WRENCH DTC database</div>'+all.map(function(x){
-      var cost=(x.cost_low||x.cost_high)?('Est. repair: $'+(x.cost_low||'?')+'&ndash;$'+(x.cost_high||'?')):'';
-      var urg=x.urgency?'<span class="obd-urg" style="background:'+obdUrgColor(x.urgency)+';color:#000">'+x.urgency+'</span>':'';
-      return '<div class="obd-dtc"><div><span class="c">'+x.code+'</span> <span style="font-size:10px;color:var(--faint)">'+x._t+'</span>'+urg+'</div>'+
-        '<div style="margin-top:5px;color:var(--text);font-size:13px">'+(x.description||'No description available')+'</div>'+
-        (cost?'<div style="margin-top:4px;color:var(--green);font-size:12px">'+cost+'</div>':'')+
-        (x.in_db?'':'<div style="font-size:10px;color:var(--faint);margin-top:3px">(not in local DTC database)</div>')+
-        '</div>';
-    }).join('');
-  }).catch(obdDown);
-}
-function obdClear(){
-  if(!confirm('Clear all stored trouble codes? This turns off the check-engine light and erases freeze-frame data. Only do this after the underlying problem is fixed.'))return;
-  fetch('/api/obd/clear?confirm=yes').then(function(r){return r.json();}).then(function(d){
-    if(d.cleared){obdMsg('&#10003; Trouble codes cleared.','ok');obdReadDTCs();}
-    else obdMsg(d.error||'Could not clear codes.','err');
-  }).catch(obdDown);
-}
-"""
-
-
 def fix_js_quotes(html):
     """The base template has  font-family:'JetBrains Mono'  inside single-quoted JS
     strings (renderMaint/renderSafety) -> a syntax error that kills the whole app
@@ -576,16 +470,6 @@ def fix_js_quotes(html):
     tail = tail.replace("switchMTab(''+t+'','+v.id+')", "switchMTab(\\''+t+'\\','+v.id+')")
     return head + tail
 
-
-def inject_obd(html):
-    """Add the collapsible OBD-II panel below the VIN bar (idempotent)."""
-    if "/*WRENCH_OBD*/" in html:
-        return html
-    if "</head>" in html:
-        html = html.replace("</head>", OBD_STYLE + "</head>", 1)
-    html = html.replace('<div class="g-controls">', OBD_PANEL + '<div class="g-controls">', 1)
-    html = html.replace("function switchTab(name){", OBD_JS + "\nfunction switchTab(name){", 1)
-    return html
 
 
 # ── Tiered parts recommendations (OEM / Premium / Best Value) ─────────────────
@@ -1816,10 +1700,9 @@ def main():
     assert start >= 0 and sci > start, "data <script> boundaries not found in demo template (refusing to corrupt output)"
     html = html[:start] + "const __D__=" + data_json + ";\n" + html[sci:]
 
-    # 2) inject the Complaints tab + VIN decode + OBD-II UI (once each)
+    # 2) inject the Complaints tab + VIN decode + feature UIs (once each)
     html = inject_tab(html)
     html = inject_vin(html)
-    html = inject_obd(html)
     html = inject_parttiers(html)
     html = inject_youtube(html)
     html = inject_guides(html)
@@ -1859,9 +1742,11 @@ def main():
     assert "/*WRENCH_SELFHOST_FONTS*/" in html, "self-hosted @font-face block missing"
     assert "always verify specs against your owner manual" in html, "AI-guide banner migration did not apply"
 
-    # 3) refresh the badge
-    makes = len(set(v["make"] for v in vlist))
-    badge = f"{len(vlist)} VEHICLES · {makes} MAKES · {len(dtc)} DTC CODES · {with_comps} WITH CONSUMER REPORTS"
+    # 3) refresh the badge (lead with the verified number, not the fleet total: verified =
+    #    vehicles carrying owner's-manual-verified curated specs, oil.ver==1 as the anchor.
+    #    "WITH CONSUMER REPORTS" must remain in the badge per shipped-surfaces S5.3.)
+    verified = sum(1 for v in vlist if isinstance(v.get("oil"), dict) and v["oil"].get("ver") == 1)
+    badge = f"{len(vlist)} SEARCHABLE · {verified} OWNER'S-MANUAL-VERIFIED · {len(dtc)} DTC CODES · {with_comps} WITH CONSUMER REPORTS"
     html = re.sub(r'(<div class="db-badge">)[^<]*(</div>)', lambda m: m.group(1) + badge + m.group(2), html, count=1)
     html = ascii_polish(html)   # truly last: guarantee pure ASCII outside data (badge included)
 

@@ -326,12 +326,35 @@ def s7_2_footer_forbidden(a):
     return out
 
 def s7_3_paywall_copy(a):
-    # Deferred P1-6. WARN until the marketing-copy fix ships; then this check is promoted
-    # to FAIL asserting ABSENCE (see the ledger's flip condition / definition-of-done).
+    # P1-6 CLOSED (Block-2, 2026-07-13): the "No subscriptions, no paywalls" claim contradicted
+    # the paid Pro tier. Copy fixed; this check is now FAIL-tier asserting ABSENCE (the ledger's
+    # definition-of-done: the WARN may only be silenced by shipping the fix + this flip together).
     out = []
     for name, txt in (("index.html", a.index), ("wrench_demo.html", a.demo_markup)):
         if "No subscriptions, no paywalls" in txt:
-            out.append("%s: 'No subscriptions, no paywalls' copy still present while Pro is sold (P1-6 open)" % name)
+            out.append("%s: 'No subscriptions, no paywalls' copy present while Pro is sold (P1-6)" % name)
+    return out
+
+def s7_4_obd_absent(a):
+    # OBD removal (Block-2, 2026-07-13): the OBD-II "Live Diagnostics" panel was a dead feature
+    # (stub API always returned unavailable; no companion app ever shipped). Fully quarantined:
+    # markup/JS/CSS gone from both HTML files, api/obd.py deleted, the vercel.json rewrite removed,
+    # and the generator's fossil injectors deleted. This asserts none of it can silently return.
+    out = []
+    OBD_TOKENS = ("obd-panel", "OBD-II Live Diagnostics", "obdConnect", "/*WRENCH_OBD*/", "/api/obd")
+    for name, txt in (("index.html", a.index), ("wrench_demo.html", a.demo_markup)):
+        for tok in OBD_TOKENS:
+            if tok in txt:
+                out.append("%s: OBD residue %r (dead feature must stay removed)" % (name, tok))
+    if os.path.exists(os.path.join(a.root, "wrench_deploy", "api", "obd.py")):
+        out.append("wrench_deploy/api/obd.py exists (OBD stub must stay deleted)")
+    vj = Artifacts._read(os.path.join(a.root, "wrench_deploy", "vercel.json"))
+    if "/api/obd" in vj:
+        out.append("vercel.json still routes /api/obd")
+    # the separate DTC Code Lookup feature MUST survive
+    for name, txt in (("index.html", a.index), ("wrench_demo.html", a.demo_markup)):
+        if 'id="pane-codes"' not in txt:
+            out.append("%s: DTC Code Lookup pane missing (must survive OBD removal)" % name)
     return out
 
 def s8_1_version_stamp(a):
@@ -497,7 +520,8 @@ CHECKS = [
     ("S6.3-empty-state",         "FAIL", "CI", s6_3_empty_state),
     ("S7.1-footer-required",     "FAIL", "CI", s7_1_footer_required),
     ("S7.2-footer-forbidden",    "FAIL", "CI", s7_2_footer_forbidden),
-    ("S7.3-paywall-copy",        "WARN", "CI", s7_3_paywall_copy),
+    ("S7.3-paywall-copy",        "FAIL", "CI", s7_3_paywall_copy),
+    ("S7.4-obd-absent",          "FAIL", "CI", s7_4_obd_absent),
     ("S8.1-version-stamp",       "FAIL", "CI", s8_1_version_stamp),
     ("S8.2-two-file-drift",      "FAIL", "CI", s8_2_two_file_drift),
     ("S1.7-gate-equivalence",    "FAIL", "DB", s1_7_gate_equivalence),

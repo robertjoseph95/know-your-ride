@@ -1,6 +1,6 @@
 # Know Your Ride
 
-**Your pocket owner's manual for every car.** A free vehicle-maintenance reference that puts oil specs, torque values, parts, fluids, recalls, complaints, repair guides, and live diagnostics for thousands of vehicles in one place.
+**Your pocket owner's manual.** A free vehicle-maintenance reference: oil specs, torque values, parts, fluids, recalls, NHTSA consumer-report aggregates, and step-by-step repair guides. 3,667 vehicles searchable; 290 with owner's-manual-verified specifications.
 
 🔧 Live: **[knowyourride.net](https://knowyourride.net)**
 
@@ -8,21 +8,20 @@
 
 ## What it is
 
-Know Your Ride is a maintenance-reference web app backed by a curated SQLite database of vehicle specifications. Pick your car from the garage and get the exact figures a home mechanic needs — no ad-walls, no PDF hunting.
+Know Your Ride is a maintenance-reference web app backed by a curated SQLite database of vehicle specifications. Pick your car from the garage and get the owner's-manual-verified figures a home mechanic needs — no ad-walls, no PDF hunting.
 
-Coverage: **1,600+ modern vehicles (2003–2025) with full specs**, plus **1,600+ older vehicles (1981–2002)** with year/make/model identification (marked *Partial data*), and **5,000+ OBD-II diagnostic trouble codes**.
+Coverage: **290 vehicles with owner's-manual-verified specifications** (and growing), inside a searchable fleet of **3,667 vehicles (1981–2026)** carrying identification, recalls, and NHTSA safety data, plus **12,196 OBD-II diagnostic trouble codes**.
 
 ## Features
 
 - **Garage specs** — oil viscosity/type/capacity, drain bolt torque & socket, spark plugs & gap, filters, tires & pressures, batteries, fluids, and a full torque-spec table per vehicle.
 - **VIN decode** — paste a 17-character VIN to jump straight to the matching vehicle (NHTSA vPIC).
-- **DTC code lookup** — search any P/B/C/U trouble code; for supported codes, see **CarMD-style ranked fixes** with success probability, average cost, and severity.
+- **DTC code lookup** — search any P/B/C/U trouble code and get its plain-language definition (SAE/generic + manufacturer-specific taxonomy).
 - **AI repair guides** — concise, spec-grounded DIY walkthroughs (Claude) that use only verified figures from the database and refuse to guess safety-critical torque values.
 - **YouTube DIY videos** — relevant how-to videos surfaced per vehicle + service.
 - **Know Your Part** — snap a photo of a part and get it identified (Claude vision, with strict cost controls).
 - **Vehicle Value** — one-tap Kelley Blue Book trade-in / private-party value lookup, pre-filled by year/make/model.
-- **Safety** — NHTSA recalls (with "do not drive" flags), complaints, crash ratings, and reliability signals.
-- **OBD-II panel** — live diagnostics readout (when paired with a compatible adapter via the local server).
+- **Safety** — NHTSA recalls (with "do not drive" flags), consumer-report aggregates, and crash ratings.
 - **SEO landing pages** — static per-vehicle and per-code pages with a generated `sitemap.xml`.
 
 ## Tech stack
