@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-07-14-tsb-threshold">
+<meta name="kyr-version" content="2026-07-14-integrity-gate">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -173,7 +173,7 @@ body{background:var(--bg)}
 .cc-freq{font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0a1f1c;background:#1fb6a6;padding:2px 7px;border-radius:100px}
 .cc-note{font-size:12.5px;color:var(--dim);line-height:1.55}
 .cc-group{font-size:11px;color:var(--faint);font-style:italic;margin-top:9px;line-height:1.45}
-.cc-flag{font-size:11.5px;color:#ffd97a;margin-top:10px;line-height:1.5}
+.cc-flag{font-size:11.5px;color:#7a5200;margin-top:10px;line-height:1.5}
 .cc-showall{display:block;width:100%;min-height:44px;margin-top:10px;background:transparent;color:var(--accent);border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:700;cursor:pointer}
 .cc-showall:hover{border-color:var(--accent)}
 .cc-vin{display:inline-block;margin-top:8px;font-size:12px;color:var(--accent);text-decoration:none;font-weight:600}
@@ -724,7 +724,6 @@ body{background:var(--bg)}
     <div class="feat"><h3>FUEL ECONOMY</h3><p>EPA city/hwy/combined MPG, annual fuel cost, and EV range/MPGe per drivetrain config.</p></div>
     <div class="feat"><h3>SAFETY RATINGS</h3><p>NHTSA 5-star ratings across 6 crash categories plus rollover risk percentage.</p></div>
     <div class="feat"><h3>CONSUMER REPORTS</h3><p>NHTSA complaint aggregates: top components, plus crash, fire, and injury totals with the incident date range.</p></div>
-    <div class="feat"><h3>WARRANTY COVERAGE</h3><p>All warranty types: bumper-to-bumper, powertrain, corrosion, roadside, hybrid, and EV battery.</p></div>
     <div class="feat"><h3>RECALL DATABASE</h3><p>1,657 vehicles with active NHTSA recall data, remedy text, and park-it flags.</p></div>
     <div class="feat"><h3>DTC CODE LOOKUP</h3><p>12,196 OBD-II codes searchable by full code or prefix across all 4 systems.</p></div>
     <div class="feat"><h3>49 MAKES &middot; 45 YEARS</h3><p>1981-2026 coverage across mainstream, luxury, performance, and discontinued brands.</p></div>
@@ -774,7 +773,7 @@ body{background:var(--bg)}
   </div>
 </div>
 
-<script src="/data.6406f289.js"></script>
+<script src="/data.d413c744.js"></script>
 <script>
 
 const DB=__D__;
@@ -848,7 +847,7 @@ function renderComplaints(v){
   // Lane 3 -- related safety recall (separate provenance state; never proof of a complaint's cause)
   var rc=(v.recalls||[]).length;
   h+='<div class="cc-lane cc-lane-recall"><div class="cc-lane-h">Related safety recalls</div>';
-  h+='<div class="cc-note">'+(rc?(rc+' NHTSA recall'+(rc>1?'s':'')+' on record for this model year (listed under Warranty &amp; Recalls). A recall is a separate official action and does not explain any specific complaint.'):'No NHTSA recalls on record for this model year.')+'</div>';
+  h+='<div class="cc-note">'+(rc?(rc+' NHTSA recall'+(rc>1?'s':'')+' on record for this model year (listed under Recalls). A recall is a separate official action and does not explain any specific complaint.'):'No NHTSA recalls on record for this model year.')+'</div>';
   h+='<a class="cc-vin" href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener">Check your VIN for recalls at NHTSA.gov &rarr;</a></div>';
   return h+ccDisclaimer()+ccSources(v);
 }
@@ -1430,24 +1429,23 @@ function renderSafety(v){
   // Reliability section REMOVED (Block-1, 2026-07-13): the `rel` score/rating was an unsourced
   // computed heuristic rendered as an authoritative rating -- gated out of the blob. The raw
   // NHTSA crash/fire/injury aggregates it duplicated live in the Consumer Reports tab (comps_agg).
-  if(!s)return '<div class="sec-head">NHTSA Safety Ratings</div><p class="empty-note">No NHTSA safety ratings on file for this vehicle. Warranty, recalls, and customer complaints for this model year appear below.</p>';
+  if(!s)return '<div class="sec-head">NHTSA Safety Ratings</div><p class="empty-note">No NHTSA safety ratings on file for this vehicle. Recalls and customer complaints for this model year appear below.</p>';
   return h;
 }
 
 function renderWarranty(v){
-  var h='',w=v.warranty,recs=v.recalls||[];
-  var wlabels={basic:'Bumper-to-Bumper',powertrain:'Powertrain',corrosion:'Rust/Corrosion',roadside:'Roadside Assist',hybrid_battery:'Hybrid Battery',ev_battery:'EV Battery'};
-  if(w&&Object.keys(w).length){
-    h+='<div class="sec-head">Warranty</div><div class="wty-grid">'+Object.entries(w).map(function(e){var k=e[0],wt=e[1];return '<div class="wty-card"><div class="wty-type">'+(wlabels[k]||k)+'</div><div class="wty-detail">'+(wt.mo?wt.mo+' Mo':'&mdash;')+' / '+(wt.mi?wt.mi.toLocaleString()+' Mi':'&mdash;')+'</div><div class="wty-note">'+(wt.notes||'')+'</div></div>';}).join('')+'</div>';
-  }
-  h+='<div class="sec-head">Recalls ('+recs.length+')</div>';
+  /* Warranty grid GATED (2026-07-14 integrity gate): the warranty table was a third-party
+     aggregator pull (vehicle-finder API) with no provenance -- fails THE LAW. The payload no
+     longer ships v.warranty; this renders recalls only, pending an OEM-verified rebuild. */
+  var h='',recs=v.recalls||[];
+  h+='<div class="sec-head" style="margin-top:20px">Recalls ('+recs.length+')</div>';
   if(!recs.length)h+='<p class="empty-note">No recalls on record.</p>';
   else h+=recs.map(function(r){return '<div class="recall-card '+(r.park?'park':'')+'">'+( r.camp?'<div class="rc-camp">Campaign: '+htmlEsc(r.camp)+'</div>':'')+( r.park?'<div class="rc-park">&#9888; DO NOT DRIVE</div>':'')+( r.comp?'<div class="rc-comp">'+htmlEsc(r.comp)+'</div>':'')+( r.sum?'<div class="rc-text" style="margin-bottom:8px">'+htmlEsc(r.sum)+'</div>':'')+( r.remedy?'<div class="rc-text"><strong style="color:var(--text)">Remedy:</strong> '+htmlEsc(r.remedy)+'</div>':'')+'</div>';}).join('');
   return h;
 }
 
 // 4-tab consolidation (Block-3, 2026-07-13): Overview (oil/parts/fluids/perf-MPG) - Maintenance
-// (schedule + due + guides) - History (service log + costs) - Safety (NHTSA ratings + warranty/
+// (schedule + due + guides) - History (service log + costs) - Safety (NHTSA ratings +
 // recalls + Common Customer Complaints). The empty Known Issues tab is retired; the standalone
 // Consumer Reports tab folds into Safety.
 var MTABS=['overview','maint','history','safety'];
@@ -1505,7 +1503,7 @@ function switchMTab(tab,vid){curTab=tab;var v=VEH[vid];renderMTabs(v);renderMBod
 function ccSecHead(t){return '<div class="sec-head" style="margin-top:20px">'+t+'</div>';}
 function renderOverview(v){return renderOilShop(v)+renderPartsTieredYTG(v)+renderFluids(v)+renderPerf(v);}
 function renderHistory(v){var ex=(typeof renderExpenses==='function')?renderExpenses(v):'';return ccSecHead('Service Log').replace('margin-top:20px','margin-top:2px')+renderServiceLog(v)+ccSecHead('Cost Tracking')+ex;}
-function renderSafetyTab(v){return renderSafety(v)+ccSecHead('Warranty &amp; Recalls')+renderWarrantyKbb(v)+'<div style="height:22px"></div>'+renderComplaints(v);}
+function renderSafetyTab(v){return renderSafety(v)+renderWarrantyKbb(v)+'<div style="height:22px"></div>'+renderComplaints(v);}
 function renderMBody(v){
   var fns={overview:renderOverview,maint:renderMaintGated,history:renderHistory,safety:renderSafetyTab};
   document.getElementById('m-body').innerHTML=(fns[curTab]||renderOverview)(v);

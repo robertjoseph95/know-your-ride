@@ -14,9 +14,11 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
 ---
 
 ## S1. The data blob — `wrench_deploy/data.<md5-8>.js`
-- **Ships:** `var __D__ = {v:[3,667 vehicles], dtc, fixes, fuseTsbsByCode:{}}` — the Tier-1
-  verified-data core. Per vehicle: identity, gated curated specs (`ver` flags), recalls,
-  safety, mpg, warranty, `comp_n`/`comps_agg`.
+- **Ships:** `var __D__ = {v:[3,667 vehicles], dtc, fixes:{}}` — the Tier-1 verified-data
+  core. Per vehicle: identity, gated curated specs (`ver` flags), recalls, safety, mpg, ev,
+  `comps_agg`, and (D-2) `guidance`. The full top-level field set is the S1.10 allowlist in
+  `_verify_shipped.py`. `warranty` (vehicle-finder aggregator) and `fuse_loc` (AI-generated)
+  were stripped 2026-07-14 on provenance grounds — quarantined in the DB, absent here.
 - **Generator:** `files/04_rebuild_demo.py` (splices into `wrench_demo.html`) →
   `_deploy_sync_specs.py` (externalizes to `data.<hash>.js`, stamps `index.html`).
 - **Current guards:** build-time `_assert_gate_sources` + `_strip_unverified`/`enforce_ver0`
@@ -36,7 +38,12 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
      CarMD DTC fix-rate probabilities/costs. The `dtc` definitions map is separate and stays.)*
   5. [CI][FAIL] Blob filename hash == md5-8 of file content; `index.html` references exactly
      one `data.<hash>.js` and that file exists in the repo. *(Desync/404 class)*
-  6. [CI][WARN] Payload size budget: warn > 16 MB (was 25.7 pre-fix; ~10.7 after Block-1).
+  6. [CI][WARN] Payload size budget: warn > 16 MB (was 25.7 pre-fix; ~9.5 after the
+     2026-07-14 warranty/fuse_loc strip).
+  6b. [CI][FAIL] **Top-level vehicle field allowlist (default-deny, S1.10):** every key on
+     every vehicle object must be in `VEHICLE_FIELDS`; unenumerated fields fail. Closes the
+     warranty/fuse_loc class — a field the generator attaches without a `_ver()` path can no
+     longer ship unnoticed. New surface ⇒ deliberate new allowlist entry. *(2026-07-14)*
   7. [DB][FAIL] Verified-value equivalence: rebuilding the data JSON from the canonical DB
      reproduces the committed blob (requires a `--check` mode on the rebuild; see design).
   8. [DB][FAIL] `_assert_gate_sources` over the live DB: no blacklisted source computes `ver=1`.

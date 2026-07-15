@@ -121,6 +121,33 @@ def s1_9_paid_feature_gate(a):
                    % len(a.D.get("fixes") or {}))
     return out
 
+# Payload field allowlist (2026-07-14 integrity gate). DEFAULT-DENY on the top-level vehicle
+# shape: every key the generator may legitimately emit is enumerated here; any other key fails.
+# This is the structural close of the warranty/fuse_loc class: both shipped unverified because
+# they were never in GATE_TABLES and the generator attached them with no _ver() call -- no
+# existing check could see a field it had never been told about. A gate that trusts the
+# generator to remember is not a gate. New surface => new allowlist entry, deliberately.
+#   identity:   id, year, make, model, trim, engine        (vehicles table)
+#   gated spec: oil, parts, fluids, torque, maint, maint_parts, engines  (ver-carrying, S1.1/S1.7)
+#   government: mpg (EPA), safety + recalls (NHTSA), comps_agg (NHTSA aggregates, S5.1)
+#   ev:         ev_specs summary {batt,use,charge,range}
+#   guidance:   D-2 human-verified TSB pairings (contents governed by S5.7/S5.9)
+# warranty (vehicle-finder.com aggregator pull) and fuse_loc (AI-generated) are DELIBERATELY
+# absent -- quarantined in the DB, stripped 2026-07-14, and rejected here if they reappear.
+VEHICLE_FIELDS = {"id", "year", "make", "model", "trim", "engine",
+                  "oil", "parts", "fluids", "torque", "maint", "maint_parts", "engines",
+                  "mpg", "safety", "recalls", "comps_agg", "ev", "guidance"}
+
+def s1_10_vehicle_field_allowlist(a):
+    out = []
+    for v in a.D["v"]:
+        extra = set(v.keys()) - VEHICLE_FIELDS
+        if extra:
+            out.append("vehicle %s ships non-allowlisted top-level field(s) %s" % (v.get("id"), sorted(extra)))
+            if len(out) >= 5:
+                break
+    return out
+
 def s1_5_hash_and_reference(a):
     out = []
     if len(a.blob_paths) != 1:
@@ -693,6 +720,7 @@ CHECKS = [
     ("S1.3/S6.1-notes-gate",     "FAIL", "CI", s1_3_notes_gate),
     ("S1.4-narratives-gone",     "FAIL", "CI", s1_4_narratives_gone),
     ("S1.9-paid-feature-gate",   "FAIL", "CI", s1_9_paid_feature_gate),
+    ("S1.10-field-allowlist",    "FAIL", "CI", s1_10_vehicle_field_allowlist),
     ("S1.5-hash-and-reference",  "FAIL", "CI", s1_5_hash_and_reference),
     ("S1.6-size-budget",         "WARN", "CI", s1_6_size_budget),
     ("S2.1-noindex",             "FAIL", "CI", s2_1_noindex),

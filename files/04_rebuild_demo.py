@@ -249,8 +249,11 @@ def build_data(cur):
         "side_p": r["side_crash_passenger"], "rollover": r["rollover_rating"],
         "roll_pct": r["rollover_risk_pct"], "pole": r["side_pole_rating"]}))
 
-    each("warranty", lambda d, r: d.setdefault("warranty", {}).__setitem__(
-        r["warranty_type"], {"mo": r["months"], "mi": r["miles"], "notes": r["notes"]}))
+    # warranty REMOVED from the payload (2026-07-14 integrity gate): the warranty table is
+    # a vehicle-finder.com bulk pull (third-party aggregator -- fails THE LAW) with NO
+    # provenance column at all, so no row can ever compute ver:1. Rows stay quarantined in
+    # the DB pending an OEM-verified rebuild; the render path is disabled in wrench_demo.html
+    # and the shipped-surfaces verifier (S1.10) rejects the key if it ever reappears.
 
     # GATED (Block-1 paid-feature integrity, 2026-07-13): `rel` and `costs` DO NOT ship.
     #  - reliability.overall_score/rating is an unsourced computed heuristic (0 complaints ->
@@ -379,15 +382,10 @@ def build_data(cur):
     # read DB.fixes defensively ((DB.fixes&&DB.fixes[code])||[]) so an empty map renders nothing.
     fixes = {}
 
-    # Fuse panel locations (populated by wrench_fuse_locations.py via Claude API).
-    if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='fuse_locations'").fetchone():
-        cur.execute("SELECT vehicle_id, primary_location, secondary_location FROM fuse_locations")
-        for r in cur.fetchall():
-            if r["vehicle_id"] in veh:
-                veh[r["vehicle_id"]]["fuse_loc"] = {
-                    "primary": r["primary_location"],
-                    "secondary": r["secondary_location"],
-                }
+    # fuse_loc REMOVED from the payload (2026-07-14 integrity gate): fuse_locations is 100%
+    # AI-generated (source='claude-sonnet-4-6', single 2026-05-28 batch via wrench_fuse_locations.py)
+    # and was never consumed by any renderer -- it shipped AI prose in the public payload with no
+    # provenance marker. Rows stay quarantined in the DB; S1.10 rejects the key if it reappears.
 
     # Fuse/relay TSB+complaint excerpts (fuse_tsbs / fuseTsbsByCode) fully REMOVED (Block-3,
     # 2026-07-13): the root key previously shipped as {} but nothing ever read it, and shipping
