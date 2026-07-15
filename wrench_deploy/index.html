@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-07-14-contrast-and-norm">
+<meta name="kyr-version" content="2026-07-15-stripe-scrub">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -483,6 +483,29 @@ body{background:var(--bg)}
 .rcl-rem{font-size:12px;color:var(--text);line-height:1.5}
 .rcl-status{font-size:11px;color:var(--accent);margin-top:5px}
 </style>
+<script>/*WRENCH_STRIPE_SCRUB*/
+/* P0 (2026-07-15): Stripe returns to /?success=true&session_id=cs_... The gtag config
+   below captures page_location SYNCHRONOUSLY at head-parse (consent-denied cookieless
+   pings included), while the old strip ran at DOMContentLoaded -- so the checkout
+   session id reached analytics. This must stay the FIRST script in <head>, above gtag.
+   DEFAULT-DENY (same shape as S1.10): the address bar keeps ONLY the deep-link params
+   the app reads for navigation (v / tab / code -- kyrApplyURL + the popstate handler);
+   every other param is scrubbed before gtag exists, so an unenumerated Stripe or
+   future-integration param can never survive into a GA hit. The pristine query is
+   handed to the paywall handler in-memory via window.__kyrQS (kyrInitPaywall reads
+   success/canceled from it). No consent, tracking, or hostname behavior changes here. */
+(function(){
+  try{
+    if(!location.search)return;
+    window.__kyrQS=location.search;
+    var keep=['v','tab','code'];
+    var p=new URLSearchParams(location.search),c=new URLSearchParams();
+    for(var i=0;i<keep.length;i++){if(p.has(keep[i]))c.set(keep[i],p.get(keep[i]));}
+    var qs=c.toString();
+    if(qs!==p.toString())history.replaceState({},'',location.pathname+(qs?'?'+qs:''));
+  }catch(e){}
+})();
+</script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-7RE1GC9S5Q"></script>
 <script>
@@ -1155,7 +1178,7 @@ function renderMaintGated(v){
   if(n>3)h+=proUnlock('Unlock the full maintenance schedule','Showing 3 of '+n+' service intervals. Pro unlocks the complete schedule.');
   return h;
 }
-function kyrInitPaywall(){var p=new URLSearchParams(location.search);if(p.get('success')==='true'){kyrSetPro();kyrToast('Welcome to Pro. All features unlocked.');history.replaceState({},'',location.pathname);}else if(p.get('canceled')==='true'){history.replaceState({},'',location.pathname);}var b=document.getElementById('go-pro-btn');if(b&&kyrPro()){b.classList.add('is-pro');b.innerHTML='&#9733; Pro';b.onclick=null;}}
+function kyrInitPaywall(){var p=new URLSearchParams(window.__kyrQS||location.search);if(p.get('success')==='true'){kyrSetPro();kyrToast('Welcome to Pro. All features unlocked.');history.replaceState({},'',location.pathname);}else if(p.get('canceled')==='true'){history.replaceState({},'',location.pathname);}var b=document.getElementById('go-pro-btn');if(b&&kyrPro()){b.classList.add('is-pro');b.innerHTML='&#9733; Pro';b.onclick=null;}}
 document.addEventListener('DOMContentLoaded',kyrInitPaywall);
 
 /*WRENCH_SEARCH*/
