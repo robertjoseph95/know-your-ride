@@ -479,14 +479,30 @@ body{background:var(--bg)}
   }catch(e){}
 })();
 </script>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-7RE1GC9S5Q"></script>
-<script>
+<!-- Google tag (gtag.js) — hostname-gated -->
+<script>/*WRENCH_GA_HOSTGUARD*/
+/* GA hostname isolation (2026-07-15): this snippet is shared canonical code, so it used
+   to fire on EVERY host that served the file -- Vercel previews and localhost included
+   (real localhost /g/collect hits into the prod property were observed during the
+   2026-07-15 stripe-scrub verification). DEFAULT-DENY: analytics runs ONLY on the two
+   production hosts; on every other host -- previews, localhost, any subdomain, any
+   future demo -- this is a structural no-op: the gtag.js library is never fetched, no
+   config is queued, and no hit of any kind (consent-granted or cookieless) can fire.
+   window.dataLayer + a queuing window.gtag stub still exist on every host, so the
+   consent banner and any future tracking calls are safe no-ops off-prod. */
+(function(){
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+  window.gtag = function(){dataLayer.push(arguments);};
+  var h = location.hostname;
+  if (h !== 'knowyourride.net' && h !== 'www.knowyourride.net') return;   // default-deny
   gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied'});
   gtag('js', new Date());
   gtag('config', 'G-7RE1GC9S5Q');
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://www.googletagmanager.com/gtag/js?id=G-7RE1GC9S5Q';
+  document.head.appendChild(s);
+})();
 </script>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#15171c">
