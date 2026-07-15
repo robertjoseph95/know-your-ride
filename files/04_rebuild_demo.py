@@ -88,6 +88,108 @@ def _assert_gate_sources(cur):
                 raise SystemExit(f"INTEGRITY GATE: blacklisted source computes ver=1 in {t}: {s!r}")
 
 
+# ── NHTSA component vocabulary + fail-closed parser (Deploy B, 2026-07-14) ─────────────
+# Controlled-vocabulary segmentation (the genuine hardening from the Block-3 parallel
+# recon) feeding the UNCHANGED Block-3 ruling-A display grouping: every canonical label
+# COLLAPSES to its NHTSA parent category BEFORE any threshold test. Splitting a controlled
+# parent into its subcategory children ahead of the >=3/>=10% display bar hides real
+# cleared-threshold safety topics (2007 Prius SERVICE BRAKES = 329 of 2,003 = 16.4%
+# pooled, each child alone below the bar) -- that split is the regression this parser
+# deliberately rejects.
+#
+# Vocabulary frozen from NHTSA's official complaints dataset (PROD_TYPE=V COMPDESC):
+#   https://static.nhtsa.gov/odi/ffdd/cmpl/COMPLAINTS_RECEIVED_2025-2026.zip
+#   snapshot 2026-07-13 05:25:08 ET, SHA256 98E39FAAC7A9A4BBB3C2F258A627A9EFFA63BF83
+#   3411D4C3C906CAB09B996662; field dictionary https://static.nhtsa.gov/odi/ffdd/cmpl/CMPL.txt
+# plus two labels NHTSA used historically ("ELECTRONIC STABILITY CONTROL",
+# "Other/Unknown"), kept VERBATIM -- not canonicalized -- so any row carrying them groups
+# exactly as production groups it today. NHTSA serializes multiple components into one
+# comma-joined string while canonical labels may themselves contain commas
+# ("FUEL SYSTEM, GASOLINE"), so the string is segmented EXACTLY against the vocabulary:
+# a separator is accepted only after a complete label, longest-first. FAIL-CLOSED: blank,
+# unrecognized, or ambiguous strings hard-fail the build -- on a safety surface, guessing
+# a topic is worse than stopping the build.
+_COMPONENT_VOCAB = frozenset({
+    "AIR BAGS", "BACK OVER PREVENTION", "Carry Handle, Shell, Base",
+    "Chest Clip, Buckle, Harness", "CHILD SEAT", "COMMUNICATION", "ELECTRICAL SYSTEM",
+    "ELECTRONIC STABILITY CONTROL", "ELECTRONIC STABILITY CONTROL (ESC)", "ENGINE",
+    "ENGINE AND ENGINE COOLING", "EQUIPMENT", "EQUIPMENT ADAPTIVE/MOBILITY",
+    "EXTERIOR LIGHTING", "FIRERELATED", "FORWARD COLLISION AVOIDANCE",
+    "FUEL SYSTEM, DIESEL", "FUEL SYSTEM, GASOLINE", "FUEL SYSTEM, OTHER",
+    "FUEL/PROPULSION SYSTEM", "HYBRID PROPULSION SYSTEM",
+    "I suspect the car seat is counterfeit", "Insert, Padding", "INTERIOR LIGHTING",
+    "LANE DEPARTURE", "LATCHES/LOCKS/LINKAGES", "NONE", "Other/I am not sure",
+    "Other/Unknown", "PARKING BRAKE", "POWER TRAIN", "ROLLOVER", "SEAT BELTS", "SEATS",
+    "SERVICE BRAKES", "SERVICE BRAKES, AIR", "SERVICE BRAKES, ELECTRIC",
+    "SERVICE BRAKES, HYDRAULIC",
+    "SERVICE BRAKES, HYDRAULIC; AUTOHOLD BRAKE SYSTEM/BRAKE HOLD", "STEERING",
+    "STRUCTURE", "SUSPENSION", "Tether, Lower Anchor (on car seat or vehicle)", "TIRES",
+    "TRACTION CONTROL SYSTEM", "TRAILER HITCHES", "UNKNOWN OR OTHER",
+    "VEHICLE SPEED CONTROL", "VISIBILITY", "VISIBILITY/WIPER", "WHEELS",
+})
+_VOCAB_ORDERED = tuple(sorted(_COMPONENT_VOCAB, key=lambda t: (-len(t), t)))
+_TOPIC_MEMO = {}
+
+
+def _segment_component(text):
+    """All exact segmentations of `text` into vocabulary labels (memoized recursion).
+    Truncates at two solutions -- callers only need none / one / ambiguous."""
+    memo = {}
+    def parse(offset):
+        if offset in memo:
+            return memo[offset]
+        sols = []
+        for term in _VOCAB_ORDERED:
+            if not text.startswith(term, offset):
+                continue
+            end = offset + len(term)
+            if end == len(text):
+                sols.append((term,))
+            elif text[end] == ",":
+                for tail in parse(end + 1):
+                    sols.append((term,) + tail)
+                    if len(sols) > 1:
+                        break
+            if len(sols) > 1:
+                break
+        memo[offset] = tuple(sols)
+        return memo[offset]
+    return parse(0)
+
+
+def _component_topics(component):
+    """Parent-collapsed display topic set for one NHTSA component serialization."""
+    raw = component if isinstance(component, str) else ""
+    hit = _TOPIC_MEMO.get(raw)
+    if hit is not None:
+        return hit
+    text = raw.strip()
+    if not text:
+        raise SystemExit("COMPLAINT PARSER: blank NHTSA component serialization (fail-closed)")
+    sols = _segment_component(text)
+    if not sols:
+        raise SystemExit("COMPLAINT PARSER: unrecognized NHTSA component string %r "
+                         "(fail-closed; extend the frozen vocabulary deliberately)" % text)
+    if len(sols) > 1:
+        raise SystemExit("COMPLAINT PARSER: ambiguous NHTSA component string %r (fail-closed)" % text)
+    out = set()
+    for label in sols[0]:
+        out.add(label.split(", ")[0].strip())     # collapse to the NHTSA parent (ruling A)
+    out.discard("UNKNOWN OR OTHER")
+    out = frozenset(out)
+    _TOPIC_MEMO[raw] = out
+    return out
+
+
+def _ymm_key(year, make, model):
+    """Normalized year/make/model identity (the key NHTSA's by-vehicle query uses):
+    int year, whitespace-collapsed uppercase make/model. Merges zero identities in the
+    current fleet (verified 2026-07-14) -- protective against future casing drift."""
+    def clean(s):
+        return " ".join(str(s or "").split()).upper()
+    return (int(year or 0), clean(make), clean(model))
+
+
 def _strip_unverified(vlist):
     """C1 (2026-07-02): ver:0 spec VALUES must not ship. Render-time gating alone left
     fabricated values readable in the public blob (and visible via the ungated card/
@@ -284,58 +386,63 @@ def build_data(cur):
     with_comps = 0
     ymm_topic_counts = {}   # (year,make,model) -> {topic: distinct-ODI count}; FULL map for pairings
     if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='complaints'").fetchone():
-        # Component normalization (Block-3 ruling A, deterministic "KYR grouping of NHTSA
-        # reports"): NHTSA joins multiple components with a bare comma, but canonical names
-        # keep an internal ", " (e.g. "FUEL SYSTEM, GASOLINE"). So split ONLY on comma-not-
-        # followed-by-space -- NEVER naive comma-split -- then roll each token up to its NHTSA
-        # parent category (drop the ", SUBCATEGORY" tail). "UNKNOWN OR OTHER" is NHTSA's
-        # catch-all: it still counts toward n (the denominator) but is never shown as a topic.
-        _CSPLIT = re.compile(r",(?! )")
-        def _topics(component):
-            out = set()
-            for part in _CSPLIT.split(component or ""):
-                part = part.strip()
-                if part:
-                    out.add(part.split(", ")[0].strip())
-            out.discard("UNKNOWN OR OTHER")
-            return out
-        # Aggregate on the (year, make, model) identity with a DISTINCT-ODI UNION, then project
-        # the result onto every engine-variant vehicle id sharing that identity. NHTSA files
-        # complaints per year/make/model, not per engine, and some models carry duplicate ids
-        # (e.g. 2020/2021 RAM 1500 = Hemi + EcoDiesel) whose complaint sets overlap -- a naive
-        # per-id count double-counts the shared ODI numbers.
-        ymm_rows, ymm_ids = {}, {}
+        # Component normalization v2 (Deploy B, 2026-07-14): controlled-vocabulary
+        # segmentation via module-level _component_topics (fail-closed), feeding the
+        # UNCHANGED Block-3 ruling-A display grouping -- labels collapse to their NHTSA
+        # parent BEFORE any threshold test. "UNKNOWN OR OTHER" still counts toward n
+        # (the denominator) but is never shown as a topic.
+        # Aggregate on the NORMALIZED (year, make, model) identity with a DISTINCT-ODI
+        # UNION, then project the result onto every engine-variant vehicle id sharing that
+        # identity. NHTSA files complaints per year/make/model, not per engine, and some
+        # models carry duplicate ids (e.g. 2020/2021 RAM 1500 = Hemi + EcoDiesel) whose
+        # complaint sets overlap -- a naive per-id count double-counts the shared ODI
+        # numbers. Duplicate-ODI rows must AGREE on event meta (fail-closed); topics union.
+        ymm_rows, ymm_ids, id_key = {}, {}, {}
         for vid, v in veh.items():
-            ymm_ids.setdefault((v.get("year"), v.get("make"), v.get("model")), []).append(vid)
+            k = _ymm_key(v.get("year"), v.get("make"), v.get("model"))
+            id_key[vid] = k
+            ymm_ids.setdefault(k, []).append(vid)
         cur.execute("SELECT vehicle_id,complaint_number,component,incident_date,crash,fire,injury,deaths FROM complaints")
         for r in cur.fetchall():
-            v = veh.get(r["vehicle_id"])
-            if not v:
+            key = id_key.get(r["vehicle_id"])
+            if key is None:
                 continue
-            key = (v.get("year"), v.get("make"), v.get("model"))
-            ymm_rows.setdefault(key, {})[r["complaint_number"]] = r   # dedup by ODI = union
+            odi = str(r["complaint_number"] or "").strip()
+            if not odi:
+                raise SystemExit("COMPLAINT PARSER: blank complaint_number for vehicle %s (fail-closed)"
+                                 % r["vehicle_id"])
+            meta = (r["incident_date"], 1 if r["crash"] else 0, 1 if r["fire"] else 0,
+                    int(r["injury"] or 0), int(r["deaths"] or 0))
+            tset = _component_topics(r["component"])
+            slot = ymm_rows.setdefault(key, {}).get(odi)
+            if slot is None:
+                ymm_rows[key][odi] = [meta, set(tset)]
+            elif slot[0] != meta:
+                raise SystemExit("COMPLAINT PARSER: duplicate ODI %s for %s disagrees on event meta (fail-closed)"
+                                 % (odi, key))
+            else:
+                slot[1] |= tset
         for key, odi_map in ymm_rows.items():
-            rows = list(odi_map.values())
-            n = len(rows)                                     # distinct-ODI denominator (Y)
+            n = len(odi_map)                                  # distinct-ODI denominator (Y)
             topic_odi, crash, fire, inj, deaths = {}, 0, 0, 0, 0
-            for r in rows:
-                for t in _topics(r["component"]):             # each ODI counted once per topic
+            # Incident cutoff: NHTSA rows carry placeholder dates (01/01/1901, 01/01/1965);
+            # only dates within the model's plausible life (model year - 2 onward) count.
+            # Ship a MONTH max ("YYYY-MM"); the UI renders "Incident dates through {Month Year}".
+            floor = max(1990, (key[0] or 0) - 2)
+            months = []
+            for meta, tset in odi_map.values():
+                for t in tset:                                # each ODI counted once per topic
                     topic_odi[t] = topic_odi.get(t, 0) + 1
-                crash += 1 if r["crash"] else 0
-                fire += 1 if r["fire"] else 0
-                inj += int(r["injury"] or 0)
-                deaths += int(r["deaths"] or 0)
+                crash += meta[1]
+                fire += meta[2]
+                inj += meta[3]
+                deaths += meta[4]
+                if meta[0] and date_key(meta[0])[0] >= floor:
+                    months.append(date_key(meta[0])[:2])
             topics = sorted(topic_odi.items(), key=lambda kv: (-kv[1], kv[0]))[:6]  # deterministic
             ymm_topic_counts[key] = dict(topic_odi)   # FULL map (incl. below-threshold) for pairings
             agg = {"n": n, "topics": [[t, c] for t, c in topics],
                    "crash": crash, "fire": fire, "inj": inj, "deaths": deaths}
-            # Incident cutoff: NHTSA rows carry placeholder dates (01/01/1901, 01/01/1965); only
-            # dates within the model's plausible life (model year - 2 onward) count. Ship a MONTH
-            # max ("YYYY-MM"); the UI renders "Incident dates through {Month Year}".
-            yr = key[0] or 0
-            floor = max(1990, yr - 2)
-            months = [date_key(r["incident_date"])[:2] for r in rows
-                      if r["incident_date"] and date_key(r["incident_date"])[0] >= floor]
             if months:
                 y, m = max(months)
                 agg["through"] = "%04d-%02d" % (y, m)
@@ -362,7 +469,7 @@ def build_data(cur):
                 continue
             if not all(d.get(k) for k in ("tsb", "url", "vhash", "vby", "vat", "sym", "act", "topic")):
                 continue                         # incomplete record -> not emitted (default-deny)
-            key = (v.get("year"), v.get("make"), v.get("model"))
+            key = _ymm_key(v.get("year"), v.get("make"), v.get("model"))
             tcount = ymm_topic_counts.get(key, {}).get(d["topic"], 0)
             n = (v.get("comps_agg") or {}).get("n", 0)
             v.setdefault("guidance", []).append({
