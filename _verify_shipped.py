@@ -406,6 +406,30 @@ def s5_7_tsb_gate(a):
             out.append("%s: manufacturer-guidance teal empty-state missing" % name)
     return out
 
+def s5_10_collapse_canary(a):
+    # Collapse canary (2026-07-14, post-Deploy-B guard commit): no shipped complaint-topic
+    # label may contain ", ". Parent-collapsed labels never do (the collapse keeps everything
+    # before the first ", "); every NHTSA subcategory label does ("SERVICE BRAKES, HYDRAULIC",
+    # "FUEL SYSTEM, GASOLINE"). A parser edit that reintroduces split-before-threshold ships
+    # comma-space labels immediately, so this fires on the blob alone -- in CI, on every push,
+    # no DB needed. The split it guards against hid 68 cleared-threshold safety topics on
+    # 2026-07-14 data (e.g. 2007 Prius SERVICE BRAKES 329/2,003 = 16.4% pooled). S5.11 is the
+    # complete DB-tier equivalence; this is the cheap always-on tripwire. Not redundant.
+    out = []
+    for v in a.D["v"]:
+        for t in ((v.get("comps_agg") or {}).get("topics") or []):
+            label = str(t[0]) if isinstance(t, list) and t else ""
+            if ", " in label:
+                out.append("vehicle %s ships subcategory topic label %r (split-before-threshold reintroduced?)"
+                           % (v.get("id"), label))
+        for g in (v.get("guidance") or []):
+            if ", " in str(g.get("topic", "")):
+                out.append("vehicle %s guidance topic %r carries a subcategory label"
+                           % (v.get("id"), g.get("topic")))
+        if len(out) >= 5:
+            break
+    return out
+
 PII_RES = (re.compile(r"\b[\w.+-]+@[\w-]+\.\w{2,}\b"),
            re.compile(r"\b(?:\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4})\b"),
            re.compile(r"\b[A-HJ-NPR-Z0-9]{17}\b"))
@@ -712,6 +736,74 @@ def s5_9_guidance_count(a):
                 return out
     return out
 
+def s5_11_comps_agg_db(a):
+    """[DB] Full projection equivalence (2026-07-14, post-Deploy-B guard commit): independently
+    recompute every identity's complaint aggregate from the complaints table -- distinct-ODI
+    dedup, PARENT-COLLAPSED topics (collapse BEFORE any threshold), top-6 by (-count, label),
+    crash/fire/injury/death sums -- and assert the shipped comps_agg matches per vehicle, plus
+    coverage equivalence (exactly the vehicles whose identity has complaint rows ship an agg).
+    Mirror uses the simple comma-heuristic (split on ",(?! )", keep text before ", ") which
+    provably agrees with the generator's vocabulary parser on the entire corpus (byte-identical
+    blob, 2026-07-14) -- two DIFFERENT algorithms that must agree, so drift in either fires
+    here. Catches ANY projection drift, not just the split (S5.10 is the CI tripwire).
+    `through` equivalence stays in S5.8; topic-vs-guidance count honesty stays in S5.9."""
+    con = _db(a)
+    cur = con.cursor()
+    ymm = {vid: (y, mk, md) for vid, y, mk, md in cur.execute("SELECT id,year,make,model FROM vehicles")}
+    rows_by_key = {}
+    for vid, cn, comp, crash, fire, inj, deaths in cur.execute(
+            "SELECT vehicle_id,complaint_number,component,crash,fire,injury,deaths FROM complaints"):
+        key = ymm.get(vid)
+        if key:
+            rows_by_key.setdefault(key, {})[cn] = (comp, 1 if crash else 0, 1 if fire else 0,
+                                                   int(inj or 0), int(deaths or 0))
+    con.close()
+    csplit = re.compile(r",(?! )")
+    memo = {}
+    def agg_for(key):
+        if key in memo:
+            return memo[key]
+        odi = rows_by_key.get(key)
+        if not odi:
+            memo[key] = None
+            return None
+        tc = {}
+        crash = fire = inj = deaths = 0
+        for comp, c, f, i, d in odi.values():
+            seen = set()
+            for part in csplit.split(comp or ""):
+                t = part.split(", ")[0].strip()
+                if t and t != "UNKNOWN OR OTHER":
+                    seen.add(t)
+            for t in seen:
+                tc[t] = tc.get(t, 0) + 1
+            crash += c; fire += f; inj += i; deaths += d
+        topics = sorted(tc.items(), key=lambda kv: (-kv[1], kv[0]))[:6]
+        memo[key] = {"n": len(odi), "topics": [[t, c] for t, c in topics],
+                     "crash": crash, "fire": fire, "inj": inj, "deaths": deaths}
+        return memo[key]
+    out = []
+    for v in a.D["v"]:
+        want = agg_for((v.get("year"), v.get("make"), v.get("model")))
+        got = v.get("comps_agg")
+        if want is None:
+            if got:
+                out.append("vehicle %s ships comps_agg but the DB has no complaint rows for its identity" % v.get("id"))
+        elif not got:
+            out.append("vehicle %s missing comps_agg (DB has %d complaint rows for its identity)"
+                       % (v.get("id"), want["n"]))
+        else:
+            for f in ("n", "crash", "fire", "inj", "deaths"):
+                if got.get(f) != want[f]:
+                    out.append("vehicle %s comps_agg.%s=%r but DB-derived=%r" % (v.get("id"), f, got.get(f), want[f]))
+            if got.get("topics") != want["topics"]:
+                out.append("vehicle %s comps_agg.topics diverges from the DB-derived projection "
+                           "(shipped %r... vs derived %r...)"
+                           % (v.get("id"), (got.get("topics") or [])[:2], want["topics"][:2]))
+        if len(out) >= 5:
+            break
+    return out
+
 # ---------------------------------------------------------------- registry / main
 
 CHECKS = [
@@ -741,6 +833,7 @@ CHECKS = [
     ("S5.5-labeled-count",       "FAIL", "CI", s5_5_labeled_count),
     ("S5.6-incident-date-copy",  "FAIL", "CI", s5_6_incident_date_phrasing),
     ("S5.7-tsb-gate",            "FAIL", "CI", s5_7_tsb_gate),
+    ("S5.10-collapse-canary",    "FAIL", "CI", s5_10_collapse_canary),
     ("S6.2-no-documented-framing","FAIL", "CI", s6_2_no_documented_framing),
     ("S6.3-empty-state",         "FAIL", "CI", s6_3_empty_state),
     ("S7.1-footer-required",     "FAIL", "CI", s7_1_footer_required),
@@ -754,6 +847,7 @@ CHECKS = [
     ("S4.4-specs-regen",         "FAIL", "DB", s4_4_specs_regen),
     ("S5.8-incident-date-db",    "FAIL", "DB", s5_8_incident_date_matches_db),
     ("S5.9-guidance-count-db",   "FAIL", "DB", s5_9_guidance_count),
+    ("S5.11-comps-agg-db",       "FAIL", "DB", s5_11_comps_agg_db),
     ("S8.3-count-reconciliation","WARN", "DB", s8_3_count_reconciliation),
 ]
 

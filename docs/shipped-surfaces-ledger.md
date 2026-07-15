@@ -104,12 +104,16 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
   `n`, and a month-granularity incident cutoff `through` ("YYYY-MM"). Rendered as three provenance
   lanes inside **Safety** (customer-reported / manufacturer-documented teal empty-state / recall);
   hero badge "N WITH CONSUMER REPORTS". **No TSB / manufacturer-guidance data ships (Phase 1).**
-- **Generator:** `files/04_rebuild_demo.py` — component normalization (split on comma-not-
-  followed-by-space, roll up to NHTSA parent; never naive-split), year/make/model distinct-ODI
-  union projected onto engine-variant ids (fixes 2020/2021 RAM 1500 double-count), month cutoff,
-  hero badge line. Renderer + 3-lane copy persisted in `wrench_demo.html` (the fossil `inject_tab`
-  injector was deleted — the tab is fully hand-authored).
-- **Current guards:** S5.1–S5.8 below.
+- **Generator:** `files/04_rebuild_demo.py` — component normalization v2 (2026-07-14): exact
+  segmentation against a frozen official NHTSA vocabulary (fail-closed on blank/unknown/
+  ambiguous strings; never naive-split), then **collapse to the NHTSA parent label BEFORE any
+  threshold test** — splitting parents into subcategories hides cleared-threshold safety topics
+  (68 on 2026-07-14 data, e.g. 2007 Prius SERVICE BRAKES 329/2,003). Normalized year/make/model
+  distinct-ODI union (duplicate-ODI rows must agree on event meta) projected onto engine-variant
+  ids (fixes 2020/2021 RAM 1500 double-count), month cutoff, hero badge line. Renderer + 3-lane
+  copy persisted in `wrench_demo.html` (the fossil `inject_tab` injector was deleted — the tab
+  is fully hand-authored).
+- **Current guards:** S5.1–S5.11 below.
 - **Invariants:**
   1. [CI][FAIL] `comps_agg` schema whitelist: keys ⊆ `{n, topics, crash, fire, inj, deaths,
      through}`; each topic is a `[label, int]` pair (no narrative, no nested guidance object).
@@ -143,6 +147,18 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
   9. [DB][FAIL] **Guidance count matches DB** — every shipped `guidance.topic` is a real normalized
      complaint component for the vehicle, and `tcount`/`n` equal the DB-derived distinct-ODI counts
      (a below-threshold pairing may surface its topic, but never with a fabricated count).
+  10. [CI][FAIL] **Collapse canary (S5.10)** — no shipped topic label (in `comps_agg.topics` or
+     `guidance.topic`) may contain `", "`. Parent-collapsed labels never do; every NHTSA
+     subcategory label ("SERVICE BRAKES, HYDRAULIC", "FUEL SYSTEM, GASOLINE") does — so a parser
+     edit that reintroduces split-before-threshold fails **in CI on the blob alone, no DB**.
+     Cheap always-on tripwire for the 2026-07-14 collapse ruling. *(2026-07-14)*
+  11. [DB][FAIL] **Projection equivalence (S5.11)** — every identity's full `comps_agg` (`n`,
+     `topics` top-6 with counts, `crash`/`fire`/`inj`/`deaths`) plus coverage (exactly the
+     vehicles whose identity has complaint rows carry an agg) must equal an independent
+     recomputation from the complaints table using the comma-heuristic mirror — a *different*
+     algorithm than the generator's vocabulary parser, so drift in either fires. Catches ANY
+     projection drift, not just the split; the expensive complete check to S5.10's tripwire.
+     `through` stays in S5.8; guidance-count honesty stays in S5.9. *(2026-07-14)*
 
 **Manufacturer-communication pairing pipeline (Block D-1).** Local-only `tsb_pairings` table +
 `_tsb_pairing.py` CLI (`init` / `add` / `list` / `recheck` / `candidates`). A pairing is created
