@@ -1,8 +1,8 @@
 # S1 Secure Maintenance Supabase Foundation Implementation Plan
 
-**Status:** Draft executable plan; no implementation or remote action is authorized by this document alone
+**Status:** Rulings reconciled 2026-07-17; no implementation or remote action is authorized by this document alone
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development` (recommended) or `superpowers:executing-plans` to implement this plan task-by-task. Use `superpowers:test-driven-development` for every code task and `superpowers:verification-before-completion` before claiming S1 complete. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:using-git-worktrees` before Task 1, then `superpowers:subagent-driven-development` (recommended) or `superpowers:executing-plans` to implement this plan task-by-task. Use `superpowers:test-driven-development` for every code task and `superpowers:verification-before-completion` before claiming S1 complete. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Establish a replayable, tested, least-privilege Supabase/PostgreSQL and shared-Python foundation for the secure maintenance program without routing production traffic, migrating users, or changing production secrets.
 
@@ -22,6 +22,7 @@
 - Python is exactly 3.12 in Vercel and CI; runtime dependencies use exact `==` pins.
 - All application tables live in unexposed schema `private`, have RLS enabled and forced, and grant no table privilege or policy to `PUBLIC`, `anon`, `authenticated`, or either runtime login.
 - Browser/runtime roles execute only explicitly reviewed functions; Auth administration credentials exist only in the separate, disabled identity-worker deployment.
+- S1 creates `kyr_api_runtime` and `kyr_identity_worker_runtime` with `LOGIN PASSWORD NULL`. S1 does not generate, transmit, install, rotate, or revoke either password. S2 owns that separately gated credential lifecycle and the first authenticated connectivity proof.
 - Monetary values use integer cents; user/garage identities use UUIDs; request hashes and identity HMACs are 32-byte values.
 - Git staging is path-targeted only. Never use `git add -A`, `git add .`, or `git commit -a`.
 
@@ -29,11 +30,14 @@
 
 ## S1 authorization boundary
 
-This plan has three gates:
+This plan has four gates:
 
-1. **Local implementation gate:** creating code, migrations, tests, and focused commits is allowed when execution begins. No remote state changes.
-2. **CI/preview gate:** pushing the feature branch and creating Vercel preview deployments require explicit approval. Neither action may target `main` or production.
+0. **Program/repository prerequisite:** do not begin Task 1 until roadmap Section 0 rows `IC-01` through `IC-05`, `OA-A2`, and `REPO-VIS-01` are `COMPLETE` with their required evidence linked. Re-run `gh repo view robertjoseph95/know-your-ride --json visibility --jq '.visibility'` and require `PRIVATE` immediately before execution. Changing repository visibility is a separate external action requiring explicit approval; this plan does not authorize it. If any prerequisite is unmet, report and stop without editing.
+1. **Local implementation gate:** creating code, migrations, tests, and focused commits is allowed only after Gate 0 and a separate execution approval. No remote state changes.
+2. **CI/preview gate:** pushing the dedicated S1 feature branch and creating Vercel preview deployments require explicit approval. Neither action may target `main` or production.
 3. **Remote schema gate:** applying the tested migration to Supabase project `cajushswdwuthhakuevp` requires a second explicit approval. Until then, that paid project remains unchanged.
+
+Repository privacy does not permit secrets in source. The schema, migrations, tests, CI, role names, and project reference are non-secret architecture; all credentials and customer/export data remain outside git.
 
 S1 never:
 
@@ -46,31 +50,80 @@ S1 never:
 - merges or pushes to `main`;
 - deploys with `--prod`.
 
-At the start of an authorized S1 execution, before Task 1 changes any file, capture the implementation baseline:
+At the start of an authorized S1 execution, use the required worktree skill to create an isolated worktree on `codex/s1-supabase-foundation` from the approved post-Option-A base. Before Task 1 changes any file, assert and capture that branch and baseline:
 
 ```powershell
 $repoRoot = (git rev-parse --show-toplevel).Trim()
-$base = (git rev-parse HEAD).Trim()
-if (-not $repoRoot -or -not $base) {
-  throw 'S1 baseline state was not captured'
+$targetBranch = 'codex/s1-supabase-foundation'
+$branch = (git branch --show-current).Trim()
+$head = (git rev-parse HEAD).Trim()
+if (-not $repoRoot -or $branch -ne $targetBranch -or -not $head) {
+  throw "S1 must run on named branch $targetBranch with a captured HEAD"
 }
-git config --local kyr.s1-base $base
-if ($LASTEXITCODE -ne 0) { throw 'S1 baseline was not persisted to local git config' }
+$storedBranch = (git config --local --get kyr.s1-branch | Out-String).Trim()
+$storedBase = (git config --local --get kyr.s1-base | Out-String).Trim()
+if ($storedBranch -or $storedBase) {
+  if ($storedBranch -ne $targetBranch -or -not $storedBase) {
+    throw 'existing S1 worktree has an incomplete or mismatched branch/base contract'
+  }
+  $base = $storedBase
+} else {
+  $base = $head
+  git config --local kyr.s1-branch $branch
+  if ($LASTEXITCODE -ne 0) { throw 'S1 branch was not persisted to local git config' }
+  git config --local kyr.s1-base $base
+  if ($LASTEXITCODE -ne 0) { throw 'S1 baseline was not persisted to local git config' }
+}
 git cat-file -e "$base`^{commit}"
 if ($LASTEXITCODE -ne 0) { throw 'S1 baseline is not a commit' }
-$base
+$mergeBase = (git merge-base $base HEAD).Trim()
+if ($mergeBase -ne $base) { throw 'S1 baseline is not an ancestor of HEAD' }
+[pscustomobject]@{ repo = $repoRoot; branch = $branch; base = $base }
 ```
 
-Repo-local git config survives separate agent shells and cannot enter a commit. Reload and validate `kyr.s1-base` wherever the plan compares S1 commits. Record that exact hash in every S1 report. It is the approved-plan execution start, not the earlier design commit.
+Repo-local git config survives separate agent shells and cannot enter a commit. Reload and validate both `kyr.s1-branch` and `kyr.s1-base` wherever the plan compares or pushes S1 commits. Record both values in every S1 report. The base is the approved-plan execution start, not the earlier design commit or an Option-A branch.
 
 ## Current constraints
 
 - Production contains a legacy `wrench_deploy/runtime.txt`, CI uses 3.12, and the workstation has only 3.14. Current Vercel Python documentation recognizes `.python-version`, `pyproject.toml`, or `Pipfile.lock`, not `runtime.txt`. S1 replaces the legacy file with root-level `.python-version` files pinned to 3.12; workstation runs are fast feedback only, and GitHub Actions/Vercel preview are authoritative.
 - Docker is not installed locally. The clean-database proof therefore runs in GitHub Actions using Docker. Installing Docker Desktop is optional and not part of S1.
+- At the 2026-07-17 reconciliation, the GitHub repository was public. Gate 0 blocks S1 implementation and any Tier-2 branch push until a separately approved visibility change has been completed and verified; this plan does not perform that change.
 - The repository clone is not linked to the correct Vercel project. The old OneDrive link points to stale `project-sj4at`; never use it.
 - The correct Vercel project is `know-your-ride`, whose configured Root Directory is `wrench_deploy`.
 - The current Supabase project is active and empty/unconnected. It is not mutated before the remote schema gate.
-- Supabase reports project `cajushswdwuthhakuevp` in `us-west-2` on PostgreSQL 17. Runtime URLs must include a nonempty dedicated-role password and use the dashboard's exact shared transaction-pooler host, port `6543`, database `/postgres`, `sslmode=require`, and either the exact main username `kyr_api_runtime.cajushswdwuthhakuevp` or worker username `kyr_identity_worker_runtime.cajushswdwuthhakuevp`. S1's allowlist contains only the two current `us-west-2` Supavisor cluster hostnames; the environment selects the one shown by Connect, and any mismatch stops configuration instead of falling through to libpq credential sources.
+- Supabase reports project `cajushswdwuthhakuevp` in `us-west-2` on PostgreSQL 17. Future runtime URLs must include a nonempty dedicated-role password and use the dashboard's exact shared transaction-pooler host, port `6543`, database `/postgres`, `sslmode=require`, and either the exact main username `kyr_api_runtime.cajushswdwuthhakuevp` or worker username `kyr_identity_worker_runtime.cajushswdwuthhakuevp`. S1's allowlist contains only the two current `us-west-2` Supavisor cluster hostnames; the environment selects the one shown by Connect, and any mismatch stops configuration instead of falling through to libpq credential sources. These URL shapes are S2's future runtime contract, not an S1 credential: S1 leaves both role passwords null and creates no `KYR_DATABASE_URL` or `KYR_IDENTITY_WORKER_DATABASE_URL` value.
+- Replacing `wrench_deploy/runtime.txt` and changing the shared requirements rebuilds all 13 pre-S1 Python functions on the next deployment. Task 9 therefore cold-starts every legacy function in one non-production Python 3.12 preview before S1 may close.
+
+## Execution-tool preflight
+
+Run this repository/provider-read-only preflight at the start of an authorized execution. The pinned `npx` invocation may populate the local npm cache but changes no project or provider state. Docker remains optional locally because the authoritative database replay runs in CI.
+
+```powershell
+foreach ($command in 'git', 'gh', 'node', 'npm', 'npx', 'python', 'vercel') {
+  if (-not (Get-Command $command -ErrorAction SilentlyContinue)) {
+    throw "$command is required for S1"
+  }
+}
+
+$vercelVersion = (& vercel --version 2>&1 | Out-String).Trim()
+if ($LASTEXITCODE -ne 0 -or $vercelVersion -notmatch '(^|\s)56\.2\.0(\s|$)') {
+  throw "Vercel CLI 56.2.0 is required; observed: $vercelVersion"
+}
+$supabaseVersion = (& npx --yes supabase@2.109.1 --version 2>&1 | Out-String).Trim()
+if ($LASTEXITCODE -ne 0 -or $supabaseVersion -notmatch '(^|\s)2\.109\.1(\s|$)') {
+  throw "Supabase CLI 2.109.1 is required; observed: $supabaseVersion"
+}
+
+git --version
+gh --version
+node --version
+npm --version
+npx --version
+python --version
+[pscustomobject]@{ vercel = $vercelVersion; supabase = $supabaseVersion }
+```
+
+Expected: every command resolves, Vercel reports `56.2.0`, and the pinned Supabase CLI reports `2.109.1`. Authentication checks remain just-in-time in Task 9 before remote CI/preview actions.
 
 ---
 
@@ -368,6 +421,10 @@ The `private` schema must never appear in `api.schemas` or `api.extra_search_pat
 
 ```sql
 -- KYR Tier-2 foundation. Tier 1 vehicle facts never enter this schema.
+
+-- S1 intentionally leaves both runtime logins unable to password-authenticate.
+-- S2 separately provisions, installs, verifies, rotates, and revokes their
+-- generated credentials; no role password belongs in migration history.
 
 do $$
 begin
@@ -1385,6 +1442,7 @@ Expected: no matches. `password null` is intentionally safe and may be visually 
 - Create: `supabase/tests/database/002_foundation_constraints.test.sql`
 - Create: `supabase/tests/database/003_foundation_behavior.test.sql`
 - Create: `supabase/tests/database/004_foundation_invariants.test.sql`
+- Create: `supabase/tests/database/005_linked_test_rollback.test.sql`
 - Create: `tests/deployment/__init__.py`
 - Create: `tests/deployment/test_supabase_config.py`
 - Create: `tests/deployment/test_foundation_migration_source.py`
@@ -1392,7 +1450,7 @@ Expected: no matches. `password null` is intentionally safe and may be visually 
 **Interfaces:**
 
 - Consumes: the CLI-created empty config/migration stubs from Task 3 Steps 1-2.
-- Produces: local config and migration-source contracts plus four transactional pgTAP suites that are the RED/GREEN authority for Task 3's schema and Task 9's clean replay.
+- Produces: local config and migration-source contracts plus five transactional pgTAP suites that are the RED/GREEN authority for Task 3's schema and Task 9's clean replay.
 
 - [ ] **Step 1: Add the structural security suite.**
 
@@ -2615,6 +2673,63 @@ select * from finish();
 rollback;
 ~~~
 
+- [ ] **Step 2c: Prove suites 003/004 leave no synthetic Auth or application state.**
+
+Create `supabase/tests/database/005_linked_test_rollback.test.sql`:
+
+```sql
+begin;
+create extension if not exists pgtap with schema extensions;
+set local search_path = extensions, public, pg_catalog;
+select plan(3);
+
+select is(
+  (
+    select count(*)::integer
+    from auth.users
+    where id in (
+      '11111111-1111-1111-1111-111111111111',
+      '22222222-2222-2222-2222-222222222222',
+      '33333333-3333-3333-3333-333333333333',
+      '44444444-4444-4444-4444-444444444444'
+    )
+  ),
+  0,
+  'prior pgTAP suites leave no synthetic auth.users rows'
+);
+
+select is(
+  (
+    select count(*)::integer
+    from private.account_deletion_requests
+    where deletion_request_id in (
+      'dddddddd-dddd-dddd-dddd-dddddddddddd',
+      'dadadada-dada-dada-dada-dadadadadada'
+    )
+  ),
+  0,
+  'prior pgTAP suites leave no synthetic deletion requests'
+);
+
+select is(
+  (
+    select count(*)::integer
+    from private.credit_ledger
+    where user_id in (
+      '33333333-3333-3333-3333-333333333333',
+      '44444444-4444-4444-4444-444444444444'
+    )
+  ),
+  0,
+  'prior pgTAP suites leave no synthetic credit rows'
+);
+
+select * from finish();
+rollback;
+```
+
+Suite 005 is intentionally ordered after suites 003/004. It proves the prior files' known synthetic rows are absent before it performs its own rollback.
+
 - [ ] **Step 3: Add and record a guaranteed RED database-source contract before writing Task 3 Step 3; do not substitute the paid remote project.**
 
 Before the environment check, create empty `tests/deployment/__init__.py`, then create `tests/deployment/test_supabase_config.py`:
@@ -2713,7 +2828,7 @@ python -m unittest discover -s tests -p "test_*.py" -v
 python -m compileall -q _deploy_check.py tests
 ```
 
-Expected after Task 3 Steps 2a-3: all Python tests pass. If Docker is available, rerun `npx --yes supabase@2.109.1 db start` and `npx --yes supabase@2.109.1 test db`; all four pgTAP files must pass. If Docker remains unavailable, CI in Task 9 is the first authoritative database GREEN and no remote schema action may precede it.
+Expected after Task 3 Steps 2a-3: all Python tests pass. If Docker is available, rerun `npx --yes supabase@2.109.1 db start` and `npx --yes supabase@2.109.1 test db`; all five pgTAP files must pass. If Docker remains unavailable, CI in Task 9 is the first authoritative database GREEN and no remote schema action may precede it.
 
 - [ ] **Step 5: Commit the Supabase source and tests with exact paths.**
 
@@ -2734,6 +2849,7 @@ $paths = @(
   'supabase/tests/database/002_foundation_constraints.test.sql',
   'supabase/tests/database/003_foundation_behavior.test.sql',
   'supabase/tests/database/004_foundation_invariants.test.sql',
+  'supabase/tests/database/005_linked_test_rollback.test.sql',
   'tests/deployment/__init__.py',
   'tests/deployment/test_supabase_config.py',
   'tests/deployment/test_foundation_migration_source.py'
@@ -2747,7 +2863,7 @@ git commit -m "db(tier2): define private maintenance foundation"
 git show --stat --oneline HEAD
 ```
 
-Expected staged set: one config, one migration, four SQL test files, the deployment-test package marker, the Python config contract, and the inspected CLI-generated `supabase/.gitignore` only if it exists. No `.temp`, credentials, or export files.
+Expected staged set: one config, one migration, five SQL test files, the deployment-test package marker, the Python config contract, and the inspected CLI-generated `supabase/.gitignore` only if it exists. No `.temp`, credentials, or export files.
 
 ---
 
@@ -2769,10 +2885,11 @@ Expected staged set: one config, one migration, four SQL test files, the deploym
 - Create: `tests/unit/test_kyr_api_security.py`
 - Create: `tests/deployment/test_main_bundle_contract.py`
 - Modify: `wrench_deploy/vercel.json`
+- Read-only baseline dependency: `.vercelignore` (must already be tracked; Task 5 neither modifies nor stages it)
 
 **Interfaces:**
 
-- Consumes: Task 1's Python/runtime pins and Task 3's runtime role/function names.
+- Consumes: Task 1's Python/runtime pins, Task 3's runtime role/function names, and the tracked root `.vercelignore` upload boundary.
 - Produces: `MainSettings`, `load_main_settings(...)`, `connect(settings)`, `transaction(settings, user_id=None)`, `HTTPProblem`, `read_json(...)`, `write_json(...)`, `validate_mutation_origin(...)`, and the off-by-default `/api/foundation` probe.
 
 - [ ] **Step 1: Write the failing configuration and bundle tests first.**
@@ -2905,6 +3022,17 @@ if __name__ == "__main__":
     unittest.main()
 ```
 
+Verify the upload boundary is tracked baseline state before writing its contract:
+
+```powershell
+$vercelIgnore = (git ls-files -- .vercelignore | Out-String).Trim()
+if ($LASTEXITCODE -ne 0 -or $vercelIgnore -ne '.vercelignore') {
+  throw '.vercelignore must already be tracked before Task 5'
+}
+```
+
+Expected: exactly `.vercelignore`. Do not modify or stage it in Task 5.
+
 Create `tests/deployment/test_main_bundle_contract.py` (the package marker already exists from Task 4):
 
 ```python
@@ -2951,6 +3079,10 @@ class MainBundleContractTests(unittest.TestCase):
             self.assertNotIn(forbidden, text)
 
     def test_main_cli_upload_excludes_worker_root(self):
+        self.assertTrue(
+            VERCELIGNORE.is_file(),
+            ".vercelignore is a required tracked baseline dependency",
+        )
         text = VERCELIGNORE.read_text(encoding="utf-8")
         self.assertIn("/*", text)
         self.assertIn("!/wrench_deploy", text)
@@ -3305,7 +3437,12 @@ from kyr_api.config import MainSettings  # noqa: E402
 from kyr_api.db import connect, transaction  # noqa: E402
 
 
-SETTINGS = MainSettings("postgresql://example.invalid/db", "https://knowyourride.net", False)
+SETTINGS = MainSettings(
+    database_url="postgresql://example.invalid/db",
+    pooler_host=None,
+    canonical_origin="https://knowyourride.net",
+    foundation_enabled=False,
+)
 
 
 class DatabaseHelperTests(unittest.TestCase):
@@ -3818,7 +3955,7 @@ git show --stat --oneline HEAD
 
 **Interfaces:**
 
-- Consumes: all Task 1-6 Python contracts, the replayable migration, and four pgTAP suites.
+- Consumes: all Task 1-6 Python contracts, the replayable migration, and five pgTAP suites.
 - Produces: additive `tier2-foundation / python` and `tier2-foundation / database` checks; existing shipped-artifact workflow remains untouched.
 
 - [ ] **Step 0: Write and run the failing workflow contract before creating YAML.**
@@ -4018,7 +4155,21 @@ Do not continue on silence or an echoed report.
 - Consumes: explicit CI/preview approval, Task 7 workflows, the correct Vercel project metadata, and the pre-push production fingerprint.
 - Produces: a green current-commit clean-replay run, Task 8's local legacy-verifier evidence, a non-production main preview, legacy-route smoke evidence, byte-identical production proof, and—only after a further approval—a disabled worker preview.
 
-- [ ] **Step 0: Before pushing, capture the actual production version, blob name, and byte hashes.**
+- [ ] **Step 0: Fail closed if the remote CLIs are not authenticated.**
+
+```powershell
+gh auth status
+if ($LASTEXITCODE -ne 0) { throw 'GitHub CLI is not authenticated' }
+$vercelIdentity = (& vercel whoami 2>&1 | Out-String).Trim()
+if ($LASTEXITCODE -ne 0 -or -not $vercelIdentity) {
+  throw 'Vercel CLI is not authenticated'
+}
+$vercelIdentity
+```
+
+Expected: a valid GitHub session and a nonempty Vercel identity. These checks are read-only.
+
+- [ ] **Step 0a: Before pushing, capture the actual production version, blob name, and byte hashes.**
 
 ```powershell
 function Get-KyrProductionFingerprint {
@@ -4062,11 +4213,25 @@ Expected: all four properties are non-empty. This baseline is captured before an
 - [ ] **Step 1: Push only the feature branch, never `main`.**
 
 ```powershell
-git branch --show-current
-git push --set-upstream origin codex/option-a-integrity-speed
+$visibility = (gh repo view robertjoseph95/know-your-ride --json visibility --jq '.visibility' | Out-String).Trim()
+if ($LASTEXITCODE -ne 0 -or $visibility -ne 'PRIVATE') {
+  throw "Tier-2 branch push requires a private repository; observed: $visibility"
+}
+
+$branch = (git config --local --get kyr.s1-branch | Out-String).Trim()
+$current = (git branch --show-current).Trim()
+if (-not $branch -or $branch -eq 'main' -or $branch -notlike 'codex/s1-*') {
+  throw "stored S1 branch is missing or unsafe: $branch"
+}
+if ($current -ne $branch) {
+  throw "current branch $current does not match stored S1 branch $branch"
+}
+
+git push --set-upstream origin "HEAD:refs/heads/$branch"
+if ($LASTEXITCODE -ne 0) { throw "failed to push $branch" }
 ```
 
-Expected branch: `codex/option-a-integrity-speed`.
+Expected: repository visibility is `PRIVATE`, and only the persisted dedicated S1 branch—currently `codex/s1-supabase-foundation`—is pushed; never `main` and never an Option-A implementation branch. This step checks privacy but does not authorize or change repository visibility.
 
 - [ ] **Step 2: Wait for and watch the new workflow for the exact pushed commit.**
 
@@ -4127,19 +4292,76 @@ vercel curl /api/foundation --deployment $preview
 
 Expected response: `{"ok":true,"foundation":"s1-v1"}`. The command must not contain `--prod`.
 
-- [ ] **Step 5a: Smoke-test legacy routes affected by the runtime, dependency, and function-glob change.**
+- [ ] **Step 5a: Exercise every one of the 13 pre-S1 Python functions without entering a paid, external-fetch, or write path.**
 
 ```powershell
-$preview = git config --local --get kyr.s1-main-preview
-if (-not $preview) { throw 'main preview state is missing' }
-$preview = $preview.Trim()
+$preview = (git config --local --get kyr.s1-main-preview | Out-String).Trim()
 if ($preview -notmatch '^https://') { throw 'stored preview URL is invalid' }
-vercel curl /api/auth --deployment $preview
-vercel curl /api/recalls --deployment $preview
-vercel curl /api/vin/INVALID --deployment $preview
+
+$cases = @(
+  [pscustomobject]@{ name='auth';                path='/api/auth';                       method='GET';  data=$null; json=$false; status=400; pattern='Use POST\.' },
+  [pscustomobject]@{ name='expenses';            path='/api/expenses';                   method='GET';  data=$null; json=$false; status=501; pattern="Unsupported method \('GET'\)" },
+  [pscustomobject]@{ name='garage';              path='/api/garage';                     method='GET';  data=$null; json=$false; status=501; pattern="Unsupported method \('GET'\)" },
+  [pscustomobject]@{ name='guide';               path='/api/guide';                      method='GET';  data=$null; json=$false; status=200; pattern='"pro_required"\s*:\s*true' },
+  [pscustomobject]@{ name='identify-part';       path='/api/identify-part';              method='GET';  data=$null; json=$false; status=501; pattern="Unsupported method \('GET'\)" },
+  [pscustomobject]@{ name='promo';               path='/api/promo';                      method='GET';  data=$null; json=$false; status=501; pattern="Unsupported method \('GET'\)" },
+  [pscustomobject]@{ name='recalls';             path='/api/recalls';                    method='GET';  data=$null; json=$false; status=400; pattern='make, model and year are required' },
+  [pscustomobject]@{ name='service-log';         path='/api/service-log';                method='GET';  data=$null; json=$false; status=501; pattern="Unsupported method \('GET'\)" },
+  [pscustomobject]@{ name='subscribe';           path='/api/subscribe';                  method='POST'; data=$null; json=$false; status=501; pattern="Unsupported method \('POST'\)" },
+  [pscustomobject]@{ name='verify-subscription'; path='/api/verify-subscription';         method='GET';  data=$null; json=$false; status=400; pattern='email parameter required' },
+  [pscustomobject]@{ name='vin';                 path='/api/vin/INVALID';                 method='GET';  data=$null; json=$false; status=400; pattern='VIN must be 17 characters' },
+  [pscustomobject]@{ name='webhook';             path='/api/webhook';                    method='GET';  data=$null; json=$false; status=501; pattern="Unsupported method \('GET'\)" },
+  [pscustomobject]@{ name='youtube';             path='/api/youtube';                    method='GET';  data=$null; json=$false; status=200; pattern='"pro_required"\s*:\s*true' }
+)
+
+$smokeRoot = Join-Path $env:TEMP ("kyr-s1-function-smoke-" + [guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory -Path $smokeRoot -Force | Out-Null
+try {
+  $results = foreach ($case in $cases) {
+    $bodyPath = Join-Path $smokeRoot "$($case.name).body"
+    $curlArgs = @(
+      $case.path, '--deployment', $preview, '--',
+      '--request', $case.method, '--silent', '--show-error',
+      '--output', $bodyPath, '--write-out', '%{http_code}'
+    )
+    if ($case.json) { $curlArgs += @('--header', 'Content-Type: application/json') }
+    if ($null -ne $case.data) { $curlArgs += @('--data', $case.data) }
+
+    $rawStatus = (& vercel curl @curlArgs 2>&1 | Out-String).Trim()
+    if ($LASTEXITCODE -ne 0) { throw "$($case.name) invocation failed: $rawStatus" }
+    $statusMatch = [regex]::Match($rawStatus, '(\d{3})\s*$')
+    if (-not $statusMatch.Success) {
+      throw "$($case.name) returned no parseable HTTP status: $rawStatus"
+    }
+    $actualStatus = [int]$statusMatch.Groups[1].Value
+    $body = if (Test-Path $bodyPath) { Get-Content -Raw -LiteralPath $bodyPath } else { '' }
+    if ($actualStatus -ne $case.status) {
+      throw "$($case.name) expected $($case.status), received $actualStatus; body=$body"
+    }
+    if (-not [regex]::IsMatch($body, $case.pattern)) {
+      throw "$($case.name) omitted expected response contract: $($case.pattern)"
+    }
+    [pscustomobject]@{ function=$case.name; method=$case.method; status=$actualStatus }
+  }
+  if (@($results).Count -ne 13) { throw 'not all 13 legacy Python functions were exercised' }
+  $results | Format-Table -AutoSize
+} finally {
+  $resolvedSmokeRoot = [IO.Path]::GetFullPath($smokeRoot)
+  $resolvedTempRoot = [IO.Path]::GetFullPath($env:TEMP).TrimEnd('\', '/') + [IO.Path]::DirectorySeparatorChar
+  if (-not $resolvedSmokeRoot.StartsWith($resolvedTempRoot, [StringComparison]::OrdinalIgnoreCase)) {
+    throw "refusing to remove smoke directory outside TEMP: $resolvedSmokeRoot"
+  }
+  Remove-Item -LiteralPath $smokeRoot -Recurse -Force -ErrorAction SilentlyContinue
+}
+
+$logs = (& vercel logs $preview --since 10m --json 2>&1 | Out-String)
+if ($LASTEXITCODE -ne 0) { throw 'preview logs could not be inspected' }
+if ($logs -match 'ModuleNotFoundError|ImportError|No module named|Traceback') {
+  throw 'preview logs contain a Python import/runtime failure'
+}
 ```
 
-Expected legacy-safe 400 contracts: Auth says `Use POST.`; recalls says make/model/year are required; VIN says a valid 17-character VIN is required. Any 404, import error, or 5xx stops S1.
+Expected: all 13 named functions return the exact safe contract above. Seven single-method handlers deliberately receive their unsupported method and must return BaseHTTPRequestHandler's exact `Unsupported method ('GET'|'POST')` 501 text; this proves module import/dispatch without depending on Redis or Stripe configuration. No request sends authorization, cookies, a real email, a promo code, a valid VIN, a Stripe plan/signature, or a service payload. Any 404, unexpected status, non-matching 501 body, import traceback, external provider call, or state mutation stops S1. `/api/foundation` in Step 5 separately proves that `kyr_api` and psycopg import in the new fourteenth function.
 
 - [ ] **Step 6: Prove the production site was not changed.**
 
@@ -4264,12 +4486,14 @@ Expected dry run: exactly one `*_tier2_foundation.sql` migration. If anything el
 
 After the user has approved this exact dry-run output:
 
+The linked pgTAP run deliberately performs transient SQL writes on the paid project. Suites 003 and 004 insert four synthetic `@example.invalid` rows directly into `auth.users` plus related private rows. They do not use the Auth API, send email, call a provider, or represent real users. The [current Supabase CLI reference](https://supabase.com/docs/reference/cli/supabase-projects-list) states that each test is transaction-wrapped and individually rolled back; these files also end in `ROLLBACK`, and suite 005 runs afterward to prove the known Auth, deletion-request, and credit fixtures are absent. Approval of the command below explicitly includes those rollback-only writes.
+
 ```powershell
 npx --yes supabase@2.109.1 db push --linked
 npx --yes supabase@2.109.1 test db --linked
 ```
 
-Expected: migration applied once; all pgTAP assertions pass. No seed/user rows are created.
+Expected: migration applied once; all five pgTAP suites pass, including suite 005's post-suite rollback proof. No synthetic Auth or application row persists after the command.
 
 - [ ] **Step 4: Run Supabase security and performance advisors through the connected Supabase tooling.**
 
@@ -4285,6 +4509,7 @@ Report:
 - `kyr_api_runtime` can execute only `private.foundation_health()` from S1;
 - `kyr_identity_worker_runtime` has no table privilege and no executable S1 function;
 - both function owners are `NOLOGIN`, `NOINHERIT`, non-superuser, and `NOBYPASSRLS`;
+- both runtime roles are `LOGIN PASSWORD NULL` and therefore cannot password-authenticate in S1;
 - zero application profiles, garage vehicles, service events, and entitlements;
 - no Auth administration credential was copied or distributed into source, bundles, the main Vercel environment, logs, shell history, or reports; S1 makes no claim about provider-managed key existence.
 
@@ -4329,9 +4554,10 @@ The S2 plan may rely only on these S1 outputs after they are proven:
 - the committed private table/role/RLS names;
 - the transaction-local `kyr.user_id` convention;
 - the absence of direct table grants for the runtime role;
+- the deliberate `LOGIN PASSWORD NULL` state for both runtime roles;
 - clean-replay and advisor results.
 
-S2 may not infer a session/JWT/cookie API from the foundation probe. Those contracts must be designed and tested explicitly in the S2 plan.
+S2 may not infer a session/JWT/cookie API from the foundation probe. Those contracts must be designed and tested explicitly in the S2 plan. S2 must also begin with a separately approved credential-lifecycle task: generate distinct high-entropy main/worker role passwords without printing them, install each pooled URL only in the correct Vercel project, prove cross-project isolation and the first authenticated connection, and define rotation, incident revocation, final retirement, and rollback to `PASSWORD NULL`. No role password may enter a migration, source file, transcript, log, or report.
 
 ---
 
@@ -4339,7 +4565,7 @@ S2 may not infer a session/JWT/cookie API from the foundation probe. Those contr
 
 **Design coverage:** S1 creates every approved foundation table, the five-role split between table ownership, user commands, operations, the main runtime, and the identity-worker runtime, forced RLS, shared API primitives, transaction-pooler configuration, a separate worker root, tests, CI, and export guards. It routes no production traffic and migrates no user.
 
-**Security coverage:** Browser roles and both runtime logins have no table grants. The user and operational function owners are `NOLOGIN`/`NOINHERIT`/`NOBYPASSRLS` with table-specific ACLs; user-owned policies depend on a transaction-local immutable UUID. Main configuration fails closed if an Auth administration credential is injected. The worker skeleton cannot accept an identity or execute an Auth operation.
+**Security coverage:** Browser roles and both runtime logins have no table grants. Both runtime logins remain `PASSWORD NULL` throughout S1. The user and operational function owners are `NOLOGIN`/`NOINHERIT`/`NOBYPASSRLS` with table-specific ACLs; user-owned policies depend on a transaction-local immutable UUID. Main configuration fails closed if an Auth administration credential is injected. The worker skeleton cannot accept an identity or execute an Auth operation.
 
 **Concurrency/data coverage:** Composite owner foreign keys, owner-scoped request UUIDs, request hashes, one-credit-per-service uniqueness, webhook/deletion lease fields, fencing tokens, integer cents, archive consistency, and required indexes exist before command functions are added.
 

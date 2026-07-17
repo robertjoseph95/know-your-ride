@@ -17,6 +17,8 @@ This design preserves the verified-data product boundary:
 - Supabase never becomes the authority for oil, fluid, part, maintenance, recall, complaint, safety, MPG, or other public vehicle facts.
 - All verified static reference information remains free. Pro sells workflow capacity and convenience.
 
+**Recorded architecture amendment (2026-07-17).** This design deliberately amends D0's former "Redis + Stripe only" Tier-2 formula and supersedes the prior decision to preserve KYR's hand-rolled scrypt/Redis authentication while leaving Supabase and PostgreSQL out of scope. The amendment is limited to private commercial workflow data. Tier 1 remains static, zero-runtime, DoD-severable, and authoritative for verified vehicle facts.
+
 The current Supabase project `know-your-ride` was verified active and healthy in US West with PostgreSQL 17, an empty public schema, and no security-advisor findings. Its existing $25/month Pro plan is approved for this program; paid branches, extra projects, Point-in-Time Recovery, or other added spend require separate approval. No production configuration currently points to it.
 
 ## 2. Current problem
@@ -39,6 +41,8 @@ Supabase Auth and PostgreSQL are selected over a Redis V2 rebuild because KYR's 
 ## 3. Approved product rules
 
 The following decisions are binding.
+
+**Recorded product-policy amendment (2026-07-17).** The limits below deliberately replace the live Free 2 / Pro 5 garage caps and the live allowance of three Free service entries per vehicle. Free 1 / Pro 3 and three lifetime successful service-event credits per account are product and monetization decisions, not technical defaults inferred from the database migration. They take effect only at the separately approved product cutover, with the grandfathering, archive, and downgrade protections below.
 
 ### 3.1 Access and plans
 
@@ -126,6 +130,10 @@ Database functions use `SECURITY INVOKER` wherever granular grants and forced RL
 - have negative authorization and concurrency tests.
 
 Supabase secret/service credentials are project-wide and bypass RLS, so "narrow use" in code is not sufficient isolation. They live only in a separate minimal identity-admin worker deployment; ordinary KYR API functions do not receive those environment variables. The worker rejects every Supabase API origin except the exact approved KYR project origin before the credential can be used. It does not accept a caller-supplied user ID. It claims durable, server-created jobs from a restricted queue and is allowlisted to two Auth administration effects: revoke all sessions for a user and delete an Auth user after the purge gate. Signup, verification, login, refresh, recovery, JWT verification, and normal user-data operations do not use the secret/service credential. Deployment manifests and bundle/environment tests prove the credential is absent from the browser and ordinary API runtime.
+
+"Separate" means a distinct Vercel project, deployment root, and environment, not another route or function bundled into the main KYR project. Only that project may receive the Supabase Auth administration credential. Creating or configuring it remains a separately approved external action.
+
+Repository visibility does not define the secret boundary. Schema definitions, migration logic, role names, tests, CI workflows, and the Supabase project reference are non-secret architecture and must be safe if disclosed. Database passwords, Supabase secret/service credentials, Stripe secrets, Redis tokens, SMTP credentials, signing material, and migration/customer exports are secrets and must remain outside source control regardless of repository visibility.
 
 ### 4.4 Redis boundary
 
@@ -560,6 +568,8 @@ At minimum, test desktop and 390 x 844 mobile journeys:
 
 This is one architecture program delivered as independently gated blocks. Each block has its own implementation plan section, targeted commit, tests, preview, and explicit production approval.
 
+**Cross-program prerequisites.** S1 may not begin until roadmap Section 0 rows `IC-01` through `IC-05`, `OA-A2`, and `REPO-VIS-01` are `COMPLETE` with their required evidence linked. Work that satisfies both containment and A1 is reconciled once rather than reimplemented. Option A's mobile cutover and cleanup remain separately gated. Repository-visibility change, identity-worker project creation, remote schema application, and every deployment remain separate approval gates.
+
 ### S1 - Foundation
 
 - Add pinned dependencies and migration tooling.
@@ -570,6 +580,7 @@ This is one architecture program delivered as independently gated blocks. Each b
 ### S2 - Identity and sessions
 
 - Implement Supabase signup, verification, JWT/session validation, `app_sessions`, login, refresh, recovery, CSRF, canonical host, and private/no-store responses behind a feature flag.
+- Before either runtime connects, provision distinct high-entropy passwords for the main and identity-worker database roles through a separately approved, non-logging secret workflow; store each pooled URL only in its correct Vercel project; verify connection isolation; and define rotation, revocation, and rollback-to-`PASSWORD NULL` procedures.
 - Configure and test custom SMTP.
 - Prove forced legacy-session rejection in preview/internal testing.
 

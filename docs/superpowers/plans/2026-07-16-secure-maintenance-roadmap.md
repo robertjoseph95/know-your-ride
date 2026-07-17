@@ -1,6 +1,6 @@
 # Secure Maintenance and Supabase Migration Roadmap
 
-**Status:** Draft implementation roadmap; execution and every remote gate await explicit approval
+**Status:** Architecture and product rulings approved through 2026-07-17; execution and every remote gate await explicit approval
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development` (recommended) or `superpowers:executing-plans` to execute each approved block. Use `superpowers:test-driven-development` for implementation tasks and `superpowers:verification-before-completion` before any completion claim. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -20,8 +20,36 @@
 - Private workflow data is UID-owned, same-origin API mediated, default-deny, transactionally consistent, and never browser-authoritative.
 - Free/Pro limits, lifetime credits, grandfathering, archive behavior, 30-day deletion recovery, and the data/workflow paywall boundary remain exactly as approved below.
 - Every block starts with a failing contract, keeps existing shipped-artifact checks additive, stages exact paths only, and pauses before unapproved remote or destructive action.
+- This roadmap deliberately amends the former Redis-and-Stripe-only Tier-2 doctrine and the later decision to preserve scrypt/Redis authentication; it does not amend Tier 1.
+- Free 1 / Pro 3 and three lifetime Free service credits replace the live Free 2 / Pro 5 and three-per-vehicle behavior only at the separately approved product cutover.
+- S1 follows live-verified audit containment and the Option A applicability gate (A1 containment plus A2 shared projection); it is not a parallel implementation lane. Option A mobile cutover and cleanup remain separately gated.
+- Before S1 begins, repository visibility must be verified private. Changing visibility is a separately approved external action and is not authorized by this roadmap.
 
 ---
+
+## 0. Cross-program prerequisite and audit register
+
+These statuses describe the reconciled state on 2026-07-17. S1 Gate 0 requires every prerequisite row below to show `COMPLETE` with its exact evidence linked in this table. Updating a status records completed evidence; it does not authorize the underlying edit, deployment, repository change, or provider action.
+
+| ID | Prerequisite | Status | Required completion evidence |
+|---|---|---|---|
+| `IC-01` | Quarantine the CR-V cross-configuration values across blob, homepage sample, and guide input; replace the sample with an applicability-safe vehicle. | OPEN | Targeted commit, applicability fixtures, artifact delta, approved preview, and live version/blob verification. |
+| `IC-02` | Replace substring source acceptance with the exact-token source registry and default-deny unknown tokens. | OPEN | Negative fixtures for near-match/substring sources, full shipped verifier PASS, targeted commit, and live verifier evidence. |
+| `IC-03` | Complete the ruled vehicle-SEO containment so no configuration-specific value can bypass the shared gate. | OPEN | Generator contract, representative page proofs, sitemap/noindex evidence, targeted commit, and live crawl verification if deployed. |
+| `IC-04` | Remove the Army demo's wrong M939 manual attribution and encumbered/false SAE-SPN table. | OPEN | Source-cited recon, candidate hash/diff, reviewer-approved preview, deploy approval, and live demo hash. |
+| `IC-05` | Fix Army/AF dispatch-gate fail-open/NO-GO behavior and align readiness labels with the ruled DAFI terminology. | OPEN | Safety-control tests, candidate hashes, mobile/desktop preview, explicit deploy approval, and live demo hashes. |
+| `OA-A2` | Prove the Option A shared projection enforces exact source plus configuration applicability and produces equivalent/narrower artifacts. | OPEN | Approved A2 plan, semantic/negative fixtures, side-by-side artifact report, targeted commit, and reviewer ruling on every omission; no frontend cutover is implied. |
+| `REPO-VIS-01` | Make the GitHub repository private through a separately approved external action. | OPEN | Read-only `gh repo view robertjoseph95/know-your-ride --json visibility --jq '.visibility'` output exactly `PRIVATE`. |
+
+The following findings are recorded but are not S1 implementation tasks. They remain open unless a security incident requires earlier reprioritization.
+
+| ID | Separate audit follow-up | Status | Required next artifact |
+|---|---|---|---|
+| `OPS-SENTRY-01` | Correct Vercel `SENTRY_DNS` to the code's `SENTRY_DSN` and verify a controlled event. | OPEN | Scoped environment-change/preview plan with a separate production gate. |
+| `SEC-SW-01` | Prevent service-worker cache keys from retaining Stripe `session_id` query values. | OPEN | Failing cache test, normalization/exclusion plan, and Cache Storage proof. |
+| `SEO-DTC-01` | Reconcile 662 misleading DTC pages and remove 162 stale outputs. | OPEN | Generator cleanup and body/metadata-parity plan with crawl fixtures. |
+| `LEGAL-01` | Resolve the root project-license signal, third-party notices, and README/legal claim drift. | OPEN | Counsel-reviewed licensing/copy ruling before any public legal text changes. |
+| `REPO-GH-01` | Add appropriate `main` protection and enable vulnerability/Dependabot alerts while preserving secret scanning and push protection. | OPEN | Separately approved GitHub-settings plan and read-back verification. |
 
 ## 1. Binding product rules
 
@@ -72,7 +100,13 @@ Database source of truth
 
 The canonical frontend source remains `wrench_demo.html`; `wrench_deploy/index.html` is derived and must never be the only edited copy.
 
+The identity-admin worker must be a separate Vercel project with an isolated environment. Co-deployment with the main API project is forbidden.
+
+Private repository visibility is defense in depth only. Migrations, schema/role definitions, tests, CI, and project references are non-secret architecture. No credential, password, token, signing key, webhook secret, or customer/export payload may be committed.
+
 ## 4. Block sequence
+
+**Entry gate for this roadmap:** Section 0 rows `IC-01` through `IC-05`, `OA-A2`, and `REPO-VIS-01` are `COMPLETE` with their required evidence linked. Overlapping containment/A1 work is recorded once rather than reimplemented. If any condition is false, stop before S1 Task 1. Planning may overlap, but implementation may not.
 
 ### S1 - Foundation
 
@@ -106,6 +140,7 @@ Write the exact S2 plan only after S1 fixes the schema names, package imports, r
 Outputs:
 
 - [ ] Supabase signup, confirmation, resend, login, refresh, recovery, and logout are implemented behind a disabled feature flag.
+- [ ] Distinct high-entropy database-role passwords are provisioned through a separately approved non-logging workflow, scoped to the correct Vercel project, tested for isolation, and covered by rotation, revocation, and rollback-to-`PASSWORD NULL` procedures.
 - [ ] Production uses asymmetric JWT signing; the API validates algorithm, signature, issuer, audience, expiry, project, subject, role, and session ID against JWKS.
 - [ ] Tokens live only in `Secure`, `HttpOnly`, `SameSite=Lax`, host-only `__Host-` cookies.
 - [ ] Every private request checks the local `app_sessions` row so revocation is immediate.
@@ -215,6 +250,8 @@ Stop the active block and report evidence if any of these occurs:
 - Existing `_verify_shipped.py` checks are removed, weakened, or made non-additive.
 - A command would stage broadly (`git add -A`, `git add .`, or `git commit -a`).
 - A task requires an unapproved paid Supabase branch/project, production deployment, provider cancellation, or destructive data operation.
+
+Section 0 records the Sentry environment-name correction, service-worker `session_id` cache-key fix, DTC SEO cleanup, root license/README reconciliation, and remaining GitHub protection/dependency-alert work. They are not smuggled into S1; each requires its own scoped plan and state-change gate.
 
 ## 6. Verification ladder for every block
 
