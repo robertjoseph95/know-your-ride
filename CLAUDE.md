@@ -24,7 +24,7 @@ served by Vercel) plus the spec-verification campaign workspace (local-only file
 
 ## Two-tier doctrine (D0, 2026-07-02)
 - **Tier 1 — the verified-data core** (static HTML + data blob): stays static-over-SQLite with ZERO runtime dependency; never add a runtime service to it.
-- **Tier 2 — the Pro layer** (`wrench_deploy/api/`): a commercial shell. Runtime deps allowed but must stay DECOUPLED and PORTABLE — plain serverless functions + Redis + Stripe only; **no Vercel-proprietary services** (KV/Blob/Edge-middleware).
+- **Tier 2 — the commercial workflow layer** (`wrench_deploy/api/`): **D0 amended 2026-07-17.** The former "Redis + Stripe only" restriction and the later decision to preserve hand-rolled scrypt/Redis authentication are superseded for Tier 2. The approved boundary is plain Vercel Python functions, Supabase Auth/PostgreSQL, Stripe, and optional narrowly scoped Redis for caching, throttling, AI budgets, and purge suppression. This is deliberate Supabase coupling for private workflow data; it does not extend to Tier 1 or make Supabase authoritative for vehicle facts. The Supabase Auth administration credential may exist only in a separate identity-admin Vercel project and never in the main API project, browser, repository, or logs. No Vercel-proprietary database, KV, Blob, queue, or Edge-only dependency is authorized without a later ruling.
 
 ## Repo map
 - `wrench_vehicles.db` (repo root) = **the canonical DB**. ⚠ `files/wrench_vehicles.db` is a stale partial copy with no curated tables — never read or write it.
@@ -49,10 +49,12 @@ served by Vercel) plus the spec-verification campaign workspace (local-only file
 ## Workflow discipline
 - Slices are **PAUSE-gated**: inventory → source recon **PAUSE** → engine map **PAUSE** → reads **PAUSE (present log)** → write/deploy **only on explicit user go**.
 - **Echo ≠ approval**: if the user pastes back a preview without a new instruction, HOLD and ask.
+- **Cross-program order (2026-07-17):** complete and live-verify urgent audit containment, then prove the Option A applicability gate (A1 containment plus A2 shared projection) before Supabase S1 begins. Option A's mobile cutover and cleanup remain separately gated; they are not folded into S1. Implementation lanes are sequential even when planning overlaps, and completion of one block never authorizes the next.
 
 ## Git — CRITICAL
 - **NEVER `git add -A` / `git add .`** — the working tree holds many untracked local-only files; use targeted `git add <path>` so only intended files are committed. A pre-commit guard also blocks whole-tree adds and enforces this.
 - Always: targeted `git add <path>` → `git show --stat HEAD` to verify contents → push.
+- **Tier-2 visibility gate:** before any Supabase/Tier-2 implementation begins, verify that the GitHub repository is private. Changing visibility is a separate external action requiring explicit approval immediately before execution; approval of a design or plan does not authorize it. Private visibility is defense in depth, not secret storage: credentials, passwords, tokens, signing keys, webhook secrets, and customer exports never enter git.
 - This root `CLAUDE.md` is committed (shared project context). Machine-local or sensitive operational notes belong in `CLAUDE.local.md` (gitignored). The scoped `wrench_deploy/CLAUDE.md` and `files/CLAUDE.md` remain untracked.
 
 ## Environment
