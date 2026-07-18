@@ -32,6 +32,8 @@ import glob
 import shutil
 import datetime
 
+from ic01_quarantine import projection_problems
+
 HERE     = os.path.dirname(os.path.abspath(__file__))
 ROOT     = os.path.dirname(HERE)                       # "Wrench App Data"
 DB_PATH  = os.path.join(ROOT, "wrench_vehicles.db")
@@ -86,6 +88,52 @@ def _assert_gate_sources(cur):
             sl = (s or "").strip().lower()
             if ("ai-" in sl or "haiku" in sl or sl == "scraped" or "classifier" in sl) and _ver(s) == 1:
                 raise SystemExit(f"INTEGRITY GATE: blacklisted source computes ver=1 in {t}: {s!r}")
+
+
+def _assert_ic01_projection(vlist):
+    """Fail the normal build if any quarantined CR-V value reaches the blob."""
+    problems = projection_problems(vlist)
+    if problems:
+        raise SystemExit("IC-01 PAYLOAD GUARD: " + "; ".join(problems))
+
+
+def _refresh_verified_count_copy(html, verified):
+    """Refresh count-bearing claims without replacing unrelated numeric literals."""
+    value = str(verified)
+    def required_sub(label, pattern, replacement, expected):
+        nonlocal html
+        html, count = re.subn(pattern, replacement, html)
+        if count != expected:
+            raise RuntimeError(
+                "verified-count surface %s matched %d time(s); expected %d"
+                % (label, count, expected)
+            )
+
+    required_sub(
+        "description/OG/H1",
+        r"(vehicles searchable[;,]\s*)\d+(\s+with owner's-manual-verified specifications)",
+        lambda m: m.group(1) + value + m.group(2),
+        3,
+    )
+    required_sub(
+        "hero badge",
+        r">\d+ Owner's-Manual-Verified<",
+        ">" + value + " Owner's-Manual-Verified<",
+        1,
+    )
+    required_sub(
+        "About statistic",
+        r'(<div class="astat-n">)\d+(</div><div class="astat-l">Verified Specs</div>)',
+        lambda m: m.group(1) + value + m.group(2),
+        1,
+    )
+    required_sub(
+        "Pro coverage",
+        r"(Owner's-manual-verified maintenance schedules &mdash; )\d+( vehicles and growing)",
+        lambda m: m.group(1) + value + m.group(2),
+        1,
+    )
+    return html
 
 
 # ── NHTSA component vocabulary + fail-closed parser (Deploy B, 2026-07-14) ─────────────
@@ -1766,6 +1814,8 @@ def main():
           "torque_rows={torque_rows} maint_rows={maint_rows} maint_parts={maint_parts} dropped; "
           "ver0_shells={ver0_shells} (engines + any other ver:0 object)".format(**strip))
 
+    _assert_ic01_projection(vlist)
+
     # P1-1 (2026-07-11) build guard: verify the generic ver:0 invariant held -- no object may
     # ship ver:0 alongside value-bearing keys. Category-agnostic defense-in-depth; fails the
     # build before any file is written if a future gated table reintroduces the engine leak.
@@ -1860,8 +1910,15 @@ def main():
 #    with complaint data (not projected variant ids). "WITH CONSUMER REPORTS" per S5.3.)
     verified = sum(1 for v in vlist if isinstance(v.get("oil"), dict) and v["oil"].get("ver") == 1)
     ymm_with_comps = len({(v.get("year"), v.get("make"), v.get("model")) for v in vlist if v.get("comps_agg")})
+    html = _refresh_verified_count_copy(html, verified)
     badge = f"{len(vlist)} SEARCHABLE · {verified} OWNER'S-MANUAL-VERIFIED · {len(dtc)} DTC CODES · {ymm_with_comps} WITH CONSUMER REPORTS"
-    html = re.sub(r'(<div class="db-badge">)[^<]*(</div>)', lambda m: m.group(1) + badge + m.group(2), html, count=1)
+    html, badge_count = re.subn(
+        r'(<div class="db-badge">)[^<]*(</div>)',
+        lambda m: m.group(1) + badge + m.group(2),
+        html,
+        count=1,
+    )
+    assert badge_count == 1, "database badge count surface missing or duplicated"
     html = ascii_polish(html)   # truly last: guarantee pure ASCII outside data (badge included)
 
     with open(OUT_FILE, "wb") as f:

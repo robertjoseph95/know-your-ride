@@ -1,6 +1,6 @@
 # Know Your Ride
 
-**Your pocket owner's manual.** A free vehicle-maintenance reference: oil specs, torque values, parts, fluids, recalls, NHTSA consumer-report aggregates, and step-by-step repair guides. 3,667 vehicles searchable; 290 with owner's-manual-verified specifications.
+**Your pocket owner's manual.** A free vehicle-maintenance reference: oil specs, torque values, parts, fluids, recalls, NHTSA consumer-report aggregates, and step-by-step repair guides. 3,667 vehicles searchable; 285 with owner's-manual-verified specifications.
 
 🔧 Live: **[knowyourride.net](https://knowyourride.net)**
 
@@ -10,7 +10,7 @@
 
 Know Your Ride is a maintenance-reference web app backed by a curated SQLite database of vehicle specifications. Pick your car from the garage and get the owner's-manual-verified figures a home mechanic needs — no ad-walls, no PDF hunting.
 
-Coverage: **290 vehicles with owner's-manual-verified specifications** (and growing), inside a searchable fleet of **3,667 vehicles (1981–2026)** carrying identification, recalls, and NHTSA safety data, plus **12,196 OBD-II diagnostic trouble codes**.
+Coverage: **285 vehicles with owner's-manual-verified specifications** (and growing), inside a searchable fleet of **3,667 vehicles (1981–2026)** carrying identification, recalls, and NHTSA safety data, plus **12,196 OBD-II diagnostic trouble codes**.
 
 ## Features
 

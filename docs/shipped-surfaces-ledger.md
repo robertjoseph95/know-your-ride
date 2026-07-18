@@ -68,11 +68,11 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
   and this entry is rewritten.)*
 
 ## S3. Homepage sample card — `#kyr-sample` in `index.html` / `wrench_demo.html` (+ `kyrHsDefaultPlacard`)
-- **Ships:** one hard-coded hero card + a JS placard, both featuring vehicle id **12912**
-  (2022 Honda CR-V, owner's-manual-verified).
+- **Ships:** one hard-coded hero card + a JS placard, both pinned to vehicle id **467**
+  (2020 Nissan Sentra, exact-year owner's-manual-verified).
 - **Generator:** hand-maintained in canonical `wrench_demo.html`; `_deploy_sync_specs.py`
   propagates to `index.html`.
-- **Current guards:** none (fixed by P0-3, unprotected since).
+- **Current guards:** `S3.1`–`S3.3` plus the stricter IC-01 sample pin (`S9.3`).
 - **Invariants:**
   1. [CI][FAIL] The static card and `kyrHsDefaultPlacard` reference the same vehicle id, and
      that id's blob record has `oil.ver == 1` (and `parts.ver == 1`).
@@ -80,9 +80,11 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
      in that vehicle's `ver:1` blob record — no value drift, no fabrication. *(P0-3)*
   3. [CI][FAIL] The old fabricated strings (`0W-20 Full Synthetic`, `14mm &middot; M12x1.25`,
      `openModal(12802)`) are absent.
+  4. [CI][FAIL] Card and placard are exactly id 467; the placard function contains exactly
+     one `VEH[467]` reference and no `||` / `DB.v` fallback.
 
 ## S4. Paid-guide input — `wrench_deploy/api/specs.json` (+ `guide.py` consumption)
-- **Ships:** 290 owner's-manual-verified vehicle records `{label, oil, parts, torque}` +
+- **Ships:** 285 owner's-manual-verified vehicle records `{label, oil, parts, torque}` +
   `_meta` provenance header, bundled into the Pro guide function.
 - **Generator:** `_gen_guide_specs.py` (deterministic; verified rows only).
 - **Current guards:** commit-time `_deploy_check.py` marker check (staged specs.json must
@@ -97,6 +99,7 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
   3. [CI][WARN] File size < 500 KB (the fabricated legacy file was 1.0 MB).
   4. [DB][FAIL] Regeneration equivalence: running `_gen_guide_specs.py` against the canonical
      DB reproduces the committed file byte-for-byte (determinism makes this exact).
+  5. [CI][FAIL] IC-01 ids 12372, 12511, 12777, 12847, and 12912 are absent.
 
 ## S5. Common Customer Complaints — `comps_agg` in the blob + Safety-tab card
 - **Ships:** per-vehicle `{n, topics[[label,count]…≤6], crash, fire, inj, deaths, through?}` —
@@ -234,3 +237,29 @@ source, no frequency framing, and a DB-honest count.
    in both (sample card, footer, disclaimers, empty state) — the two-file drift class.
 3. [DB][WARN] Count reconciliation: blob `ver:1` vehicle counts == DB verified counts ==
    `specs.json` `record_count`.
+
+## S9. IC-01 exact-configuration applicability quarantine
+- **Ships:** in the canonical blob/demo, homepage, and guide projection, all five Honda CR-V
+  identities retain their independent EPA/NHTSA data while the cross-configuration
+  maintenance/specification values are quarantined. Vehicle SEO pages remain a separate
+  **IC-03** containment surface and are explicitly outside this contract.
+- **Generator:** `_write_crv_5thgen_pilot.py` applies exact source token
+  `quarantine-applicability-ic01`; `files/04_rebuild_demo.py` applies the ordinary `ver:0`
+  strip and an IC-01-specific build guard; `_gen_guide_specs.py` excludes the rows naturally.
+- **Invariants:**
+  1. [CI][FAIL] IDs 12372, 12511, 12777, 12847, and 12912 each ship exactly once with
+     their exact identity and non-empty EPA MPG / NHTSA recall, safety, and complaint
+     projections; `oil == parts == fluids == {"ver":0}` and no `torque`, `maint`, or
+     `maint_parts`.
+  2. [CI][FAIL] All five ids are absent from the paid-guide projection.
+  3. [CI][FAIL] Homepage sample is pinned to exact-year verified Sentra id 467 with no fallback;
+     its displayed viscosity, capacity, and recall count must all match and be present in the blob.
+  4. [CI][FAIL] All seven count-bearing claims in both HTML surfaces and both README claims
+     equal the blob-derived `oil.ver == 1` count; unrelated numbers such as SVG coordinates are
+     outside this semantic check.
+  5. [CI][FAIL] The inline canonical-demo JSON is byte-identical to the deploy blob JSON.
+  6. [DB][FAIL] Every affected row carries the exact token, with table counts 5/5/5/5/15;
+     no accepted-source concatenation, whitespace variant, missing id, or reserved-token use
+     in any other source-bearing database table.
+  7. [CI][FAIL] At phone width, the primary navigation is contained in its own horizontal
+     scroll rail; it cannot widen the document beyond the viewport.

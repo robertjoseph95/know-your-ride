@@ -7,8 +7,8 @@ AI snapshot with NO provenance (1,669 records), feeding fabricated / DB-contradi
 paying Pro users as "use these EXACT values". This generator emits ONLY ver==1 (OM-cited)
 values -- the SAME gate the Tier-1 blob uses (files/04_rebuild_demo.py). Any field that is not
 owner's-manual-verified is OMITTED, so guide.py's build_specs() renders nothing for it and the
-model hedges to "check your factory service manual" (GUIDE_SYSTEM). The result covers ~290
-verified vehicles instead of 1,669 fabricated ones -- fewer, but every value is OM-true.
+model hedges to "check your factory service manual" (GUIDE_SYSTEM). The result covers the
+current verified cohort instead of 1,669 fabricated records -- fewer, but every value is OM-true.
 
 Deterministic: explicit ORDER BY on every query, sort_keys serialization, no timestamps in the
 data. Run twice -> byte-identical. Regenerate after verification changes; DO NOT hand-edit
