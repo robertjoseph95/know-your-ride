@@ -218,8 +218,8 @@ class handler(BaseHTTPRequestHandler):
             return self._send(500, {"guide": None, "error": "server not configured (ANTHROPIC_API_KEY)"})
         v = _specs().get(str(vid))
         if not v or not v.get("label"):   # also skips the top-level _meta provenance key
-            # P0-2 Option C: specs.json now carries ONLY owner's-manual-verified vehicles
-            # (~290), so any other id -- including real but unverified vehicles -- gets an
+            # P0-2 Option C: specs.json now carries ONLY the current owner's-manual-verified
+            # cohort, so any other id -- including real but unverified vehicles -- gets an
             # honest "not verified yet" response instead of a fabricated guide or a bare 404.
             # This branch returns BEFORE the cache path: unverified responses are never cached.
             return self._send(200, {"guide": None, "unverified": True, "label": None,

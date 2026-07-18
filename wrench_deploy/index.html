@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-07-15-ga-hostguard">
+<meta name="kyr-version" content="2026-07-18-crv-applicability-quarantine">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -228,7 +228,7 @@ body{background:var(--bg)}
 
   /* 1. Reduce flat padding - 28px eats too much on 360px phones */
   .topbar { padding: 0 16px; }
-  .tabs   { padding: 0 16px; }
+  .tabs   { padding: 0 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .pane   { padding: 16px; }
 
   /* 2. Vehicle grid - 310px min causes overflow on small phones */
@@ -331,10 +331,10 @@ body{background:var(--bg)}
 .gh-cache{font-size:9px;color:var(--faint);margin-top:6px;font-style:italic}
 </style>
 <!--KYR_META-->
-<meta name="description" content="Free vehicle maintenance reference. 3,667 vehicles searchable; 290 with owner's-manual-verified specifications. Oil specs, drain plug sizes, DTC code lookup, recalls and more.">
+<meta name="description" content="Free vehicle maintenance reference. 3,667 vehicles searchable; 285 with owner's-manual-verified specifications. Oil specs, drain plug sizes, DTC code lookup, recalls and more.">
 <link rel="canonical" href="https://knowyourride.net/">
 <meta property="og:title" content="Know Your Ride - Vehicle Maintenance Reference">
-<meta property="og:description" content="Free vehicle maintenance reference. 3,667 vehicles searchable; 290 with owner's-manual-verified specifications. Oil specs, drain plug sizes, DTC code lookup, recalls and more.">
+<meta property="og:description" content="Free vehicle maintenance reference. 3,667 vehicles searchable; 285 with owner's-manual-verified specifications. Oil specs, drain plug sizes, DTC code lookup, recalls and more.">
 <meta property="og:url" content="https://knowyourride.net/">
 <meta property="og:type" content="website">
 <style>
@@ -506,7 +506,7 @@ body{background:var(--bg)}
   }catch(e){}
 })();
 </script>
-<!-- Google tag (gtag.js) — hostname-gated -->
+<!-- Google tag (gtag.js) - hostname-gated -->
 <script>/*WRENCH_GA_HOSTGUARD*/
 /* GA hostname isolation (2026-07-15): this snippet is shared canonical code, so it used
    to fire on EVERY host that served the file -- Vercel previews and localhost included
@@ -595,13 +595,13 @@ body{background:var(--bg)}
 <body>
 
 <a class="skip-link" href="#main-content">Skip to main content</a>
-<h1 class="sr-only">Know Your Ride &mdash; free vehicle maintenance reference: 3,667 vehicles searchable, 290 with owner's-manual-verified specifications</h1>
+<h1 class="sr-only">Know Your Ride &mdash; free vehicle maintenance reference: 3,667 vehicles searchable, 285 with owner's-manual-verified specifications</h1>
 <div class="topbar">
   <div>
     <div class="brand-lockup"><svg class="brand-ico" viewBox="0 0 512 512" role="img" aria-label="Know Your Ride"><rect width="512" height="512" rx="96" fill="#09090b"/><g transform="rotate(-20 330 140)"><rect x="316" y="80" width="46" height="190" rx="23" fill="#fdba74"/><rect x="290" y="36" width="100" height="100" rx="28" fill="#fdba74"/><rect x="324" y="28" width="32" height="66" rx="14" fill="#09090b"/></g><rect x="134" y="172" width="268" height="290" rx="18" fill="#f5e6d3"/><rect x="116" y="156" width="268" height="290" rx="22" fill="#f97316"/><rect x="116" y="156" width="32" height="290" rx="16" fill="#c2560a"/><text x="274" y="330" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="76" fill="#fff7ed">P0420</text></svg><div class="brand">KNOW YOUR RIDE<em>.</em></div></div>
     <div class="tagline">Your pocket owner's manual</div>
   </div>
-  <div class="db-badge">3667 SEARCHABLE - 290 OWNER'S-MANUAL-VERIFIED - 12196 DTC CODES - 1038 WITH CONSUMER REPORTS</div>
+  <div class="db-badge">3667 SEARCHABLE - 285 OWNER'S-MANUAL-VERIFIED - 12196 DTC CODES - 1038 WITH CONSUMER REPORTS</div>
 </div>
 
 <div id="kyr-relink" style="display:none;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;background:rgba(255,107,0,0.1);border:1px solid var(--accent);padding:10px 20px;font-size:13px;line-height:1.4"><span id="kyr-relink-msg">Re-link your Pro account to restore full access &mdash; enter your email below</span><input type="email" id="kyr-relink-email" placeholder="you@example.com" autocomplete="email" spellcheck="false" style="padding:6px 10px;border:1px solid var(--accent);border-radius:4px;background:#fff;color:#111;font-size:13px;min-width:180px"><button type="button" id="kyr-relink-btn" onclick="kyrRelinkSubmit()" style="padding:6px 14px;border:none;border-radius:4px;background:var(--accent);color:#fff;font-weight:700;font-size:12px;letter-spacing:.04em;cursor:pointer">RE-LINK PRO</button><button type="button" id="kyr-relink-x" onclick="kyrRelinkDismiss()" aria-label="Dismiss" style="background:none;border:none;color:var(--accent);font-size:18px;line-height:1;cursor:pointer;padding:0 4px">&times;</button></div>
@@ -614,7 +614,7 @@ body{background:var(--bg)}
 </div>
 
 <div class="pane active" id="pane-garage">
-  <div id="kyr-hero" style="max-height:160px;overflow:hidden;text-align:center;padding:18px 16px 6px"><div style="font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:36px;letter-spacing:.04em;line-height:1.05;color:var(--text)">KNOW YOUR RIDE</div><div style="font-family:'Manrope',sans-serif;font-size:14px;color:var(--dim);max-width:580px;margin:7px auto 0;line-height:1.5">Owner's-manual-verified specs &mdash; oil type, drain plug size, maintenance schedules, and recall alerts.</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);background:var(--p2);border:1px solid var(--border);padding:5px 12px;border-radius:4px">290 Owner's-Manual-Verified</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);background:var(--p2);border:1px solid var(--border);padding:5px 12px;border-radius:4px">3,667 Searchable</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);background:var(--p2);border:1px solid var(--border);padding:5px 12px;border-radius:4px">49 Makes</span></div></div>
+  <div id="kyr-hero" style="max-height:160px;overflow:hidden;text-align:center;padding:18px 16px 6px"><div style="font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:36px;letter-spacing:.04em;line-height:1.05;color:var(--text)">KNOW YOUR RIDE</div><div style="font-family:'Manrope',sans-serif;font-size:14px;color:var(--dim);max-width:580px;margin:7px auto 0;line-height:1.5">Owner's-manual-verified specs &mdash; oil type, drain plug size, maintenance schedules, and recall alerts.</div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px"><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);background:var(--p2);border:1px solid var(--border);padding:5px 12px;border-radius:4px">285 Owner's-Manual-Verified</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);background:var(--p2);border:1px solid var(--border);padding:5px 12px;border-radius:4px">3,667 Searchable</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);background:var(--p2);border:1px solid var(--border);padding:5px 12px;border-radius:4px">49 Makes</span></div></div>
   <style>/*WRENCH_HEROSEARCH_v21f*/
 .kyr-hs{width:100%;padding:6px 16px 22px;text-align:center}
 .kyr-hs-inner{max-width:840px;margin:0 auto}
@@ -703,7 +703,7 @@ body{background:var(--bg)}
     </select>
     <div class="g-count" id="g-count">- VEHICLES</div>
   </div>
-  <div id="kyr-sample" style="max-width:880px;margin:0 0 16px;background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:13px 16px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px"><div style="font-weight:700;font-size:15px;color:var(--text)">2022 Honda CR-V</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);background:var(--p2,#1c1c1c);border:1px solid var(--border);padding:3px 9px;border-radius:100px">Verified</div></div><div style="display:flex;gap:12px;margin-bottom:13px"><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#128738; 0W-20</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Oil Viscosity</div></div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#128167; 3.7 / 4.7 qt</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Oil Capacity</div></div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#9888;&#65039; 2 Open Recalls</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Recall Status</div></div></div><button onclick="openModal(12912)" style="width:100%;background:var(--accent);color:#000;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:13px;cursor:pointer">See Full Specs for This Car &#8594;</button></div>
+  <div id="kyr-sample" style="max-width:880px;margin:0 0 16px;background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:13px 16px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px"><div style="font-weight:700;font-size:15px;color:var(--text)">2020 Nissan Sentra</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);background:var(--p2,#1c1c1c);border:1px solid var(--border);padding:3px 9px;border-radius:100px">Verified</div></div><div style="display:flex;gap:12px;margin-bottom:13px"><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#128738; 0W-20</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Oil Viscosity</div></div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#128167; 4.4 qt</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Oil Capacity</div></div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#9888;&#65039; 4 Open Recalls</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Recall Status</div></div></div><button onclick="openModal(467)" style="width:100%;background:var(--accent);color:#000;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:13px;cursor:pointer">See Full Specs for This Car &#8594;</button></div>
   <div class="vgrid" id="vgrid"></div>
 </div>
 
@@ -749,7 +749,7 @@ body{background:var(--bg)}
     <p class="about-sub">Owner's-manual-verified maintenance schedules, step-by-step repair guides, and DTC code lookups &mdash; all in one app.</p>
   </div>
   <div class="stats-row">
-    <div class="astat"><div class="astat-n">290</div><div class="astat-l">Verified Specs</div></div>
+    <div class="astat"><div class="astat-n">285</div><div class="astat-l">Verified Specs</div></div>
     <div class="astat"><div class="astat-n">3,667</div><div class="astat-l">Searchable</div></div>
     <div class="astat"><div class="astat-n">49</div><div class="astat-l">Makes</div></div>
     <div class="astat"><div class="astat-n">12,196</div><div class="astat-l">DTC Codes</div></div>
@@ -812,7 +812,7 @@ body{background:var(--bg)}
   </div>
 </div>
 
-<script src="/data.d413c744.js"></script>
+<script src="/data.7f38cd28.js"></script>
 <script>
 
 const DB=__D__;
@@ -1289,7 +1289,7 @@ function renderPlacard(v){
     +'</div></div>';
 }
 function kyrPlSlot(){var s=document.getElementById('kyr-sample');if(s)s.style.cssText='max-width:560px;margin:0 0 16px;display:block';return s;}
-function kyrHsDefaultPlacard(){var s=kyrPlSlot();if(!s)return;var v=VEH[12912]||VEH[12802]||DB.v[0];if(v)s.innerHTML=renderPlacard(v);}
+function kyrHsDefaultPlacard(){var s=kyrPlSlot();if(!s)return;var v=VEH[467];if(v)s.innerHTML=renderPlacard(v);}
 function kyrHsShowTrims(mk,md,yr){
   var s=document.getElementById('g-search');if(s){s.value=yr+' '+mk+' '+md;if(typeof gSearchInput==='function')gSearchInput();else renderGarage();}
   var sg=document.getElementById('g-suggest');if(sg)sg.classList.remove('open');
@@ -1694,7 +1694,7 @@ document.addEventListener('DOMContentLoaded',function(){
           <li>AI repair guides (step-by-step)</li>
           <li>DIY YouTube videos</li>
           <li>Know Your Part photo scanning</li>
-          <li>Owner's-manual-verified maintenance schedules &mdash; 290 vehicles and growing</li>
+          <li>Owner's-manual-verified maintenance schedules &mdash; 285 vehicles and growing</li>
         </ul>
         <div class="pp-btns">
           <a class="pp-btn annual" href="/api/subscribe?plan=annual"><span class="pp-badge">Most Popular - Save 33%</span>Annual - $23.99/year</a>

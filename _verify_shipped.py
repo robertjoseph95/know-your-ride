@@ -18,6 +18,15 @@ import os
 import re
 import sys
 
+from files.ic01_quarantine import (
+    EXPECTED_DB_ROWS,
+    EXPECTED_HOMEPAGE_SAMPLE,
+    HOMEPAGE_SAMPLE_ID,
+    QUARANTINED_VEHICLE_IDS,
+    QUARANTINE_SOURCE,
+    projection_problems,
+)
+
 # ---------------------------------------------------------------- artifact load
 
 class Artifacts(object):
@@ -27,6 +36,16 @@ class Artifacts(object):
         self.demo_path = os.path.join(root, "wrench_demo.html")
         self.index = self._read(self.index_path)
         self.demo = self._read(self.demo_path)
+        self.demo_json_raw = ""
+        self.demo_D = None
+        data_start = self.demo.find("const __D__=")
+        data_end = self.demo.find(";\n</script>", data_start)
+        if data_start >= 0 and data_end > data_start:
+            self.demo_json_raw = self.demo[data_start + len("const __D__="):data_end]
+            try:
+                self.demo_D = json.loads(self.demo_json_raw)
+            except Exception:
+                self.demo_D = None
         # demo markup = demo minus the inline __D__ data line (checks on framing/markers
         # must not match complaint/recall PROSE inside the data).
         self.demo_markup = re.sub(r"const __D__=\{.*?\};\n", "DATA;\n", self.demo, flags=re.S)
@@ -34,12 +53,14 @@ class Artifacts(object):
         self.blob_paths = blobs
         self.blob_path = blobs[0] if len(blobs) == 1 else None
         self.blob_raw = self._read(self.blob_path) if self.blob_path else ""
+        self.blob_json_raw = ""
         self.D = None
         if self.blob_raw:
             m = re.search(r"__D__\s*=\s*(\{.*\})\s*;?\s*$", self.blob_raw, re.S)
             if m:
+                self.blob_json_raw = m.group(1)
                 try:
-                    self.D = json.loads(m.group(1))
+                    self.D = json.loads(self.blob_json_raw)
                 except Exception:
                     self.D = None
         sp = os.path.join(root, "wrench_deploy", "api", "specs.json")
@@ -50,6 +71,7 @@ class Artifacts(object):
             self.specs = None
         self.sitemap = self._read(os.path.join(root, "wrench_deploy", "sitemap.xml"))
         self.robots = self._read(os.path.join(root, "wrench_deploy", "robots.txt"))
+        self.readme = self._read(os.path.join(root, "README.md"))
         self.veh_pages = sorted(glob.glob(os.path.join(root, "wrench_deploy", "vehicles", "*", "index.html")))
         self.dtc_pages = sorted(glob.glob(os.path.join(root, "wrench_deploy", "dtc", "*", "index.html")))
 
@@ -533,6 +555,139 @@ def s8_2_two_file_drift(a):
             out.append("marker %r: index=%d demo=%d (two-file drift)" % (mk, ni, nd))
     return out
 
+
+# IC-01 (2026-07-18): source verification and exact-configuration applicability are
+# independent gates.  These checks quarantine five cross-configuration CR-V rows on
+# every shipped surface while preserving identity and government data.
+
+def s9_1_ic01_projection(a):
+    return projection_problems(a.D["v"])
+
+
+def s9_2_ic01_guide_absent(a):
+    if not isinstance(a.specs, dict):
+        return ["specs.json missing or unparseable"]
+    present = sorted(
+        vehicle_id for vehicle_id in QUARANTINED_VEHICLE_IDS
+        if str(vehicle_id) in a.specs
+    )
+    return ["quarantined CR-V id(s) still present in specs.json: %s" % present] if present else []
+
+
+def s9_3_ic01_sample_pin(a):
+    out = []
+    sample = next((v for v in a.D["v"] if v.get("id") == HOMEPAGE_SAMPLE_ID), None)
+    if not sample:
+        return ["replacement homepage sample %s is absent from the blob" % HOMEPAGE_SAMPLE_ID]
+    expected = EXPECTED_HOMEPAGE_SAMPLE
+    identity = tuple(sample.get(key) for key in ("year", "make", "model", "trim", "engine"))
+    if identity != expected["identity"]:
+        out.append("replacement sample identity %r != pinned identity %r"
+                   % (identity, expected["identity"]))
+    oil = sample.get("oil") or {}
+    if oil.get("visc") != expected["oil_visc"]:
+        out.append("replacement sample oil viscosity %r != pinned %r"
+                   % (oil.get("visc"), expected["oil_visc"]))
+    if oil.get("cap_w") != expected["oil_cap_w"]:
+        out.append("replacement sample oil capacity %r != pinned %r"
+                   % (oil.get("cap_w"), expected["oil_cap_w"]))
+    if len(sample.get("recalls") or []) != expected["recall_count"]:
+        out.append("replacement sample recall count %d != pinned %d"
+                   % (len(sample.get("recalls") or []), expected["recall_count"]))
+    label = "%s %s %s" % expected["identity"][:3]
+    function_re = re.compile(
+        r"function kyrHsDefaultPlacard\(\)\{(.*?)\}\s*function kyrHsShowTrims\(",
+        re.S,
+    )
+    for name, text in (("index.html", a.index), ("wrench_demo.html", a.demo_markup)):
+        card_match = CARD_ID.search(text)
+        body_match = function_re.search(text)
+        if not card_match or not body_match:
+            out.append("%s: sample card or default placard function not found" % name)
+            continue
+        card_id = int(card_match.group(1))
+        body = body_match.group(1)
+        placard_ids = [int(x) for x in re.findall(r"VEH\[(\d+)\]", body)]
+        if card_id != HOMEPAGE_SAMPLE_ID:
+            out.append("%s: sample card id %s != pinned id %s" % (name, card_id, HOMEPAGE_SAMPLE_ID))
+        if placard_ids != [HOMEPAGE_SAMPLE_ID]:
+            out.append("%s: default placard vehicle references %s != [%s]"
+                       % (name, placard_ids, HOMEPAGE_SAMPLE_ID))
+        if "||" in body or "DB.v" in body:
+            out.append("%s: default placard contains a hidden fallback" % name)
+        card = re.search(r'id="kyr-sample".*?</button>', text, re.S)
+        if not card or label not in card.group(0):
+            out.append("%s: sample card label does not match blob identity %r" % (name, label))
+            continue
+        card_html = card.group(0)
+        expected_values = (
+            ("viscosity", expected["oil_visc"]),
+            ("capacity", expected["oil_cap_w"]),
+            ("recall count", "%d Open Recalls" % expected["recall_count"]),
+        )
+        for field, value in expected_values:
+            if not value or str(value) not in card_html:
+                out.append("%s: sample card is missing blob-derived %s %r"
+                           % (name, field, value))
+    return out
+
+
+COUNT_COPY_PATTERNS = (
+    ("description/OG/H1", r"vehicles searchable[;,]\s*(\d+)\s+with owner's-manual-verified specifications", 3),
+    ("database badge", r'class="db-badge">[^<]*?\b(\d+) OWNER\'S-MANUAL-VERIFIED', 1),
+    ("hero badge", r">(\d+) Owner's-Manual-Verified<", 1),
+    ("About statistic", r'<div class="astat-n">(\d+)</div><div class="astat-l">Verified Specs</div>', 1),
+    ("Pro coverage", r"Owner's-manual-verified maintenance schedules &mdash; (\d+) vehicles and growing", 1),
+)
+
+
+def s9_4_ic01_count_copy(a):
+    verified = sum(
+        1 for v in a.D["v"]
+        if isinstance(v.get("oil"), dict) and v["oil"].get("ver") == 1
+    )
+    out = []
+    for name, text in (("index.html", a.index), ("wrench_demo.html", a.demo_markup)):
+        for label, pattern, expected_matches in COUNT_COPY_PATTERNS:
+            values = [int(x) for x in re.findall(pattern, text)]
+            if values != [verified] * expected_matches:
+                out.append("%s: %s count(s) %s != %s"
+                           % (name, label, values, [verified] * expected_matches))
+    readme_patterns = (
+        ("summary", r"vehicles searchable;\s*(\d+)\s+with owner's-manual-verified specifications"),
+        ("coverage", r"Coverage:\s*\*\*(\d+) vehicles with owner's-manual-verified specifications"),
+    )
+    for label, pattern in readme_patterns:
+        values = [int(x) for x in re.findall(pattern, a.readme)]
+        if values != [verified]:
+            out.append("README.md: %s count %s != [%s]" % (label, values, verified))
+    return out
+
+
+def s9_5_demo_blob_equivalence(a):
+    if not a.demo_json_raw:
+        return ["wrench_demo.html inline dataset missing or unparseable"]
+    if not a.blob_json_raw:
+        return ["deploy blob dataset missing or unparseable"]
+    if a.demo_json_raw != a.blob_json_raw:
+        return ["wrench_demo.html inline dataset differs byte-for-byte from the deploy blob"]
+    return []
+
+
+def s9_7_mobile_nav_containment(a):
+    """The 390px proof must keep the primary navigation inside its own scroll rail."""
+    out = []
+    containment = re.compile(
+        r"(?<![-\w])\.tabs\s*\{[^{}]*overflow-x\s*:\s*auto\s*;"
+        r"[^{}]*-webkit-overflow-scrolling\s*:\s*touch\s*;?[^{}]*\}",
+        flags=re.S,
+    )
+    for surface, markup in (("wrench_demo.html", a.demo_markup),
+                            ("wrench_deploy/index.html", a.index)):
+        if not containment.search(markup):
+            out.append("%s does not contain the mobile primary-navigation rail" % surface)
+    return out
+
 # ---------------------------------------------------------------- DB-tier checks
 # These need the local-only canonical wrench_vehicles.db (315 MB, gitignored).
 # They are auto-skipped -- with a printed SKIP line -- when the DB is absent (CI).
@@ -553,6 +708,64 @@ def _db(a):
     con = sqlite3.connect("file:%s?mode=ro" % a.db_path.replace("\\", "/"), uri=True)
     con.row_factory = sqlite3.Row
     return con
+
+
+def s9_6_ic01_source_scope(a):
+    out = []
+    if _ver(QUARANTINE_SOURCE) != 0:
+        out.append("quarantine source token computes ver=1")
+
+    con = _db(a)
+    cur = con.cursor()
+    ids = tuple(sorted(QUARANTINED_VEHICLE_IDS))
+    placeholders = ",".join("?" for _ in ids)
+    for table, expected in EXPECTED_DB_ROWS.items():
+        rows = list(cur.execute(
+            "SELECT vehicle_id, source FROM %s WHERE vehicle_id IN (%s)"
+            % (table, placeholders),
+            ids,
+        ))
+        if len(rows) != expected:
+            out.append("%s has %d IC-01 row(s), expected %d" % (table, len(rows), expected))
+        per_id = {}
+        for row in rows:
+            per_id[row["vehicle_id"]] = per_id.get(row["vehicle_id"], 0) + 1
+            if row["source"] != QUARANTINE_SOURCE:
+                out.append("%s vehicle %s source %r is not the exact quarantine token"
+                           % (table, row["vehicle_id"], row["source"]))
+        expected_per_id = 3 if table == "maintenance" else 1
+        if per_id != {vehicle_id: expected_per_id for vehicle_id in ids}:
+            out.append("%s per-vehicle IC-01 row counts %s are not %d each"
+                       % (table, per_id, expected_per_id))
+
+    # Exact token and every string containing it are reserved for this cohort and these
+    # five tables. This rejects both outsider use and accepted-source concatenation.
+    source_tables = []
+    table_names = [row["name"] for row in cur.execute(
+        "SELECT name FROM sqlite_master WHERE type='table'"
+    )]
+    for table in table_names:
+        quoted = '"%s"' % table.replace('"', '""')
+        columns = {column["name"] for column in cur.execute("PRAGMA table_info(%s)" % quoted)}
+        if {"vehicle_id", "source"}.issubset(columns):
+            source_tables.append(table)
+    for table in source_tables:
+        quoted = '"%s"' % table.replace('"', '""')
+        rows = cur.execute(
+            "SELECT vehicle_id, source FROM %s WHERE source LIKE ?" % quoted,
+            ("%" + QUARANTINE_SOURCE + "%",),
+        )
+        for row in rows:
+            allowed = (
+                table in EXPECTED_DB_ROWS
+                and row["vehicle_id"] in QUARANTINED_VEHICLE_IDS
+                and row["source"] == QUARANTINE_SOURCE
+            )
+            if not allowed:
+                out.append("%s vehicle %s uses reserved quarantine token in source %r"
+                           % (table, row["vehicle_id"], row["source"]))
+    con.close()
+    return out
 
 def s1_7_gate_equivalence(a):
     """Gate-dimension DB<->blob equivalence: for each gated category, the set of vehicles
@@ -842,8 +1055,15 @@ CHECKS = [
     ("S7.4-obd-absent",          "FAIL", "CI", s7_4_obd_absent),
     ("S8.1-version-stamp",       "FAIL", "CI", s8_1_version_stamp),
     ("S8.2-two-file-drift",      "FAIL", "CI", s8_2_two_file_drift),
+    ("S9.1-ic01-projection",     "FAIL", "CI", s9_1_ic01_projection),
+    ("S9.2-ic01-guide-absent",   "FAIL", "CI", s9_2_ic01_guide_absent),
+    ("S9.3-ic01-sample-pin",     "FAIL", "CI", s9_3_ic01_sample_pin),
+    ("S9.4-ic01-count-copy",     "FAIL", "CI", s9_4_ic01_count_copy),
+    ("S9.5-demo-blob-equivalence","FAIL", "CI", s9_5_demo_blob_equivalence),
+    ("S9.7-mobile-nav-containment","FAIL", "CI", s9_7_mobile_nav_containment),
     ("S1.7-gate-equivalence",    "FAIL", "DB", s1_7_gate_equivalence),
     ("S1.8-gate-sources",        "FAIL", "DB", s1_8_gate_sources),
+    ("S9.6-ic01-source-scope",   "FAIL", "DB", s9_6_ic01_source_scope),
     ("S4.4-specs-regen",         "FAIL", "DB", s4_4_specs_regen),
     ("S5.8-incident-date-db",    "FAIL", "DB", s5_8_incident_date_matches_db),
     ("S5.9-guidance-count-db",   "FAIL", "DB", s5_9_guidance_count),
