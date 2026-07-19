@@ -66,7 +66,8 @@ class Artifacts(object):
         sp = os.path.join(root, "wrench_deploy", "api", "specs.json")
         self.specs_path = sp
         try:
-            self.specs = json.load(open(sp, encoding="utf-8"))
+            with open(sp, encoding="utf-8") as f:
+                self.specs = json.load(f)
         except Exception:
             self.specs = None
         self.sitemap = self._read(os.path.join(root, "wrench_deploy", "sitemap.xml"))
@@ -78,7 +79,8 @@ class Artifacts(object):
     @staticmethod
     def _read(p):
         try:
-            return open(p, encoding="utf-8", errors="replace").read()
+            with open(p, encoding="utf-8", errors="replace") as f:
+                return f.read()
         except Exception:
             return ""
 
@@ -175,7 +177,8 @@ def s1_5_hash_and_reference(a):
     if len(a.blob_paths) != 1:
         return ["expected exactly one wrench_deploy/data.*.js, found %d" % len(a.blob_paths)]
     name = os.path.basename(a.blob_path)
-    h = hashlib.md5(open(a.blob_path, "rb").read()).hexdigest()[:8]
+    with open(a.blob_path, "rb") as f:
+        h = hashlib.md5(f.read()).hexdigest()[:8]
     if name != "data.%s.js" % h:
         out.append("blob filename %s != content hash data.%s.js" % (name, h))
     refs = set(re.findall(r"data\.[0-9a-f]{8}\.js", a.index))
@@ -829,13 +832,15 @@ def s4_4_specs_regen(a):
         mod.OUT = tmp
         with redirect_stdout(io.StringIO()):
             mod.main()
-        fresh = open(tmp, "rb").read()
+        with open(tmp, "rb") as f:
+            fresh = f.read()
     finally:
         try:
             os.remove(tmp)
         except OSError:
             pass
-    committed = open(a.specs_path, "rb").read()
+    with open(a.specs_path, "rb") as f:
+        committed = f.read()
     if fresh != committed:
         return ["regenerated specs.json differs from the committed file "
                 "(%d vs %d bytes) -- DB and artifact are out of sync; rerun _gen_guide_specs.py"
@@ -1019,6 +1024,619 @@ def s5_11_comps_agg_db(a):
 
 # ---------------------------------------------------------------- registry / main
 
+# ---------------------------------------------------------------- S10: IC-02 exact-token source registry
+# files/source_registry.py is the single PRODUCTION classifier for the gate.
+# This section never lets the registry verify itself: every expectation below is
+# pinned INDEPENDENTLY -- an independent parser, independently pinned token/table
+# scopes, literal adversarial fixtures, and literal hashes. The mapping hash
+# (S10.2) is a drift TRIPWIRE, not the correctness proof; correctness comes from
+# the fixture contract (S10.1) and the DB-census agreement sweep (S10.4).
+
+_S10_DELIMITER = " ("
+# Pinned LITERAL spelling (never the ic01_quarantine/registry import): a
+# coordinated token rename must fail the fixture contract and the census, not
+# just the S10.2 mapping hash.
+_S10_QUARANTINE = "quarantine-applicability-ic01"
+_S10_VERIFIED = {
+    "owner-manual-verified": ("oil_change", "parts", "fluids", "torque_specs"),
+    "Buick Owner's Manual": ("maintenance",),
+    "Cadillac Owner's Manual": ("maintenance",),
+    "Chevrolet Owner's Manual": ("maintenance",),
+    "Ford Owner's Manual": ("maintenance",),
+    "GMC Owner's Manual": ("maintenance",),
+    "Honda Owner's Manual": ("maintenance",),
+    "Hyundai Owner's Manual": ("maintenance",),
+    "Lincoln Owner's Manual": ("maintenance",),
+    "Mazda Owner's Manual": ("maintenance",),
+    "Nissan Owner's Manual": ("maintenance",),
+    "Owner's Manual": ("maintenance",),
+    "Subaru Owner's Manual": ("maintenance",),
+}
+_S10_UNVERIFIED = {
+    "ai-haiku-4.5": ("oil_change", "parts", "fluids", "torque_specs",
+                     "engine_specs", "maintenance"),
+    "scraped": ("oil_change", "parts", "fluids", "torque_specs",
+                "engine_specs", "maintenance"),
+    "unknown": ("oil_change", "parts", "fluids", "torque_specs", "engine_specs"),
+    "engine_classifier_v1": ("maintenance",),
+    _S10_QUARANTINE: ("oil_change", "parts", "fluids", "torque_specs",
+                      "maintenance"),
+}
+_S10_MARKERS = ("ai-", "haiku", "scraped", "classifier", "quarantine-applicability",
+                "unknown", "epa-manufacturer-specs")
+_S10_SOURCE_TABLES = frozenset({
+    "oil_change", "parts", "fluids", "torque_specs", "engine_specs",
+    "maintenance", "ev_specs", "fuse_locations", "vehicle_notes",
+})
+_S10_BARE_COUNT = 424
+_S10_BARE_SHA256 = "ca156c69ed4cc8df34ff1244a612d497494a725ec3efcdd7d502f2aa179c8980"
+_S10_MAPPING_SHA256 = "4e8447602ec0f67464d4decddcecbeb09f190e4a5b1796e281e4b12764065674"
+_S10_EV_ROWS = 75
+_S10_EV_SOURCE = "epa-manufacturer-specs"
+
+
+def _s10_verdict(src, table):
+    """Independent small parser: 1 / 0 / "fail" from THIS module's pinned scopes
+    only (no source_registry import). Byte-exact token, split once on " (",
+    opaque suffix except blacklist markers under a verified token."""
+    if not isinstance(src, str) or not src or src != src.strip():
+        return "fail"
+    token, sep, suffix = src.partition(_S10_DELIMITER)
+    if sep and not suffix:
+        return "fail"
+    if token in _S10_VERIFIED:
+        if table not in _S10_VERIFIED[token]:
+            return "fail"
+        if sep and any(m in suffix.lower() for m in _S10_MARKERS):
+            return "fail"
+        return 1
+    if token in _S10_UNVERIFIED:
+        if table not in _S10_UNVERIFIED[token]:
+            return "fail"
+        if token == _S10_QUARANTINE and sep:
+            return "fail"
+        return 0
+    return "fail"
+
+
+# (source, table, vehicle_id, expected 1/0/"raise") -- expectations are literal.
+_S10_FIXTURES = (
+    ("owner-manual-verified", "oil_change", None, 1),
+    ("owner-manual-verified", "parts", None, 1),
+    ("owner-manual-verified", "fluids", None, 1),
+    ("owner-manual-verified", "torque_specs", None, 1),
+    ("Honda Owner's Manual", "maintenance", None, 1),
+    ("owner-manual-verified (2019 Silverado 1500 OM p.337)", "oil_change", None, 1),
+    ("GMC Owner's Manual (Sierra 2500HD) + 6.6L Duramax Supplement",
+     "maintenance", None, 1),                      # real irregular legacy suffix
+    ("ai-haiku-4.5", "maintenance", None, 0),
+    ("scraped", "oil_change", None, 0),
+    ("unknown", "engine_specs", None, 0),
+    ("engine_classifier_v1", "maintenance", None, 0),
+    (_S10_QUARANTINE, "oil_change", 12372, 0),
+    ("scraped (owner-manual-verified)", "oil_change", None, 0),  # citation != source
+    (None, "oil_change", None, "raise"),
+    ("", "oil_change", None, "raise"),
+    (" owner-manual-verified", "oil_change", None, "raise"),
+    ("owner-manual-verified ", "oil_change", None, "raise"),
+    ("Owner-Manual-Verified", "oil_change", None, "raise"),
+    ("HONDA OWNER'S MANUAL", "maintenance", None, "raise"),
+    ("Toyota Owner's Manual", "maintenance", None, "raise"),   # unobserved make
+    ("scraped-owner-manual", "oil_change", None, "raise"),
+    ("owner-manual-verified+scraped", "oil_change", None, "raise"),
+    ("owner-manual-verified (", "oil_change", None, "raise"),
+    ("owner-manual-verified (backfilled from scraped table)", "oil_change", None, "raise"),
+    ("owner-manual-verified (unknown)", "oil_change", None, "raise"),
+    ("owner-manual-verified (epa-manufacturer-specs)", "parts", None, "raise"),
+    ("owner-manual-verified (SCRAPED copy)", "oil_change", None, "raise"),
+    ("owner-manual-verified (Unknown provenance)", "fluids", None, "raise"),
+    ("owner-manual-verified (EPA-Manufacturer-Specs)", "torque_specs", None, "raise"),
+    ("owner-manual-verified (AI-Haiku assisted)", "parts", None, "raise"),
+    ("owner-manual-verified (Engine_Classifier_V1)", "fluids", None, "raise"),
+    ("Honda Owner's Manual (QUARANTINE-APPLICABILITY-IC01)", "maintenance", None, "raise"),
+    ("owner-manual-verified", "maintenance", None, "raise"),   # wrong table
+    ("owner-manual-verified", "engine_specs", None, "raise"),  # wrong table
+    ("Honda Owner's Manual", "oil_change", None, "raise"),     # wrong table
+    (_S10_QUARANTINE + " (x)", "oil_change", 12372, "raise"),
+    (_S10_QUARANTINE, "oil_change", 467, "raise"),             # outside cohort
+    ("epa-manufacturer-specs", "oil_change", None, "raise"),
+    ("epa-manufacturer-specs", "ev_specs", None, "raise"),     # blocked table
+    ("owner-manual-verified", "ev_specs", None, "raise"),
+    ("owner-manual-verified", "fuse_locations", None, "raise"),
+    ("owner-manual-verified", "zz_brand_new_table", None, "raise"),  # no disposition
+)
+
+
+def s10_1_registry_contract(a):
+    from files.source_registry import SourceRegistryError, classify
+    out = []
+    for src, table, vid, expected in _S10_FIXTURES:
+        try:
+            got = classify(src, table, vehicle_id=vid)
+        except SourceRegistryError:
+            got = "raise"
+        if got != expected:
+            out.append("classify(%r, %r, vehicle_id=%r) -> %r, pinned %r"
+                       % (src, table, vid, got, expected))
+    return out
+
+
+def s10_2_registry_mapping_pin(a):
+    import files.source_registry as sr
+    payload = {
+        "delimiter": sr.TOKEN_DELIMITER,
+        "verified": {t: sorted(v) for t, v in sr.VERIFIED_TOKEN_TABLES.items()},
+        "unverified": {t: sorted(v) for t, v in sr.UNVERIFIED_TOKEN_TABLES.items()},
+        "markers": sorted(sr.BLACKLIST_SUFFIX_MARKERS),
+        "dispositions": sr.TABLE_DISPOSITIONS,
+        "bare": [sr.BARE_VERIFIED_TOKEN, list(sr.BARE_ROW_TABLES),
+                 sr.BARE_ROW_COUNT, sr.BARE_ROW_SHA256],
+        "ev": [sr.EV_TABLE, sr.EV_FROZEN_ROW_COUNT, sr.EV_FROZEN_SOURCE],
+    }
+    canon = json.dumps(payload, sort_keys=True, ensure_ascii=True,
+                       separators=(",", ":"))
+    got = hashlib.sha256(canon.encode()).hexdigest()
+    if got != _S10_MAPPING_SHA256:
+        return ["registry mapping drifted: canonical sha256 %s != pinned %s "
+                "(a mapping change needs a ruling + a deliberate pin update)"
+                % (got, _S10_MAPPING_SHA256)]
+    return []
+
+
+def s10_3_generator_wiring(a):
+    """Structural (AST) wiring proof at call-graph strength (IC-02 final
+    correction 1): a call that merely EXISTS somewhere is not wiring. For each
+    generator this proves the gates are direct statements of main() ordered
+    BEFORE any projection/template/backup/write access, that the admission scan
+    invokes the imported classifier, that every gated projection classifies, and
+    that the imported registry symbols are never rebound or shadowed. Calls
+    hidden in uncalled helpers or `if False:` blocks do not count (only Try
+    bodies are linearized into main's statement order). Expectations are pinned
+    here, never derived from the registry."""
+    import ast
+
+    REGISTRY_MODULES = ("source_registry", "files.source_registry")
+
+    def linearize(body):
+        flat = []
+        for stmt in body:
+            if isinstance(stmt, ast.Try):
+                flat.extend(linearize(stmt.body))
+                flat.extend(linearize(stmt.finalbody))
+            else:
+                flat.append(stmt)
+        return flat
+
+    def direct_call_name(stmt):
+        if (isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call)
+                and isinstance(stmt.value.func, ast.Name)):
+            return stmt.value.func.id
+        return None
+
+    def calls_to(node, name):
+        return [sub for sub in ast.walk(node)
+                if isinstance(sub, ast.Call) and isinstance(sub.func, ast.Name)
+                and sub.func.id == name]
+
+    def stmt_is_dangerous(stmt, extra_names):
+        for sub in ast.walk(stmt):
+            if isinstance(sub, ast.Call):
+                f = sub.func
+                if isinstance(f, ast.Name) and (f.id == "open" or f.id in extra_names):
+                    return True
+                if isinstance(f, ast.Attribute) and f.attr in ("copy2", "copy", "write"):
+                    return True
+        return False
+
+    def is_r_vehicle_id(node):
+        return (isinstance(node, ast.Subscript)
+                and isinstance(node.value, ast.Name) and node.value.id == "r"
+                and isinstance(node.slice, ast.Constant)
+                and node.slice.value == "vehicle_id")
+
+    def is_proper_classify(call, classify_name, table):
+        """A LIVE projection classifier call: the imported classifier, the same
+        literal table, and the row's vehicle_id."""
+        return (isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
+                and call.func.id == classify_name and len(call.args) >= 3
+                and isinstance(call.args[1], ast.Constant)
+                and call.args[1].value == table
+                and is_r_vehicle_id(call.args[2]))
+
+    def direct_gate_expr(stmt, fn_name):
+        return (direct_call_name(stmt) == fn_name
+                and len(stmt.value.args) == 1
+                and isinstance(stmt.value.args[0], ast.Name)
+                and stmt.value.args[0].id == "cur")
+
+    def protected_names(rel, tree, names, out):
+        """Pinned function names: defined exactly once, never rebound -- not by
+        assignment, import, class, or a second definition anywhere."""
+        for name in names:
+            defs = [n for n in ast.walk(tree)
+                    if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef,
+                                      ast.ClassDef)) and n.name == name]
+            if len(defs) != 1:
+                out.append("%s: pinned function %r must be defined exactly once "
+                           "(found %d)" % (rel, name, len(defs)))
+        for node in ast.walk(tree):
+            if (isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store)
+                    and node.id in names):
+                out.append("%s rebinds pinned function %r (line %d)"
+                           % (rel, node.id, node.lineno))
+            elif isinstance(node, (ast.Import, ast.ImportFrom)):
+                for alias in node.names:
+                    if (alias.asname or alias.name.split(".")[0]) in names:
+                        out.append("%s rebinds pinned function %r via import "
+                                   "(line %d)"
+                                   % (rel, alias.asname or alias.name, node.lineno))
+
+    def try_gate_discipline(rel, main_fn, gates, out):
+        """Inside main's connection try block: the `cur` assignment, then the
+        direct gate calls IMMEDIATELY -- no control flow, raise, or any other
+        statement may precede them, so the gates are unconditionally reachable."""
+        try_node = next((s for s in main_fn.body if isinstance(s, ast.Try)), None)
+        if try_node is None:
+            out.append("%s: main() has no connection try block" % rel)
+            return
+        pending = list(gates)
+        seen_cur = False
+        for stmt in try_node.body:
+            if not pending:
+                break
+            if (not seen_cur and isinstance(stmt, ast.Assign)
+                    and len(stmt.targets) == 1
+                    and isinstance(stmt.targets[0], ast.Name)
+                    and stmt.targets[0].id == "cur"):
+                seen_cur = True
+                continue
+            if direct_gate_expr(stmt, pending[0]):
+                pending.pop(0)
+                continue
+            out.append("%s: inside the connection try block %r must directly "
+                       "follow the cur assignment (found %s first)"
+                       % (rel, pending[0], type(stmt).__name__))
+            return
+        if pending:
+            out.append("%s: connection try block never reaches %s(cur)"
+                       % (rel, pending[0]))
+
+    def each_projection_coverage(rel, build_fn, classify_name, out):
+        """Every gated projection is a DIRECT `each("<table>", lambda...)`
+        statement of build_data whose emitted `ver` value is a live classifier
+        call with the same literal table and the row vehicle_id. Dead or dummy
+        calls anywhere else never satisfy coverage."""
+        covered = set()
+        for stmt in linearize(build_fn.body):
+            if not (isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call)
+                    and isinstance(stmt.value.func, ast.Name)
+                    and stmt.value.func.id == "each"):
+                continue
+            call = stmt.value
+            if (len(call.args) < 2 or not isinstance(call.args[0], ast.Constant)
+                    or call.args[0].value not in GATE_TABLES):
+                continue
+            table = call.args[0].value
+            lam = call.args[1]
+            if not isinstance(lam, ast.Lambda):
+                out.append("%s: each(%r, ...) projection is not a lambda"
+                           % (rel, table))
+                continue
+            ver_values = []
+            for node in ast.walk(lam):
+                if isinstance(node, ast.Dict):
+                    for key, value in zip(node.keys, node.values):
+                        if isinstance(key, ast.Constant) and key.value == "ver":
+                            ver_values.append(value)
+            if not ver_values:
+                out.append("%s: each(%r, ...) emits no ver key" % (rel, table))
+            elif all(is_proper_classify(v, classify_name, table)
+                     for v in ver_values):
+                covered.add(table)
+            else:
+                out.append("%s: each(%r, ...) emits a ver value that is not the "
+                           "imported classifier with the literal table and row "
+                           "vehicle_id" % (rel, table))
+        missing = [t for t in GATE_TABLES if t not in covered]
+        if missing:
+            out.append("%s: build_data lacks live classified projection(s) for %s"
+                       % (rel, missing))
+
+    def guide_loop_coverage(rel, main_fn, classify_name, out):
+        """Each real guide table loop's ACTIVE guard (first statement of the
+        loop body) must directly invoke the imported classifier with the
+        matching literal table and row vehicle_id."""
+        required = ("oil_change", "parts", "torque_specs")
+        covered = set()
+        for stmt in linearize(main_fn.body):
+            if not isinstance(stmt, ast.For):
+                continue
+            it = stmt.iter
+            if not (isinstance(it, ast.Call) and isinstance(it.func, ast.Attribute)
+                    and it.func.attr == "execute" and it.args
+                    and isinstance(it.args[0], ast.Constant)
+                    and isinstance(it.args[0].value, str)):
+                continue
+            sql = it.args[0].value
+            for table in required:
+                if ("FROM %s" % table) not in sql:
+                    continue
+                guard = stmt.body[0] if stmt.body else None
+                if (isinstance(guard, ast.If)
+                        and any(is_proper_classify(n, classify_name, table)
+                                for n in ast.walk(guard.test))):
+                    covered.add(table)
+                else:
+                    out.append("%s: the %s loop guard does not directly invoke "
+                               "the imported classifier with the literal table "
+                               "and row vehicle_id" % (rel, table))
+        missing = [t for t in required if t not in covered]
+        if missing:
+            out.append("%s: main() lacks live classified guide loop(s) for %s"
+                       % (rel, missing))
+
+    def analyze(rel, txt, out):
+        try:
+            tree = ast.parse(txt)
+        except SyntaxError as e:
+            out.append("%s does not parse: %r" % (rel, e))
+            return None, None, None
+        aliases = {}   # local binding name -> registry symbol name
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and node.module in REGISTRY_MODULES:
+                for alias in node.names:
+                    aliases[alias.asname or alias.name] = alias.name
+        for node in ast.walk(tree):
+            if (isinstance(node, ast.Name) and isinstance(node.ctx, ast.Store)
+                    and node.id in aliases):
+                out.append("%s rebinds imported registry symbol %r (line %d)"
+                           % (rel, node.id, node.lineno))
+            elif (isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+                    and node.name in aliases):
+                out.append("%s shadows imported registry symbol %r with a local "
+                           "definition (line %d)" % (rel, node.name, node.lineno))
+            elif isinstance(node, ast.arg) and node.arg in aliases:
+                out.append("%s shadows imported registry symbol %r with a "
+                           "parameter" % (rel, node.arg))
+            elif isinstance(node, ast.Import):
+                for alias in node.names:
+                    if (alias.asname or alias.name.split(".")[0]) in aliases:
+                        out.append("%s rebinds imported registry symbol %r via "
+                                   "import (line %d)"
+                                   % (rel, alias.asname or alias.name, node.lineno))
+            elif (isinstance(node, ast.ImportFrom)
+                    and node.module not in REGISTRY_MODULES):
+                for alias in node.names:
+                    if (alias.asname or alias.name) in aliases:
+                        out.append("%s rebinds imported registry symbol %r from "
+                                   "module %r (line %d)"
+                                   % (rel, alias.asname or alias.name, node.module,
+                                      node.lineno))
+        funcs = {n.name: n for n in tree.body if isinstance(n, ast.FunctionDef)}
+        return tree, aliases, funcs
+
+    out = []
+
+    # ---------------- files/04_rebuild_demo.py
+    rel = os.path.join("files", "04_rebuild_demo.py")
+    txt = a._read(os.path.join(a.root, rel))
+    if not txt:
+        out.append("%s missing or unreadable" % rel)
+    else:
+        tree, aliases, funcs = analyze(rel, txt, out)
+        if tree is not None:
+            local = {sym: name for name, sym in aliases.items()}
+            classify_name = local.get("classify")
+            afl_name = local.get("assert_frozen_landscape")
+            main_fn = funcs.get("main")
+            adm_fn = funcs.get("_assert_registry_admission")
+            build_fn = funcs.get("build_data")
+            if not classify_name or not afl_name:
+                out.append("%s does not import classify + assert_frozen_landscape "
+                           "from the shared source registry" % rel)
+            elif main_fn is None or adm_fn is None or build_fn is None:
+                out.append("%s is missing main / _assert_registry_admission / "
+                           "build_data" % rel)
+            else:
+                protected_names(
+                    rel, tree,
+                    ("main", "build_data", "_assert_registry_admission"), out)
+                try_gate_discipline(
+                    rel, main_fn, ["_assert_registry_admission", afl_name], out)
+                flat = linearize(main_fn.body)
+                gate_i = {}
+                for i, stmt in enumerate(flat):
+                    name = direct_call_name(stmt)
+                    if name == "_assert_registry_admission":
+                        gate_i.setdefault("_assert_registry_admission", i)
+                    elif name == afl_name:
+                        gate_i.setdefault(afl_name, i)
+                danger_i = len(flat)
+                for i, stmt in enumerate(flat):
+                    if stmt_is_dangerous(stmt, {"build_data"}):
+                        danger_i = i
+                        break
+                for gate in ("_assert_registry_admission", afl_name):
+                    if gate not in gate_i:
+                        out.append("%s: main() does not call %s(cur) as a direct "
+                                   "statement" % (rel, gate))
+                    elif gate_i[gate] >= danger_i:
+                        out.append("%s: main() calls %s only after build/template/"
+                                   "backup/write access" % (rel, gate))
+                if not calls_to(adm_fn, classify_name):
+                    out.append("%s: _assert_registry_admission never invokes the "
+                               "imported classifier" % rel)
+                each_projection_coverage(rel, build_fn, classify_name, out)
+        if '"owner" in s' in txt:
+            out.append("%s still contains the copied substring whitelist gate" % rel)
+        if re.search(r"^def _ver\(", txt, flags=re.M):
+            out.append("%s still defines a local _ver classifier" % rel)
+
+    # ---------------- _gen_guide_specs.py
+    rel = "_gen_guide_specs.py"
+    txt = a._read(os.path.join(a.root, rel))
+    if not txt:
+        out.append("%s missing or unreadable" % rel)
+    else:
+        tree, aliases, funcs = analyze(rel, txt, out)
+        if tree is not None:
+            local = {sym: name for name, sym in aliases.items()}
+            classify_name = local.get("classify")
+            afl_name = local.get("assert_frozen_landscape")
+            main_fn = funcs.get("main")
+            if not classify_name or not afl_name:
+                out.append("%s does not import classify + assert_frozen_landscape "
+                           "from the shared source registry" % rel)
+            elif main_fn is None:
+                out.append("%s is missing main()" % rel)
+            else:
+                protected_names(rel, tree, ("main",), out)
+                try_gate_discipline(rel, main_fn, [afl_name], out)
+                flat = linearize(main_fn.body)
+                gate_at = None
+                danger_i = len(flat)
+                for i, stmt in enumerate(flat):
+                    if gate_at is None and direct_call_name(stmt) == afl_name:
+                        gate_at = i
+                    if (stmt_is_dangerous(stmt, set())
+                            or calls_to(stmt, classify_name)):
+                        danger_i = i
+                        break
+                if gate_at is None:
+                    out.append("%s: main() does not call %s(cur) as a direct "
+                               "statement" % (rel, afl_name))
+                elif gate_at >= danger_i:
+                    out.append("%s: main() calls %s only after projection/output "
+                               "access" % (rel, afl_name))
+                guide_loop_coverage(rel, main_fn, classify_name, out)
+        if '"owner" in s' in txt:
+            out.append("%s still contains the copied substring whitelist gate" % rel)
+        if re.search(r"^def _ver\(", txt, flags=re.M):
+            out.append("%s still defines a local _ver classifier" % rel)
+    return out
+
+
+def s10_4_token_census(a):
+    from files.source_registry import SourceRegistryError, classify
+    con = _db(a)
+    cur = con.cursor()
+    pairs = []
+    for t in GATE_TABLES:
+        for (s,) in cur.execute("SELECT DISTINCT source FROM %s" % t).fetchall():
+            pairs.append((s, t))
+    con.close()
+    out = []
+    observed = {}
+    for s, t in pairs:
+        token = s.partition(_S10_DELIMITER)[0] if isinstance(s, str) else s
+        observed.setdefault(token, set()).add(t)
+    pinned = {}
+    for token, tables in list(_S10_VERIFIED.items()) + list(_S10_UNVERIFIED.items()):
+        pinned[token] = set(tables)
+    if observed != pinned:
+        unexpected = sorted("%r in %s" % (k, sorted(v - pinned.get(k, set())))
+                            for k, v in observed.items() if v - pinned.get(k, set()))
+        unobserved = sorted("%r in %s" % (k, sorted(set(pinned[k]) - observed.get(k, set())))
+                            for k in pinned if set(pinned[k]) - observed.get(k, set()))
+        out.append("token census drifted from pins: unexpected=%s unobserved=%s "
+                   "(update pins only by ruling)" % (unexpected, unobserved))
+    folded = {}
+    for token in observed:
+        if isinstance(token, str):
+            folded.setdefault(token.lower(), []).append(token)
+    collisions = {k: sorted(v) for k, v in folded.items() if len(v) > 1}
+    if collisions:
+        out.append("case-fold token collision(s): %s" % collisions)
+    for s, t in pairs:
+        independent = _s10_verdict(s, t)
+        try:
+            production = classify(s, t)
+        except SourceRegistryError as e:
+            production = "fail"
+        if independent == "fail" or production == "fail":
+            out.append("stored source rejected: %r in %s (independent=%r, registry=%r)"
+                       % (s, t, independent, production))
+        elif independent != production:
+            out.append("classifier disagreement on %r in %s: independent=%r registry=%r"
+                       % (s, t, independent, production))
+    return out
+
+
+def s10_5_bare_row_freeze(a):
+    con = _db(a)
+    cur = con.cursor()
+    lines = []
+    for table in ("oil_change", "parts", "fluids", "torque_specs"):
+        cols = [r[1] for r in cur.execute('PRAGMA table_info("%s")' % table).fetchall()]
+        keep = [i for i, c in enumerate(cols) if c != "source"]
+        for row in cur.execute('SELECT * FROM "%s" WHERE source = ?' % table,
+                               ("owner-manual-verified",)).fetchall():
+            lines.append(json.dumps([table] + [[cols[i], row[i]] for i in keep],
+                                    ensure_ascii=True, separators=(",", ":")))
+    con.close()
+    digest = hashlib.sha256()
+    for line in sorted(lines):
+        digest.update(line.encode())
+        digest.update(b"\n")
+    out = []
+    if len(lines) != _S10_BARE_COUNT:
+        out.append("bare owner-manual-verified rows: %d != frozen %d (citation-debt "
+                   "freeze: new/changed verified rows need a provenance suffix)"
+                   % (len(lines), _S10_BARE_COUNT))
+    if digest.hexdigest() != _S10_BARE_SHA256:
+        out.append("bare-row content digest %s != frozen %s"
+                   % (digest.hexdigest(), _S10_BARE_SHA256))
+    return out
+
+
+def s10_6_table_disposition(a):
+    import files.source_registry as sr
+    con = _db(a)
+    cur = con.cursor()
+    names = [n for (n,) in cur.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' "
+        "AND name NOT LIKE 'sqlite_%'").fetchall()]
+    source_tables = set()
+    for name in names:
+        cols = {r[1] for r in cur.execute(
+            'PRAGMA table_info("%s")' % name.replace('"', '""')).fetchall()}
+        if "source" in cols:
+            source_tables.add(name)
+    con.close()
+    out = []
+    if source_tables != _S10_SOURCE_TABLES:
+        out.append("source-bearing tables %s != pinned census %s (every new "
+                   "source-bearing table needs an explicit disposition ruling)"
+                   % (sorted(source_tables), sorted(_S10_SOURCE_TABLES)))
+    if set(sr.TABLE_DISPOSITIONS) != _S10_SOURCE_TABLES:
+        out.append("registry dispositions %s != pinned census %s"
+                   % (sorted(sr.TABLE_DISPOSITIONS), sorted(_S10_SOURCE_TABLES)))
+    return out
+
+
+def s10_7_ev_freeze(a):
+    con = _db(a)
+    cur = con.cursor()
+    out = []
+    n = cur.execute("SELECT COUNT(*) FROM ev_specs").fetchone()[0]
+    if n != _S10_EV_ROWS:
+        out.append("ev_specs has %d row(s); frozen at %d pending IC-02E" % (n, _S10_EV_ROWS))
+    sources = {s for (s,) in cur.execute("SELECT DISTINCT source FROM ev_specs").fetchall()}
+    if sources != {_S10_EV_SOURCE}:
+        out.append("ev_specs sources %s; frozen at exactly %r pending IC-02E"
+                   % (sorted(map(repr, sources)), _S10_EV_SOURCE))
+    for t in GATE_TABLES:
+        leak = cur.execute("SELECT COUNT(*) FROM %s WHERE source = ?" % t,
+                           (_S10_EV_SOURCE,)).fetchone()[0]
+        if leak:
+            out.append("%d %r row(s) in gated table %s (never a verified token)"
+                       % (leak, _S10_EV_SOURCE, t))
+    con.close()
+    if _s10_verdict(_S10_EV_SOURCE, "ev_specs") != "fail":
+        out.append("independent parser accepted %r in ev_specs" % _S10_EV_SOURCE)
+    return out
+
+
 CHECKS = [
     ("S1.1-ver0-shell",          "FAIL", "CI", s1_1_ver0_shell),
     ("S1.2-forbidden-strings",   "FAIL", "CI", s1_2_forbidden_strings),
@@ -1069,6 +1687,13 @@ CHECKS = [
     ("S5.9-guidance-count-db",   "FAIL", "DB", s5_9_guidance_count),
     ("S5.11-comps-agg-db",       "FAIL", "DB", s5_11_comps_agg_db),
     ("S8.3-count-reconciliation","WARN", "DB", s8_3_count_reconciliation),
+    ("S10.1-registry-contract",  "FAIL", "CI", s10_1_registry_contract),
+    ("S10.2-registry-mapping-pin","FAIL", "CI", s10_2_registry_mapping_pin),
+    ("S10.3-generator-wiring",   "FAIL", "CI", s10_3_generator_wiring),
+    ("S10.4-token-census",       "FAIL", "DB", s10_4_token_census),
+    ("S10.5-bare-row-freeze",    "FAIL", "DB", s10_5_bare_row_freeze),
+    ("S10.6-table-disposition",  "FAIL", "DB", s10_6_table_disposition),
+    ("S10.7-ev-freeze",          "FAIL", "DB", s10_7_ev_freeze),
 ]
 
 

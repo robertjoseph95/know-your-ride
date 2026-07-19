@@ -33,6 +33,12 @@ import shutil
 import datetime
 
 from ic01_quarantine import projection_problems
+from source_registry import (
+    GATED_TABLES,
+    SourceRegistryError,
+    assert_frozen_landscape,
+    classify as _classify,
+)
 
 HERE     = os.path.dirname(os.path.abspath(__file__))
 ROOT     = os.path.dirname(HERE)                       # "Wrench App Data"
@@ -60,33 +66,37 @@ def date_key(s):
         return (0, 0, 0)
 
 
-def _ver(src):
-    """Data-integrity gate: 1 if a curated spec's source is manufacturer/government
-    verified (owner's manual / vPIC / EPA / NHTSA), else 0. AI-generated (ai-haiku),
-    scraped, classifier, unknown, and null are all UNVERIFIED. Single source of truth
-    for the UI gate (the blob carries the boolean, not the raw source string, so
-    'ai-haiku-4.5' never ships to the client)."""
-    s = (src or "").strip().lower()
-    if not s or "ai-" in s or "haiku" in s or s == "scraped" or "classifier" in s or s == "unknown":
-        return 0
-    if "owner" in s or "manual" in s or "vpic" in s or "epa" in s or "nhtsa" in s:
-        return 1
-    return 0
+# Data-integrity gate (IC-02): the exact-token classifier lives in
+# files/source_registry.py -- the single production gate shared with
+# _gen_guide_specs.py. It returns the ver boolean (the blob carries the boolean,
+# never the raw source string) and HARD-FAILS the build on any unknown token,
+# wrong-table use, or blacklisted provenance suffix (fail-closed, never 0).
+GATE_TABLES = GATED_TABLES
 
 
-GATE_TABLES = ("oil_change", "parts", "fluids", "torque_specs", "engine_specs", "maintenance")
+def _assert_registry_admission(cur):
+    """IC-02 pre-projection admission scan (correction 3): EVERY row of EVERY
+    gated table must classify -- with source, table, AND vehicle_id -- before any
+    projection runs and before any file is read, backed up, or written. Orphan
+    rows (vehicle_id absent from vehicles) are rejected explicitly: they are
+    invisible to the projection joins, so without this scan an unregistered
+    token could sit in a gated table without ever failing the build.
 
-
-def _assert_gate_sources(cur):
-    """D1 (2026-07-02): the 2025/26 SCRAPE is blacklisted by SOURCE, not by year --
-    OM/gov-verified rows ship regardless of model year. Hard gate: a source that
-    looks scraped/AI-generated must never compute ver=1, whatever the whitelist
-    branch says (defends against future _ver() edits loosening the blacklist)."""
+    Subsumes and retains the old partial D1 scan (2026-07-02): the blacklist
+    heuristic below is applied to every row's verdict, so a source that looks
+    scraped/AI-generated must never compute ver=1, whatever the registry's
+    whitelist says (defends against future registry edits loosening the gate)."""
+    vids = {r["id"] for r in cur.execute("SELECT id FROM vehicles").fetchall()}
     for t in GATE_TABLES:
-        cur.execute(f"SELECT DISTINCT source FROM {t}")
-        for (s,) in cur.fetchall():
+        for row in cur.execute(f"SELECT vehicle_id, source FROM {t}").fetchall():
+            vid, s = row["vehicle_id"], row["source"]
+            if vid not in vids:
+                raise SourceRegistryError(
+                    "REGISTRY ADMISSION: orphan vehicle_id %r in gated table %s "
+                    "(source=%r) -- orphan rows are never admitted" % (vid, t, s))
+            verdict = _classify(s, t, vid)
             sl = (s or "").strip().lower()
-            if ("ai-" in sl or "haiku" in sl or sl == "scraped" or "classifier" in sl) and _ver(s) == 1:
+            if verdict == 1 and ("ai-" in sl or "haiku" in sl or sl == "scraped" or "classifier" in sl):
                 raise SystemExit(f"INTEGRITY GATE: blacklisted source computes ver=1 in {t}: {s!r}")
 
 
@@ -325,7 +335,8 @@ def build_data(cur):
         "visc": r["viscosity"], "type": r["oil_type"], "cap_w": r["capacity_with_filter"],
         "cap_wo": r["capacity_without_filter"], "spec": r["oem_spec"],
         "filters": pj(r["filters_json"]), "drain": pj(r["drain_bolt_json"]),
-        "ver": _ver(r["source"] if "source" in r.keys() else None)}))
+        "ver": _classify(r["source"] if "source" in r.keys() else None,
+                         "oil_change", r["vehicle_id"])}))
 
     # EV specs -> rendered in the Oil tab in place of the "No oil data - EV" message
     if cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ev_specs'").fetchone():
@@ -347,18 +358,21 @@ def build_data(cur):
         "plugs": pj(r["spark_plugs_json"]), "air": pj(r["air_filters_json"]),
         "cabin": pj(r["cabin_filters_json"]), "wipers": pj(r["wiper_blades_json"]),
         "batts": pj(r["batteries_json"]),
-        "ver": _ver(r["source"] if "source" in r.keys() else None)}))
+        "ver": _classify(r["source"] if "source" in r.keys() else None,
+                         "parts", r["vehicle_id"])}))
 
     each("fluids", lambda d, r: d.update(fluids={
         "trans": r["transmission_fluid"], "trans_cap": r["transmission_capacity"],
         "brake": r["brake_fluid"], "coolant": r["coolant_type"],
         "coolant_cap": r["coolant_capacity"], "ps": r["power_steering_fluid"],
         "diff": pj(r["differential_fluids_json"]),
-        "ver": _ver(r["source"] if "source" in r.keys() else None)}))
+        "ver": _classify(r["source"] if "source" in r.keys() else None,
+                         "fluids", r["vehicle_id"])}))
 
     each("torque_specs", lambda d, r: d.setdefault("torque", []).append(
         {"comp": r["component"], "ft": r["torque_ft_lbs"], "nm": r["torque_nm"], "notes": r["notes"],
-         "ver": _ver(r["source"] if "source" in r.keys() else None)}))
+         "ver": _classify(r["source"] if "source" in r.keys() else None,
+                          "torque_specs", r["vehicle_id"])}))
 
     # vehicle_notes GATED (P0-4 proper, 2026-07-12 ruling E): 100% of the table is
     # non-authoritative (859 google-ai-* + 340 null-source rows; zero OM/gov citations),
@@ -375,7 +389,8 @@ def build_data(cur):
         {"var": r["variant"], "hp": r["horsepower"], "tq": r["torque_ft_lbs"],
          "disp": r["displacement_l"], "cyl": r["cylinders"], "config": r["cylinder_config"],
          "asp": r["aspiration"], "fuel": r["fuel_system"],
-         "ver": _ver(r["source"] if "source" in r.keys() else None)}))
+         "ver": _classify(r["source"] if "source" in r.keys() else None,
+                          "engine_specs", r["vehicle_id"])}))
 
     # fuel economy (range_miles/mpge added by script 02)
     cur.execute("PRAGMA table_info(fuel_economy)")
@@ -418,7 +433,8 @@ def build_data(cur):
     # maintenance + parts (the original 04 dropped these)
     each("maintenance", lambda d, r: d.setdefault("maint", []).append(
         {"id": r["id"], "mi": r["mileage_interval"], "mo": r["months_interval"],
-         "desc": r["description"], "ver": _ver(r["source"]), "notes": r["notes"],
+         "desc": r["description"],
+         "ver": _classify(r["source"], "maintenance", r["vehicle_id"]), "notes": r["notes"],
          "diff": (r["difficulty_level"] if "difficulty_level" in r.keys() else None),
          "tool": (r["tool_required"] if "tool_required" in r.keys() else None),
          "tmin": (r["time_minutes"] if "time_minutes" in r.keys() else None)}))
@@ -1802,12 +1818,23 @@ def main():
 
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
+    # try/finally guarantees the SQLite handle closes on EVERY path -- a failing
+    # gate must not leak the connection (IC-02 final correction 2); the raise
+    # still propagates and aborts the build before any file is touched.
+    try:
+        cur = conn.cursor()
 
-    print("Building data from DB...")
-    vlist, dtc, fixes, with_comps = build_data(cur)
-    _assert_gate_sources(cur)
-    conn.close()
+        # IC-02 fail-closed preflight: BOTH gates run before build_data, so any
+        # unknown token, orphan row, or frozen-landscape violation aborts before
+        # the template is read, before the .bak backup is taken, and before any
+        # write.
+        _assert_registry_admission(cur)
+        assert_frozen_landscape(cur)
+
+        print("Building data from DB...")
+        vlist, dtc, fixes, with_comps = build_data(cur)
+    finally:
+        conn.close()
 
     strip = _strip_unverified(vlist)
     print("Integrity strip (C1): oil={oil} parts={parts} fluids={fluids} shells; "
@@ -1849,7 +1876,8 @@ def main():
     # The demo declares <meta charset="UTF-8"> but the original bytes are cp1252
     # (e.g. 0xB7 mid-dots), which renders as mojibake. Read robustly (utf-8, then
     # cp1252) and we'll write genuine UTF-8 so bytes match the declared charset.
-    raw = open(OUT_FILE, "rb").read()
+    with open(OUT_FILE, "rb") as f:
+        raw = f.read()
     try:
         html = raw.decode("utf-8")
     except UnicodeDecodeError:
