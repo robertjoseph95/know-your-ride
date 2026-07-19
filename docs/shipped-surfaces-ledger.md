@@ -263,3 +263,63 @@ source, no frequency framing, and a DB-honest count.
      in any other source-bearing database table.
   7. [CI][FAIL] At phone width, the primary navigation is contained in its own horizontal
      scroll rail; it cannot widen the document beyond the viewport.
+
+## S10. IC-02 exact-token source registry — the gate's admission contract
+- **Ships:** nothing directly — this contract governs HOW every `ver` boolean in the S1
+  blob and the S4 guide projection is computed. `files/source_registry.py` is the single
+  production classifier: byte-exact, case-sensitive tokens; one split on the exact `" ("`
+  delimiter; the suffix is opaque legacy provenance (Phase A) that can never confer
+  verification; unknown tokens, wrong-table use, boundary whitespace, and blacklisted
+  provenance markers under a verified token HARD-FAIL the build before any output is
+  written (fail-closed, never silently 0). Both generators
+  (`files/04_rebuild_demo.py`, `_gen_guide_specs.py`) import it; the copied substring
+  `_ver()` implementations are gone. Unit contract: `tests/test_source_registry.py`
+  (CI-discovered via `unittest discover -s tests`).
+- **Generator:** `files/source_registry.py` (declarative mapping + classifier +
+  `assert_frozen_landscape`).
+- **Current guards:** the build's pre-projection admission scan
+  (`_assert_registry_admission`: EVERY row of EVERY gated table classified with source,
+  table, and vehicle_id; orphan vehicle ids rejected explicitly; the D1
+  blacklist-vs-verdict heuristic retained per row) and `assert_frozen_landscape`, both
+  run before the template read, the `.bak` backup, and any write; the guide generator
+  runs `assert_frozen_landscape` before projection and classifies every row it reads;
+  the S10 verifier family below (independent parser and
+  independently pinned expectations — the registry never verifies itself; the mapping hash
+  is a drift tripwire, not the correctness proof).
+- **Invariants:**
+  1. [CI][FAIL] The production classifier reproduces the pinned adversarial fixture
+     table exactly: verified tokens → 1 in their registered tables only; registered
+     unverified tokens (`ai-haiku-4.5`, `scraped`, `unknown`, `engine_classifier_v1`,
+     the IC-01 quarantine token) → 0; null/empty/whitespace, case-changed, unknown,
+     compound, blacklisted-suffix, wrong-table, quarantine-concatenation/-outside-cohort,
+     `epa-manufacturer-specs`, and undispositioned-table presentations all hard-fail.
+  2. [CI][FAIL] The registry's declarative mapping hashes (canonical serialization of the
+     data, not the Python file) to the pinned value; any mapping change requires a ruling
+     and a deliberate pin update.
+  3. [CI][FAIL] Structural (AST) wiring proof at live-call-site strength: both
+     generators import the shared `classify`/`assert_frozen_landscape` and never
+     rebind or shadow them; `main`, `build_data`, and
+     `_assert_registry_admission` are pinned functions (defined exactly once,
+     never rebound); inside the build's connection try block the `cur`
+     assignment is IMMEDIATELY followed by the direct, unconditionally reachable
+     `_assert_registry_admission(cur)` and `assert_frozen_landscape(cur)` calls
+     — before any control flow, raise, `build_data`, template access, backup, or
+     write; the admission scan invokes the classifier; every gated
+     `each("<table>", lambda...)` projection's emitted `ver` value is a LIVE
+     call to the imported classifier with the same literal table and the row
+     vehicle_id, and each guide table loop's active guard likewise — dead or
+     dummy calls (uncalled helpers, `if False:`, module tails) never satisfy
+     coverage; neither file retains a substring `_ver`.
+  4. [DB][FAIL] Database token census == pinned scope exactly (18 byte-exact tokens across
+     the six gated tables), zero case-fold collisions, and the verifier's INDEPENDENT
+     parser agrees with the production classifier on every distinct `(source, table)`.
+  5. [DB][FAIL] Citation-debt freeze: exactly 424 rows carry the bare
+     `owner-manual-verified` token, with a pinned content digest over their non-source
+     columns — new/changed verified rows require a provenance suffix; changes to the
+     grandfathered set require a ruling.
+  6. [DB][FAIL] Every source-bearing table has an explicit disposition (6 registry-gated,
+     `ev_specs` blocked pending IC-02E, `fuse_locations`/`vehicle_notes` excluded-never-
+     ships); a new source-bearing table cannot bypass the gate by omission.
+  7. [DB][FAIL] `ev_specs` is frozen pending IC-02E at exactly 75 rows and the exact
+     `epa-manufacturer-specs` token, which appears in no gated table and is never
+     classified verified. *(Token-level admission only; field-level authority = OA-A2.)*
