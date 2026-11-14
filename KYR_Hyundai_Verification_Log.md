@@ -6,7 +6,59 @@ source pattern in `KYR_OEM_Manual_Source_Map.md` (Hyundai section). **Host:** `o
 glovebox-manual (free, no auth, citable manufacturer source). **This is the HMG foundation — it pre-characterizes
 Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the Sonata (shared platform + Theta II/Smartstream engines).**
 
-> **Hyundai status (2026-11-14, after the Veloster / Santa Cruz slice): 47 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 5/5** · **Santa Fe ✅ 9/13** · **Palisade ✅ 6/6** · **Venue 3/7 verified (2020 / 2021 / 2026; the 2022–2025 rows were added 2026-11-14 with government data only, curated specs still to read)** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz ✅ 1/1** · **Accent ⛔ 0/8 (deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. **⚠ Label audit 2026-11-14: a second-host year label is NOT automatically the model year — three labels hold the next year's book and four are unproved; see the LABEL AUDIT section. Row corrections deployed as `2026-11-14-hyundai-label-audit`; the Kona 2022 / Elantra 2022 intervals lost to false print conflicts were restored as `2026-11-14-hyundai-restore-2022`.** DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. Every Hyundai vehicle row that has a manufacturer book is now written; what remains is deferred for lack of a book, electrified, or has no vehicle row (Venue 2022–2025, Santa Cruz 2022–2025, Accent 2005+, Palisade 2023, Kona 2018 / 2019 / 2023 / 2025).
+> **Hyundai status (2026-11-14, after the Venue 2022–2025 slice): 51 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 5/5** · **Santa Fe ✅ 9/13** · **Palisade ✅ 6/6** · **Venue ✅ 7/7** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz ✅ 1/1** · **Accent ⛔ 0/8 (deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. **⚠ Label audit 2026-11-14: a second-host year label is NOT automatically the model year — three labels hold the next year's book and four are unproved; see the LABEL AUDIT section. Row corrections deployed as `2026-11-14-hyundai-label-audit`; the Kona 2022 / Elantra 2022 intervals lost to false print conflicts were restored as `2026-11-14-hyundai-restore-2022`.** DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. Every Hyundai vehicle row that has a manufacturer book is now written; what remains is deferred for lack of a book, electrified, or has no vehicle row (Venue 2022–2025, Santa Cruz 2022–2025, Accent 2005+, Palisade 2023, Kona 2018 / 2019 / 2023 / 2025).
+
+## ✅ VENUE 2022–2025 — 4/4, Venue now 7/7 — `2026-11-14-hyundai-venue-2022-2025`, commit 61c9be2c — ELEVENTH HYUNDAI SLICE (missing-year pilot, step B)
+**What this is:** the curated specs for the four rows added in step A (section below), each read from that year's own book. Tally **327 verified / 42 nameplates / 11 makes; Hyundai 51 rows.** Script `_write_hyundai_venue_2022_2025.py`; backup `wrench_vehicles.db.bak_venue_2022_2025_20261114_174608`. Confirmed live 2026-11-14 17:51:41 local: the site serves version 2026-11-14-hyundai-venue-2022-2025 and data.3061682b.js, whose md5 3061682bf34ef0e8b5e296b31c90f343 equals the local file. Verifier PASS 58 before staging; CI green.
+
+**Books and prints** (identified by the Venue body on the exterior overview p.2-2, wheelbase 99.2 in, length 159.0 in, Smartstream G1.6 1,598 cc as the only engine):
+
+| Year | id | Primary book | Other prints of the same year | Result |
+|---|---|---|---|---|
+| 2022 | 38718 | titled portal book, Copyright 2021, 390 pp | none (`QX/2021` is the 2021 book, `QX/2022` holds the 2023 book) | single print |
+| 2023 | 38719 | titled portal book, Copyright 2022, 403 pp | `QX/2022` (Copyright 2022): spec pages 2-7 to 2-12 and all four schedule pages identical. `QX/2023` (Copyright 2023): on those pages it only adds an engine-oil-additive notice and renumbers footnotes | no value differs |
+| 2024 | 38720 | portal book, cover reads "2024 Owner's Manual VENUE", Copyright 2023, 410 pp | `QX/2024` (Copyright 2024): spec pages and all four schedule pages identical | no value differs |
+| 2025 | 38721 | `QX/2025`, Copyright 2025, 413 pp | none (the portal serves no 2025 book) | single print |
+
+**The 2025 book — accepted by ruling 2026-11-14.** No page names the model year. Support: the label was first posted 2024-10-16 and last updated 2025-05-29, before the separate `QX/2026` label was first posted (2025-08-19). The book is its own edition: it introduces the Oil Life Management System on p.9-7 (none in either 2024 print or in 2023; its p.9-7 is identical to the 2026 book's), and it lacks the 2026 changes (different bulb table, "MICHANG CVTF SP-CVT1" fluid naming, "Brake fluid" label, 397 pages). **Not a marker:** the tire date-code example ("week of 20xx") follows the COPYRIGHT year in every print.
+
+**Read log — the same in all four years** (tires and lug nuts p.2-9; capacities p.2-11; viscosity chart p.2-12 from a page render):
+
+| Item | Value |
+|---|---|
+| Oil | 0W-20 only (one bar across the whole chart); 4.02 qt / 3.8 L; API SN PLUS/SP or ILSAC GF-6; full synthetic required |
+| Brake fluid | SAE J1704 DOT-4 LV, FMVSS 116 DOT-4, ISO 4925 Class 6; 0.74–0.85 qt / 0.7–0.8 L |
+| Coolant type | mixture of antifreeze and water, phosphate-based ethylene glycol |
+| Tires | 185/65R15 at 36 psi; 205/55R17 at 33 psi; compact spare T125/80D15 or T125/80D16 at 60 psi |
+| Wheel lug nuts | 79–94 lb-ft (107–127 N·m, 11–13 kgf·m) |
+| Fuel tank | 11.89 gal / 45 L |
+| Automatic transmission fluid | CVTF SP-CVT1 |
+
+**Read log — by year** (schedule grids read from upright page renders):
+
+| Item | 2022 (p.8-8 / 8-10) | 2023, 2024, 2025 (p.9-8 / 9-10) |
+|---|---|---|
+| Manual transmission | still listed: fluid API GL-4 SAE 70W TGO-9, 1.59–1.69 qt / 1.5–1.6 L | not listed |
+| Coolant quantity written | 5.94 qt / 5.62 L, manual transmission only | none |
+| Refrigerant (not carried) | R-134a | R-1234yf |
+| Engine oil and filter | 8,000 mi / 12 mo | 8,000 mi / 12 mo |
+| Spark plugs | 96,000 mi / 144 mo | 96,000 mi (no months printed) |
+| Air cleaner filter | 32,000 mi / 48 mo | 32,000 mi / 48 mo |
+| Cabin air filter | 8,000 mi / 12 mo | 16,000 mi / 24 mo |
+| Tire rotation | 8,000 mi (no months printed) | 8,000 mi / 12 mo |
+| Coolant | 120,000 mi / 10 years, then 24,000 mi / 36 mo | 120,000 mi / 120 mo, then 24,000 mi / 24 mo |
+| Brake fluid | replace 60,000 mi / 48 mo | replace 60,000 mi / 48 mo |
+
+**Rulings applied (Robert, 2026-11-14, "Go, as recommended"):**
+- **2022 manual transmission:** the book lists it while EPA lists only the automatic — written as printed, "if equipped", exactly as ruled for 2021; the coolant column carries the manual figure only.
+- **Standing unit ruling:** the automatic's fluid quantity (6.34 US qt beside 6.7 L) and its coolant quantity (6.32 US qt beside 5.78 L) do not convert, in every book — neither is written. For 2023–2025 no other coolant figure is printed, so the quantity is null.
+- **Gates:** spark-plug part number and gap, and the 12V battery, are not published in any of the four books. Electric power steering has no fluid (the 2022 book says EPS, 2023+ say MDPS).
+
+**Checks:** dry run 4 vehicles / 28 schedule rows / 19 unit pairs converted; the four ids held no curated rows; government rows untouched; bare rows 424; the rebuilt data differs from the previous deployed data in exactly these four objects; verifier PASS 58.
+
+**Quirk seen, no action:** the titled 2023 book's p.9-10 footnote says "an authorized HYUNDAI or KIA dealer"; the 2024 book drops "or KIA".
+
+---
 
 ## ➕ VENUE 2022–2025 — FOUR MISSING MODEL-YEAR ROWS ADDED (government data only) — `2026-11-14-hyundai-venue-rows`, commit 2fbf604a — MISSING-YEAR PILOT, STEP A
 **What this is:** the fleet had Venue rows for 2020, 2021 and 2026 only. These four rows fill the gap. They carry EPA fuel economy and NHTSA recalls, safety ratings and complaints. **They carry no curated specification yet** — oil, fluids, parts, torque and maintenance come from each year's book in step B. They are not counted as verified (tally stays 323 / 42 / 11; Hyundai 47 verified rows). No reliability, warranty or service-cost rows were written. Confirmed live 2026-11-14 17:34:33 local: the site serves version 2026-11-14-hyundai-venue-rows and data.9df6e963.js, whose md5 9df6e9639142f4c0cf7146f523a3f885 equals the local file. Verifier PASS 58 before staging; CI green.
@@ -30,7 +82,7 @@ Each year: one EPA record (Auto AV-S1, 1.6 L, 4 cyl, front-wheel drive, Regular)
 - Rows inserted: vehicles 4, fuel_economy 4, recalls 2, safety_ratings 4, complaints 70, pull_log 16. Fleet 3,667 → 3,671. Bare rows 424. The rebuilt data differs from the previous deployed data by exactly the four new objects.
 
 **Open after this step:**
-1. **Step B** — the curated-spec slice for Venue 2022–2025 from the four books above (reads first, then PAUSE). The 2025 book's weaker basis should be re-stated at that pause.
+1. ~~**Step B** — the curated-spec slice for Venue 2022–2025~~ **done 2026-11-14**, see the section above (`2026-11-14-hyundai-venue-2022-2025`).
 2. **Annual fuel cost is time-dependent.** EPA now gives $1,950 for the 2021 and 2026 Venue too; the stored 2020 / 2021 / 2026 rows (pulled May 2026) show about $1,350–$1,450. A fleet-wide refresh is a separate decision.
 3. **Static vehicle pages** (`wrench_deploy/vehicles/`) were not touched; the four new vehicles have no static page. That belongs to the separate pages lane.
 
