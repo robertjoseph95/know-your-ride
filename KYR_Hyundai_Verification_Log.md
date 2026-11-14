@@ -6,7 +6,64 @@ source pattern in `KYR_OEM_Manual_Source_Map.md` (Hyundai section). **Host:** `o
 glovebox-manual (free, no auth, citable manufacturer source). **This is the HMG foundation — it pre-characterizes
 Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the Sonata (shared platform + Theta II/Smartstream engines).**
 
-> **Hyundai status (2026-11-14, after the Venue slice): 44 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 5/5** · **Santa Fe ✅ 9/13** · **Palisade ✅ 6/6** · **Venue ✅ 3/3** · **Accent ⛔ 0/8 (deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked), Veloster (2019–2021), Santa Cruz (2026), Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. Veloster has portal books for 2019 and 2021 (2020 not found); books exist for model years that have no vehicle row (Venue 2022–2025, Accent 2005+).
+> **Hyundai status (2026-11-14, after the Veloster / Santa Cruz slice): 47 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 5/5** · **Santa Fe ✅ 9/13** · **Palisade ✅ 6/6** · **Venue ✅ 3/3** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz ✅ 1/1** · **Accent ⛔ 0/8 (deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. Every Hyundai vehicle row that has a manufacturer book is now written; what remains is deferred for lack of a book, electrified, or has no vehicle row (Venue 2022–2025, Santa Cruz 2022–2025, Accent 2005+, Palisade 2023, Kona 2018 / 2019 / 2023 / 2025).
+
+## ✅ VELOSTER 2/3 + SANTA CRUZ 1/1 — `2026-11-14-hyundai-veloster-santa-cruz`, commit 929886b9 — TENTH HYUNDAI SLICE
+Recon, reads, write and deploy all 2026-11-14 (live confirmed 16:01:53, blob `data.40f286a4.js` byte-identical to the local build at 16:01:54, old blob returns 404, CI green). Write script `_write_hyundai_veloster_santa_cruz.py`. Backup `wrench_vehicles.db.bak_veloster_santa_cruz_20261114_155738`. Fleet tally 320 → 323, nameplates 40 → 42. The three written ids held only blacklisted-source rows (unsourced placeholders — oil "4.8", battery "Group 47" — or scraped rows, never shipped), which this replaces.
+
+| Row | Book | Print status |
+|---|---|---|
+| **Veloster 2019** (id 38641) | portal `2019 Veloster OM.pdf` (491 pp, Copyright 2018, created 2018-08-01, no title metadata; the JS generation began with MY2019) | one print |
+| **Veloster 2020** (id 38682) | **none — DEFERRED** | — |
+| **Veloster 2021** (id 38683) | portal `2021-Veloster-Owners-Manual.pdf` (482 pp, titled, cover "2021 Owner's Manual VELOSTER", part no. LJ3O-EU05B, Copyright 2020) | one print |
+| **Santa Cruz 2026** (id 9981) | second host `NX4OB/2026` (567 pp, book header `_NX4aOB_en_US`, Copyright 2026, created 2026-04-30) — served but absent from the US menu | one print |
+
+**⛔ VELOSTER 2020 DEFERRED:** no manufacturer owner's manual is available. The portal answered HTTP 404 for 81 filename forms across seven folder spellings (`veloster`, `velostar`, `velostor`, `veloser`, `velostr`, `Veloster`, `veloster-n`); the second host carries no Veloster book (not on the US menu; `JS` and `JSN` answer HTTP 500). The row is untouched — the write script fingerprints it before and after.
+
+**Self-ID.** Veloster: JS body on the exterior overview p.1-2 (image code OJS018001N, both books rendered), wheelbase 104.33 in, length 166.93 in, Gamma 1.6 T-GDI 1,591 cc + Nu 2.0 MPI 1,999 cc. Santa Cruz: pickup body on the exterior overview p.2-3 (rendered), wheelbase 118.30 in, length 195.67 in, Smartstream G2.5 GDI + G2.5 T-GDI 2,497 cc. Veloster N has its own book and is not covered. The DB engine label on the Veloster rows ("1.6L Turbo") was left as it is; both engines the books list are written, each labelled.
+
+**⚠ WHICH MODEL YEAR IS `NX4OB/2026`?** NHTSA vPIC lists a Santa Cruz for both 2026 and 2027, so the label was tested, not assumed. (1) The host files 2027-model-year books under their own 2027 label — `SX2/2027` first posted 2026-06-30, `LX3/2027` 2026-09-11, `MX5a/2027` 2026-10-14, `DN8/2027` served — and `NX4OB/2027` does not exist. (2) It keeps updating 2026 labels in place after a 2027 book appears (`SX2/2026` updated 2026-07-14). (3) This book says AWD where the 2025-label book says 4WD, the change the Tucson books show between 2025 and 2026. Read as a later print of model year 2026. The same evidence supports the 2026 rows written earlier from `DN8/2026`, `NX4/2026` and `QX/2026`. **The early NX4OB labels ARE shifted:** label 2021 (Copyright 2021, 596 pp) is the model-year-2022 book (the titled portal `2022-Santa-Cruz-Owners-Manual.pdf` is Copyright 2021, 598 pp; no 2021 Santa Cruz exists); label 2025 (Copyright 2024, facelift) is model year 2025.
+
+**Veloster 2019 and 2021 — values (the two books agree on every specification page except the brake-fluid specification):**
+
+| Field | Gamma 1.6 T-GDI | Nu 2.0 MPI | Page |
+|---|---|---|---|
+| Engine oil | 4.76 qt / 4.5 L | 4.23 qt / 4.0 L | 8-7 |
+| Viscosity (chart rendered) | 5W-30 recommended; chart also 5W-40, 10W-30, 15W-40, 20W-50 | 5W-20 recommended; chart also 5W-30, 10W-30 | 8-9 |
+| Oil specification | ACEA A5/B5 | API SM and ILSAC GF-4 (or above), ACEA A5/B5 | 8-7 |
+| Automatic / dual clutch | DCT fluid API GL-4 SAE 70W, 2.01–2.11 qt / 1.9–2.0 L | ATF SP-IV, 7.08 qt / 6.7 L | 8-7 |
+| Coolant | 7.5 qt / 7.1 L | 6.8 qt / 6.5 L | 8-8 |
+
+Both engines: manual transmission fluid API GL-4 SAE 70W TGO-9, 1.8–1.9 qt / 1.7–1.8 L · brake fluid 0.74–0.85 qt / 0.7–0.8 L (2019 FMVSS 116 DOT-3 or DOT-4; 2021 SAE J1704 DOT-4 LV / FMVSS 116 DOT-4 / ISO 4925 Class 6) · fuel tank 13.2 gal / 50 L · tires 215/45R17, 225/40R18, 225/40ZR18 at 33 psi front and rear · compact spare T125/80D16 at 60 psi · wheel lug nut 79–94 lb-ft (107–127 N·m, 11–13 kgf·m) · electric power steering. The books also print 36 psi for driving over 100 mph; not carried (the write script fails if it reaches a shipped column).
+
+**Veloster normal schedule (upright grids; Nu 2.0 MPI p.7-8 to 7-10, Gamma 1.6 T-GDI p.7-13 to 7-15), mi / mo:**
+
+| Item | Gamma 1.6 T-GDI | Nu 2.0 MPI |
+|---|---|---|
+| Engine oil & filter | 6,000 / 12 | 7,500 / 12 |
+| Spark plugs | 42,000 | 97,500 |
+| Air cleaner filter | 24,000 / 48 | 30,000 / 48 |
+| Climate control air filter | 12,000 / 12 | 15,000 / 12 |
+| Tire rotation | 6,200 (as printed; the grid steps by 6,000) | 6,200 (as printed; the grid steps by 7,500) |
+| Coolant | first 120,000 / 120, then 30,000 / 24 | same |
+| Brake fluid, 2019 | inspect only — no row | inspect only — no row |
+| Brake fluid, 2021 (grid marks, rendered) | 30,000 / 60 (brake / clutch) | 30,000 / 48 |
+
+2019 = 10 rows, 2021 = 12 rows.
+
+**Santa Cruz 2026 — values:** oil 6.13 qt / 5.8 L (one cell spans both engines), 0W-20 (G2.5 GDI) / 0W-30 (G2.5 T-GDI), API SN PLUS/SP or ILSAC GF-6, full synthetic required (p.10-7; chart p.10-9 rendered) · automatic transmission ATF SP4M-1, 6.87 qt / 6.5 L (the only transmission listed) · coolant 10 qt / 9.5 L (G2.5 GDI, printed without decimals) and 9.09 qt / 8.6 L (G2.5 T-GDI) · brake fluid SAE J1704 DOT-4 LV / ISO 4925 Class 6 / FMVSS 116 DOT-4, 0.87 qt / 0.82 L · rear differential (AWD) 0.56–0.67 qt / 0.53–0.63 L and transfer case (AWD) 0.65–0.71 qt / 0.62–0.68 L, hypoid gear oil API GL-5 SAE 75W/85 (p.10-8) · fuel tank 17.69 gal / 67 L · tires 245/60R18 or 245/50R20 at 35 psi front and rear, compact spare T135/80D18 at 60 psi, wheel nut 79–94 lb-ft (p.10-4, rendered) · MDPS.
+
+**Santa Cruz normal schedule (p.9-11 to 9-15), 8 rows, mi / mo:** oil 8,000 / 12 · spark plugs 96,000 (G2.5 GDI) and 48,000 / 72 (G2.5 T-GDI, grid marks on a render) · air cleaner 24,000 / 36 · cabin filter 16,000 / 24 (grid marks) · tire rotation 8,000 / 12 · coolant first 120,000 / 120 then 24,000 / 24 · brake fluid 48,000 / 48.
+
+All 17 printed unit pairs convert. Each row has one print, so there was no second print to compare.
+
+**Gates (null):** spark-plug part number and gap in all three · 12V battery (Veloster: not published; Santa Cruz: capacity-label illustration only, MF68R-DIN) · Veloster differential (front-wheel drive).
+
+**⚠ PROBE TOOLING INCIDENT (2026-11-14).** After about 6,700 portal probe requests in one afternoon, two runs at once, `owners.hyundaiusa.com` (Cloudflare) answered HTTP 429 with `Retry-After: 442`. The first probe tool treated every failed request as "not found", so it could not tell a missing file from a rate-limited answer — and its negatives had already been recorded here (the Accent defer, the Venue "nothing for 2025 / 2026"). The tool was rebuilt: a miss counts only on HTTP 404, the run stops on 429, one request at a time with a pause. Every negative recorded on 2026-11-14 was then re-asked and holds: Accent 1995–2004 (21 forms a year), Venue 2025 / 2026, Santa Cruz 2025 / 2026, Veloster 2020 — all HTTP 404; Accent 2007, 2009–2013, 2015 — HTTP 404 on the core forms. The probe counts quoted in the Venue and Accent sections below (322, 552) come from the first tool.
+
+**No vehicle row exists** for Santa Cruz 2022–2025, though books do (portal `2022-Santa-Cruz-Owners-Manual.pdf`; second host `NX4OB` labels 2021–2025).
+
+---
 
 ## ✅ VENUE — 3/3 (2020 / 2021 / 2026 QX) — `2026-11-14-hyundai-venue`, commit 43c1f8c1 — NINTH HYUNDAI SLICE
 Recon, reads, write and deploy all 2026-11-14 (live confirmed 15:21:01, blob `data.34209456.js` byte-identical to the local build at 15:21:02, old blob returns 404, CI green). Write script `_write_hyundai_venue.py`. Backup `wrench_vehicles.db.bak_venue_20261114_151436`. Fleet tally 317 → 320. The three ids held only blacklisted-source rows (ai-generated / scraped, never shipped), which this replaces.
@@ -68,6 +125,8 @@ Grids are printed sideways; statement rows were decoded from text, grid rows (oi
 **DEFER, all eight rows: no manufacturer owner's manual is available for these years.** The US portal's Accent folder starts at 2005 — 552 filename probes across 1995–2006 found only `2005_Hyundai_Accent_OM.pdf` and `2006_Hyundai_Accent_OM.pdf`. The second host does not list Accent for the U.S.A at all. The eight rows have no curated data and stay that way (honest defer, not a gap). Nothing was written.
 
 Portal Accent books that DO exist, for model years with no vehicle row: 2005, 2006, 2008, 2014 (`2014-Accent-Owners-Manual.pdf`), 2016, 2017, 2018 (`2018 Accent Owners Manual.pdf`), 2019 (`2019 Accent OM.pdf`), 2020 (`2020 Accent Owner's Manual.pdf`), 2021 (`2021 Accent OM.pdf`), 2022 (`2022-Accent-OM.pdf`); not found in 46 filename forms each: 2007, 2009–2013, 2015. Existence probes only — none was downloaded or read.
+
+**Re-checked 2026-11-14 with a status-aware probe** (see the probe tooling incident in the Veloster / Santa Cruz section): 21 filename forms for each of 1995–2004 returned HTTP 404; the core forms for 2007, 2009–2013 and 2015 returned HTTP 404. The defer stands.
 
 ---
 
