@@ -6,7 +6,52 @@ source pattern in `KYR_OEM_Manual_Source_Map.md` (Hyundai section). **Host:** `o
 glovebox-manual (free, no auth, citable manufacturer source). **This is the HMG foundation — it pre-characterizes
 Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the Sonata (shared platform + Theta II/Smartstream engines).**
 
-> **Hyundai status (2026-11-14, after the Kona deploy + audit corrections): 19 rows.** **Sonata 4/14** (2006 NF + 2018 LF + 2021 DN8 + 2024 DN8-FL; the "2005" write had landed on the wrong vehicle and was removed) · **Elantra ✅ 4/13** (2017/2020 AD + 2021/2022 CN7) · **Tucson ✅ 6/10** (2018/2020/2021 TL + 2022/2023/2024 NX4) · **Kona ✅ 5/5** (2020/2021 OS + 2022 OS facelift + 2024/2026 SX2). Two manufacturer hosts are now in use (US portal = first print, `ownersmanual.hyundai.com` = later print); values the two prints contradict and capacities whose quart/litre figures conflict are not written. DB also has Santa Fe 13, Palisade 6, Accent, Tiburon, Venue, Veloster, Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** Santa Fe → Palisade (Lambda V6 read fresh), then the newest deferred years the second host now serves (Tucson 2025/2026, Elantra 2024-2026, Sonata 2025/2026).
+> **Hyundai status (2026-11-14, after the Santa Fe deploy): 28 rows.** **Sonata 4/14** · **Elantra ✅ 4/13** · **Tucson ✅ 6/10** · **Kona ✅ 5/5** · **Santa Fe ✅ 9/13** (2005/2006 SM + 2018 three-row NC + 2019/2020 TM + 2021/2023 TM facelift + 2025/2026 MX5; 2001–2004 deferred). Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); values the prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written. DB also has Palisade 6, Accent, Tiburon, Venue, Veloster, Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** Palisade (LX2 2021–2025 and LX3 2026+ on the second host; Lambda 3.8 V6 read fresh), then the newest deferred years the second host serves (Tucson 2025/2026, Elantra 2024–2026, Sonata 2025/2026).
+
+## ✅ SANTA FE — 9/13 (2005/2006 SM + 2018 NC + 2019/2020 TM + 2021/2023 TM facelift + 2025/2026 MX5) — `2026-11-14-hyundai-santa-fe`, commit b864f51f — FIFTH HYUNDAI
+Recon, reads, write and deploy all 2026-11-14 (live blob data.e6b921b0.js md5 e6b921b0… byte-identical to the commit; _verify_shipped.py PASS 58; CI green; README count copy 295→304). Write script `_write_hyundai_santa_fe.py` (dry-run default; asserts each target id's year/make/model; quart/litre check on every shipped pair). Backup `wrench_vehicles.db.bak_santafe_20261114_114254`. Four generations, each read from its own books; Hybrid and Plug-in Hybrid have their own manuals and are not written.
+
+**Identity rulings (2026-11-14):** (1) **2019** is written from the second host's file labelled 2018 — the earliest TM-generation book, Copyright 2018, engines matching EPA's 2019 Santa Fe; the portal's 2019 file is the three-row body (sold that year as the Santa Fe XL). (2) **2018** is the three-row 3.3 V6 vehicle (the manual titled "2018 Hyundai Santa Fe", and what EPA calls Santa Fe that year); the two-row Sport has a separate manual and no DB row. (3) **2005/2006** are V6-only: EPA lists a 2.4 I4 that neither book carries.
+
+| Row | Engines | Oil (drain+filter) | Visc | Coolant | Trans |
+|---|---|---|---|---|---|
+| **2005 SM** (id 11155) | 2.7 V6 + 3.5 V6 | **4.76** / **4.54** | 5W-30; 10W-30 above 0 °F (first grade misprinted, not written) | 7.4 / 8.66 | ATF SP-III 8.98 |
+| **2006 SM** (id 11225) | same | 4.76 / 4.54 | 5W-20 or 5W-30; 10W-30 above 0 °F | 7.4 / 8.66 | ATF SP-III 8.98 |
+| **2018 NC three-row** (id 12522) | Lambda 3.3 V6 | **6.02** | 5W-30 | 9.6 | ATF SP-IV 8.24 |
+| **2019 TM** (id 12673) | 2.4 GDI + 2.0 T-GDI | **5.07** / 5.07 | 5W-20 / 5W-30 | 8.3 (8.6 trailer pkg) / 7.9 | ATF SP-IV 6.86 (2.4); 2.0T capacity not written |
+| **2020 TM** (id 12781) | same | 5.07 / 5.07 | 5W-20 / 5W-30 | same | same |
+| **2021 TM facelift** (id 12851) | Smartstream G2.5 GDI + G2.5 T-GDI | **6.13** both | 0W-20 (GDI); T-GDI not written | 7.5 / 8.17 | ATF SP-IV 6.87; T-GDI dual clutch 3.49–3.59 + 2.59–2.64 |
+| **2023 TM facelift** (id 12981) | same | 6.13 both | 0W-20 / 0W-30 | 7.5 / 8.17 | 6.87, fluid type not written; dual clutch 3.4–3.6 + 2.58–2.64 |
+| **2025 MX5** (id 13113) | Smartstream G2.5 T-GDi | 6.13 | 0W-30 full synthetic | **9.65** | wet dual clutch 3.49–3.6 + 2.59–2.64 |
+| **2026 MX5** (id 13179) | same | 6.13 | 0W-30 full synthetic | 9.65 | **automatic, ATF SP4M-1 7.5** |
+
+Common by generation: **SM** — hydraulic PS (PSF-3 0.95 / 1.06 qt), brake DOT 3 / DOT 4, transfer case + rear axle GL-5 80W/90 (0.85 / 1.16 qt), tire 225/70R16 @ 30, wheel nut **65–80 lb-ft**, fuel 19 gal; **plugs published: Champion RC10PYPB4 or NGK PFR5N-11, gap 0.039–0.043 in; battery MF 68 AH** (Electrical spec table) — all written. **NC** — EPS, DOT 3/4, GL-5 75W/90 rear 0.56 / transfer 0.72 qt, 235/60R18 · 235/55R19 @ 33, lug 79–94. **TM** — EPS, GL-5 75W/85 rear 0.61 qt (pre-facelift) / 0.56–0.67 (facelift), 235/65R17 · 235/60R18 · 235/55R19 @ 35 (pre) / 235/60R18 · 235/55R19 · 255/45R20 @ 35 (facelift), lug 79–94, fuel 18.75 gal (pre) / 17.7 gal (facelift; the 2021 first print gives it as 70.8 US qt / 67 L). **MX5** — MDPS, DOT-4, GL-5 75W/85 rear 0.56–0.67 / transfer 0.5–0.55 qt, 18-in @ 35 and 20/21-in @ 36 psi (PSI cells empty, note carries them), lug 79–94, fuel 17.7 gal.
+
+**Not written, and why (reasons live in the `source` suffix):**
+
+| Row | Value | What the books say | Rule |
+|---|---|---|---|
+| 2023 | Automatic transmission fluid type | first print ATF SP-IV; both later prints ATF SP4M-1 | edition conflict — capacity only |
+| 2020 | Brake fluid DOT-3 allowance | first print "DOT-3 or DOT-4"; later print "ISO 4925 DOT-4" | edition conflict — "DOT-4" written |
+| 2021 | T-GDI oil viscosity | capacities table 0W-20 (cell spans both engines); viscosity chart 0W-30 | internal conflict |
+| 2005 | First oil viscosity grade | printed "SAE 50W-20" | misprint |
+| 2019, 2020 | 2.0 T-GDI transmission capacity | 7.09 qt beside 7.0 L | units do not convert |
+| 2019, 2020 | Transfer case capacity | 0.44–0.49 qt beside 0.47–0.52 L | units do not convert |
+| 2018 | Fuel tank | 18.95 gal beside 71 L | units do not convert |
+
+Edition cross-checks: 2019 and 2020 books are text-identical on every page read; 2020 first print vs later print differ only in the brake-fluid line; 2021 first print vs later print (dated 2020-12-14) agree on every written value (they differ in a dual-clutch inspection interval); 2023 first print vs later prints agree on everything except the ATF type. 2005, 2006, 2018, 2019, 2025, 2026 have a single print.
+
+**Gates (null):** plug PN/gap 2018+ (interval only) · 12V battery 2018–2020 (no spec) and 2021+ (label illustration, "may differ") · EPS/MDPS · Hybrid / Plug-in Hybrid.
+
+**★ Carry outcomes (engine predicts, the OM decides):** Lambda 3.3 V6 **6.02 qt = Sonata NF's 3.3 Lambda 6.02** (thirteen model years apart) · Theta 2.4 GDI and 2.0 T-GDI both **5.07 = Sonata LF 5.07** · Smartstream 2.5 **6.13 = Tucson NX4 and Sonata facelift 6.13** · the same 2.5T keeps 6.13 qt and 0W-30 across TM and MX5 while coolant moves 8.17 → 9.65 qt with the body. **Transmission is not carried by the engine:** the 2.5T has a wet dual clutch in 2021–2025 and a conventional automatic in 2026.
+
+**OM normal-schedule intervals written (71 rows; mi / mo):** 2005, 2006 (6 each; p.5-4/5-5) — oil 7,500 / 6, plugs 60,000 / 48, air cleaner 30,000 / 24, A/C filter 10,000 / 12, coolant 30,000 / 24, **timing belt 60,000 / 48** (fuel filter 52,500 / 42 and the single ATF change at 105,000 / 84 are in the book but not written). 2018 (6; list-style schedule p.7-9..7-23) — oil 7,500 / 12, plugs 100,000 / 10 years, air cleaner 30,000 / 24, climate filter 15,000 / 12, rotation 7,500 / 6, coolant first 120,000 mi or 60 months (as printed) then 30,000 / 24. 2019, 2020 (11 each; p.7-8, 7-13) — oil 7,500 / 12 (2.0T 6,000 / 12), plugs 97,500 (42,000), air cleaner 30,000 / 48 (24,000 / 48), climate filter 15,000 / 12 (12,000 / 12), rotation 7,500 (6,000), coolant 120,000 / 120 then 30,000 / 24. 2021 (9; p.9-8..9-11) — oil 8,000 / 12, plugs GDI 96,000 / T-GDI 48,000, air cleaner 24,000 / 36, climate filter 16,000 / 24, coolant GDI 120,000 / 120 then 30,000 / 24 and T-GDI 80,000 / 10 years then 24,000 / 24, brake fluid GDI 60,000 / 48 and T-GDI 48,000 / 48. 2023 (8) — oil 8,000 / 12, plugs 96,000 / 48,000, air cleaner 24,000 / 36, cabin filter 16,000 / 24, rotation 8,000 / 12, coolant 120,000 / 120 then 24,000 / 24, brake fluid 48,000 / 48. 2025, 2026 (7 each) — oil 8,000 / 12, plugs 48,000, air cleaner 24,000 / 36, cabin filter 16,000 / 24, rotation 8,000 / 12, coolant 120,000 / 120 then 24,000 / 24, brake fluid 48,000 / 48.
+
+### DEFERRED (4, each with reason)
+- **2001–2004 (ids 10988, 11014, 11049, 11097)** — no manufacturer manual on either host (portal sweep 2001–2007 found only 2005 and 2006; the second host starts at 2018).
+- **⚠ Separate-manual variants (known gap):** Santa Fe Hybrid (TMaHEV / MX5aHEV), Plug-in Hybrid (TMPHEV), and the 2018 two-row Santa Fe Sport — not written, not guessed.
+
+---
 
 ## ⚠ AUDIT 2026-11-14 — live-row corrections (commit e8b42251, `2026-11-14-hyundai-kona`)
 The 15 Hyundai rows live before the Kona slice were checked against the later manual prints and against their own cited books (read-only audit, then corrections approved the same day; script `_fix_hyundai_audit_2026_11_14.py`, backup `wrench_vehicles.db.bak_hyundai_audit_20261114_104836`).
