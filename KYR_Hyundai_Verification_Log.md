@@ -6,7 +6,70 @@ source pattern in `KYR_OEM_Manual_Source_Map.md` (Hyundai section). **Host:** `o
 glovebox-manual (free, no auth, citable manufacturer source). **This is the HMG foundation — it pre-characterizes
 Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the Sonata (shared platform + Theta II/Smartstream engines).**
 
-> **Hyundai status (2026-11-14, after the Sonata / Elantra re-read): 41 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 5/5** · **Santa Fe ✅ 9/13** · **Palisade ✅ 6/6**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. DB also has Accent, Tiburon, Venue, Veloster, Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. The unverified older years (Tucson 2017/2019, Elantra 2018 and 2000–2004, Sonata 2001–2005 and 2019/2020) are not on the second host and would need portal recon.
+> **Hyundai status (2026-11-14, after the Venue slice): 44 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 5/5** · **Santa Fe ✅ 9/13** · **Palisade ✅ 6/6** · **Venue ✅ 3/3** · **Accent ⛔ 0/8 (deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked), Veloster (2019–2021), Santa Cruz (2026), Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. Veloster has portal books for 2019 and 2021 (2020 not found); books exist for model years that have no vehicle row (Venue 2022–2025, Accent 2005+).
+
+## ✅ VENUE — 3/3 (2020 / 2021 / 2026 QX) — `2026-11-14-hyundai-venue`, commit 43c1f8c1 — NINTH HYUNDAI SLICE
+Recon, reads, write and deploy all 2026-11-14 (live confirmed 15:21:01, blob `data.34209456.js` byte-identical to the local build at 15:21:02, old blob returns 404, CI green). Write script `_write_hyundai_venue.py`. Backup `wrench_vehicles.db.bak_venue_20261114_151436`. Fleet tally 317 → 320. The three ids held only blacklisted-source rows (ai-generated / scraped, never shipped), which this replaces.
+
+| Row | Books | Print status |
+|---|---|---|
+| **2020** (id 677) | portal `2020 Venue Owner's Manual.pdf` (375 pp, Copyright 2019, titled) + second host `QX/2020` (392 pp, Copyright 2020) | two prints, identical on every page read |
+| **2021** (id 2170) | portal `2021-Venue-Owners-Manual.pdf` (392 pp, Copyright 2020, titled, glyph-coded text) + `QX/2021` (392 pp, Copyright 2021) | two prints, identical on every page read (the later print adds a notice on p.8-7) |
+| **2026** (id 9980) | `QX/2026` (397 pp, Copyright 2026, PDF created 2026-07-21, title `QX_ENG-HMA.indb`) | one available print; the portal has nothing for 2025 / 2026 (322 probes) |
+
+**Self-ID (every book):** Venue body on the exterior overview p.2-2, wheelbase 99.2 in, overall length 159.0 in, Smartstream G1.6 1,598 cc, Copyright HYUNDAI Motor America. One engine in every year.
+
+**⚠ QX LABEL = MODEL YEAR — proved, not assumed.** `QX/2020` has the same copyright year (2020) and the same page count (392) as the titled 2021 portal book, which looked like a shifted label (as on Santa Fe `TMa`). The maintenance grid settled it: `QX/2020` steps by 7,500 miles like the titled 2020 book; the titled 2021 book steps by 8,000. A later print of one model year resembles the next year's first print in everything except the values that changed between model years, so identify by such a value.
+
+**Values (same in all three years unless a year is named):**
+
+| Field | Value | Page |
+|---|---|---|
+| Engine oil | 4.02 qt / 3.8 L | 2-11 |
+| Viscosity 2020 | 0W-20 recommended; chart also allows 5W-20, 0W-30, 5W-30 (all temperatures) and 10W-30 above 0 °F; API latest (SN PLUS), fallback API SL / ILSAC GF-3 / ACEA A3 | 2-12 (render) |
+| Viscosity 2021, 2026 | 0W-20 only; API SN PLUS/SP or ILSAC GF-6, full synthetic required | 2-12 (render) |
+| Manual transmission fluid (2020, 2021 books) | API GL-4 SAE 70W TGO-9, 1.59–1.69 qt / 1.5–1.6 L | 2-11 |
+| Intelligent variable transmission fluid | CVTF SP-CVT1 (2026: MICHANG or Hyundai genuine); **quantity not written** | 2-11 |
+| Coolant | phosphate-based ethylene glycol; manual 5.94 qt / 5.62 L; **automatic quantity not written** | 2-11 |
+| Brake (/ clutch) fluid | SAE J1704 DOT-4 LV / FMVSS 116 DOT-4 / ISO 4925 Class 6; 0.74–0.85 qt / 0.7–0.8 L | 2-11 |
+| Fuel tank | 11.89 gal / 45 L | 2-11 |
+| Tires | 185/65R15 at 36 psi; 205/55R17 at 33 psi; front and rear; compact spare T125/80D15 or D16 at 60 psi | 2-9 |
+| Wheel lug nut | 79–94 lb-ft (107–127 N·m, 11–13 kgf·m) | 2-9 |
+| Steering | electric (EPS / MDPS), no fluid | text |
+
+**⚠ UNIT CONFLICTS (unit ruling applied, "Go, as recommended" 2026-11-14):** every book prints the intelligent variable transmission fluid as `6.34 US qt. (6.7 L)` (6.7 L = 7.08 qt) and that transmission's coolant as `6.32 US qt. (5.78 L)` (5.78 L = 6.11 qt). Neither quantity is written. The 2020 / 2021 coolant column carries the manual-transmission figure only, labelled; the 2026 coolant quantity is null. The write script fails if any of the four figures reaches a shipped column.
+
+**OM normal-schedule intervals written (20 rows; mi / mo):**
+
+| Item | 2020 (p.8-8) | 2021 (p.8-8, 8-10) | 2026 (p.9-8, 9-10) |
+|---|---|---|---|
+| Engine oil & filter | 7,500 / 12 | 8,000 / 12 | 8,000 / 12 |
+| Spark plugs | 97,500 | 96,000 / 144 | 96,000 |
+| Air cleaner filter | 30,000 / 48 | 32,000 / 48 | 32,000 / 48 |
+| Climate control / cabin air filter | 15,000 / 12 | 8,000 / 12 | 16,000 / 24 |
+| Tire rotation | 7,500 | 8,000 | 8,000 / 12 |
+| Coolant, first replacement | 120,000 / 120 | 120,000 / 120 | 120,000 / 120 |
+| Coolant, thereafter | 30,000 / 24 | 24,000 / 36 | 24,000 / 24 |
+| Brake fluid | inspect only — no row | 60,000 / 48 | 60,000 / 48 |
+
+Grids are printed sideways; statement rows were decoded from text, grid rows (oil, air cleaner, cabin filter) read from upright renders. Exact page diffs (not similarity scores) confirmed the two prints agree for 2020 and 2021.
+
+**Rulings on this slice (2026-11-14, "Go, as recommended"):** R1 the unit ruling as above; R2 the 2021 books still list a manual transmission → written as printed, marked "if equipped", for 2020 and 2021; R3 the 2020 severe-usage table is headed "Nu 2.0 MPI", an engine this vehicle does not have (both prints, gone from 2021 on) → severe rows are never written, and the 2020 normal schedule, which carries no engine label and is identical in both prints, is written.
+
+**Gates (null):** spark-plug part number and gap, 12V battery (neither published) · numeric tire-pressure columns (pressure differs by wheel size, carried in the tire note) · differential (front-wheel drive only).
+
+**Misprints noted:** `API Lastest` on the 2020 capacities table; the "Nu 2.0 MPI" heading above.
+
+**No vehicle row exists** for Venue 2022–2025, though books do (portal `2022-Venue-Owners-Manual.pdf`, `2023-Venue-OM.pdf`, `2024 Venue OM.pdf`; second host `QX/2022`–`QX/2025`).
+
+---
+
+## ⛔ ACCENT — 0/8 DEFERRED (1995–2002, ids −140002 to −140009) — recon 2026-11-14
+**DEFER, all eight rows: no manufacturer owner's manual is available for these years.** The US portal's Accent folder starts at 2005 — 552 filename probes across 1995–2006 found only `2005_Hyundai_Accent_OM.pdf` and `2006_Hyundai_Accent_OM.pdf`. The second host does not list Accent for the U.S.A at all. The eight rows have no curated data and stay that way (honest defer, not a gap). Nothing was written.
+
+Portal Accent books that DO exist, for model years with no vehicle row: 2005, 2006, 2008, 2014 (`2014-Accent-Owners-Manual.pdf`), 2016, 2017, 2018 (`2018 Accent Owners Manual.pdf`), 2019 (`2019 Accent OM.pdf`), 2020 (`2020 Accent Owner's Manual.pdf`), 2021 (`2021 Accent OM.pdf`), 2022 (`2022-Accent-OM.pdf`); not found in 46 filename forms each: 2007, 2009–2013, 2015. Existence probes only — none was downloaded or read.
+
+---
 
 ## ✅ RE-READ — 8 rows (Sonata 2006/2018/2021/2024 + Elantra 2017/2020/2021/2022) — `2026-11-14-hyundai-reread`, commit a1950c1b — EIGHTH HYUNDAI SLICE
 Recon, reads, write and deploy all 2026-11-14 (live confirmed 14:43:59, blob `data.abf31de5.js` byte-identical to the local build at 14:44:01, CI green). Write script `_write_hyundai_sonata_elantra_reread.py`, which supersedes `_write_hyundai_sonata.py` and `_write_hyundai_elantra.py` for these ids. Backup `wrench_vehicles.db.bak_reread_20261114_143853`. No new vehicle: the fleet tally stays 317.
