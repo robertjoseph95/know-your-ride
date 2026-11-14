@@ -1,3 +1,9 @@
+# SUPERSEDED 2026-11-14 - DO NOT RE-RUN. The audit of the live Hyundai rows corrected values this script wrote
+# (see _fix_hyundai_audit_2026_11_14.py). Re-running would undo those corrections: it writes a battery group (AGM70L) taken from an example label page for 2021 and 2022.
+import sys as _sys
+if "--i-know-this-is-superseded" not in _sys.argv:
+    _sys.exit("_write_hyundai_elantra.py is superseded by the 2026-11-14 audit corrections - see _fix_hyundai_audit_2026_11_14.py")
+
 # Hyundai Elantra - SECOND Hyundai slice (cashes the Sonata source foundation). 4 writable; 9 deferred (untouched).
 # Writable: 2017/2020 AD, 2021/2022 CN7. Source = owners.hyundaiusa.com glovebox-manual (free, citable).
 # Multi-engine per row (base OM only; separate-OM trims noted, NOT written). HEV = gated variant.

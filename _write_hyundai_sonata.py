@@ -1,3 +1,9 @@
+# SUPERSEDED 2026-11-14 - DO NOT RE-RUN. The audit of the live Hyundai rows corrected values this script wrote
+# (see _fix_hyundai_audit_2026_11_14.py). Re-running would undo those corrections: it addresses id 35202 (the model-year-2000 Sonata) as 2005, writes a 2021 2.5 GDi oil capacity the later print contradicts, a 2024 tire size that is not in the 2024 book, and a battery group taken from an example label page.
+import sys as _sys
+if "--i-know-this-is-superseded" not in _sys.argv:
+    _sys.exit("_write_hyundai_sonata.py is superseded by the 2026-11-14 audit corrections - see _fix_hyundai_audit_2026_11_14.py")
+
 # Hyundai Sonata - FIRST HYUNDAI slice (fresh make). 5 writable rows; 9 deferred (untouched).
 # Writable: 2005/2006 NF (2.4 Theta + 3.3 Lambda V6), 2018 LF (2.4 GDI + 2.0T + 1.6T), 2021 DN8 (2.5 + 1.6T),
 #   2024 DN8-FL (2.5 GDI + 2.5T N-Line). Source = owners.hyundaiusa.com MyHyundai glovebox-manual (free, citable).
