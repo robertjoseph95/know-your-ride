@@ -36,6 +36,8 @@ BARE = "owner-manual-verified"
 JARGON = re.compile(r"\bgated\b|\bpending\b|\bnot in OM\b|\bin OM\b", re.I)   # mirrors _verify_shipped S1.12
 SRC_TABLES = ("oil_change", "fluids", "parts", "torque_specs")
 GLOBAL = "ownersmanual.hyundai.com full_pdf %s en_US"
+# _fix_hyundai_restore_2022_intervals.py later rewords the Kona 2022 / Elantra 2022 notes; its mark means "already applied"
+RESTORED_MARK = "restored 2026-11-14"
 
 SONATA_SRC = (
     "owner-manual-verified (per 2021 Hyundai Sonata OM, portal file 2021-Sonata-Owners-Manual.pdf = "
@@ -224,9 +226,9 @@ def plan(c):
                     for (cur,) in c.execute("SELECT source FROM %s WHERE vehicle_id=?" % t, (vid,)).fetchall():
                         if cur == BARE:
                             continue                            # frozen bare row: never touched
-                        if new in cur:
+                        if new in cur or RESTORED_MARK in cur:
                             touched += 1
-                            continue                            # already applied
+                            continue                            # already applied (or reworded later by the restoration script)
                         assert cur.count(old) == 1, (vid, t, "source text to replace not found exactly once", old[:60])
                         ns = cur.replace(old, new)
                         good_source(ns, t, vid)
