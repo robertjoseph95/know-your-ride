@@ -27,6 +27,8 @@
 # ** Shipped-text rule (S1.12): no "GATED" / "pending" / "in OM" bookkeeping in any value column. battery_notes stays
 #    NULL. differential_fluids_json is written in the renderer's own shape [{location, fluid_type}] (S1.11).
 #
+# ** 2026-11-14: the 2024 row's coolant now carries both manufacturer figures (the NX4a book gives 10.11 qt / 9.57 L);
+#    applied to the live row by _write_hyundai_newest_years.py (fluids only). A re-run of THIS script reproduces it.
 # Usage:  python _write_hyundai_tucson.py            -> DRY RUN: print every row, classify every source, write nothing
 #         python _write_hyundai_tucson.py --write    -> backup DB, DELETE the 6 curated tables per id, INSERT, verify
 import sqlite3, json, shutil, datetime, sys, os, re
@@ -192,11 +194,11 @@ ROWS = [
   fluids=dict(
    trans="Automatic transmission: " + ATF_TL2 + ", 6.87 qt / 6.5 L.",
    brake=BRAKE_NX4, cool_type=COOL_NX4,
-   cool_cap="10.04 qt / 9.5 L (Smartstream G2.5 GDI)",
+   cool_cap="10.04 qt / 9.5 L or 10.11 qt / 9.57 L (Smartstream G2.5 GDI)",
    diff=diff(GL5_85 + ", 0.56-0.67 qt / 0.53-0.63 L", GL5_85 + ", 0.65-0.71 qt / 0.62-0.68 L")),
   parts=dict(tire="235/65R17 or 235/55R19",
    note="17-in wheels: 235/65R17; 19-in wheels: 235/55R19; 35 psi front and rear at normal and maximum load. Compact spare T135/90D17 at 60 psi. Fuel tank 14.27 gal / 54 L."),
-  src="owner-manual-verified (per 2024 Hyundai Tucson OM, portal file 2024_Tucson_Owners_Manual.pdf = tucson_2024_NX4_OM.pdf, owners.hyundaiusa.com glovebox-manual; NX4, self-ID engine table p.10-2 Smartstream G 2.5 GDI 2,497cc, wheelbase 108.5 in; capacities p.10-6 (coolant 10.04 qt, the one change from 2023), viscosity p.10-7, tires + lug torque p.10-4, brake fluid DOT 4 also p.9-17; gated to null: spark-plug part number and gap (not published, interval only), 12V battery group and CCA (p.9-31 shows only a label-reading example MF68L-DIN under Santa Fe image code OTM090064L, not a Tucson spec), battery notes; 1.6T Hybrid / Plug-in Hybrid has its own manual and is gated)",
+  src="owner-manual-verified (per 2024 Hyundai Tucson OM, portal file 2024_Tucson_Owners_Manual.pdf = tucson_2024_NX4_OM.pdf, owners.hyundaiusa.com glovebox-manual; NX4, self-ID engine table p.10-2 Smartstream G 2.5 GDI 2,497cc, wheelbase 108.5 in; capacities p.10-6 (coolant 10.04 qt, the one change from 2023), viscosity p.10-7, tires + lug torque p.10-4, brake fluid DOT 4 also p.9-17; gated to null: spark-plug part number and gap (not published, interval only), 12V battery group and CCA (p.9-31 shows only a label-reading example MF68L-DIN under Santa Fe image code OTM090064L, not a Tucson spec), battery notes; 1.6T Hybrid / Plug-in Hybrid has its own manual and is gated; 2026-11-14 second-book check: the manufacturer lists two 2024 Tucson manuals for the U.S.A, ownersmanual.hyundai.com full_pdf NX4 2024 en_US and ownersmanual.hyundai.com full_pdf NX4a 2024 en_US; this row's portal book and NX4 print coolant 10.04 qt / 9.5 L, NX4a prints 10.11 qt / 9.57 L (p.10-6 in each); both manufacturer figures are written, unattributed, because the books do not say which vehicle is which (ruling 2026-11-14); oil, transmission fluid, viscosity, tires, wheel nut torque and the maintenance schedule are identical in the two books)",
   msrc="Hyundai Owner's Manual (Tucson 2024 NX4, p.%s)",
   maint=[
    (8000, 12, "Engine oil & filter change", "9-10"),
