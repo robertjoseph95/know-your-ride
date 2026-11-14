@@ -137,7 +137,13 @@ BLACKLIST_SUFFIX_MARKERS = (
 BARE_VERIFIED_TOKEN = "owner-manual-verified"
 BARE_ROW_TABLES = ("oil_change", "parts", "fluids", "torque_specs")
 BARE_ROW_COUNT = 424
-BARE_ROW_SHA256 = "ca156c69ed4cc8df34ff1244a612d497494a725ec3efcdd7d502f2aa179c8980"
+# Ruling 2026-11-13 (re-pin): the GATED-jargon scrub (`_fix_gated_jargon.py`, batch 2)
+# rewrote process wording in the note columns of 14 grandfathered `parts` rows
+# (battery_notes on 8 Nissan / 5 Honda / 1 Ford; tire_size_note on the 2022 F-150).
+# Text only: no spec value, part number or source changed; count stays 424; no row
+# entered or left the set. Previous pin ca156c69ed4cc8df34ff1244a612d497494a725ec3efcdd7d502f2aa179c8980
+# (matches the pre-scrub backup wrench_vehicles.db.bak_gatedjargon_20261113_194424).
+BARE_ROW_SHA256 = "82ded42209a31b69532c971b14aed8cfdc52e9846d916bdf87111aeaffdd97f5"
 
 # IC-02E freeze: current shape of the blocked ev_specs table.
 EV_TABLE = "ev_specs"

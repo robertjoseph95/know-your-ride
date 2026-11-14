@@ -220,6 +220,47 @@ def s1_11_diff_shape(a):
     return out
 
 
+# S1.12 (2026-11-13): no campaign bookkeeping in shipped verified text. `GATED`, `pending`,
+# `not in OM` are the campaign's internal gate vocabulary; it belongs in the DB `source`
+# field (never shipped) or the make's verification log, never in a value column. ver:0
+# values are stripped at build, so every string that reaches a vehicle object is shipped
+# verified content: none of it may carry that vocabulary. Recalls are excluded (NHTSA text).
+# (Found 2026-11-13: 312 + 377 verified rows carried it in Battery Notes, the Transmission
+# and Coolant rows, oil capacity, spark-plug gap, coolant capacity, the Trim Variants tire
+# note and the Colorado/Canyon differential JSON.)
+_JARGON_RE = re.compile(r"\bgated\b|\bpending\b|\bnot in OM\b|\bin OM\b", re.I)
+
+
+def _walk_strings(obj, path):
+    if isinstance(obj, str):
+        yield path, obj
+    elif isinstance(obj, dict):
+        for k, v in obj.items():
+            for item in _walk_strings(v, path + "." + str(k)):
+                yield item
+    elif isinstance(obj, list):
+        for i, v in enumerate(obj):
+            for item in _walk_strings(v, path + "[%d]" % i):
+                yield item
+
+
+def s1_12_no_process_jargon(a):
+    out = []
+    n_hits = 0
+    for v in a.D["v"]:
+        for k, sub in v.items():
+            if k == "recalls":
+                continue
+            for path, s in _walk_strings(sub, k):
+                m = _JARGON_RE.search(s)
+                if m:
+                    n_hits += 1
+                    if len(out) < 5:
+                        out.append("vehicle %s %s carries %r: %r" % (v.get("id"), path, m.group(0), s[:110]))
+    if n_hits > len(out):
+        out.append("... %d jargon-bearing shipped strings in total" % n_hits)
+    return out
+
 def s1_5_hash_and_reference(a):
     out = []
     if len(a.blob_paths) != 1:
@@ -1117,8 +1158,13 @@ _S10_SOURCE_TABLES = frozenset({
     "maintenance", "ev_specs", "fuse_locations", "vehicle_notes",
 })
 _S10_BARE_COUNT = 424
-_S10_BARE_SHA256 = "ca156c69ed4cc8df34ff1244a612d497494a725ec3efcdd7d502f2aa179c8980"
-_S10_MAPPING_SHA256 = "4e8447602ec0f67464d4decddcecbeb09f190e4a5b1796e281e4b12764065674"
+# Ruling 2026-11-13 (re-pin, see files/source_registry.py): the GATED-jargon scrub rewrote
+# note text in 14 grandfathered parts rows (8 Nissan / 5 Honda / 1 Ford); text only, count
+# unchanged at 424. Previous pin ca156c69ed4cc8df34ff1244a612d497494a725ec3efcdd7d502f2aa179c8980.
+_S10_BARE_SHA256 = "82ded42209a31b69532c971b14aed8cfdc52e9846d916bdf87111aeaffdd97f5"
+# Mapping pin follows the bare-row re-pin above (BARE_ROW_SHA256 is part of the canonical
+# payload); previous pin 4e8447602ec0f67464d4decddcecbeb09f190e4a5b1796e281e4b12764065674.
+_S10_MAPPING_SHA256 = "9865c2e4ff9fbc4272d3d1d78d345983fa8a8c8decd7a96889ac0b6e2e6484b5"
 _S10_EV_ROWS = 75
 _S10_EV_SOURCE = "epa-manufacturer-specs"
 
@@ -1693,6 +1739,7 @@ CHECKS = [
     ("S1.9-paid-feature-gate",   "FAIL", "CI", s1_9_paid_feature_gate),
     ("S1.10-field-allowlist",    "FAIL", "CI", s1_10_vehicle_field_allowlist),
     ("S1.11-diff-shape",         "FAIL", "CI", s1_11_diff_shape),
+    ("S1.12-no-process-jargon",  "FAIL", "CI", s1_12_no_process_jargon),
     ("S1.5-hash-and-reference",  "FAIL", "CI", s1_5_hash_and_reference),
     ("S1.6-size-budget",         "WARN", "CI", s1_6_size_budget),
     ("S2.1-noindex",             "FAIL", "CI", s2_1_noindex),

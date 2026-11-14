@@ -55,6 +55,18 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
      *(2026-11-10: 153 dict-shaped verified rows never rendered — an object has no `.length`
      — and 25 Nissan `{type,fluid}` rows rendered as em-dashes; 11 Colorado/Canyon rows
      carried an OM-silent `GATED` placeholder as if it were a value → omitted at build.)*
+  6d. [CI][FAIL] **No process jargon in shipped text (S1.12):** no string anywhere in a shipped
+     vehicle object (recalls excluded: NHTSA text) matches
+     `gated|pending|not in OM|in OM` (case-insensitive). `GATED` /
+     `pending` / `not in OM` are the campaign's internal gate vocabulary: it belongs in the DB
+     `source` field (never shipped) or the make's verification log, never in a value column,
+     because ver:0 stripping cannot tell a fact from a note once the note is stored AS the value.
+     *(2026-11-13: 312 verified rows on 171 vehicles carried it in Battery Notes, the Transmission
+     row, the placard oil line, spark-plug gap and coolant capacity; a pattern-keyed second sweep
+     found 377 more in Battery Notes, the Coolant row, the Trim Variants tire note and the
+     Colorado/Canyon differential JSON. `_fix_gated_jargon.py` rewrote the process clause to plain
+     consumer wording with the verified facts verbatim; values that were nothing but a gate note
+     became NULL (4 + 11).)*
   7. [DB][FAIL] Verified-value equivalence: rebuilding the data JSON from the canonical DB
      reproduces the committed blob (requires a `--check` mode on the rebuild; see design).
   8. [DB][FAIL] `_assert_gate_sources` over the live DB: no blacklisted source computes `ver=1`.
@@ -327,7 +339,10 @@ source, no frequency framing, and a DB-honest count.
   5. [DB][FAIL] Citation-debt freeze: exactly 424 rows carry the bare
      `owner-manual-verified` token, with a pinned content digest over their non-source
      columns — new/changed verified rows require a provenance suffix; changes to the
-     grandfathered set require a ruling.
+     grandfathered set require a ruling. *(Ruling 2026-11-13: digest re-pinned to
+     `82ded422...` after the GATED-jargon scrub rewrote note text in 14 grandfathered `parts`
+     rows: battery_notes on 8 Nissan / 5 Honda / 1 Ford, tire_size_note on the 2022 F-150;
+     text only, no value or source changed, count unchanged at 424. See S1 item 6d.)*
   6. [DB][FAIL] Every source-bearing table has an explicit disposition (6 registry-gated,
      `ev_specs` blocked pending IC-02E, `fuse_locations`/`vehicle_notes` excluded-never-
      ships); a new source-bearing table cannot bypass the gate by omission.
