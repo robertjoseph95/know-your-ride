@@ -131,3 +131,9 @@ Had NS-3 + hydraulic been carried across, R53 would have been wrong on both. The
 | ★ Lug/drain/oil-filter | 83 / 22–29 / 11–15 ft-lb | same | same |
 
 **Notes:** 2017–2019 Rogue Hybrid (2.0L QR20DE, separate manual) NOT claimed — gas 2.5L written, hybrid noted in battery_notes. Preview-verified the three value-sets render distinctly (T32 4.9 qt; T33-2021 dual; T33 1.5T 5.0 qt + intercooler). NULL/gated: spark gap, battery, CVT capacity. **S35 (2008/2009) gated.** Deployed `2026-06-21-nissan-rogue`.
+
+## 2026-11-13 - GATED-jargon scrub (cross-make, commit `674d05d5`, version `2026-11-13-gated-jargon-scrub`)
+
+`_fix_gated_jargon.py` rewrote internal gate vocabulary (GATED / pending / not in OM / in OM) in shipped text columns to consumer wording; verified facts verbatim, `source` untouched; values that were only a gate note -> NULL. Verifier S1.12 now blocks that vocabulary from any shipped string. Full before/after: `KYR_GATED_Jargon_Rewrite_Log_2026-11-13_batch1_WRITTEN.md` / `_batch2_WRITTEN.md`. **Rule going forward:** gate reasons go in the `source` suffix or this log, never in battery_notes / tire_size_note / value strings.
+
+**Nissan specifics:** 8 grandfathered bare-token `parts` rows (2019/2020 Sentra, 2019 Altima, 2020 Maxima, 2020/2023 Rogue, 2020/2022 Pathfinder) had Battery Notes text rewritten; the citation-debt freeze digest was re-pinned under the 2026-11-13 ruling (text only, no value or source change).

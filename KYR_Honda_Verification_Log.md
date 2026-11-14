@@ -89,3 +89,9 @@
 | NULL → service manual | **lug torque** (not in Guide), plug gap, fixed plug/coolant/trans intervals, battery group/CCA, **drain-plug & trans-drain torque/size** | — |
 
 **Generation-stable write:** 2017 (id 12374) cited to this exact Guide; 2016/2018–2021 written `owner-manual-verified (per 2017 OG-05950, 10th-gen shared drivetrain)` — same 1.5T/2.0L drivetrain, fluids, capacities, tire sizes across the generation (same method as Mazda Gen 1/2/3, CR-V). Fabricated `ai-haiku-4.5` rows purged from all spec tables; service-manual fields left empty → "pending verification" (gate confirmed: oil/fluids/tire visible `ver=1`, gap/battery/torque pending; negative control 2022 11th-gen still gated). Deployed `2026-06-21-civic-10thgen`.
+
+## 2026-11-13 - GATED-jargon scrub (cross-make, commit `674d05d5`, version `2026-11-13-gated-jargon-scrub`)
+
+`_fix_gated_jargon.py` rewrote internal gate vocabulary (GATED / pending / not in OM / in OM) in shipped text columns to consumer wording; verified facts verbatim, `source` untouched; values that were only a gate note -> NULL. Verifier S1.12 now blocks that vocabulary from any shipped string. Full before/after: `KYR_GATED_Jargon_Rewrite_Log_2026-11-13_batch1_WRITTEN.md` / `_batch2_WRITTEN.md`. **Rule going forward:** gate reasons go in the `source` suffix or this log, never in battery_notes / tire_size_note / value strings.
+
+**Honda specifics:** 5 grandfathered bare-token `parts` rows (2008/2009/2010/2012 Accord, 2017 Civic) had Battery Notes text rewritten; the citation-debt freeze digest was re-pinned under the 2026-11-13 ruling (text only, no value or source change).

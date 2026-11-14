@@ -221,3 +221,9 @@ The full sweep is a clean CONFIRM-DON'T-ASSUME case study: brake DOT 3→DOT 4, 
 - [ ] **Engine→transmission-speed binding** — confirm from an authoritative GM source or leave gated (ATF type already verified; diesel→10-spd confirmed in supplement).
 - [x] **GMC Sierra 1500** (15 rows) — DONE (`2026-06-23-sierra`, commit 02e8bdaa); twin confirmed vs Silverado per gen; diesel-complete via shared supplement; 2003 V8 gap gated.
 - [ ] **GM-group next:** Sierra 2500 HD (4 rows, 6.6L Duramax — separate supplement); Cadillac/Buick siblings (inherit GM ecosystem); Suburban/Tahoe/Yukon/Escalade (note LM2 SUV diesel); Colorado/Canyon.
+
+## 2026-11-13 - GATED-jargon scrub (cross-make, commit `674d05d5`, version `2026-11-13-gated-jargon-scrub`)
+
+`_fix_gated_jargon.py` rewrote internal gate vocabulary (GATED / pending / not in OM / in OM) in shipped text columns to consumer wording; verified facts verbatim, `source` untouched; values that were only a gate note -> NULL. Verifier S1.12 now blocks that vocabulary from any shipped string. Full before/after: `KYR_GATED_Jargon_Rewrite_Log_2026-11-13_batch1_WRITTEN.md` / `_batch2_WRITTEN.md`. **Rule going forward:** gate reasons go in the `source` suffix or this log, never in battery_notes / tire_size_note / value strings.
+
+**Chevrolet specifics:** GM rows carried most of batch 1 (transmission binding parentheticals, battery-label notes, 2003 Suburban/Tahoe illegible-table gates -> 2 spark_plug_gap + 2 coolant_capacity NULL) and batch 2 (coolant_type 'not stated in OM' x116, tire_size_note '- pending.' x~120, 11 Colorado/Canyon 2020-2024 differential_fluids_json gate-only values -> NULL). No grandfathered GM row changed; freeze unaffected by GM rows.

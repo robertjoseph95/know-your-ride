@@ -206,3 +206,9 @@ Common (all read fresh): **5W-30**; **hydraulic PS** 0.7 qt (NOT EPS); **4-spd a
 
 ---
 *Page citations are OM printed-page numbers. Spec tables are image-rendered → read via render-to-image. OM PDFs kept locally (exceed GitHub 100MB limit, gitignored); provenance = doc number + self-ID code above.*
+
+## 2026-11-13 - GATED-jargon scrub (cross-make, commit `674d05d5`, version `2026-11-13-gated-jargon-scrub`)
+
+`_fix_gated_jargon.py` rewrote internal gate vocabulary (GATED / pending / not in OM / in OM) in shipped text columns to consumer wording; verified facts verbatim, `source` untouched; values that were only a gate note -> NULL. Verifier S1.12 now blocks that vocabulary from any shipped string. Full before/after: `KYR_GATED_Jargon_Rewrite_Log_2026-11-13_batch1_WRITTEN.md` / `_batch2_WRITTEN.md`. **Rule going forward:** gate reasons go in the `source` suffix or this log, never in battery_notes / tire_size_note / value strings.
+
+**Subaru specifics:** Subaru battery_notes prefixes 'GATED (Subaru OM does NOT print/publish):' and CVT '(type not user-serviceable, GATED)' rewritten to plain wording in batch 1. No grandfathered Subaru row changed.
