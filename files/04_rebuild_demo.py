@@ -57,6 +57,108 @@ def pj(val):
         return None
 
 
+# ── Differential Fluids shape normalizer (2026-11-10) ────────────────────────────
+# The renderer reads fluids.diff as [{location, fluid_type}]. The DB column
+# differential_fluids_json was written in three shapes over time -- a {key: "text"} dict
+# (153 verified rows: GM / Ford / Subaru), a [{type, fluid}] list (25 verified rows:
+# Nissan), and an unverified [{position, fluid_type, capacity_quarts, affiliate_url,
+# source, last_verified_at, ...}] list (442 ai rows, shelled by C1 anyway) -- so NO
+# verified row ever rendered: a dict has no .length (section skipped) and the
+# {type, fluid} keys rendered as em-dashes. Normalize here, in the one projection the
+# blob is built from, so the DB stays untouched and the shipped shape is pinned by
+# S1.11. Verified TEXT is carried verbatim (capacity stays inside the OM-cited string);
+# only the key names change. A value carrying the literal GATED marker is an OM-silent
+# placeholder, not a spec -> omitted (THE LAW: silent -> absent, never a fake value).
+_DIFF_LOC = {
+    "rear_axle": "Rear axle", "front_axle": "Front axle", "front_axle_4wd": "Front axle (4WD)",
+    "front_rear_axle_4wd": "Front & rear axles (4WD)",
+    "transfer_case": "Transfer case", "transfer_case_awd": "Transfer case (AWD)",
+    "transfer_case_4wd": "Transfer case (4WD)", "transfer_awd": "Transfer case (AWD)",
+    "rear_differential": "Rear differential", "rear_diff_awd": "Rear differential (AWD)",
+    "front_differential": "Front differential", "front_differential_at": "Front differential (AT)",
+    "front_differential_cvt": "Front differential (CVT)", "awd_coupling": "AWD coupling",
+    "manual_transmission": "Manual transmission", "automatic_transmission": "Automatic transmission",
+    "front": "Front differential", "rear": "Rear differential",
+}
+_DIFF_GATE_MARKER = "GATED"
+_DIFF_CAP_RE = re.compile(r"\d\s*(?:qt|quart|pint|l)\b", re.I)
+DIFF_NORM = {"dict_rows": 0, "list_rows": 0, "entries": 0, "gated_dropped": 0}
+
+
+def _diff_location(key):
+    k = str(key or "").strip()
+    if not k:
+        return None
+    if k.lower() in _DIFF_LOC:
+        return _DIFF_LOC[k.lower()]
+    words = []
+    for w in k.replace("-", "_").split("_"):
+        lw = w.lower()
+        if not lw:
+            continue
+        if lw in ("awd", "4wd", "at", "cvt", "mt"):
+            words.append("(" + lw.upper() + ")")
+        elif lw == "diff":
+            words.append("differential")
+        else:
+            words.append(lw)
+    s = " ".join(words)
+    return (s[:1].upper() + s[1:]) if s else None
+
+
+def norm_diff(val):
+    """Project any stored differential_fluids_json shape to [{location, fluid_type}]."""
+    if not val:
+        return None
+    out = []
+
+    def add(loc, fluid, cap=None):
+        fluid = str(fluid).strip() if fluid is not None else ""
+        if not fluid:
+            return
+        if _DIFF_GATE_MARKER in fluid:
+            DIFF_NORM["gated_dropped"] += 1
+            return
+        if cap not in (None, "", 0) and not _DIFF_CAP_RE.search(fluid):
+            fluid = "%s, %s qt" % (fluid, cap)
+        out.append({"location": loc or "Differential", "fluid_type": fluid})
+
+    if isinstance(val, dict):
+        DIFF_NORM["dict_rows"] += 1
+        for k, x in val.items():
+            add(_diff_location(k), x)
+    elif isinstance(val, list):
+        DIFF_NORM["list_rows"] += 1
+        for d in val:
+            if not isinstance(d, dict):
+                continue
+            loc = d.get("location") or _diff_location(d.get("type") or d.get("position"))
+            add(loc, d.get("fluid_type") or d.get("fluid"),
+                d.get("capacity_qts", d.get("capacity_quarts")))
+    DIFF_NORM["entries"] += len(out)
+    return out or None
+
+
+# Renderer migration (same fix, presentation side): the table had a third "Capacity"
+# column fed by a `capacity_qts` key no row ever carried, so it would show an em-dash
+# beside OM text that already states the capacity. Two columns; capacity rides in the
+# verified string. Applied as an idempotent template migration in main() + asserted.
+_DIFF_JS_OLD = (
+    "if(f.diff&&f.diff.length)h+='<div class=\"sec-head\">Differential Fluids</div>"
+    "<table class=\"tbl\"><thead><tr><th>Location</th><th>Fluid</th><th>Capacity</th></tr></thead><tbody>'"
+    "+f.diff.map(function(d){return '<tr><td style=\"font-weight:700;text-transform:capitalize\">'"
+    "+(d.location||'&mdash;')+'</td><td style=\"color:var(--dim)\">'+(d.fluid_type||'&mdash;')+'</td><td>'"
+    "+(d.capacity_qts?d.capacity_qts+' qts':'&mdash;')+'</td></tr>';}).join('')+'</tbody></table>';"
+)
+_DIFF_JS_NEW = (
+    "if(f.diff&&f.diff.length)h+='<div class=\"sec-head\">Differential Fluids</div>"
+    "<table class=\"tbl\"><thead><tr><th>Location</th><th>Fluid / Capacity</th></tr></thead><tbody>'"
+    "+f.diff.map(function(d){return '<tr><td style=\"font-weight:700;text-transform:capitalize\">'"
+    "+(d.location||'&mdash;')+'</td><td style=\"color:var(--dim)\">'+(d.fluid_type||'&mdash;')+'</td></tr>';})"
+    ".join('')+'</tbody></table>';"
+)
+
+
 def date_key(s):
     """MM/DD/YYYY -> (Y, M, D) for sorting; bad/empty -> zeros."""
     try:
@@ -365,7 +467,7 @@ def build_data(cur):
         "trans": r["transmission_fluid"], "trans_cap": r["transmission_capacity"],
         "brake": r["brake_fluid"], "coolant": r["coolant_type"],
         "coolant_cap": r["coolant_capacity"], "ps": r["power_steering_fluid"],
-        "diff": pj(r["differential_fluids_json"]),
+        "diff": norm_diff(pj(r["differential_fluids_json"])),
         "ver": _classify(r["source"] if "source" in r.keys() else None,
                          "fluids", r["vehicle_id"])}))
 
@@ -1841,6 +1943,9 @@ def main():
           "torque_rows={torque_rows} maint_rows={maint_rows} maint_parts={maint_parts} dropped; "
           "ver0_shells={ver0_shells} (engines + any other ver:0 object)".format(**strip))
 
+    print("Differential-fluids shape (S1.11): dict_rows={dict_rows} list_rows={list_rows} -> "
+          "entries={entries}; gated placeholders dropped={gated_dropped}".format(**DIFF_NORM))
+
     _assert_ic01_projection(vlist)
 
     # P1-1 (2026-07-11) build guard: verify the generic ver:0 invariant held -- no object may
@@ -1920,6 +2025,8 @@ def main():
     # (Apostrophe-free wording: the banner lives inside a single-quoted JS string.)
     html = html.replace("AI-generated guide - always verify specs before use.",
                         "AI-generated guide - always verify specs against your owner manual or the factory service manual before use.")
+    # Differential Fluids renderer: 3-col -> 2-col (S1.11, 2026-11-10). Idempotent migration.
+    html = html.replace(_DIFF_JS_OLD, _DIFF_JS_NEW, 1)
     html = fix_js_quotes(html)
 
     # Build-integrity guards: a .replace(old, new, 1) silently no-ops if `old` ever drifts,
@@ -1928,6 +2035,7 @@ def main():
     assert "const __D__=" in html, "embedded dataset missing after rebuild"
     assert "/*WRENCH_SELFHOST_FONTS*/" in html, "self-hosted @font-face block missing"
     assert "always verify specs against your owner manual" in html, "AI-guide banner migration did not apply"
+    assert _DIFF_JS_OLD not in html and html.count(_DIFF_JS_NEW) == 1, "Differential Fluids renderer migration did not apply (S1.11)"
 
     # 3) refresh the badge (lead with the verified number, not the fleet total: verified =
     #    vehicles carrying owner's-manual-verified curated specs, oil.ver==1 as the anchor.

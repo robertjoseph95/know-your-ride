@@ -172,6 +172,54 @@ def s1_10_vehicle_field_allowlist(a):
                 break
     return out
 
+# S1.11 (2026-11-10): the Differential Fluids projection shape. The renderer reads
+# fluids.diff as [{location, fluid_type}]; the DB column held three historical shapes
+# and NO verified row rendered (dict -> no .length -> section skipped; Nissan
+# {type,fluid} -> em-dashes). norm_diff() in the generator is the single projection;
+# this pins the shipped result on every ver:1 fluids object AND the two-column renderer
+# on both page files. Gate placeholders (`GATED`) must never ship as a value.
+_DIFF_KEYS = {"location", "fluid_type"}
+_DIFF_TH = "<th>Location</th><th>Fluid / Capacity</th>"
+
+def s1_11_diff_shape(a):
+    out = []
+    n_rows = 0
+    for v in a.D["v"]:
+        f = v.get("fluids")
+        if not isinstance(f, dict) or f.get("ver") != 1 or f.get("diff") is None:
+            continue
+        n_rows += 1
+        d = f["diff"]
+        vid = v.get("id")
+        if not isinstance(d, list) or not d:
+            out.append("vehicle %s fluids.diff is %s (must be a non-empty array)" % (vid, type(d).__name__))
+        else:
+            for e in d:
+                if not isinstance(e, dict) or set(e.keys()) != _DIFF_KEYS:
+                    out.append("vehicle %s diff entry keys %s (must be exactly location+fluid_type)"
+                               % (vid, sorted(e.keys()) if isinstance(e, dict) else type(e).__name__))
+                    break
+                bad = [k for k in _DIFF_KEYS
+                       if not isinstance(e[k], str) or not e[k].strip()
+                       or "<" in e[k] or ">" in e[k] or "GATED" in e[k]]
+                if bad:
+                    out.append("vehicle %s diff.%s invalid: %r" % (vid, bad[0], e[bad[0]]))
+                    break
+        if len(out) >= 5:
+            break
+    for needle, label in (('"diff":{', "dict-shaped"), ('"diff":[{"type"', "legacy {type,fluid}")):
+        n = a.blob_raw.count(needle)
+        if n:
+            out.append("blob carries %d %s diff value(s) (%r)" % (n, label, needle))
+    for name, txt in (("index.html", a.index), ("wrench_demo.html", a.demo_markup)):
+        n = txt.count(_DIFF_TH)
+        if n != 1:
+            out.append("%s: two-column Differential Fluids header found %d time(s), expected 1" % (name, n))
+    if not out and n_rows == 0:
+        out.append("no ver:1 fluids.diff shipped at all (expected ~178 verified rows)")
+    return out
+
+
 def s1_5_hash_and_reference(a):
     out = []
     if len(a.blob_paths) != 1:
@@ -1644,6 +1692,7 @@ CHECKS = [
     ("S1.4-narratives-gone",     "FAIL", "CI", s1_4_narratives_gone),
     ("S1.9-paid-feature-gate",   "FAIL", "CI", s1_9_paid_feature_gate),
     ("S1.10-field-allowlist",    "FAIL", "CI", s1_10_vehicle_field_allowlist),
+    ("S1.11-diff-shape",         "FAIL", "CI", s1_11_diff_shape),
     ("S1.5-hash-and-reference",  "FAIL", "CI", s1_5_hash_and_reference),
     ("S1.6-size-budget",         "WARN", "CI", s1_6_size_budget),
     ("S2.1-noindex",             "FAIL", "CI", s2_1_noindex),

@@ -44,6 +44,17 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
      every vehicle object must be in `VEHICLE_FIELDS`; unenumerated fields fail. Closes the
      warranty/fuse_loc class — a field the generator attaches without a `_ver()` path can no
      longer ship unnoticed. New surface ⇒ deliberate new allowlist entry. *(2026-07-14)*
+  6c. [CI][FAIL] **Differential Fluids shape (S1.11):** every `ver:1` `fluids.diff` is `null`
+     or a non-empty array of `{location, fluid_type}` string pairs — exactly those two keys,
+     non-empty, no markup, no gate-placeholder text (`GATED`); zero dict-shaped `"diff":{`
+     and zero legacy `{type,fluid}` entries anywhere in the blob; and the renderer's
+     two-column header (`Location | Fluid / Capacity`) appears exactly once in `index.html`
+     and in `wrench_demo.html`. The DB column `differential_fluids_json` keeps its three
+     historical shapes; `norm_diff()` in the generator is the one projection to this shape
+     and carries verified text verbatim (capacity stays inside the OM-cited string).
+     *(2026-11-10: 153 dict-shaped verified rows never rendered — an object has no `.length`
+     — and 25 Nissan `{type,fluid}` rows rendered as em-dashes; 11 Colorado/Canyon rows
+     carried an OM-silent `GATED` placeholder as if it were a value → omitted at build.)*
   7. [DB][FAIL] Verified-value equivalence: rebuilding the data JSON from the canonical DB
      reproduces the committed blob (requires a `--check` mode on the rebuild; see design).
   8. [DB][FAIL] `_assert_gate_sources` over the live DB: no blacklisted source computes `ver=1`.
