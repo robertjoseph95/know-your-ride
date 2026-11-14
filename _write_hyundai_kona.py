@@ -40,6 +40,9 @@ from source_registry import classify, SourceRegistryError  # noqa: E402
 
 DB = os.path.join(ROOT, "wrench_vehicles.db")
 WRITE = "--write" in sys.argv
+if WRITE and "--i-know-this-is-superseded" not in sys.argv:      # label audit 2026-11-14
+    sys.exit("_write_hyundai_kona.py: rows this script writes were corrected by _fix_hyundai_label_audit_2026_11_14.py; a re-run "
+             "would undo that. Pass --i-know-this-is-superseded to proceed, then run the fix script again.")
 WITH_2026 = "--with-2026" in sys.argv
 JARGON = re.compile(r"\bgated\b|\bpending\b|\bnot in OM\b|\bin OM\b", re.I)   # mirrors _verify_shipped S1.12
 
