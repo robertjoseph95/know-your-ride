@@ -6,7 +6,57 @@ source pattern in `KYR_OEM_Manual_Source_Map.md` (Hyundai section). **Host:** `o
 glovebox-manual (free, no auth, citable manufacturer source). **This is the HMG foundation — it pre-characterizes
 Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the Sonata (shared platform + Theta II/Smartstream engines).**
 
-> **Hyundai status (2026-11-14, after the newest-year backfill): 41 rows.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 5/5** · **Santa Fe ✅ 9/13** · **Palisade ✅ 6/6**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed. DB also has Accent, Tiburon, Venue, Veloster, Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued on the second host for these six nameplates; candidates are the four July rows still in the older thin format (Elantra 2021/2022, Sonata 2021/2024) and the unverified older years (Tucson 2017/2019, Elantra 2018, Sonata 2019/2020), none of which the second host serves.
+> **Hyundai status (2026-11-14, after the Sonata / Elantra re-read): 41 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 5/5** · **Santa Fe ✅ 9/13** · **Palisade ✅ 6/6**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. DB also has Accent, Tiburon, Venue, Veloster, Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. The unverified older years (Tucson 2017/2019, Elantra 2018 and 2000–2004, Sonata 2001–2005 and 2019/2020) are not on the second host and would need portal recon.
+
+## ✅ RE-READ — 8 rows (Sonata 2006/2018/2021/2024 + Elantra 2017/2020/2021/2022) — `2026-11-14-hyundai-reread`, commit a1950c1b — EIGHTH HYUNDAI SLICE
+Recon, reads, write and deploy all 2026-11-14 (live confirmed 14:43:59, blob `data.abf31de5.js` byte-identical to the local build at 14:44:01, CI green). Write script `_write_hyundai_sonata_elantra_reread.py`, which supersedes `_write_hyundai_sonata.py` and `_write_hyundai_elantra.py` for these ids. Backup `wrench_vehicles.db.bak_reread_20261114_143853`. No new vehicle: the fleet tally stays 317.
+
+**Why:** the eight rows written in the July pilot were in a thin format — one placeholder maintenance row with no interval, no tire pressures or trim note, capacities stored as quarts with no metric figure, no differential entries. Each was re-read from the same manual(s) and rewritten to the current standard. An inventory query found the eight; the first estimate from memory was four.
+
+**⚠ THREE LIVE VALUES WERE WRONG (all on rows carrying a verified badge), now corrected:**
+
+| Row | Was live | What the manual prints |
+|---|---|---|
+| Sonata 2006 (id 11226) | spark plugs "SK16PR-A11 / IFR5G-11" with a gap | **no plug number or gap anywhere** — text of all 276 pages searched, engine table p.9-3 rendered → removed |
+| Sonata 2006 (id 11226) | power steering "PSF-3 type fluid" | **PSF-4 type fluid** (lubrication chart p.9-4, rendered) |
+| Sonata 2018 (id 12523) | viscosity 5W-20 for a row covering three engines | 5W-20 for the 2.4 GDI only; **5W-30 for the 1.6 T-GDI and 2.0 T-GDI** (p.8-9) |
+
+Also brought into line on Sonata 2024 (id 13049): the dual clutch quantities were single rounded figures (3.5 qt and 2.6 qt) and now carry the printed ranges with litres (3.49-3.59 qt / 3.3-3.4 L and 2.59-2.64 qt / 2.45-2.5 L); the AWD rear differential and transfer case entries were missing and were added.
+
+**⚠ FROZEN ROWS:** seven of the eight ids hold a wheel-nut torque row whose source is the bare token (part of the 424 frozen grandfathered rows). A full rewrite would have dropped the freeze to 417. Their values match the manuals (79 lb-ft / 107 N·m), so they were left untouched: the script never deletes from `torque_specs` for them, asserts each is as expected, and checks the bare count BEFORE commit. Only Sonata 2006 gained a torque row (65–80 lb-ft, p.3-11), with a citation suffix.
+
+| Row | Books | Engines | Oil | Visc | Coolant |
+|---|---|---|---|---|---|
+| **Sonata 2006 NF** (id 11226) | portal, single print | 2.4L + 3.3L | 4.54 qt / 4.3 L · 6.02 qt / 5.7 L | 5W-20 or 5W-30; 10W-30 above 0 °F | 6.87 / 6.66 / 8.66 qt |
+| **Sonata 2018 LF** (id 12523) | portal, single print | 1.6T + 2.0T + 2.4 | 4.75 qt / 4.5 L · 5.07 qt / 4.8 L ×2 | 5W-30 turbo / 5W-20 2.4 | 7.50 / 7.92 / 7.60 qt |
+| **Sonata 2021 DN8** (id 12853) | portal first print + later print | 1.6T + 2.5 + 2.5T | 5.07 qt / 4.8 L (1.6T) · 6.13 qt / 5.8 L (2.5T); 2.5 not written | 0W-20 / 0W-30 (2.5T) | 8.59 qt / 8.13 L (2.5T); others not written |
+| **Sonata 2024 DN8 facelift** (id 13049) | portal first print = later print | 2.5 + 2.5T | 6.13 qt / 5.8 L both | 0W-20 / 0W-30 | 9.2 qt / 8.7 L · 9.3 qt / 8.8 L |
+| **Elantra 2017 AD** (id 12379) | portal, single print | Nu 2.0 MPI | 4.23 qt / 4.0 L | 5W-20 | 6.34 / 6.97 qt |
+| **Elantra 2020 AD facelift** (id 669) | portal, single print | 2.0 MPI + 1.6T | 4.23 qt / 4.0 L · 4.76 qt / 4.5 L | 5W-20 / 5W-30 | 6.45 / 6.34 / 6.97 qt |
+| **Elantra 2021 CN7** (id 2163) | portal first print + `CN7a` + `CN7` later prints | G2.0 + G1.6T | 4.54 qt / 4.3 L · 5.07 qt / 4.8 L | 0W-20 | 7.82 qt / 7.4 L · 7.19 qt / 6.8 L |
+| **Elantra 2022 CN7** (id 3691) | portal first print + `CN7` + `CN7a` later prints | G2.0 + G1.6T | same | 0W-20 | same |
+
+**Engines only a later print carries (ruling 2026-11-14, written from that print, the source says so):** Sonata 2021 Smartstream G2.5 T-GDI (oil, 0W-30, wet dual clutch fluids, coolant, 48,000-mile plugs) and Elantra 2021 Smartstream G1.6 T-GDi (oil, dual clutch and manual transmission fluid, coolant, 235/40R18 tire, 47,000-mile plugs). The 2021 Elantra's titled first print is the America-built variant and covers the 2.0 only.
+
+**Not written, and why (reasons live in the `source` suffix):**
+
+| Row | Value | What the books say | Rule |
+|---|---|---|---|
+| Sonata 2021 | G2.5 GDi oil capacity | first print 5.49 qt / 5.2 L; later print 6.13 qt / 5.8 L | edition conflict (standing from the audit) |
+| Sonata 2021 | coolant for G1.6 T-GDi and G2.5 GDi | first print 4.76 qt / 4.5 L and 5.49 qt / 5.2 L (they echo the oil figures); later print 8.03 qt / 7.6 L and 9.07 qt / 8.59 L | edition conflict |
+| Elantra 2022 | G1.6 T-GDi spark-plug interval | first print 47,000 mi; later print 48,000 mi | whole rows only |
+| Elantra 2022 | coolant interval after the first replacement | 30,000 mi (first print, `CN7a`); 24,000 mi (`CN7`) | first replacement only |
+| Elantra 2022 | tire-rotation months | none in the first print; 12 in the later prints | 8,000 mi written, no months |
+| Sonata 2018 | brake-fluid quantity | "0.7~0.8 US qt (0.7~0.8 l)" | same numbers for both units — spec only |
+| Sonata 2006 | cold tire pressure | the book refers to the vehicle placard | not published |
+
+**OM normal-schedule intervals written (64 rows replacing 8 placeholders; mi / mo):** Sonata 2006 (5; grid p.5-4/5-5) — oil 7,500 / 6, plugs 97,500 / 78, air cleaner 30,000 / 24, A/C filter 10,000 / 12, coolant first 60,000 / 60 then 30,000 / 24. Sonata 2018 (11) — turbo p.7-10: oil 6,000 / 12, plugs 42,000, air cleaner 18,000 / 36, climate filter 6,000 / 12, rotation 6,000; 2.4 p.7-15: 7,500 / 12, 97,500, 22,500 / 36, 7,500 / 12, 7,500; coolant first 120,000 / 120 then 30,000 / 24. Sonata 2021 (9) — oil 8,000 / 12, plugs 40,000 / 60 (1.6T, grid marks) · 96,000 (2.5) · 48,000 (2.5T), air cleaner 24,000 / 36, climate filter 16,000 / 24, rotation 8,000, coolant first 120,000 / 120 then 30,000 / 24, brake fluid 48,000 / 48. Sonata 2024 (8; p.9-11 to 9-14) — oil 8,000 / 12, plugs 96,000 (2.5) · 48,000 (2.5T), air cleaner 24,000 / 36, cabin filter 16,000 / 24, rotation 8,000 / 12, coolant first 120,000 / 120 then 24,000 / 24, brake fluid 48,000 / 48. Elantra 2017 (6; list-style p.7-8+) — oil 7,500 / 12, plugs 97,500 / 78, air cleaner 30,000 / 24, climate filter 15,000 / 12, rotation 7,500 / 6, coolant first 120,000 / 120 then 30,000 / 24. Elantra 2020 (10) — 2.0 p.7-8: oil 7,500 / 12, plugs 97,500, air cleaner 30,000 / 48, rotation 7,500; 1.6T p.7-13: 6,000 / 12, 42,000, 24,000 / 48, 6,000; climate filter every 12 months (no mileage printed); coolant first 120,000 / 120 then 30,000 / 24. Elantra 2021 (8; p.9-8 to 9-10) — oil 8,000 / 12, plugs 96,000 (2.0) · 47,000 (1.6T), air cleaner 24,000 / 36, cabin filter 16,000 / 24, rotation 8,000, coolant first 120,000 / 120 then 30,000 / 24, brake fluid 48,000 / 48. Elantra 2022 (7) — as 2021 without the 1.6T plug row, coolant first replacement only.
+
+**Gates (null):** plug PN/gap in all eight · 12V battery except Sonata 2006 (MF68AH, Electrical table p.9-2) · EPS / MDPS except Sonata 2006 (hydraulic, written) · numeric tire-pressure columns for Elantra 2017 / 2020 (pressure differs by wheel size, so it is carried in the tire note).
+
+**Left open:** whether to re-pin the freeze so the seven wheel-nut rows can carry citation suffixes like every other row.
+
+---
 
 ## ✅ NEWEST-YEAR BACKFILL — 7 rows (Sonata 2025/2026 + Tucson 2025/2026 + Elantra 2024/2025/2026) — `2026-11-14-hyundai-newest-years`, commit 60895598 — SEVENTH HYUNDAI SLICE
 Recon, reads, write and deploy all 2026-11-14 (live-confirmed 14:05 CST: kyr-version 2026-11-14-hyundai-newest-years, live blob data.d57ca1e3.js md5 = local, previous blob 404). Write script `_write_hyundai_newest_years.py` (dry-run default; asserts each target id's year/make/model; quart/litre and gallon/litre checks, gallon tolerance following the printed precision; guard against any US unit without a paired metric figure). Backup `wrench_vehicles.db.bak_newest_years_20261114_135816`. The US portal has no book for 2025–2027 on any of the three nameplates (1,320 probes) and only an abridged 2024 Elantra, so each row has one available print, from the second host. Hybrid, Plug-in Hybrid and N have their own books and are not written.
@@ -205,6 +255,7 @@ Common: **EPS/MDPS** (no PS fluid) · brake **DOT 3/4** (TL; 0.74–0.85 qt) →
 ---
 
 ## ✅ ELANTRA — 4/13 (2017/2020 AD + 2021/2022 CN7) — `2026-07-01-hyundai-elantra`, commit 8a754d96 — SECOND HYUNDAI (cashes the foundation)
+> **2026-11-14: every row in this section was RE-READ and rewritten — see the RE-READ section at the top. What follows is the July record, kept for history; three of its values were wrong (Sonata 2006 spark plugs and power-steering fluid, Sonata 2018 oil grade).**
 > **⚠ Corrected 2026-11-14 (audit, commit e8b42251):** battery group AGM70L on the 2021 and 2022 rows came from an example label illustration and is now null. Every other 2021 / 2022 value matches the later print (`ownersmanual.hyundai.com` CN7). The table below is the original read.
 
 Compact sibling; the source foundation transferred cheaply (host + self-ID + gates). Multi-engine (base OM only). HEV + separate-OM trims gated.
@@ -234,6 +285,7 @@ Common: **EPS** (no PS fluid) · brake DOT 3/4 (AD) → DOT 4 (CN7) · **lug 79�
 ---
 
 ## ✅ SONATA — pilot 5/14 (2005/06 NF + 2018 LF + 2021 DN8 + 2024 DN8-FL) — `2026-07-01-hyundai-sonata`, commit 1da532c0 — FIRST HYUNDAI
+> **2026-11-14: every row in this section was RE-READ and rewritten — see the RE-READ section at the top. What follows is the July record, kept for history; three of its values were wrong (Sonata 2006 spark plugs and power-steering fluid, Sonata 2018 oil grade).**
 > **⚠ Corrected 2026-11-14 (audit, commit e8b42251) — Sonata is 4/14, not 5/14:** (1) the "2005 NF" values had been written to id 35202, the model-year-2000 car, and were removed; only 2006 (id 11226) carries the NF read. (2) 2021: the 2.5 oil figure 5.49 below is the first print's; the later print says 6.13, so it is no longer shipped. (3) 2024: tire size is 215/55R17, 235/45R18 or 245/40R19 at 35 psi, not 205/65R16. (4) 2024: battery AGM70L came from an example label and is now null. The text below is the original read, kept for the record.
 
 Fresh make, recon-first. Multi-engine per row (turbos/N-Line = trims within the year's row). HEV = gated variant (own OM slug `sonata-hybrid`).
