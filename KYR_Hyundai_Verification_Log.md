@@ -6,7 +6,60 @@ source pattern in `KYR_OEM_Manual_Source_Map.md` (Hyundai section). **Host:** `o
 glovebox-manual (free, no auth, citable manufacturer source). **This is the HMG foundation — it pre-characterizes
 Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the Sonata (shared platform + Theta II/Smartstream engines).**
 
-> **Hyundai status (2026-11-14): 15 rows.** **Sonata ✅ 5/14** (NF + LF + DN8 clusters; 9 deferred) · **Elantra ✅ 4/13** (2017/2020 AD + 2021/2022 CN7; 9 deferred) · **Tucson ✅ 6/10** (2018/2020/2021 TL + 2022/2023/2024 NX4; 4 deferred) — the FIRST Hyundai SUV, sets the SUV-body baseline and is the first slice with OM service intervals recorded (39 rows). Make source characterized + engine families on record. DB also has Santa Fe 13, Accent, Tiburon, Palisade 6, Kona 5, Venue, Veloster, Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** Kona → Santa Fe → Palisade (recon done 2026-11-10; Tucson baseline inherited), then Elantra-N/turbo-trim targeted pulls.
+> **Hyundai status (2026-11-14, after the Kona deploy + audit corrections): 19 rows.** **Sonata 4/14** (2006 NF + 2018 LF + 2021 DN8 + 2024 DN8-FL; the "2005" write had landed on the wrong vehicle and was removed) · **Elantra ✅ 4/13** (2017/2020 AD + 2021/2022 CN7) · **Tucson ✅ 6/10** (2018/2020/2021 TL + 2022/2023/2024 NX4) · **Kona ✅ 5/5** (2020/2021 OS + 2022 OS facelift + 2024/2026 SX2). Two manufacturer hosts are now in use (US portal = first print, `ownersmanual.hyundai.com` = later print); values the two prints contradict and capacities whose quart/litre figures conflict are not written. DB also has Santa Fe 13, Palisade 6, Accent, Tiburon, Venue, Veloster, Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** Santa Fe → Palisade (Lambda V6 read fresh), then the newest deferred years the second host now serves (Tucson 2025/2026, Elantra 2024-2026, Sonata 2025/2026).
+
+## ⚠ AUDIT 2026-11-14 — live-row corrections (commit e8b42251, `2026-11-14-hyundai-kona`)
+The 15 Hyundai rows live before the Kona slice were checked against the later manual prints and against their own cited books (read-only audit, then corrections approved the same day; script `_fix_hyundai_audit_2026_11_14.py`, backup `wrench_vehicles.db.bak_hyundai_audit_20261114_104836`).
+
+| Finding | Row | Correction |
+|---|---|---|
+| **Wrong vehicle** — the 2005 NF manual's values were written to id 35202, which is the model-year-2000 Sonata (EF generation). `_write_hyundai_sonata.py` addressed it as "2005". Live with a verified flag from 2026-07-01. | Sonata id 35202 | All curated rows removed; the 2000 Sonata is unverified again. The real 2005 row (id 11156) stays deferred: government data gives 2005 the EF roster (2.4 / 2.7 V6), which the NF "2005" manual (2.4 Theta / 3.3 Lambda) does not match. |
+| **Edition conflict** — 2.5 GDi oil capacity 5.49 qt / 5.2 L in the first print (p.2-11, Copyright 2020), 6.13 qt / 5.8 L in the later print. | Sonata 2021 id 12853 | 2.5 figure removed; 1.6T 5.07 qt / 4.8 L (identical in both prints) stays. The old "facelift moved 5.49 → 6.13" note below was really a print revision. |
+| **Not in the book** — tire size 205/65R16 is the 2021 book's base size; the 2024 book (both prints) lists 215/55R17, 235/45R18, 245/40R19 at 35 psi (p.2-13). | Sonata 2024 id 13049 | Tire sizes and 35 / 35 psi written from p.2-13. |
+| **Example label** — battery group AGM70L came from the "Battery Capacity Label" page, an illustration marked Example / "may differ from the illustration". | Elantra 2021 id 2163, Elantra 2022 id 3691, Sonata 2024 id 13049 | Set to null (same gate as Tucson and Kona). |
+
+Checked with no disagreement: Elantra 2021 / 2022 and Tucson 2022 / 2024 on every stored value (Tucson including the schedule intervals); all 109 stored quart/litre pairs convert correctly. No later print exists for Sonata 2006 / 2018, Elantra 2017 / 2020, Tucson 2018 / 2020 / 2021 (platform codes NF, LF, AD, TL are not served) and Tucson 2023 (only an abridged manual there). A fleet-wide scan found no other cross-generation address. The Sonata and Elantra write scripts now refuse to re-run. Noted, not changed: Sonata 2024 wet-DCT quantities are stored as 3.5 / 2.6 qt where the book prints ranges 3.49–3.59 / 2.59–2.64 qt.
+
+---
+
+## ✅ KONA — 5/5 (2020/2021 OS + 2022 OS facelift + 2024/2026 SX2) — `2026-11-14-hyundai-kona`, commit e8b42251 — FOURTH HYUNDAI, second SUV
+Recon, reads, write and deploy all 2026-11-14 (live blob data.eb3fc46c.js md5 eb3fc46c… byte-identical to the commit; _verify_shipped.py PASS 58; CI green; README count copy 291→295). Write script `_write_hyundai_kona.py` (dry-run default; asserts each target id's year/make/model and runs a quart/litre conversion check on every shipped pair). Backups `wrench_vehicles.db.bak_kona_20261114_100859` and `_104836`. Self-ID per book by engine table + wheelbase. Kona N and Kona Electric have their own books and are not in these rows. The DB has no Kona rows for 2018, 2019, 2023 or 2025 (the books exist).
+
+**Sources.** 2020, 2021, 2022: US portal first prints (`2020 Kona Owner's Manual.pdf`, `2021_Kona_Owners_Manual.pdf`, `2022-Kona-Owners-Manual.pdf`), each cross-checked page by page against the later print. 2024, 2026: `ownersmanual.hyundai.com/full_pdf/SX2/<MY>/en_US` (Copyright 2023 / 2026 HYUNDAI Motor America; no portal copy exists). **Ruling 2026-11-14:** that host is an accepted verified manufacturer source; the 2026 row was written under D1 (blacklisted by source, not by year) and is the first verified 2026 row read from a 2026 book.
+
+| Row | Engines | Oil (drain+filter) | Visc | Coolant | Trans |
+|---|---|---|---|---|---|
+| **2020 OS** (id 673) | Nu 2.0 MPI + Gamma 1.6 T-GDI | **4.23** / **4.76** | 5W-20 / 5W-30 | 6.8 / 7.5 | AT SP-IV 7.08; 1.6T DCT GL-4 70W 2.01–2.11 |
+| **2021 OS** (id 2166) | same pair | 4.23 / *not written* | 5W-20 / 5W-30 | 6.8 / 7.5 | as 2020 |
+| **2022 OS facelift** (id 3694) | Smartstream G2.0 Atkinson + G1.6 T-GDi | **4.5** / **5.1** | 0W-20 full synthetic | 6.3 / 7.3 | IVT SP-CVT1 7.1; 1.6T DCT GL-4 70W 1.7–1.8 |
+| **2024 SX2** (id 6787) | same Smartstream pair | 4.5 / 5.1 | 0W-20 full synthetic | 7.3 / **9.0** | 1.6T AT SP4M-1 6.8; IVT SP-CVT1 *capacity not written* |
+| **2026 SX2** (id 9976) | same Smartstream pair | 4.5 / 5.1 | 0W-20 full synthetic | 7.3 / 9.0 | as 2024 |
+
+Common: **EPS** (OS) / **MDPS** (SX2), no PS fluid · brake **DOT-4 LV** (OS; 0.74–0.85 qt on 2020/21) → **DOT-4** (SX2) · AWD gear oil GL-5 75W/90 (2020/21; 2022 rear) and 75W/85 (2022 transfer, SX2) · **lug 79–94 lb-ft** every book · fuel **13.2 gal** (SX2 2.0: 12.4 gal) · tires **205/60R16 · 215/55R17 · 235/45R18 @ 33/33** (OS) / **215/60R17 @ 36, 215/55R18 and 235/45R19 @ 33** (SX2; pressures vary by size, so the PSI cells are empty and the note carries them) · spare T125/80D16 (OS) / T145/90D16 (SX2) @ 60.
+
+**★ Two null rules (ruling 2026-11-14) — reasons live in the `source` suffix, never in shipped columns:**
+1. **Edition conflict → not written.** First print vs later print of the same model-year manual:
+
+| MY | Value | First print (portal) | Later print | Written |
+|---|---|---|---|---|
+| 2020 | Brake-fluid replacement | inspect only | 60,000 mi / 48 mo (1.6T 48,000) | no row |
+| 2021 | 1.6T oil capacity | 4.76 qt / 4.5 L | 4.23 qt / 4.0 L | 2.0 figure only |
+| 2022 | 1.6T spark plugs | 47,000 mi | 48,000 mi | 2.0 row only (96,000) |
+| 2022 | Cabin filter | 16,000 mi or 12 mo | 16,000 mi / 24 mo | 16,000 mi, no months |
+| 2022 | Coolant repeat | 30,000 mi / 24 mo | 24,000 mi / 24 mo | first replacement only |
+| 2022 | Tire rotation | 8,000 mi | 8,000 mi or 12 mo | 8,000 mi, no months |
+
+2. **Quart/litre conflict → capacity not written, fluid specification only.** 2020/2021 transfer case and rear differential (0.44–0.49 qt printed beside 0.47–0.52 L; 0.36–0.4 qt beside 0.38–0.42 L); 2022 brake-fluid capacity (0.5–0.6 qt beside 0.7–0.8 L); 2024/2026 IVT (6.9 qt beside 6.7 L; 7.1 qt beside 6.9 L), rear differential (0.6–0.7 qt beside 0.4–0.5 L), transfer case (0.8–0.9 qt beside 0.62–0.68 L). The 2022 book prints the same transfer/differential litres as 2020/21 with quarts that do convert, which is why those 2022 capacities are written.
+
+**Gates (null):** plug PN/gap (interval only, every book) · 12V battery (2020/21 carry no 12V spec; 2022 p.9-30 and SX2 p.655 / p.685 show only an example capacity label) · `battery_notes` NULL.
+
+**★ Carry outcomes (engine predicts, the OM decides):** Nu 2.0 MPI **4.23 / 5W-20** = Elantra AD · Gamma 1.6T **4.76 / 5W-30** = Elantra 2020 and Tucson 2018 · Smartstream 2.0 **4.5** and 1.6T **5.1** = Elantra CN7's 4.54 / 5.07 at one-decimal print · body-decided fields moved as expected: coolant 6.8 / 7.5 (OS Nu / Gamma; the Gamma figure equals the Tucson TL's 7.5), 6.3 / 7.3 (facelift), 7.3 / 9.0 (SX2); fuel 13.2 gal against Tucson's 16.38 / 14.27. The SX2 1.6T swapped the 7-speed DCT for an 8-speed automatic (ATF SP4M-1).
+
+**OM normal-schedule intervals written (47 rows):** 2020 (11) — oil & filter 7,500 / 12 (Gamma 6,000 / 12), plugs 97,500 (Gamma 42,000), air cleaner 30,000 / 48 (Gamma 24,000 / 48), climate filter 15,000 / 12 (Gamma 12,000 / 12), rotation 7,500 (Gamma 6,000), coolant 120,000 / 120 then 30,000 / 24 (p.7-8, 7-13). 2021 (13) — the same plus brake fluid 60,000 / 48 (Gamma 48,000 / 48; p.7-10, 7-15). 2022 (7) — oil 8,000 / 12, plugs 2.0 96,000, air cleaner 24,000 / 36, cabin filter 16,000, rotation 8,000, coolant first 120,000 / 120, brake fluid 48,000 / 48 (p.9-8 to 9-10). 2024 and 2026 (8 each) — oil 8,000 / 12, plugs 48,000 (1.6T) and 96,000 (2.0), air cleaner 24,000 / 36, cabin filter 16,000 / 24, rotation 8,000 / 12, coolant 120,000 / 120 then 24,000 / 24, brake fluid 48,000 / 48 (2024 p.625–629; 2026 p.654–657).
+
+**★ Source/format notes (banked to source map):** OS first prints extract as text (bullets come out as `(cid:129)`); the 2022 facelift book's schedule tables are rotated, so the text comes out reversed and the pages were rendered and read as images; SX2 books are flat text. Later prints carry extra pages, so page indexes shift (506 vs 505 pp for 2020; 596 vs 579 for 2022) while printed page numbers stay usable.
+
+---
 
 ## ✅ TUCSON — 6/10 (2018/2020/2021 TL + 2022/2023/2024 NX4) — `2026-11-13-hyundai-tucson`, commit 03fa8111 — THIRD HYUNDAI, FIRST SUV (sets the SUV-body baseline)
 Read 2026-11-10; every value re-read page-by-page from its own book 2026-11-13; written 2026-11-13 (backup `wrench_vehicles.db.bak_tucson_20261113_212022`), deployed 2026-11-14 (live blob `data.058aeade.js` md5 `058aeade…` byte-identical to the commit; `_verify_shipped.py` PASS 58; README count copy 285→291). Multi-engine per row (TL: Nu 2.0 GDI + Theta II 2.4 GDI + Gamma 1.6T; NX4: Smartstream G2.5 GDI). 2022+ 1.6T Hybrid / Plug-in Hybrid = own 81.7 MB OM → gated, gas only written. **Ruling 2026-11-13 ("Go, write Tucson"): record the OM normal-schedule intervals** (the Mazda 3 convention) — 39 maintenance rows written, not the interval-free single row the Sonata/Elantra slices used. Write script `_write_hyundai_tucson.py` (committed; dry-run default, `--write` to apply).
@@ -39,6 +92,8 @@ Common: **EPS/MDPS** (no PS fluid) · brake **DOT 3/4** (TL; 0.74–0.85 qt) →
 ---
 
 ## ✅ ELANTRA — 4/13 (2017/2020 AD + 2021/2022 CN7) — `2026-07-01-hyundai-elantra`, commit 8a754d96 — SECOND HYUNDAI (cashes the foundation)
+> **⚠ Corrected 2026-11-14 (audit, commit e8b42251):** battery group AGM70L on the 2021 and 2022 rows came from an example label illustration and is now null. Every other 2021 / 2022 value matches the later print (`ownersmanual.hyundai.com` CN7). The table below is the original read.
+
 Compact sibling; the source foundation transferred cheaply (host + self-ID + gates). Multi-engine (base OM only). HEV + separate-OM trims gated.
 
 | Row | Engines | Oil | Visc | Coolant | Trans |
@@ -66,6 +121,8 @@ Common: **EPS** (no PS fluid) · brake DOT 3/4 (AD) → DOT 4 (CN7) · **lug 79�
 ---
 
 ## ✅ SONATA — pilot 5/14 (2005/06 NF + 2018 LF + 2021 DN8 + 2024 DN8-FL) — `2026-07-01-hyundai-sonata`, commit 1da532c0 — FIRST HYUNDAI
+> **⚠ Corrected 2026-11-14 (audit, commit e8b42251) — Sonata is 4/14, not 5/14:** (1) the "2005 NF" values had been written to id 35202, the model-year-2000 car, and were removed; only 2006 (id 11226) carries the NF read. (2) 2021: the 2.5 oil figure 5.49 below is the first print's; the later print says 6.13, so it is no longer shipped. (3) 2024: tire size is 215/55R17, 235/45R18 or 245/40R19 at 35 psi, not 205/65R16. (4) 2024: battery AGM70L came from an example label and is now null. The text below is the original read, kept for the record.
+
 Fresh make, recon-first. Multi-engine per row (turbos/N-Line = trims within the year's row). HEV = gated variant (own OM slug `sonata-hybrid`).
 
 | Row | Engines | Oil (drain+filter) | Visc | Coolant | Trans |
