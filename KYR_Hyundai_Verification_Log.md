@@ -6,7 +6,41 @@ source pattern in `KYR_OEM_Manual_Source_Map.md` (Hyundai section). **Host:** `o
 glovebox-manual (free, no auth, citable manufacturer source). **This is the HMG foundation — it pre-characterizes
 Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the Sonata (shared platform + Theta II/Smartstream engines).**
 
-> **Hyundai status (2026-11-14, after the Santa Fe deploy): 28 rows.** **Sonata 4/14** · **Elantra ✅ 4/13** · **Tucson ✅ 6/10** · **Kona ✅ 5/5** · **Santa Fe ✅ 9/13** (2005/2006 SM + 2018 three-row NC + 2019/2020 TM + 2021/2023 TM facelift + 2025/2026 MX5; 2001–2004 deferred). Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); values the prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written. DB also has Palisade 6, Accent, Tiburon, Venue, Veloster, Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** Palisade (LX2 2021–2025 and LX3 2026+ on the second host; Lambda 3.8 V6 read fresh), then the newest deferred years the second host serves (Tucson 2025/2026, Elantra 2024–2026, Sonata 2025/2026).
+> **Hyundai status (2026-11-14, after the Palisade deploy): 34 rows.** **Sonata 4/14** · **Elantra ✅ 4/13** · **Tucson ✅ 6/10** · **Kona ✅ 5/5** · **Santa Fe ✅ 9/13** · **Palisade ✅ 6/6** (2020/2021/2022 LX2 + 2024/2025 LX2 facelift + 2026 LX3; the vehicles table has no 2023 row). Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); values the prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole. DB also has Accent, Tiburon, Venue, Veloster, Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** the newest deferred years the second host serves (Tucson 2025/2026, Elantra 2024–2026, Sonata 2025/2026).
+
+## ✅ PALISADE — 6/6 (2020/2021/2022 LX2 + 2024/2025 LX2 facelift + 2026 LX3) — `2026-11-14-hyundai-palisade`, commit 8f0eb6b4 — SIXTH HYUNDAI
+Recon, reads, write and deploy all 2026-11-14 (live-confirmed 12:41 CST: kyr-version 2026-11-14-hyundai-palisade, live blob data.26a62823.js md5 = local, previous blob 404). Write script `_write_hyundai_palisade.py` (dry-run default; asserts the six target ids are exactly the Palisade rows; quart/litre, gallon/litre and quart/millilitre checks on every shipped pair, plus a guard against any US unit shipping without a paired metric figure). Backup `wrench_vehicles.db.bak_palisade_20261114_123105`. Three book families, every year read on its own pages; the 2026 Hybrid has its own manual and is not written. The vehicles table has no 2023 Palisade row.
+
+**Identity (ruling 2026-11-14, "Accept, go read"):** for this nameplate the second host's year label IS the model year. Labels 2021, 2022 and 2023 each match the US-portal book whose PDF Title names that year (2022: every page, zero strays; 2021 and 2023: later prints of the titled book). Labels 2024 (Copyright 2023, PDF created 2023-10-23) and 2025 (Copyright 2025, created 2025-04-24) have no titled portal book and are accepted on that proven sequence plus the book header `LX2_PE_en_US` and body / engine self-ID. 2026 is LX3; its PDF keywords name 2026.
+
+| Row | Engine | Oil (drain and refill) | Visc | Coolant | Trans |
+|---|---|---|---|---|---|
+| **2020 LX2** (id 676) | 3.8 GDI 3,778cc | **6.87 qt / 6.5 L** | 5W-30; 10W-30 above 0 °F | 9.4 qt / 8.9 L | ATF SP-IV 7.4 qt / 7.0 L |
+| **2021 LX2** (id 2169) | same | 6.87 qt / 6.5 L | 5W-30; 10W-30 above 0 °F | 9.4 qt / 8.9 L | ATF SP-IV 7.4 qt / 7.0 L |
+| **2022 LX2** (id 3697) | same | **1.71 gal / 6.5 L** (as printed) | 5W-30 only | 2.35 gal / 8.9 L | ATF SP-IV 1.85 gal / 7.0 L |
+| **2024 LX2 facelift** (id 6790) | same | 6.86 qt / 6.5 L | 5W-30, full synthetic required | **12.44 qt / 11.79 L** (12.65 / 11.98 with trailer) | **ATF SP4M-1** 7.39 qt / 7.0 L |
+| **2025 LX2 facelift** (id 8365) | same | 6.86 qt / 6.5 L | 5W-30, full synthetic required | same | same |
+| **2026 LX3** (id 9979) | Smartstream G3.5 GDi 3,470cc | **6.13 qt / 5.8 L** | 0W-20, full synthetic required | 12.44 qt / 11.77 L | ATF SP4M-1 7.39 qt / 7.0 L |
+
+Common: wheel nut **79–94 lb-ft** every year · EPS / MDPS · brake DOT-4 (2024+ DOT-4 LV) · rear differential and transfer case GL-5 75W/85: 0.74 qt / 0.7 L each (2020/2021), 0.19 gal / 0.7 L each (2022), 0.73 qt / 0.7 L each (2024/2025), 0.67 qt / 0.65 L and 0.74 qt / 0.7 L (2026) · 2026 XRT Pro electronic limited slip differential: Shell TF0870C, 0.507 qt / 480 mL · tires 245/60R18, 245/50R20 @ 35 (2020–2025); 235/65R18, 255/50R20, 265/45R21 @ 36 and XRT Pro 255/60R18 @ 35 (2026) · fuel 18.75 gal / 71 L (2020–2025), 19 gal / 72 L (2026). Viscosity charts and the 2026 tire table were read from page renders.
+
+**Rulings applied (2026-11-14, "Go, write Palisade"), and what is not written (reasons live in the `source` suffix):**
+
+| Row | Value | What the books say | Rule |
+|---|---|---|---|
+| 2021 | Brake fluid interval | first print grid 30,000 mi / 48 months; later print "60,000 miles or 48 months" | whole rows only — not written |
+| 2022 | Oil, air cleaner, rotation, cabin filter intervals; coolant interval after the first replacement | first print grid in 7,500-mile steps (some of its sentences already on the 8,000-mile basis); later print 8,000 throughout | whole rows only — not written; spark plugs, first coolant replacement and brake fluid agree and are written |
+| 2022 | Capacities | both prints give US gallons beside litres | written as printed; gallon/litre check |
+| 2021 | Capacities | first print US quarts, later print US gallons, same litres | one quantity — quarts written |
+| 2024, 2025, 2026 | 12V battery | capacity-label illustration only (AGM80L-DIN; 2024/2025 captioned "may differ from the illustration") | not a vehicle spec (Tucson ruling) |
+
+**Gates (null):** plug PN/gap every year (interval only) · 12V battery every year · EPS / MDPS · 2026 Hybrid.
+
+**★ Carry outcomes (engine predicts, the OM decides):** the 3.8 GDI holds 6.5 L of oil from 2020 to 2025, but the permitted grades narrow (10W-30 dropped for 2022), the coolant fill grows from 8.9 L to 11.79 L at the facelift, and the ATF changes from SP-IV to SP4M-1 (the 2023 first print still says SP-IV and its later print SP4M-1 — the same pattern as Santa Fe 2023). First slice with capacities printed in gallons, with a later print that changes the UNIT of a capacity, and with a later print that changes the service schedule.
+
+**OM normal-schedule intervals written (36 rows; mi / mo):** 2020, 2021 (6 each; p.7-8 to 7-10) — oil 7,500 / 12, plugs 97,500, air cleaner 22,500 / 36, climate control air filter 7,500 / 12, rotation 7,500, coolant first 120,000 / 120 then 30,000 / 24 (brake fluid is inspect-only in 2020). 2022 (3) — plugs 96,000, coolant first 120,000 / 120, brake fluid 48,000 / 48. 2024, 2025 (7 each; p.9-9 to 9-11) and 2026 (7; p.567–569) — oil 8,000 / 12, plugs 96,000, air cleaner 24,000 / 36, cabin filter 16,000 / 24 (**the 2025 book prints 24 months with no mileage**), rotation 8,000 / 12, coolant first 120,000 / 120 then 24,000 / 24, brake fluid 48,000 / 48.
+
+---
 
 ## ✅ SANTA FE — 9/13 (2005/2006 SM + 2018 NC + 2019/2020 TM + 2021/2023 TM facelift + 2025/2026 MX5) — `2026-11-14-hyundai-santa-fe`, commit b864f51f — FIFTH HYUNDAI
 Recon, reads, write and deploy all 2026-11-14 (live blob data.e6b921b0.js md5 e6b921b0… byte-identical to the commit; _verify_shipped.py PASS 58; CI green; README count copy 295→304). Write script `_write_hyundai_santa_fe.py` (dry-run default; asserts each target id's year/make/model; quart/litre check on every shipped pair). Backup `wrench_vehicles.db.bak_santafe_20261114_114254`. Four generations, each read from its own books; Hybrid and Plug-in Hybrid have their own manuals and are not written.
