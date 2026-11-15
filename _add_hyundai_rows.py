@@ -24,15 +24,24 @@ matched": HTTP 400 with a well-formed JSON body saying count 0. Because NHTSA gi
 answer, an 'empty' also needs a positive control (rows on that endpoint for the same make / model spelling in the
 same run); a batch without one is flagged. Anything else stops the run. An error is never 'empty'.
 
-ENGINE LABEL: '<displ>L <layout letter><cyl>' only when every part is sourced. Displacement and cylinder count come
-from the EPA record and must agree with the book's engine table. The layout comes from the book when it prints one,
-else from a vPIC decode of an NHTSA-complaint VIN prefix for that model year; with neither, the label stays empty.
+ENGINE LABEL: '<displ>L <layout letter><cyl>' (several engines joined by ' / ') only when every part is sourced.
+Displacement and cylinder count come from the EPA record and must agree with the book's engine table. The layout comes
+from the book when it prints one, else from a vPIC decode of an NHTSA-complaint VIN prefix for that model year; with
+neither, the label stays empty.
+
+EPA MODEL NAMES: EPA may list a nameplate under several names. Each batch states the names that belong to the row
+(epa_models) and the names of DIFFERENT vehicles that merely share the word (epa_ignore, e.g. an electric sibling with
+its own manual). Any other name stops the run for a ruling.
+
+REPAIR DRAFT (optional, per batch): repair_fuel_economy lists EXISTING rows of the same nameplate whose fuel-economy
+rows are to be replaced from EPA under the same rules. The dry run shows current rows beside proposed rows. The write
+replaces them only when the stored rows still equal what the dry run showed; --skip-repairs writes the new rows only.
 
     python _add_hyundai_rows.py <batch>
         DRY RUN. Pulls, prints every row it would insert, rehearses the real build against an in-memory copy of the
         database, saves the plan next to this script and prints its sha256. Touches nothing in wrench_vehicles.db.
 
-    python _add_hyundai_rows.py <batch> --write --sha <sha256 printed by the dry run>
+    python _add_hyundai_rows.py <batch> --write --sha <sha256 printed by the dry run> [--skip-repairs]
         Backs up the database, then inserts EXACTLY the saved plan (no new pull).
 """
 import contextlib
@@ -73,6 +82,39 @@ BATCHES = {
         book_engine={2023: dict(page="2-8", cc=3778, cylinders=6, layout=None)},
         epa_models={2023: ["Palisade AWD", "Palisade FWD"]},
     ),
+    "kona-missing-years": dict(
+        make="Hyundai", model="Kona",
+        targets=[(38723, 2018), (38724, 2019), (38725, 2023), (38726, 2025)],
+        books={
+            2018: ("_hyundai_manuals/kona/kona_2018_OS_portal_OM.pdf",
+                   "US portal, folder 2018, file '2018 Kona Owners Manual.pdf'; Copyright 2017; PDF created 2017-12-01; "
+                   "463 pp; 2018 is the Kona's first US model year"),
+            2019: ("_hyundai_manuals/kona/kona_2019_OS_portal_OM.pdf",
+                   "US portal, folder 2019, file '2019 Kona OM.pdf'; Copyright 2018; PDF created 2018-09-26; 485 pp; its "
+                   "own edition between the 2018 book and the titled 2020 book"),
+            2023: ("_hyundai_manuals/kona/kona_2023_portal_OM.pdf",
+                   "US portal, folder 2023, file 2023-Kona-OM.pdf; PDF title \"2023 Kona Owner's Manual\"; Copyright 2022; "
+                   "PDF created 2022-07-14; 602 pp"),
+            2025: ("_hyundai_manuals/kona/kona_2025_SX2_global_OM.pdf",
+                   "second host SX2/2025 (the portal serves no book for 2024 or later); PDF keywords "
+                   "'en_US,hyundai,SX2,2025,engine,1.3' name the year; Copyright 2024; 713 pp; first posted 2024-10-14"),
+        },
+        # 2018 / 2019 p.8-2: 1.6 T-GDI 97.09 cu.in (1,591 cc) and Nu 2.0 MPI 121.98 (1,999); "In-line 4 cylinder" for both.
+        # 2023 p.2-9: Smartstream G1.6 T-GDi 97.5 (1,598) and Smartstream G2.0 Atkinson 121.9 (1,999); "In-line 4 cylinder".
+        # 2025 p.25: Smartstream G1.6 T-GDi 97.51 (1,598) and Smartstream G2.0 Atkinson 121.98 (1,999); "No. of cylinders 4",
+        #            no layout printed.
+        book_engine={
+            2018: dict(page="8-2", engines=[dict(cc=1591, cylinders=4, layout="in-line"), dict(cc=1999, cylinders=4, layout="in-line")]),
+            2019: dict(page="8-2", engines=[dict(cc=1591, cylinders=4, layout="in-line"), dict(cc=1999, cylinders=4, layout="in-line")]),
+            2023: dict(page="2-9", engines=[dict(cc=1598, cylinders=4, layout="in-line"), dict(cc=1999, cylinders=4, layout="in-line")]),
+            2025: dict(page="25", engines=[dict(cc=1598, cylinders=4, layout=None), dict(cc=1999, cylinders=4, layout=None)]),
+        },
+        epa_models={y: ["Kona AWD", "Kona FWD"] for y in (2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025)},
+        # Different vehicles with their own manuals; electrified systems are gated (ruling 2026-11-14).
+        epa_ignore=["Kona Electric", "Kona N"],
+        # Existing rows whose fuel economy the May pull filled from the electric sibling (ruling 2026-11-14: draft a repair).
+        repair_fuel_economy=[(673, 2020), (2166, 2021), (3694, 2022), (6787, 2024)],
+    ),
 }
 
 ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
@@ -84,6 +126,9 @@ BATCH = ARGS[0]
 B_ = BATCHES[BATCH]
 MAKE, MODEL = B_["make"], B_["model"]
 TARGETS, BOOKS, BOOK_ENGINE, EPA_MODELS = B_["targets"], B_["books"], B_["book_engine"], B_["epa_models"]
+EPA_IGNORE = B_.get("epa_ignore", [])
+REPAIRS = B_.get("repair_fuel_economy", [])
+SKIP_REPAIRS = "--skip-repairs" in sys.argv
 PLAN_FILE = os.path.join(ROOT, "_add_hyundai_rows_%s_plan_cache.json" % BATCH.replace("-", "_"))   # gitignored (*_cache.json)
 WRITE = "--write" in sys.argv
 
@@ -203,11 +248,14 @@ def epa(year):
     models = [(mi.findtext("text") or "").strip() for mi in root.iter("menuItem")]
     if not models:
         raise PullError("EPA models %d: HTTP 200 but no model list for %s" % (year, MAKE))
-    near = sorted(m for m in models if MODEL.lower() in m.lower())
+    listed = sorted(m for m in models if MODEL.lower() in m.lower())
+    ignored = [m for m in listed if any(m == p or m.startswith(p + " ") for p in EPA_IGNORE)]
+    near = [m for m in listed if m not in ignored]
     if not near:
-        return "empty", [], {"models_listed": len(models), "near": near}
+        return "empty", [], {"models_listed": len(models), "near": near, "ignored": ignored}
     if near != sorted(EPA_MODELS[year]):
-        raise PullError("EPA models %d: EPA lists %r, this batch expects %r -- needs a ruling" % (year, near, sorted(EPA_MODELS[year])))
+        raise PullError("EPA models %d: EPA lists %r (ignoring %r), this batch expects %r -- needs a ruling"
+                        % (year, near, ignored, sorted(EPA_MODELS[year])))
     rows, recs, seen = [], [], set()
     for name in near:
         root = fetch_xml("%s/menu/options?year=%d&make=%s&model=%s" % (EPA, year, Q(MAKE), Q(name)),
@@ -247,7 +295,7 @@ def epa(year):
                 continue
             seen.add(key)
             rows.append(row)
-    return "ok", rows, {"models_listed": len(models), "near": near, "records": recs}
+    return "ok", rows, {"models_listed": len(models), "near": near, "ignored": ignored, "records": recs}
 
 
 # ---------------------------------------------------------------------------- NHTSA
@@ -299,12 +347,17 @@ def safety(year):
                 return None
             return int(v) if str(v).isdigit() else v
 
+        risk = r0.get("RolloverPossibility")
         row = [g("OverallRating"), g("FrontCrashDriversideRating"), g("FrontCrashPassengersideRating"),
                g("SideCrashDriversideRating"), g("SideCrashPassengersideRating"), g("RolloverRating"),
-               r0.get("RolloverPossibility"), g("SidePoleCrashRating") or g("combinedSideBarrierAndPoleRating-Front")]
+               risk if risk else None,                 # NHTSA prints 0 when the rollover test was not run
+               g("SidePoleCrashRating") or g("combinedSideBarrierAndPoleRating-Front")]
         variants.append([vid, desc, row])
     if not variants:
         return "empty", None, variants, how, []
+    if all(x is None for v in variants for x in v[2]):
+        # listed by NHTSA but not rated: there is nothing to store, and an all-empty row must not be written
+        return "empty", None, variants, how + "; %d variant(s) listed, none rated" % len(variants), []
     row, withheld = list(variants[0][2]), []
     for i, name in enumerate(SAFETY_FIELDS):
         if any(v[2][i] != row[i] for v in variants):
@@ -354,43 +407,76 @@ def vpic_decode(year, vins):
 
 
 def engine_string(epa_recs, decodes, year):
-    """'<displ>L <letter><cyl>' in the fleet's style, ONLY when every part is sourced (see the module note)."""
+    """'<displ>L <letter><cyl>' per engine, joined by ' / ', ONLY when every part is sourced (see the module note)."""
     pairs = sorted({(r["displ"], r["cylinders"]) for r in epa_recs})
-    if len(pairs) != 1 or not pairs[0][0] or not pairs[0][1]:
-        return None, "EPA does not give one displacement / cylinder count (%r)" % pairs
-    displ, cyl = pairs[0]
+    if not pairs or any(not d or not c for d, c in pairs):
+        return None, "EPA does not give a displacement / cylinder count (%r)" % pairs
     be = BOOK_ENGINE.get(year)
     if not be:
         return None, "no engine table recorded for the %d book" % year
-    if "%.1f" % (be["cc"] / 1000.0) != "%.1f" % float(displ) or str(be["cylinders"]) != cyl:
-        return None, "EPA %s L / %s cyl disagrees with the book (%d cc, %d cylinders)" % (displ, cyl, be["cc"], be["cylinders"])
-    base = "EPA: %s L, %s cyl; book p.%s: %s cc, %d cylinders" % (displ, cyl, be["page"], format(be["cc"], ","), be["cylinders"])
-    if be.get("layout"):
-        letter = BOOK_LAYOUT.get(be["layout"].lower())
-        if not letter:
-            return None, "the book states a layout this script does not map: %r" % be["layout"]
-        return "%sL %s%s" % (displ, letter, cyl), base + ", " + be["layout"]
+    engines = be.get("engines") or [be]
     good = [d for d in decodes if ((d.get("Make") or "").upper(), (d.get("Model") or "").upper(), str(d.get("ModelYear")))
             == (MAKE.upper(), MODEL.upper(), str(year))]
-    layouts = sorted({(d.get("EngineConfiguration") or "").strip() for d in good} - {""})
-    if len(layouts) != 1 or layouts[0] not in VPIC_LAYOUT:
-        return None, base + "; the book's engine table states no layout and the vPIC decodes state %r" % (layouts or "none")
-    for d in good:
-        dl, cy = (d.get("DisplacementL") or "").strip(), (d.get("EngineCylinders") or "").strip()
-        if dl and "%.1f" % float(dl) != "%.1f" % float(displ):
-            return None, base + "; vPIC displacement %s disagrees" % dl
-        if cy and cy != cyl:
-            return None, base + "; vPIC cylinder count %s disagrees" % cy
-    return "%sL %s%s" % (displ, VPIC_LAYOUT[layouts[0]], cyl), base + " (no layout printed); vPIC decode: %s" % layouts[0]
+    parts, notes = [], []
+    for displ, cyl in pairs:
+        match = [e for e in engines if "%.1f" % (e["cc"] / 1000.0) == "%.1f" % float(displ) and str(e["cylinders"]) == cyl]
+        if len(match) != 1:
+            return None, ("EPA %s L / %s cyl has %d matches in the book's engine table p.%s (%s)"
+                          % (displ, cyl, len(match), be["page"], ", ".join("%d cc" % e["cc"] for e in engines)))
+        e = match[0]
+        base = "EPA %s L, %s cyl = book p.%s %s cc, %d cylinders" % (displ, cyl, be["page"], format(e["cc"], ","), e["cylinders"])
+        if e.get("layout"):
+            letter = BOOK_LAYOUT.get(e["layout"].lower())
+            if not letter:
+                return None, "the book states a layout this script does not map: %r" % e["layout"]
+            notes.append(base + ", " + e["layout"])
+        else:
+            mine = [d for d in good if (d.get("DisplacementL") or "").strip() and "%.1f" % float(d["DisplacementL"]) == "%.1f" % float(displ)]
+            layouts = sorted({(d.get("EngineConfiguration") or "").strip() for d in mine} - {""})
+            if len(layouts) != 1 or layouts[0] not in VPIC_LAYOUT:
+                return None, base + "; the book's engine table states no layout and the vPIC decodes state %r" % (layouts or "none")
+            if any((d.get("EngineCylinders") or "").strip() not in ("", cyl) for d in mine):
+                return None, base + "; a vPIC cylinder count disagrees"
+            letter = VPIC_LAYOUT[layouts[0]]
+            notes.append(base + " (no layout printed); vPIC decode: %s" % layouts[0])
+        parts.append("%sL %s%s" % (displ, letter, cyl))
+    return " / ".join(parts), "; ".join(notes)
 
 
 # ---------------------------------------------------------------------------- plan
-def canon(targets):
-    return json.dumps(targets, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+def canon(targets, repairs=None):
+    payload = targets if not repairs else {"targets": targets, "repairs": repairs}
+    return json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
 
 
-def plan_sha(targets):
-    return hashlib.sha256(canon(targets).encode("ascii")).hexdigest()
+def plan_sha(targets, repairs=None):
+    return hashlib.sha256(canon(targets, repairs).encode("ascii")).hexdigest()
+
+
+FE_COLS = ("city_mpg, highway_mpg, combined_mpg, annual_fuel_cost, engine, transmission, drive, fuel_type, range_miles, "
+           "mpge, city_ev, hwy_ev, comb_ev")
+
+
+def stored_fuel_economy(cur, vid):
+    return [list(r) for r in cur.execute("SELECT %s FROM fuel_economy WHERE vehicle_id=? ORDER BY id" % FE_COLS, (vid,))]
+
+
+def apply_repairs(cur, repairs):
+    """Replace the fuel-economy rows of an EXISTING vehicle, only if they still equal what the dry run showed."""
+    for r in repairs:
+        vid = r["id"]
+        row = cur.execute("SELECT year, make, model FROM vehicles WHERE id=?", (vid,)).fetchone()
+        if not row or tuple(row) != (r["year"], MAKE, MODEL):
+            raise RuntimeError("repair target %d is %r, not %d %s %s" % (vid, row and tuple(row), r["year"], MAKE, MODEL))
+        if stored_fuel_economy(cur, vid) != r["current"]:
+            raise RuntimeError("repair target %d: the stored fuel-economy rows changed since the dry run" % vid)
+        if not r["fuel_economy"]:
+            raise RuntimeError("repair target %d: no replacement rows" % vid)
+        cur.execute("DELETE FROM fuel_economy WHERE vehicle_id=?", (vid,))
+        cur.executemany("INSERT INTO fuel_economy (vehicle_id, " + FE_COLS + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                        [[vid] + x for x in r["fuel_economy"]])
+        cur.execute("INSERT OR REPLACE INTO pull_log (vehicle_id, endpoint, status, pulled_at) VALUES (?,?,?,?)",
+                    (vid, "fuel-economy", "ok", r["pulled_at"]))
 
 
 def bare_count(cur):
@@ -456,7 +542,7 @@ def stored_counts(cur, targets):
 
 
 # ---------------------------------------------------------------------------- rehearsal on an in-memory copy
-def rehearse(targets):
+def rehearse(targets, repairs=()):
     """Apply the plan to an in-memory copy and run the REAL build's gates and data assembly on it."""
     src = sqlite3.connect("file:%s?mode=ro" % DB.replace("\\", "/"), uri=True)
     mem = sqlite3.connect(":memory:")
@@ -466,6 +552,7 @@ def rehearse(targets):
     cur = mem.cursor()
     before = cur.execute("SELECT COUNT(*) FROM vehicles").fetchone()[0]
     apply(cur, targets)
+    apply_repairs(cur, repairs)
     mem.commit()
     sys.path.insert(0, os.path.join(ROOT, "files"))
     spec = importlib.util.spec_from_file_location("kyr_build_04", os.path.join(ROOT, "files", "04_rebuild_demo.py"))
@@ -509,6 +596,16 @@ def rehearse(targets):
             if v.get(k):
                 say("      UNEXPECTED curated key %s" % k)
                 return False
+    for r in repairs:
+        v = by[r["id"]]
+        say("  ships after repair for id %d (%d): %d fuel-economy entr%s"
+            % (r["id"], r["year"], len(v.get("mpg") or []), "y" if len(v.get("mpg") or []) == 1 else "ies"))
+        for m in v.get("mpg") or []:
+            say("      %sL | %s | %s | city %s hwy %s comb %s | MPGe %r" % (m.get("eng"), m.get("trans"), m.get("drive"),
+                                                                        m.get("city"), m.get("hwy"), m.get("comb"), m.get("mpge")))
+            if m.get("mpge") or m.get("comb") is None:
+                say("      UNEXPECTED electric figure or missing combined figure after repair")
+                return False
     mem.close()
     return True
 
@@ -549,8 +646,8 @@ def dry_run():
             if ((d.get("Make") or "").upper(), (d.get("Model") or "").upper(), str(d.get("ModelYear"))) != (MAKE.upper(), MODEL.upper(), str(year)):
                 flags.append("%d: vPIC decodes complaint VIN prefix %s as %s %s %s" % (year, d["vin_prefix"], d.get("ModelYear"), d.get("Make"), d.get("Model")))
 
-        say("  EPA fuel economy [%s]: models %r; %d record(s) -> %d row(s) after the duplicate-trim rule"
-            % (e_st, e_info.get("near"), len(e_info.get("records", [])), len(e_rows)))
+        say("  EPA fuel economy [%s]: models %r; ignored as different vehicles %r; %d record(s) -> %d row(s) after the "
+            "duplicate-trim rule" % (e_st, e_info.get("near"), e_info.get("ignored"), len(e_info.get("records", [])), len(e_rows)))
         for rec in e_info.get("records", []):
             say("      EPA id %s (%s): %s | displ %s | cyl %s | %s | %s | turbo %r | class %s"
                 % (rec["epa_id"], rec["epa_model"], rec["option"], rec["displ"], rec["cylinders"], rec["drive"],
@@ -569,7 +666,7 @@ def dry_run():
         say("  NHTSA recalls [%s]: %d   (%s)" % (r_st, len(r_rows), r_how))
         for r in r_rows:
             say("      %s | %s | park-it %d | %s" % (r[0], r[1], r[4], r[2][:110].replace("\n", " ")))
-        say("  NHTSA safety ratings [%s]: %d rated variant(s)   (%s)" % (s_st, len(s_var), s_how))
+        say("  NHTSA safety ratings [%s]: %d listed variant(s)   (%s)" % (s_st, len(s_var), s_how))
         for sv in s_var:
             say("      variant %s %r: overall %r | front driver %r | front passenger %r | side driver %r | side passenger %r | "
                 "rollover %r | rollover risk %r | side pole %r" % tuple([sv[0], sv[1]] + sv[2]))
@@ -604,13 +701,48 @@ def dry_run():
         if "empty" in st and "ok" not in st:
             flags.append("%s is empty for every year in this batch: no positive control for the spelling %r / %r on that endpoint"
                          % (ep, MAKE, MODEL))
+    # ---- repair draft for existing rows of this nameplate
+    repairs = []
+    if REPAIRS:
+        say("")
+        say("=" * 100)
+        say("REPAIR DRAFT -- fuel economy of EXISTING %s %s rows (nothing is written; shown for a ruling)" % (MAKE, MODEL))
+        con = sqlite3.connect("file:%s?mode=ro" % DB.replace("\\", "/"), uri=True)
+        cur = con.cursor()
+        for vid, year in REPAIRS:
+            row = cur.execute("SELECT year, make, model FROM vehicles WHERE id=?", (vid,)).fetchone()
+            if not row or tuple(row) != (year, MAKE, MODEL):
+                sys.exit("repair target %d is %r, not %d %s %s" % (vid, row and tuple(row), year, MAKE, MODEL))
+            current = stored_fuel_economy(cur, vid)
+            pulled_at = datetime.datetime.now().isoformat()
+            e_st, e_rows, e_info = epa(year)
+            say("")
+            say("  id %d = %d %s %s   EPA [%s]: models %r; ignored as different vehicles %r"
+                % (vid, year, MAKE, MODEL, e_st, e_info.get("near"), e_info.get("ignored")))
+            say("    STORED NOW (%d row(s)):" % len(current))
+            for r in current:
+                say("      city %r / hwy %r / comb %r | $%r | engine %r | %s | %s | type %r | MPGe %r" % (r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[9]))
+            say("    PROPOSED (%d row(s)):" % len(e_rows))
+            for rec in e_info.get("records", []):
+                say("      EPA id %s (%s): %s | displ %s | cyl %s | %s | %s" % (rec["epa_id"], rec["epa_model"], rec["option"], rec["displ"], rec["cylinders"], rec["drive"], rec["fuelType"]))
+            for r in e_rows:
+                say("      ROW city %s / hwy %s / comb %s | $%s per year | engine %r | %s | %s | %s" % (r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7]))
+            if e_st != "ok" or not e_rows:
+                flags.append("repair %d (%d): EPA returned no rows for the expected model names -- left out of the plan" % (vid, year))
+                continue
+            repairs.append({"id": vid, "year": year, "pulled_at": pulled_at, "current": current, "fuel_economy": e_rows,
+                            "evidence": {"epa": e_info}})
+        con.close()
     say("")
     say("=" * 100)
     say("REHEARSAL (in-memory copy of the database + the real build code)")
-    ok = rehearse(targets)
+    ok = rehearse(targets, repairs)
     exp = expected_counts(targets)
     say("")
     say("TOTAL rows the write would insert: " + ", ".join("%s %d" % kv for kv in exp.items()))
+    if repairs:
+        say("REPAIR would replace fuel-economy rows on %d existing vehicle(s): %d row(s) out, %d row(s) in  (optional: --skip-repairs)"
+            % (len(repairs), sum(len(r["current"]) for r in repairs), sum(len(r["fuel_economy"]) for r in repairs)))
     say("fleet total would become %d (verified count unchanged; bare owner-manual rows %d, frozen at %d)"
         % (fleet + len(targets), bare, BARE_FROZEN))
     bad = [r for r in REQUESTS if r[1] != 200]
@@ -621,9 +753,10 @@ def dry_run():
             say("  - " + f)
     if not ok:
         sys.exit("rehearsal failed -- no plan saved")
-    sha = plan_sha(targets)
+    sha = plan_sha(targets, repairs)
     with io.open(PLAN_FILE, "w", encoding="utf-8", newline="\n") as fh:
-        json.dump({"script": os.path.basename(__file__), "batch": BATCH, "sha256": sha, "targets": targets}, fh, sort_keys=True, indent=1)
+        json.dump({"script": os.path.basename(__file__), "batch": BATCH, "sha256": sha, "targets": targets, "repairs": repairs},
+                  fh, sort_keys=True, indent=1)
     say("plan saved: %s" % PLAN_FILE)
     say("plan sha256: %s" % sha)
     say("to write exactly this plan (only on Robert's go):  python %s %s --write --sha %s" % (os.path.basename(__file__), BATCH, sha))
@@ -636,8 +769,8 @@ def write():
     want = sys.argv[sys.argv.index("--sha") + 1]
     with io.open(PLAN_FILE, encoding="utf-8") as fh:
         plan = json.load(fh)
-    targets = plan["targets"]
-    got = plan_sha(targets)
+    targets, repairs = plan["targets"], plan.get("repairs") or []
+    got = plan_sha(targets, repairs)
     if got != want or plan.get("sha256") != want or plan.get("batch") != BATCH:
         sys.exit("plan file hash %s does not match --sha %s: run the dry run again and get a fresh go" % (got, want))
     if [(t["id"], t["year"]) for t in targets] != TARGETS or any((t["make"], t["model"]) != (MAKE, MODEL) for t in targets):
@@ -670,6 +803,11 @@ def write():
                 raise RuntimeError("id %d holds %r" % (t["id"], tuple(row)))
         if cur.execute("SELECT COUNT(*) FROM vehicles").fetchone()[0] != fleet + len(targets):
             raise RuntimeError("fleet count is off")
+        if repairs and not SKIP_REPAIRS:
+            apply_repairs(cur, repairs)
+            for r in repairs:
+                if stored_fuel_economy(cur, r["id"]) != r["fuel_economy"]:
+                    raise RuntimeError("repair %d did not store the planned rows" % r["id"])
         if bare_count(cur) != BARE_FROZEN:
             raise RuntimeError("bare owner-manual count moved")
         con.commit()
@@ -679,6 +817,8 @@ def write():
         raise
     con.close()
     say("WRITTEN: " + ", ".join("%s %d" % kv for kv in exp.items()))
+    if repairs:
+        say("REPAIRS: %s" % ("skipped (--skip-repairs)" if SKIP_REPAIRS else "fuel economy replaced on ids %s" % [r["id"] for r in repairs]))
     say("fleet total is now %d" % (fleet + len(targets)))
 
 
