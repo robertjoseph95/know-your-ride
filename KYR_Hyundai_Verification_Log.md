@@ -6,7 +6,75 @@ source pattern in `KYR_OEM_Manual_Source_Map.md` (Hyundai section). **Host:** `o
 glovebox-manual (free, no auth, citable manufacturer source). **This is the HMG foundation — it pre-characterizes
 Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the Sonata (shared platform + Theta II/Smartstream engines).**
 
-> **Hyundai status (2026-11-14, after the Kona 2018 / 2019 / 2023 / 2025 slice): 56 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 9/9** · **Santa Fe ✅ 9/13** · **Palisade ✅ 7/7** · **Venue ✅ 7/7** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz 1/5 verified (2026; the 2022, 2023, 2024 and 2025 rows were added 2026-11-14 with government data only, curated specs still to read)** · **Accent ⛔ 0/8 (deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. **⚠ Label audit 2026-11-14: a second-host year label is NOT automatically the model year — three labels hold the next year's book and four are unproved; see the LABEL AUDIT section. Row corrections deployed as `2026-11-14-hyundai-label-audit`; the Kona 2022 / Elantra 2022 intervals lost to false print conflicts were restored as `2026-11-14-hyundai-restore-2022`.** DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. Every Hyundai vehicle row that has a manufacturer book is now written; what remains is deferred for lack of a book, electrified, or has no vehicle row (Venue 2022–2025, Santa Cruz 2022–2025, Accent 2005+, Palisade 2023, Kona 2018 / 2019 / 2023 / 2025).
+> **Hyundai status (2026-11-14, after the Santa Cruz 2022 / 2023 / 2024 / 2025 slice): 60 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 9/9** · **Santa Fe ✅ 9/13** · **Palisade ✅ 7/7** · **Venue ✅ 7/7** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz ✅ 5/5** · **Accent ⛔ 0/8 (deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. **⚠ Label audit 2026-11-14: a second-host year label is NOT automatically the model year — three labels hold the next year's book and four are unproved; see the LABEL AUDIT section. Row corrections deployed as `2026-11-14-hyundai-label-audit`; the Kona 2022 / Elantra 2022 intervals lost to false print conflicts were restored as `2026-11-14-hyundai-restore-2022`.** DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. Every Hyundai vehicle row that has a manufacturer book is now written; what remains is deferred for lack of a book, electrified, or has no vehicle row (Venue 2022–2025, Santa Cruz 2022–2025, Accent 2005+, Palisade 2023, Kona 2018 / 2019 / 2023 / 2025).
+
+## ✅ SANTA CRUZ 2022 / 2023 / 2024 / 2025 — 4/4, Santa Cruz now 5/5 — `2026-11-14-hyundai-santa-cruz-2022-2025`, commit 6d3fddeb — FOURTEENTH HYUNDAI SLICE (missing-year step B)
+**What this is:** the curated specs for the four rows added in step A (section below), each read from that year's own book. Tally **336 verified / 42 nameplates / 11 makes; Hyundai 60 rows.** Script `_write_hyundai_santa_cruz_2022_2025.py`; backup `wrench_vehicles.db.bak_santa_cruz_2022_2025_20261114_204742`. **LIVE CONFIRMED 2026-11-14 20:53:09** (version string served; the live data file `data.e83fc00a.js` has the same md5 as the local one; CI green).
+
+**Books and prints** (identification and label findings are in the rows section below):
+
+| Year | id | Primary book | Other files of the same year | Result |
+|---|---|---|---|---|
+| 2022 | 38727 | portal `2022-Santa-Cruz-Owners-Manual.pdf`, June 2021 | `NX4OB/2021`, December 2021 print | identical on every specification page; ONE schedule line differs |
+| 2023 | 38728 | portal `2023-Santa Cruz-OM.pdf` | `NX4OB/2022` (same production file); `NX4OB/2023` (cross-check) | identical on every specification and schedule page |
+| 2024 | 38729 | `NX4OB/2024` | `NX4OB/2023` (cross-check) | no written value contradicted (wording differs only) |
+| 2025 | 38730 | `NX4OB/2025` | none | single print |
+
+**⚠ EDITION CONFLICT — 2022 automatic-transmission-fluid schedule line (p.9-11):** the June 2021 print says "No check, No service required"; the December 2021 print says "Replace every 60,000 miles". Standing whole-row rule: **no row is written for 2022.**
+
+**★ NEW ROW TYPE — transmission-fluid interval (ruling, Robert 2026-11-14, "Go, as recommended"):** the 2023 and 2024 normal schedules print "Automatic transmission fluid: Replace every 60,000 miles" (p.9-12) in every file. Written for those two years as `Automatic transmission fluid replacement`, 60,000 mi, no month figure. It is the first manual-cited transmission-fluid row in the fleet; earlier Hyundai books print "No check, No service required" there, and so does the 2025 Santa Cruz book (p.9-14) — no row for 2025.
+
+**⚠ 2025 DUAL-CLUTCH BLOCK NOT WRITTEN (same ruling):** p.10-7 prints gear oil 2.53–2.64 US qt (2.45–2.50 L) and control oil 3.5–3.6 US qt (3.3–3.4 L) with one fluid name (GS WDCTF HD G) for both. The 2022–2024 books assign the two quantities the other way round (gear oil 3.3–3.4 L, control oil 2.45–2.50 L) and name two fluids (HD G, HD H). There is no second 2025 print. The 2025 dual-clutch fluid name and quantities are left empty; the automatic-transmission line and the transfer-case line (which names both transmissions) are written.
+
+**Read log — the same in all four years:**
+
+| Item | Value | Page (2022 / 2023, 2024 / 2025) |
+|---|---|---|
+| Engines | Smartstream G2.5 GDI and G2.5 T-GDI, 152.4 cu. in (2,497 cc), "4, in-line" | 2-8 / 2-8 / 10-2 |
+| Oil quantity | 6.13 qt / 5.8 L, one cell for both engines | 2-12 / 2-12 / 10-7 |
+| Oil grade (chart, page render) | 0W-20 (G2.5 GDI), 0W-30 (G2.5 T-GDI), one bar each | 2-13 / 2-13 / 10-9 |
+| Oil specification | API SN PLUS/SP or ILSAC GF-6; full synthetic required (API SN PLUS or above) | 2-12, 2-13 / same / 10-7, 10-8 |
+| Automatic transmission quantity | 6.87 qt / 6.5 L | 2-12 / 2-12 / 10-7 |
+| Coolant type | mixture of antifreeze and water, ethylene glycol base, aluminum radiator | 2-12 / 2-12 / 10-7 |
+| Brake fluid type | SAE J1704 DOT-4 LV, FMVSS 116 DOT-4, ISO 4925 Class 6 | 2-12 / 2-12 / 10-7 |
+| Rear differential | hypoid gear oil API GL-5 SAE 75W/85, 0.56–0.67 qt / 0.53–0.63 L | 2-12 / 2-12 / 10-8 |
+| Tires (table, page render) | 245/60R18, 245/50R20 at 35 psi all positions; compact spare T135/80D18 at 60 psi; wheel nut 79–94 lbf·ft | 2-10 / 2-10 / 10-4 |
+| Fuel tank | 17.69 gal / 67 L | 2-12 / 2-12 / 10-8 |
+
+**Read log — what changes by year:**
+
+| Item | 2022 | 2023 and 2024 | 2025 |
+|---|---|---|---|
+| Automatic transmission fluid | ATF SP-IV (MICHANG, SK, NOCA, Hyundai genuine or other approved brands) | ATF SP4M-1 (SK, MICHANG, S-OIL, Hyundai genuine) | ATF SP4M-1 (SK, MICHANG, S-OIL; the book spells the Hyundai genuine brand "SP4-M1", not written) |
+| Dual-clutch gear oil (G2.5 T-GDI) | GS WDCTF HD G (WDGO-1), 3.49–3.59 qt / 3.3–3.4 L | GS WDCTF HD G (GS Caltex), 3.4–3.6 qt / 3.3–3.4 L | not written (above) |
+| Dual-clutch control oil | GS WDCTF HD H (WDHO-1), 2.59–2.64 qt / 2.45–2.50 L | GS WDCTF HD H (GS Caltex), 2.58–2.64 qt / 2.45–2.50 L | not written (above) |
+| Coolant quantity, GDI / T-GDI | 10.00 qt / 9.46 L; 9.12 qt / 8.63 L | the same | 10 qt / 9.5 L; 9.09 qt / 8.6 L |
+| Brake fluid quantity | "As required" — none | none | 0.87 qt / 0.82 L (printed ±0.02) |
+| Transfer case | 0.66–0.72 qt / 0.62–0.68 L (GDI); 0.51–0.55 qt / 0.48–0.52 L (T-GDI) | the same | 0.65–0.71 qt / 0.62–0.68 L (automatic); 0.49–0.55 qt / 0.47–0.52 L (dual clutch) |
+| Drive wording on the differential lines | AWD | AWD | 4WD |
+| Compact spare | listed | listed | "if equipped" |
+| Wheel nut in N·m | not printed (lbf·ft and kgf·m only) | 2023 not printed; 2024 prints 107–127 | 107–127 |
+
+**Normal schedule, mi / mo** (rotated grids rendered upright for 2022–2024; upright grids for 2025, sparse rows rendered):
+
+| Row | 2022 (p.9-8 to 9-11) | 2023, 2024 (p.9-9 to 9-12) | 2025 (p.9-11 to 9-15) |
+|---|---|---|---|
+| Engine oil and filter | 8,000 / 12 | 8,000 / 12 | 8,000 / 12 |
+| Air cleaner filter | 24,000 / 36 | 24,000 / 36 | 24,000 / 36 |
+| Spark plugs, G2.5 T-GDI | 48,000 / 72 | 48,000 / 72 | 48,000 / 72 |
+| Spark plugs, G2.5 GDI | 96,000 | 96,000 | 96,000 |
+| Coolant | first 120,000 / 120, then 24,000 / 24 | the same | the same |
+| Brake fluid | 48,000 / 48 | 48,000 / 48 | 48,000 / 48 |
+| Tire rotation | 8,000 / 12 (grid marks) | 8,000 / 12 (text) | 8,000 / 12 (text) |
+| Cabin air filter | 16,000 / **12** (printed as text) | 16,000 / **24** (grid marks) | 16,000 / 24 (grid marks) |
+| Automatic transmission fluid | prints disagree — no row | **60,000** | "No check, No service required" — no row |
+| Rows written | 8 | 9 | 8 |
+
+**Gates:** spark-plug part number and gap are published by none of the books; 12V battery — each book shows only an example capacity label (MF68L-DIN p.9-32 / 9-33; MF68R-DIN in 2025); brake-fluid quantity 2022–2024; electric power steering has no fluid. Wheel-nut N·m is left empty for 2022 and 2023 because those books do not print it (precedent: Santa Fe 2005 / 2006, Sonata 2006).
+
+**Checks:** dry run 4 vehicles / 34 schedule rows / 61 unit pairs converted (a ratio test was added for quantities under one quart; the gallon tolerance follows both printed precisions, so 17.69 gal beside 67 L passes); per-year guards in the script (schedule line counts, the transmission-fluid row only on 2023 / 2024, cabin-filter months, SP-IV only on 2022, no dual-clutch text on 2025, 4WD wording on 2025, N·m only where printed); a guard keeps the left-out 2025 figures and the misspelt brand out of shipped columns; government rows untouched; bare rows 424; the rebuilt data differs from the previous deployed data in exactly these four objects; verifier PASS 58.
+
+---
 
 ## ➕ SANTA CRUZ 2022 / 2023 / 2024 / 2025 — FOUR MISSING MODEL-YEAR ROWS ADDED (government data only) — `2026-11-14-hyundai-santa-cruz-rows`, commit 0f7bf88e — MISSING-YEAR STEP A
 **What this is:** four Santa Cruz model-year rows the fleet lacked (ids 38727–38730), with EPA fuel economy and NHTSA recalls, safety ratings and complaints, and **no curated specification yet**. Fleet 3,676 → 3,680; tally stays 332 / 42 / 11 (Hyundai 56 verified rows). Script `_add_hyundai_rows.py santa-cruz-missing-years` (dry run, then the approved plan by hash); backup `wrench_vehicles.db.bak_rows_santa_cruz_missing_years_20261114_200645`. **LIVE CONFIRMED 2026-11-14 20:21:20** (version string served; the live data file `data.6fe6f7bf.js` has the same md5 as the local one).
@@ -48,7 +116,7 @@ Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the
 
 **Not touched:** the existing 2026 row (id 9981) keeps its May fuel-economy rows (older annual-cost figures, one duplicated entry) and its empty engine label.
 
-**Open after this step:** step B, the curated specs for the four years. Already seen: the two 2022 prints disagree on the automatic-transmission-fluid schedule line ("No check, No service required" in the June 2021 print, "Replace every 60,000 miles" in the December 2021 print); the 2022 book names ATF SP-IV and the 2023 book SP4M-1, with different oil-capacity figures.
+**Open after this step:** ~~step B, the curated specs for the four years~~ **done 2026-11-14**, see the section above (`2026-11-14-hyundai-santa-cruz-2022-2025`).
 
 ---
 
