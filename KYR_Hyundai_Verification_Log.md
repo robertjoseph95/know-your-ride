@@ -6,7 +6,58 @@ source pattern in `KYR_OEM_Manual_Source_Map.md` (Hyundai section). **Host:** `o
 glovebox-manual (free, no auth, citable manufacturer source). **This is the HMG foundation — it pre-characterizes
 Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the Sonata (shared platform + Theta II/Smartstream engines).**
 
-> **Hyundai status (2026-11-14, after the Santa Cruz 2022 / 2023 / 2024 / 2025 slice): 60 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 9/9** · **Santa Fe ✅ 9/13** · **Palisade ✅ 7/7** · **Venue ✅ 7/7** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz ✅ 5/5** · **Accent ⛔ 0/8 (deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. **⚠ Label audit 2026-11-14: a second-host year label is NOT automatically the model year — three labels hold the next year's book and four are unproved; see the LABEL AUDIT section. Row corrections deployed as `2026-11-14-hyundai-label-audit`; the Kona 2022 / Elantra 2022 intervals lost to false print conflicts were restored as `2026-11-14-hyundai-restore-2022`.** DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. Every Hyundai vehicle row that has a manufacturer book is now written; what remains is deferred for lack of a book, electrified, or has no vehicle row (Venue 2022–2025, Santa Cruz 2022–2025, Accent 2005+, Palisade 2023, Kona 2018 / 2019 / 2023 / 2025).
+> **Hyundai status (2026-11-14, after the Santa Cruz 2022 / 2023 / 2024 / 2025 slice): 60 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 9/9** · **Santa Fe ✅ 9/13** · **Palisade ✅ 7/7** · **Venue ✅ 7/7** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz ✅ 5/5** · **Accent 0/19 verified (1995–2002: 8 rows deferred, no manufacturer manual before 2005; 2005, 2006, 2008, 2014 and 2016–2022: 11 rows added 2026-11-14 with government data only, curated specs still to read)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. **⚠ Label audit 2026-11-14: a second-host year label is NOT automatically the model year — three labels hold the next year's book and four are unproved; see the LABEL AUDIT section. Row corrections deployed as `2026-11-14-hyundai-label-audit`; the Kona 2022 / Elantra 2022 intervals lost to false print conflicts were restored as `2026-11-14-hyundai-restore-2022`.** DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** the curated specs for the eleven Accent rows added 2026-11-14, in three slices by generation. The missing-year rows for Venue, Palisade, Kona and Santa Cruz are added and verified.
+
+## ➕ ACCENT 2005–2022 — ELEVEN MISSING MODEL-YEAR ROWS ADDED (government data only) — `2026-11-14-hyundai-accent-rows`, commit dcc288f3 — MISSING-YEAR STEP A
+**What this is:** eleven Accent model-year rows the fleet lacked (ids 38731–38741), with EPA fuel economy and NHTSA recalls, safety ratings and complaints, and **no curated specification yet**. Fleet 3,680 → 3,691; tally stays 336 / 42 / 11 (Hyundai 60 verified rows). Script `_add_hyundai_rows.py accent-missing-years` (dry run, then the approved plan by hash); backup `wrench_vehicles.db.bak_rows_accent_missing_years_20261114_212035`. **LIVE CONFIRMED 2026-11-14 21:26:05** (version string served; the live data file `data.97fd0a58.js` has the same md5 as the local one; CI green).
+
+**Book basis per year (rulings, Robert 2026-11-14, "Accept, start dry run").** All eleven are US-portal files in folder `accent`, single prints; the second host serves no Accent (no US listing; codes HC, HCa, RB, RBa, MC, LC all answer HTTP 500 while a known file answers 200).
+
+| Year | id | File | How it names its year | Copyright / pages | Engine table |
+|---|---|---|---|---|---|
+| 2005 | 38731 | `2005_Hyundai_Accent_OM.pdf` | cover "2005 Owner's Manual" + Accent | 2005 / 219 | 1.6 MPI, 1,599 cc, "4-Cylinder in-line DOHC" (p.9-3) |
+| 2006 | 38732 | `2006_Hyundai_Accent_OM.pdf` | cover "2006 Owner's Manual" + ACCENT | 2006 / 278 | the same (p.9-3) |
+| 2008 | 38733 | `2008_Hyundai_Accent_OM.pdf` | cover "2008 Owner's Manual" + ACCENT | 2008 / 273 | the same (p.9-3) |
+| 2014 | 38734 | `2014-Accent-Owners-Manual.pdf` | PDF title "2014 Accent Owners Manual" | 2013 / 406 | Gasoline 1.6, 97.09 cu.in (1591 cc), "4, In-line" (p.8-2) |
+| 2016 | 38735 | `2016_Hyundai_Accent_OM.pdf` | PDF title "2016 Hyundai Accent Owner's Manual" | 2015 / 456 | the same (p.8-2) |
+| 2017 | 38736 | `2017_Hyundai_Accent_OM.pdf` | PDF title "2017 Hyundai Accent Owner's Manual" | 2017 / 380 | the same (p.8-2) |
+| 2018 | 38737 | `2018 Accent Owners Manual.pdf` | folder + file name only | 2018 / 442, created 2018-02-20 | Gamma 1.6 GDI, 1,591 cc, "In-line 4 cylinder" (p.8-2) |
+| 2019 | 38738 | `2019 Accent OM.pdf` | folder + file name only | 2018 / 442, created 2018-08-01 | the same (p.8-2) |
+| 2020 | 38739 | `2020 Accent Owner's Manual.pdf` | cover + PDF title "2020 Accent Owner's Manual" | 2019 / 445 | Smartstream G1.6, 97.52 cu.in (1,598 cc), "In-line 4 cylinder" (p.8-2) |
+| 2021 | 38740 | `2021 Accent OM.pdf` | folder + file name only; proof marks "HCa HMA" 5/25/2020 | 2020 / 443 | the same (p.8-2) |
+| 2022 | 38741 | `2022-Accent-OM.pdf` | folder + file name only | 2021 / 445, created 2021-07-06 | the same (p.8-2) |
+
+The four files with no title naming the year were accepted on folder, file name, copyright and creation date (as for Kona 2018 / 2019). The 2018 and 2019 files share a copyright year but are separate editions: 21 pages differ and the 2019 file adds LED headlamp content. Wheelbase steps through the four generations (96.1 / 98.4 / 101.2 / 101.5 in); the 2018–2022 books show the sedan on the exterior overview p.1-2; the 2014–2017 books show an interior overview only.
+
+**Years with a government listing and NO book — no row:** 2003, 2004, 2007, 2009, 2010, 2011, 2012, 2013, 2015. For each, 21 file-name forms under portal folder `accent` answered HTTP 404 (2007, 2009–2013 and 2015 re-asked 2026-11-14 in full mode; an older tool had tried them without reading the status). vPIC lists the Accent for 2003–2022 and not 2023.
+
+**Government data written:**
+
+| Year | EPA entries (city / hwy / comb) | Recalls | Safety | Complaints | Engine label |
+|---|---|---|---|---|---|
+| 2005 | 1.5 auto 23 / 32 / 26; 1.6 auto 23 / 32 / 26; 1.5 manual 24 / 33 / 28; 1.6 manual 25 / 30 / 27 | 1 | front passenger 4, side passenger 4; the rest empty | 49 | empty |
+| 2006 | auto 25 / 33 / 28; manual 27 / 32 / 29 | 3 | no row | 43 | 1.6L I4 |
+| 2008 | auto 24 / 33 / 28; manual 27 / 32 / 29 | 1 | no row | 101 | 1.6L I4 |
+| 2014 | auto 26 / 36 / 30; manual 27 / 37 / 31 | 1 | overall 4, rollover 4, risk 12.4% | 80 | 1.6L I4 |
+| 2016 | auto 26 / 36 / 30; manual 27 / 37 / 31 | none | overall 4, rollover 4, risk 12.4% | 103 | 1.6L I4 |
+| 2017 | auto 26 / 36 / 30; manual 27 / 37 / 31 | none | overall 4, rollover 4, risk 12.4% | 68 | 1.6L I4 |
+| 2018 | auto 28 / 38 / 32; manual 28 / 37 / 31 | 1 | listed, not rated — no row | 19 | 1.6L I4 |
+| 2019 | auto 28 / 38 / 32; manual 28 / 37 / 31 | 1 | listed, not rated — no row | 31 | 1.6L I4 |
+| 2020 | variable 33 / 41 / 36; manual 29 / 39 / 33 | 4 | overall 4, rollover 4, risk 11.3% | 12 | 1.6L I4 |
+| 2021 | variable 33 / 41 / 36; manual 29 / 39 / 33 | 4 | overall 4, rollover 4, risk 11.3% | 16 | 1.6L I4 |
+| 2022 | variable 33 / 41 / 36 | 2 | overall 4, rollover 4, risk 11.3% | 17 | 1.6L I4 |
+
+**Rulings (Robert 2026-11-14, "Go, write"):**
+- **EPA name and engines, 2005:** EPA lists the 2005 car as "Accent/Brio" — taken, it is EPA's only Accent entry that year. EPA lists a 1.5 L beside the 1.6 L; the 2005 book's engine table lists the 1.6 only. All four EPA entries are kept as listed and the engine label stays empty (standing label rule: every EPA engine must match the book's table).
+- **A complaint filed against "ALL MODELS":** one 2014 complaint (ODI 11697541) is filed by NHTSA against every 2014 Hyundai and is returned for each model. Kept as returned, so the stored count equals NHTSA's count (80). The fleet already holds 360 complaint numbers on every fleet vehicle of one make and year. The script now accepts this shape and reports it; any other product mismatch still stops the run.
+- **Safety ratings for one body style:** for 2006 and 2008 NHTSA rates the four-door and lists the two-door unrated. No figure is shared by both, so no rating is stored and the app says none is on file. For 2005 both bodies are rated and differ on the two driver figures; only the two shared figures are stored.
+- NHTSA answers "no recalls" for 2016 and 2017 with its HTTP 400 count-0 body; the other years supply the positive control.
+
+**Checks:** 132 requests; the build rehearsal passed on an in-memory copy before the write; the rebuilt data differs from the previous deployed data by the eleven new objects only; bare rows 424; verifier PASS 58. Totals: vehicles 11, fuel economy 23, recalls 18, safety ratings 7, complaints 539, pull-log lines 44.
+
+**Open after this step:** step B, the curated specs for the eleven years, in three slices by generation — 2005 / 2006 / 2008, then 2014 / 2016 / 2017, then 2018–2022. Each is a single print, so there is no second print to compare. The 2005 book publishes a spark-plug type and gap and a battery rating (p.9-2 / 9-3), which the later books do not.
+
+---
 
 ## ✅ SANTA CRUZ 2022 / 2023 / 2024 / 2025 — 4/4, Santa Cruz now 5/5 — `2026-11-14-hyundai-santa-cruz-2022-2025`, commit 6d3fddeb — FOURTEENTH HYUNDAI SLICE (missing-year step B)
 **What this is:** the curated specs for the four rows added in step A (section below), each read from that year's own book. Tally **336 verified / 42 nameplates / 11 makes; Hyundai 60 rows.** Script `_write_hyundai_santa_cruz_2022_2025.py`; backup `wrench_vehicles.db.bak_santa_cruz_2022_2025_20261114_204742`. **LIVE CONFIRMED 2026-11-14 20:53:09** (version string served; the live data file `data.e83fc00a.js` has the same md5 as the local one; CI green).
@@ -586,7 +637,7 @@ Grids are printed sideways; statement rows were decoded from text, grid rows (oi
 
 Portal Accent books that DO exist, for model years with no vehicle row: 2005, 2006, 2008, 2014 (`2014-Accent-Owners-Manual.pdf`), 2016, 2017, 2018 (`2018 Accent Owners Manual.pdf`), 2019 (`2019 Accent OM.pdf`), 2020 (`2020 Accent Owner's Manual.pdf`), 2021 (`2021 Accent OM.pdf`), 2022 (`2022-Accent-OM.pdf`); not found in 46 filename forms each: 2007, 2009–2013, 2015. Existence probes only — none was downloaded or read.
 
-**Re-checked 2026-11-14 with a status-aware probe** (see the probe tooling incident in the Veloster / Santa Cruz section): 21 filename forms for each of 1995–2004 returned HTTP 404; the core forms for 2007, 2009–2013 and 2015 returned HTTP 404. The defer stands.
+**Re-checked 2026-11-14 with a status-aware probe** (see the probe tooling incident in the Veloster / Santa Cruz section): 21 filename forms for each of 1995–2004 returned HTTP 404; the core forms for 2007, 2009–2013 and 2015 returned HTTP 404. The defer stands. **Update 2026-11-14 (later the same day):** rows were added for the eleven later years that do have a book — see the Accent rows section near the top. The eight 1995–2002 rows stay deferred.
 
 ---
 
