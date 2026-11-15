@@ -6,7 +6,83 @@ source pattern in `KYR_OEM_Manual_Source_Map.md` (Hyundai section). **Host:** `o
 glovebox-manual (free, no auth, citable manufacturer source). **This is the HMG foundation — it pre-characterizes
 Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the Sonata (shared platform + Theta II/Smartstream engines).**
 
-> **Hyundai status (2026-11-14, after the Palisade 2023 slice): 52 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona 5/9 verified (2020 / 2021 / 2022 / 2024 / 2026; the 2018, 2019, 2023 and 2025 rows were added 2026-11-14 with government data only, curated specs still to read)** · **Santa Fe ✅ 9/13** · **Palisade ✅ 7/7** · **Venue ✅ 7/7** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz ✅ 1/1** · **Accent ⛔ 0/8 (deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. **⚠ Label audit 2026-11-14: a second-host year label is NOT automatically the model year — three labels hold the next year's book and four are unproved; see the LABEL AUDIT section. Row corrections deployed as `2026-11-14-hyundai-label-audit`; the Kona 2022 / Elantra 2022 intervals lost to false print conflicts were restored as `2026-11-14-hyundai-restore-2022`.** DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. Every Hyundai vehicle row that has a manufacturer book is now written; what remains is deferred for lack of a book, electrified, or has no vehicle row (Venue 2022–2025, Santa Cruz 2022–2025, Accent 2005+, Palisade 2023, Kona 2018 / 2019 / 2023 / 2025).
+> **Hyundai status (2026-11-14, after the Kona 2018 / 2019 / 2023 / 2025 slice): 56 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 9/9** · **Santa Fe ✅ 9/13** · **Palisade ✅ 7/7** · **Venue ✅ 7/7** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz ✅ 1/1** · **Accent ⛔ 0/8 (deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. **⚠ Label audit 2026-11-14: a second-host year label is NOT automatically the model year — three labels hold the next year's book and four are unproved; see the LABEL AUDIT section. Row corrections deployed as `2026-11-14-hyundai-label-audit`; the Kona 2022 / Elantra 2022 intervals lost to false print conflicts were restored as `2026-11-14-hyundai-restore-2022`.** DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. Every Hyundai vehicle row that has a manufacturer book is now written; what remains is deferred for lack of a book, electrified, or has no vehicle row (Venue 2022–2025, Santa Cruz 2022–2025, Accent 2005+, Palisade 2023, Kona 2018 / 2019 / 2023 / 2025).
+
+## ✅ KONA 2018 / 2019 / 2023 / 2025 — 4/4, Kona now 9/9 — `2026-11-14-hyundai-kona-2018-2025`, commit 69d9636d — THIRTEENTH HYUNDAI SLICE (missing-year step B)
+**What this is:** the curated specs for the four rows added in step A (section below), each read from that year's own book. Tally **332 verified / 42 nameplates / 11 makes; Hyundai 56 rows.** Script `_write_hyundai_kona_2018_2025.py`; backup `wrench_vehicles.db.bak_kona_2018_2025_20261114_192717`. **LIVE CONFIRMED 2026-11-14 19:33:12** (version string served; the live data file `data.4ffa7c40.js` has the same md5 as the local one; CI green).
+
+**Books and prints** (each identified by the Kona body on its exterior overview, the engine table and the wheelbase):
+
+| Year | id | Primary book | Other prints of the same year | Result |
+|---|---|---|---|---|
+| 2018 | 38723 | portal `2018 Kona Owners Manual.pdf`, Copyright 2017, 463 pp | `OS/2018`, Copyright 2018, 463 pp | identical on every specification and schedule page |
+| 2019 | 38724 | portal `2019 Kona OM.pdf`, Copyright 2018, 485 pp | `OS/2019`, Copyright 2019, 503 pp | identical except the brake-fluid grade |
+| 2023 | 38725 | portal, PDF title "2023 Kona Owner's Manual", Copyright 2022, 602 pp | `OS/2023` (586 pp) and `OS/2022` (596 pp), both the 2023 book, neither on the US menu | every written value agrees |
+| 2025 | 38726 | `SX2/2025`, PDF keywords name 2025, Copyright 2024, 713 pp | none | single print |
+
+**⚠ EDITION CONFLICT — 2019 brake fluid (p.8-8):** first print "FMVSS116 DOT-3 or DOT-4"; later print "SAE J1704 DOT-4 LV, FMVSS 116 DOT-4, ISO 4925 CLASS-6". The quantity is the same. **Ruling (Robert, 2026-11-14, "Go, as recommended"): write the grade both prints name, FMVSS 116 DOT-4, with the agreed quantity.** (The 2018 prints agree on "DOT-3 or DOT-4"; the 2020 first print is the first to use the DOT-4 LV wording.)
+
+**Read log — 2018 and 2019 (first generation; specifications chapter 8, schedules chapter 7):**
+
+| Item | Value | Page |
+|---|---|---|
+| Engines | Gamma 1.6 T-GDI 1,591 cc; Nu 2.0 MPI 1,999 cc; both "In-line 4 cylinder" | 8-2 |
+| Oil quantity | 4.23 qt / 4.0 L (Nu); 4.76 qt / 4.5 L (Gamma) | 8-7 |
+| Oil grade (chart, page render) | Nu: 5W-20 recommended, also 5W-30 and 10W-30 by temperature. Gamma: 5W-30 recommended, also 5W-40, 10W-30, 15W-40, 20W-50 by temperature | 8-9 |
+| Oil specification, 2018 | Nu: API SM and ILSAC GF-4 (or above), ACEA A5/B5. Gamma: ACEA A5/B5 | 8-7 |
+| Oil specification, 2019 | Nu: API Latest (ILSAC Latest). Gamma: API Latest (ILSAC Latest) or ACEA A5/B5 | 8-7 |
+| Automatic transmission (Nu) | ATF SP-IV, 7.08 qt / 6.7 L | 8-7 |
+| Dual-clutch transmission (Gamma) | API GL-4 SAE 70W, 2.01–2.11 qt / 1.9–2.0 L; the 2018 book names "HK SYN DCTF 70W", the 2019 book "HK DCTF 70W" | 8-7 |
+| Coolant | 6.8 qt / 6.5 L (Nu); 7.5 qt / 7.1 L (Gamma); phosphate-based ethylene glycol | 8-8 |
+| Brake fluid | 0.74–0.85 qt / 0.7–0.8 L; grade per year as above | 8-8 |
+| Rear differential and transfer case (AWD) | hypoid gear oil API GL-5 SAE 75W/90; quantities not written | 8-8 |
+| Tires | 205/60R16, 215/55R17, 235/45R18 at 33 psi; spare T125/80D16 at 60 psi; lug nuts 79–94 lb-ft | 8-5 |
+| Fuel tank | 13.2 gal / 50 L | 8-8 |
+| Schedule, Nu | oil 7,500 mi / 12 mo; plugs 97,500 mi; air cleaner 30,000 mi / 48 mo; climate-control air filter 15,000 mi / 12 mo; rotation 7,500 mi; coolant 120,000 mi / 10 years, then 30,000 mi / 24 mo | 7-8 |
+| Schedule, Gamma | oil 6,000 mi / 12 mo; plugs 42,000 mi; air cleaner 24,000 mi / 48 mo; filter 12,000 mi / 12 mo; rotation 6,000 mi; coolant as Nu | 7-13 |
+| Brake fluid interval | inspection marks only in both prints of both years — no replacement line | 7-10, 7-15 |
+
+**Why the 2018 / 2019 differential quantities fail:** the book prints 0.44–0.49 US qt beside 0.47–0.52 L and 0.36–0.4 US qt beside 0.38–0.42 L. Those quart figures are the litre figures DIVIDED by 1.057 instead of multiplied. Same page, same figures as the 2020 and 2021 books, which were left out for the same reason.
+
+**Read log — 2023 (facelift; all three prints print capacities in US GALLONS, written as printed):**
+
+| Item | Value | Page |
+|---|---|---|
+| Engines | Smartstream G1.6 T-GDi 1,598 cc; Smartstream G2.0 Atkinson 1,999 cc; "In-line 4 cylinder" | 2-9 |
+| Oil | 0W-20 only (one bar on the chart); 1.14 gal / 4.3 L (G2.0); 1.27 gal / 4.8 L (G1.6T); full synthetic, API SN PLUS/SP or ILSAC GF-6 | 2-13, 2-14 |
+| Intelligent variable transmission (G2.0) | SP-CVT1, 1.77 gal / 6.7 L | 2-13 |
+| Dual-clutch transmission (G1.6T) | API GL-4 SAE 70W (HK D DCTF TGO-10, Spirax S6 GHDE 70W DCTF, 7 DCTF HKM), 0.42–0.45 gal / 1.6–1.7 L | 2-13 |
+| Coolant | 1.59 gal / 6.0 L (G2.0); 1.82 gal / 6.9 L (G1.6T); ethylene glycol with phosphate, distilled water | 2-13 |
+| Rear differential — printed "(AWD)" | GL-5 75W/90, 0.12–0.14 gal / 0.47–0.52 L | 2-13 |
+| Transfer case — printed "(4WD)" | GL-5 75W/85; 0.49–0.55 qt / 0.47–0.52 L (G1.6T); 0.4–0.44 qt / 0.38–0.42 L (G2.0) | 2-14 |
+| Brake fluid | SAE J1704 DOT-4 LV, FMVSS 116 DOT-4, ISO 4925 Class 6; quantity not written (0.5–0.6 qt beside 0.7–0.8 L) | 2-14 |
+| Tires | as 2018 / 2019; compact spare "if equipped" | 2-11 |
+| Fuel tank | 13.21 gal / 50 L | 2-14 |
+| Schedule | oil 8,000 mi / 12 mo; plugs 96,000 mi (G2.0) and 48,000 mi (G1.6T); air cleaner 24,000 mi / 36 mo; cabin filter 16,000 mi / 24 mo; rotation 8,000 mi / 12 mo | 9-9 |
+| | coolant 120,000 mi / 120 mo, then 24,000 mi / 24 mo | 9-10 |
+| | brake fluid replace 48,000 mi / 48 mo | 9-11 |
+
+**Read log — 2025 (second generation; its tire, capacity, chart and schedule pages equal the `SX2/2024` file's except one inspect-only line):**
+
+| Item | Value | Page |
+|---|---|---|
+| Oil | 0W-20 only; 4.5 qt / 4.3 L (G2.0); 5.1 qt / 4.8 L (G1.6T); full synthetic, API SN PLUS/SP or ILSAC GF-6 | 31, 32 |
+| Automatic transmission (G1.6T) | ATF SP4M-1, 6.8 qt / 6.5 L | 31 |
+| Intelligent variable transmission (G2.0) | CVTF SP-CVT1; quantity not written (6.9 qt beside 6.7 L; 7.1 qt beside 6.9 L) | 31 |
+| Coolant | 7.3 qt / 6.9 L (G2.0); 9.0 qt / 8.5 L (G1.6T); ethylene glycol base | 31 |
+| Rear differential and transfer case (AWD) | GL-5 75W/85; quantities not written (0.6–0.7 qt beside 0.4–0.5 L; 0.8–0.9 qt beside 0.62–0.68 L) | 31 |
+| Brake fluid | DOT-4, "as needed" | 31 |
+| Tires | 215/60R17 at 36 psi; 215/55R18 and 235/45R19 at 33 psi; spare (if equipped) T145/90D16 at 60 psi; wheel nuts 79–94 lb-ft | 28 |
+| Fuel tank | 12.4 gal / 47 L (G2.0); 13.2 gal / 50 L (G1.6T) | 31 |
+| Schedule | oil 8,000 mi / 12 mo; air cleaner 24,000 mi / 36 mo; plugs 48,000 mi (G1.6T) and 96,000 mi (G2.0) | 625–626 |
+| | coolant 120,000 mi / 120 mo, then 24,000 mi / 24 mo; brake fluid 48,000 mi / 48 mo; rotation 8,000 mi / 12 mo | 628 |
+| | cabin filter 16,000 mi / 24 mo | 629 |
+
+**Gates:** spark-plug part number and gap are published by none of the four books; 12V battery — 2018 / 2019 publish nothing, 2023 p.9-31 and 2025 p.655 show only an example capacity label; electric power steering has no fluid.
+
+**Checks:** dry run 4 vehicles / 38 schedule rows / 41 unit pairs converted (the gallon check now tests both ends of a range); per-year guards in the script (schedule line counts and pages, brake-fluid line only on 2023 / 2025, gallon capacities only on 2023, AWD / 4WD wording); a guard keeps every non-converting printed quantity out of shipped columns; government rows untouched; bare rows 424; the rebuilt data differs from the previous deployed data in exactly these four objects; verifier PASS 58.
+
+---
 
 ## ➕ KONA 2018 / 2019 / 2023 / 2025 — FOUR MISSING MODEL-YEAR ROWS ADDED + KONA FUEL-ECONOMY REPAIR — `2026-11-14-hyundai-kona-rows`, commit 4e936655 — MISSING-YEAR STEP A
 **What this is:** four Kona model-year rows the fleet lacked, with EPA fuel economy and NHTSA recalls, safety ratings and complaints, and **no curated specification yet**. In the same change the fuel economy of the four existing Kona rows was repaired. Tally stays 328 / 42 / 11 (Hyundai 52 verified rows). Confirmed live 2026-11-14 19:01:49 local: the site serves version 2026-11-14-hyundai-kona-rows and data.f6179460.js, whose md5 f61794600900c3b11fc457772dc462e1 equals the local file. Verifier PASS 58 before staging; CI green.
@@ -53,7 +129,7 @@ vPIC lists the Kona for all four years.
 
 **Method:** `_add_hyundai_rows.py kona-missing-years` (extended in this commit: EPA names to ignore, several engines per book, the optional fuel-economy repair guarded by a snapshot of the rows it replaces, no row for an unrated safety listing). Applied plan `b9a7f6552697f3209f735e20c27d3db22b4698e3e2ff4f184952b7fc718c5f9e`; backup `wrench_vehicles.db.bak_rows_kona_missing_years_20261114_185414`. New rows: vehicles 4, fuel_economy 18, recalls 3, safety_ratings 3, complaints 369, pull_log 16. Fleet 3,672 → 3,676; bare rows 424; 100 requests, one non-200 answer (the 2018 recalls reply); verifier PASS 58.
 
-**Open after this step:** step B, the curated specs for the four years (2018 / 2019 pre-facelift OS books, 2023 facelift book, 2025 SX2 book), each with its second print where one exists.
+**Open after this step:** ~~step B, the curated specs for the four years~~ **done 2026-11-14**, see the section above (`2026-11-14-hyundai-kona-2018-2025`).
 
 ---
 
