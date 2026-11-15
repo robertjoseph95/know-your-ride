@@ -6,7 +6,57 @@ source pattern in `KYR_OEM_Manual_Source_Map.md` (Hyundai section). **Host:** `o
 glovebox-manual (free, no auth, citable manufacturer source). **This is the HMG foundation — it pre-characterizes
 Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the Sonata (shared platform + Theta II/Smartstream engines).**
 
-> **Hyundai status (2026-11-14, after the Accent 2014 / 2016 / 2017 slice): 66 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 9/9** · **Santa Fe ✅ 9/13** · **Palisade ✅ 7/7** · **Venue ✅ 7/7** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz ✅ 5/5** · **Accent 6/19 verified (2005, 2006, 2008, 2014, 2016, 2017; the 2018–2022 rows carry government data only and await their manuals; 1995–2002: 8 rows deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. **⚠ Label audit 2026-11-14: a second-host year label is NOT automatically the model year — three labels hold the next year's book and four are unproved; see the LABEL AUDIT section. Row corrections deployed as `2026-11-14-hyundai-label-audit`; the Kona 2022 / Elantra 2022 intervals lost to false print conflicts were restored as `2026-11-14-hyundai-restore-2022`.** DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** the curated specs for the five remaining Accent rows (2018–2022). The missing-year rows for Venue, Palisade, Kona and Santa Cruz are added and verified.
+> **Hyundai status (2026-11-15, after the Accent 2018–2022 slice): 71 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 9/9** · **Santa Fe ✅ 9/13** · **Palisade ✅ 7/7** · **Venue ✅ 7/7** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz ✅ 5/5** · **Accent ✅ 11/19 (2005, 2006, 2008, 2014, 2016–2022 — every year that has a manufacturer manual; 1995–2002: 8 rows deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. **⚠ Label audit 2026-11-14: a second-host year label is NOT automatically the model year — three labels hold the next year's book and four are unproved; see the LABEL AUDIT section. Row corrections deployed as `2026-11-14-hyundai-label-audit`; the Kona 2022 / Elantra 2022 intervals lost to false print conflicts were restored as `2026-11-14-hyundai-restore-2022`.** DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing is queued. **The missing-year plan is complete:** the missing-year rows for Venue, Palisade, Kona, Santa Cruz and Accent are added and verified. Open, each on its own go: the fuel-economy repair for the nameplates with an electric sibling; the existing 2026 Santa Cruz row; a re-read of Santa Fe 2005 / 2006 and Sonata 2006 for the extra schedule rows.
+
+## ✅ ACCENT 2018 / 2019 / 2020 / 2021 / 2022 — 5/5, Accent now 11/19 — `2026-11-15-hyundai-accent-2018-2022`, commit 9e474a7e — SEVENTEENTH HYUNDAI SLICE (missing-year step B, slice 3 of 3)
+**What this is:** the curated specs for the last five of the eleven Accent rows added in step A, each read from that year's own book. Accent is now verified for every year that has a manufacturer manual, and **the missing-year plan (Venue, Palisade, Kona, Santa Cruz, Accent) is complete.** Tally **347 verified / 43 nameplates / 11 makes; Hyundai 71 rows.** Script `_write_hyundai_accent_2018_2022.py`; backup `wrench_vehicles.db.bak_accent_2018_2022_20261114_221032` (written to the database 2026-11-14 22:10, deployed the next morning). **LIVE CONFIRMED 2026-11-15 09:59:24** (version string served; the live data file `data.531939ac.js` has the same md5 as the local one; the previous data file answers 404; CI green).
+
+**Books:** US-portal files, single prints (the second host serves no Accent), HC generation, grid schedule. Identified by the sedan on the exterior overview p.1-2 (page renders), the engine table p.8-2 ("In-line 4 cylinder") and the wheel base 101.5 in p.8-2. Four of the five files carry no title naming the year and stand on portal folder, file name, copyright and creation date (ruling 2026-11-14, recorded in the step-A section below).
+
+| Year | File | Title names the year | Copyright | Created | Pages | Engine (p.8-2) |
+|---|---|---|---|---|---|---|
+| 2018 | `2018 Accent Owners Manual.pdf` | no | 2018 | 2018-02-20 | 442 | Gamma 1.6 GDI, 97.09 cu.in (1,591 cc) |
+| 2019 | `2019 Accent OM.pdf` | no | 2018 | 2018-08-01 | 442 (21 pages revised from 2018) | Gamma 1.6 GDI, 97.09 cu.in (1,591 cc) |
+| 2020 | `2020 Accent Owner's Manual.pdf` | yes (title and cover) | 2019 | 2019-06-07 | 445 | Smartstream G1.6, 97.52 cu.in (1,598 cc) |
+| 2021 | `2021 Accent OM.pdf` | no | 2020 | 2020-09-01 (proof marks "HCa HMA", 5/25/2020) | 443 | Smartstream G1.6, 97.52 cu.in (1,598 cc) |
+| 2022 | `2022-Accent-OM.pdf` | no | 2021 | 2021-07-06 | 445 | Smartstream G1.6, 97.52 cu.in (1,598 cc) |
+
+**Between the years:** 2018 and 2019 are token-identical on every specification and schedule page. 2020 brings the new engine and the variable transmission but keeps a wide oil chart. 2021 and 2022 narrow the chart to 0W-20, name the brake fluid DOT 4, add a brake-fluid replacement line and move the schedule step from 7,500 to 8,000 miles.
+
+**Read log — values that change:**
+
+| Item | 2018 / 2019 | 2020 | 2021 / 2022 | Page |
+|---|---|---|---|---|
+| Oil quantity (drain and refill) | 3.49 qt / 3.3 L | 4.02 qt / 3.8 L | 4.02 qt / 3.8 L | 8-6 |
+| Oil classification | API SM and ILSAC GF-4 (or above), ACEA A5/B5 | API Latest (ILSAC Latest) or ACEA C5 | API SN PLUS/SP or ILSAC GF-6 | 8-6 |
+| Oil chart (drawn, page render) | "5W-20, 5W-30" across the whole range, "10W-30" over part of it; 5W-20 recommended | "0W-20, 0W-30, 5W-20, 5W-30" across the whole range, "10W-30" over part of it; 0W-20 recommended | 0W-20 only | 8-8 |
+| Automatic / variable transmission | ATF SP-IV (MICHANG, SK, NOCA, Hyundai genuine or other approved brands), 7.1 qt / 6.7 L | SP-CVT1, 6.87 qt / 6.5 L | SP-CVT1, 6.87 qt / 6.5 L | 8-6 |
+| Brake / clutch fluid | FMVSS 116 DOT-3 or DOT-4 | FMVSS 116 DOT-3 or DOT-4 | DOT 4 (SAE J1704 DOT-4 LV, ISO 4925 Class 6, FMVSS 116 DOT-4) | 8-7 |
+| Electric power steering (no fluid) | p.3-17 | p.3-17 | p.3-18 | — |
+
+**Read log — the same in all five books:**
+
+| Item | Value | Page |
+|---|---|---|
+| Manual transmission | API GL-4 SAE 70W, TGO-9 (HK SYN MTF 70W, SPIRAX S6 GHME 70W MTF, GS MTF HD 70W), 1.7–1.8 qt / 1.6–1.7 L. The 2022 book still lists it although EPA lists only the variable transmission that year; written as the book prints it | 8-6 |
+| Coolant | 5.60 qt / 5.3 L; mixture of antifreeze and water, phosphate-based ethylene glycol for aluminum radiator | 8-7 |
+| Tires (table, page render) | 185/65R15 (5.5J×15), 205/45R17 (6.5J×17) at 33 psi, all positions, normal and maximum load; compact spare T125/80D15 at 60 psi | 8-4 |
+| Wheel lug nut | 79–94 lbf·ft (11–13 kgf·m, 107–127 N·m) | 8-4 |
+| Fuel tank | 11.9 gal / 45 L | 8-7 |
+| Brake / clutch fluid quantity | **Not written:** printed "0.7~0.8 US qt.(0.7~0.8 l)", the same figures for both units | 8-7 |
+
+**Normal schedule (grid, p.7-8 to 7-10), mi / mo:**
+- **2018, 2019 — six rows, step 7,500 mi / 12 mo:** engine oil and filter 7,500 / 12 (p.7-8) · tire rotation 7,500, no months printed (p.7-8) · climate control air filter 7,500 / 12 (p.7-9) · air cleaner filter 22,500 / 36 (p.7-8) · spark plugs 97,500, no months printed (p.7-8) · coolant first 120,000 / 120, then every 30,000 / 24 (p.7-9).
+- **2020 — six rows:** as above, except the climate control air filter is printed "Replace every 12 Months" with no mileage. The row is written with an empty mileage.
+- **2021 — seven rows, step 8,000 mi / 12 mo:** engine oil and filter 8,000 / 12 · tire rotation 8,000, no months printed · climate control air filter 12 months, no mileage · air cleaner filter 24,000 / 36 · spark plugs 96,000, no months printed · coolant as above · brake / clutch fluid replacement 48,000 / 48 (p.7-9).
+- **2022 — seven rows:** as 2021, except tire rotation is a grid mark in every column, so 8,000 / 12.
+- **No row:** automatic and variable transmission fluid — "No check, No service required" (p.7-10); brake / clutch fluid through 2020 — inspection marks only.
+
+**Gates:** spark-plug part number and gap and the 12V battery are published by none of the five books; the brake-fluid quantity as above. Oil type is left empty: no book prints one (2021 / 2022 require API SN PLUS or above for the normal interval and call mineral or semi-synthetic oil a severe condition, but never print "full synthetic"). Front-wheel drive: no differential entry.
+
+**Checks:** dry run 5 vehicles / 32 schedule rows / 30 unit pairs converted; per-year guards in the script (engine name, oil quantity 3.49 vs 4.02, ATF SP-IV only on 2018 / 2019, SP-CVT1 from 2020, the 0W-20-only chart from 2021, DOT 4 and the brake-fluid row from 2021, schedule step 7,500 vs 8,000, rotation months only on 2022); a guard keeps the non-converting brake quantity out of shipped columns; government rows untouched; bare rows 424; the rebuilt data differs from the previous deployed data in exactly these five objects; verifier PASS 58. No new ruling was needed.
+
+---
 
 ## ✅ ACCENT 2014 / 2016 / 2017 — 3/3, Accent now 6/19 — `2026-11-14-hyundai-accent-2014-2017`, commit 03acf4e7 — SIXTEENTH HYUNDAI SLICE (missing-year step B, slice 2 of 3)
 **What this is:** the curated specs for three more of the eleven Accent rows added in step A, each read from that year's own book. Tally **342 verified / 43 nameplates / 11 makes; Hyundai 66 rows.** Script `_write_hyundai_accent_2014_2017.py`; backup `wrench_vehicles.db.bak_accent_2014_2017_20261114_215725`. **LIVE CONFIRMED 2026-11-14 22:02:28** (version string served; the live data file `data.580b6fee.js` has the same md5 as the local one; CI green).
@@ -124,7 +174,7 @@ The four files with no title naming the year were accepted on folder, file name,
 
 **Checks:** 132 requests; the build rehearsal passed on an in-memory copy before the write; the rebuilt data differs from the previous deployed data by the eleven new objects only; bare rows 424; verifier PASS 58. Totals: vehicles 11, fuel economy 23, recalls 18, safety ratings 7, complaints 539, pull-log lines 44.
 
-**Open after this step:** step B, the curated specs for the eleven years, in three slices by generation — 2005 / 2006 / 2008, then 2014 / 2016 / 2017, then 2018–2022. Each is a single print, so there is no second print to compare. The 2005 book publishes a spark-plug type and gap and a battery rating (p.9-2 / 9-3), which the later books do not. **Slice 1 (2005 / 2006 / 2008) done 2026-11-14**, see the section above (`2026-11-14-hyundai-accent-2005-2008`). **Slice 2 (2014 / 2016 / 2017) done 2026-11-14** (`2026-11-14-hyundai-accent-2014-2017`).
+**Open after this step:** step B, the curated specs for the eleven years, in three slices by generation — 2005 / 2006 / 2008, then 2014 / 2016 / 2017, then 2018–2022. Each is a single print, so there is no second print to compare. The 2005 book publishes a spark-plug type and gap and a battery rating (p.9-2 / 9-3), which the later books do not. **Slice 1 (2005 / 2006 / 2008) done 2026-11-14**, see the section above (`2026-11-14-hyundai-accent-2005-2008`). **Slice 2 (2014 / 2016 / 2017) done 2026-11-14** (`2026-11-14-hyundai-accent-2014-2017`). **Slice 3 (2018–2022) done 2026-11-15** (`2026-11-15-hyundai-accent-2018-2022`). Step B is complete for all eleven years.
 
 ---
 
