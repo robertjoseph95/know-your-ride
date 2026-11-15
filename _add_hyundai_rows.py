@@ -152,6 +152,74 @@ BATCHES = {
             2025: ["Santa Cruz AWD", "Santa Cruz FWD", "Santa Cruz XRT AWD"],
         },
     ),
+    "accent-missing-years": dict(
+        make="Hyundai", model="Accent",
+        # Eleven model years with a US-portal book (single prints; the second host serves no Accent). The fleet held
+        # only the 1995-2002 rows (deferred, no manual). No book exists for 2003, 2004, 2007, 2009-2013 or 2015
+        # (21 file-name forms each under portal folder 'accent', every answer HTTP 404), so those years get no row.
+        targets=[(38731, 2005), (38732, 2006), (38733, 2008), (38734, 2014), (38735, 2016), (38736, 2017),
+                 (38737, 2018), (38738, 2019), (38739, 2020), (38740, 2021), (38741, 2022)],
+        books={
+            2005: ("_hyundai_manuals/accent/accent_2005_portal_OM.pdf",
+                   "US portal, folder 2005, file 2005_Hyundai_Accent_OM.pdf; the cover prints '2005 Owner's Manual' and "
+                   "the Accent name; Copyright 2005; 219 pp; wheelbase 96.1 in, 4 door and 3 door"),
+            2006: ("_hyundai_manuals/accent/accent_2006_portal_OM.pdf",
+                   "US portal, folder 2006, file 2006_Hyundai_Accent_OM.pdf; the cover prints '2006 Owner's Manual' and "
+                   "ACCENT; Copyright 2006; PDF created 2006-01-24; 278 pp; wheelbase 98.4 in, 4 door and 3 door"),
+            2008: ("_hyundai_manuals/accent/accent_2008_portal_OM.pdf",
+                   "US portal, folder 2008, file 2008_Hyundai_Accent_OM.pdf; the cover prints '2008 Owner's Manual' and "
+                   "ACCENT; Copyright 2008; 273 pp; wheelbase 98.4 in, 4 door and 3 door"),
+            2014: ("_hyundai_manuals/accent/accent_2014_portal_OM.pdf",
+                   "US portal, folder 2014, file 2014-Accent-Owners-Manual.pdf; PDF title '2014 Accent Owners Manual'; "
+                   "Copyright 2013; PDF created 2013-11-13; 406 pp; wheelbase 101.2 in, 4 door and 5 door"),
+            2016: ("_hyundai_manuals/accent/accent_2016_portal_OM.pdf",
+                   "US portal, folder 2016, file 2016_Hyundai_Accent_OM.pdf; PDF title '2016 Hyundai Accent Owner's "
+                   "Manual'; Copyright 2015; PDF created 2015-08-07; 456 pp; wheelbase 101.2 in, 4 door and 5 door"),
+            2017: ("_hyundai_manuals/accent/accent_2017_portal_OM.pdf",
+                   "US portal, folder 2017, file 2017_Hyundai_Accent_OM.pdf; PDF title '2017 Hyundai Accent Owner's "
+                   "Manual'; Copyright 2017; PDF created 2017-02-16; 380 pp; wheelbase 101.2 in, 4 door and 5 door"),
+            2018: ("_hyundai_manuals/accent/accent_2018_portal_OM.pdf",
+                   "US portal, folder 2018, file '2018 Accent Owners Manual.pdf'; no PDF title names the year (accepted "
+                   "by ruling 2026-11-14 on folder, file name, copyright and creation date); Copyright 2018; PDF created "
+                   "2018-02-20; 442 pp; sedan on the exterior overview; wheelbase 101.5 in"),
+            2019: ("_hyundai_manuals/accent/accent_2019_portal_OM.pdf",
+                   "US portal, folder 2019, file '2019 Accent OM.pdf'; no PDF title names the year (ruling 2026-11-14); "
+                   "Copyright 2018; PDF created 2018-08-01; 442 pp; its own edition (21 pages revised from the 2018 "
+                   "file, LED headlamp content added); wheelbase 101.5 in"),
+            2020: ("_hyundai_manuals/accent/accent_2020_portal_OM.pdf",
+                   "US portal, folder 2020, file '2020 Accent Owner's Manual.pdf'; PDF title '2020 Accent Owner's "
+                   "Manual' and the cover prints '2020 Owner's Manual' and Accent; Copyright 2019; 445 pp; wheelbase "
+                   "101.5 in"),
+            2021: ("_hyundai_manuals/accent/accent_2021_portal_OM.pdf",
+                   "US portal, folder 2021, file '2021 Accent OM.pdf'; no PDF title names the year (ruling 2026-11-14); "
+                   "Copyright 2020; proof marks 'HCa HMA' dated 5/25/2020; PDF created 2020-09-01; 443 pp; wheelbase "
+                   "101.5 in"),
+            2022: ("_hyundai_manuals/accent/accent_2022_portal_OM.pdf",
+                   "US portal, folder 2022, file 2022-Accent-OM.pdf; no PDF title names the year (ruling 2026-11-14); "
+                   "Copyright 2021; PDF created 2021-07-06; 445 pp; wheelbase 101.5 in"),
+        },
+        # 2005 / 2006 / 2008 p.9-3: ENGINE | 1.6 MPI | Engine Type '4-Cylinder in-line DOHC' | Displacement (cc) 1,599.
+        # 2014 / 2016 / 2017 p.8-2: ENGINE | Gasoline 1.6 | 97.09 cu.in (1591 cc) | No. of cylinders '4, In-line'.
+        # 2018 / 2019 p.8-2: Gamma 1.6 GDI | 97.09 (1,591) | 'In-line 4 cylinder'.
+        # 2020 / 2021 / 2022 p.8-2: Smartstream G1.6 | 97.52 (1,598) | 'In-line 4 cylinder'.
+        book_engine={
+            2005: dict(page="9-3", cc=1599, cylinders=4, layout="in-line"),
+            2006: dict(page="9-3", cc=1599, cylinders=4, layout="in-line"),
+            2008: dict(page="9-3", cc=1599, cylinders=4, layout="in-line"),
+            2014: dict(page="8-2", cc=1591, cylinders=4, layout="in-line"),
+            2016: dict(page="8-2", cc=1591, cylinders=4, layout="in-line"),
+            2017: dict(page="8-2", cc=1591, cylinders=4, layout="in-line"),
+            2018: dict(page="8-2", cc=1591, cylinders=4, layout="in-line"),
+            2019: dict(page="8-2", cc=1591, cylinders=4, layout="in-line"),
+            2020: dict(page="8-2", cc=1598, cylinders=4, layout="in-line"),
+            2021: dict(page="8-2", cc=1598, cylinders=4, layout="in-line"),
+            2022: dict(page="8-2", cc=1598, cylinders=4, layout="in-line"),
+        },
+        # EPA lists the 2005 car as "Accent/Brio" - its only Accent entry that year (ruling 2026-11-14: take it).
+        epa_models={2005: ["Accent/Brio"], 2006: ["Accent"], 2008: ["Accent"], 2014: ["Accent"], 2016: ["Accent"],
+                    2017: ["Accent"], 2018: ["Accent"], 2019: ["Accent"], 2020: ["Accent"], 2021: ["Accent"],
+                    2022: ["Accent"]},
+    ),
 }
 
 ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
@@ -400,26 +468,42 @@ def safety(year):
         if any(v[2][i] != row[i] for v in variants):
             withheld.append("%s (%s)" % (name, "; ".join("%s: %r" % (v[1], v[2][i]) for v in variants)))
             row[i] = None
+    if all(x is None for x in row):
+        # some variants are rated, but no figure is shared by all of them (e.g. one body style rated, the other
+        # not): nothing to store, and an all-empty row must not be written
+        return "empty", None, variants, how + "; %d variant(s) listed, no rating shared by all of them" % len(variants), withheld
     return "ok", row, variants, how, withheld
 
 
 def complaints(year):
     res, how = nhtsa_list("%s/complaints/complaintsByVehicle?make=%s&model=%s&modelYear=%d" % (NHTSA, Q(MAKE), Q(MODEL), year),
                           "NHTSA complaints %d" % year, "count", "results")
-    rows, vins = [], []
+    rows, vins, all_models = [], [], []
     for x in sorted(res, key=lambda x: x.get("odiNumber") or 0, reverse=True):
         if not x.get("odiNumber"):
             raise PullError("NHTSA complaints %d: a row without an ODI number" % year)
         prods = [p for p in (x.get("products") or []) if (p.get("type") or "").lower() == "vehicle"]
-        if prods and not any(str(p.get("productYear")) == str(year) and (p.get("productModel") or "").upper() == MODEL.upper()
-                             for p in prods):
-            raise PullError("NHTSA complaints %d: ODI %s is not filed against this vehicle" % (year, x.get("odiNumber")))
+        named = any(str(p.get("productYear")) == str(year) and (p.get("productModel") or "").upper() == MODEL.upper()
+                    for p in prods)
+        # NHTSA files some complaints against 'ALL MODELS' of a make and year and returns them for every model of
+        # that make and year. They are kept, as NHTSA returns them (count == rows; the fleet already holds 360 such
+        # complaint numbers on every vehicle of one make and year), and listed in the report. Their VIN is not used
+        # for the engine decode, since it may belong to another model.
+        whole_make = any(str(p.get("productYear")) == str(year) and (p.get("productMake") or "").upper() == MAKE.upper()
+                         and (p.get("productModel") or "").upper() == "ALL MODELS" for p in prods)
+        if prods and not named:
+            if not whole_make:
+                raise PullError("NHTSA complaints %d: ODI %s is not filed against this vehicle" % (year, x.get("odiNumber")))
+            all_models.append(str(x["odiNumber"]))
         rows.append([str(x["odiNumber"]), x.get("components"), (x.get("summary") or "")[:2000], x.get("dateOfIncident"),
                      B(x.get("crash")), B(x.get("fire")), x.get("numberOfInjuries") or 0, x.get("numberOfDeaths") or 0])
-        if x.get("vin"):
+        if x.get("vin") and (named or not prods):
             vins.append(str(x["vin"]).strip().upper())
     if len({r[0] for r in rows}) != len(rows):
         raise PullError("NHTSA complaints %d: an ODI number is listed twice" % year)
+    if all_models:
+        how += "; %d of them filed by NHTSA against 'ALL MODELS' of %d %s, kept as returned: ODI %s" % (
+            len(all_models), year, MAKE, ", ".join(all_models))
     return ("ok" if rows else "empty"), rows, vins, how
 
 
