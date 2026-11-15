@@ -14,7 +14,7 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
 ---
 
 ## S1. The data blob — `wrench_deploy/data.<md5-8>.js`
-- **Ships:** `var __D__ = {v:[3,676 vehicles], dtc, fixes:{}}` — the Tier-1 verified-data
+- **Ships:** `var __D__ = {v:[3,680 vehicles], dtc, fixes:{}}` — the Tier-1 verified-data
   core. Per vehicle: identity, gated curated specs (`ver` flags), recalls, safety, mpg, ev,
   `comps_agg`, and (D-2) `guidance`. The full top-level field set is the S1.10 allowlist in
   `_verify_shipped.py`. `warranty` (vehicle-finder aggregator) and `fuse_loc` (AI-generated)

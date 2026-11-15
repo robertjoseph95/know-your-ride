@@ -115,6 +115,43 @@ BATCHES = {
         # Existing rows whose fuel economy the May pull filled from the electric sibling (ruling 2026-11-14: draft a repair).
         repair_fuel_economy=[(673, 2020), (2166, 2021), (3694, 2022), (6787, 2024)],
     ),
+    "santa-cruz-missing-years": dict(
+        make="Hyundai", model="Santa Cruz",
+        targets=[(38727, 2022), (38728, 2023), (38729, 2024), (38730, 2025)],
+        books={
+            2022: ("_hyundai_manuals/santa_cruz/santa_cruz_2022_portal_OM.pdf",
+                   "US portal, folder 2022, file 2022-Santa-Cruz-Owners-Manual.pdf; PDF title '2022 Santa Cruz Owners "
+                   "Manual'; Copyright 2021; PDF created 2021-06-08; 598 pp; 2022 is the Santa Cruz's first model year "
+                   "(vPIC and EPA list none for 2021)"),
+            2023: ("_hyundai_manuals/santa_cruz/santa_cruz_2023_portal_OM.pdf",
+                   "US portal, folder 2023, file '2023-Santa Cruz-OM.pdf'; Copyright 2022; PDF created 2022-11-17; 620 pp; "
+                   "the same production file as second host NX4OB/2022 (same proof marks, dated 2022-11-01)"),
+            2024: ("_hyundai_manuals/santa_cruz/santa_cruz_2024_NX4OB_global_OM.pdf",
+                   "second host NX4OB/2024 (the portal serves no 2024 book: 168 file-name forms, all HTTP 404); Copyright "
+                   "2023; 620 pp; pre-facelift body; differs from the 2023 book on 324 pages and carries the sections first "
+                   "seen in the 2024 books of Venue, Palisade and Kona; accepted as the 2024 source by ruling 2026-11-14 "
+                   "(supported, not provable against a titled book)"),
+            2025: ("_hyundai_manuals/santa_cruz/santa_cruz_2025_NX4OB_global_OM.pdf",
+                   "second host NX4OB/2025 (served, not on the US menu; the portal serves no 2025 book); book header "
+                   "_NX4aOB_en_US; Copyright 2024; PDF created 2024-10-17; 575 pp; the facelift body; NX4OB/2026 holds a "
+                   "separate Copyright-2026 book"),
+        },
+        # 2022 / 2023 / 2024 p.2-8 and 2025 p.10-2: ENGINE | Smartstream G 2.5 GDI and Smartstream G 2.5 T-GDI share ONE cell:
+        # 152.4 cu. in (2,497 cc) | 3.5 x 4 in. (88.5 x 101.5 mm) | firing order 1-3-4-2 | No. of cylinders "4, in-line".
+        book_engine={
+            2022: dict(page="2-8", cc=2497, cylinders=4, layout="in-line"),
+            2023: dict(page="2-8", cc=2497, cylinders=4, layout="in-line"),
+            2024: dict(page="2-8", cc=2497, cylinders=4, layout="in-line"),
+            2025: dict(page="10-2", cc=2497, cylinders=4, layout="in-line"),
+        },
+        # 2025: "Santa Cruz XRT AWD" is a trim of the same vehicle, covered by the same book (ruling 2026-11-14: take it).
+        epa_models={
+            2022: ["Santa Cruz AWD", "Santa Cruz FWD"],
+            2023: ["Santa Cruz AWD", "Santa Cruz FWD"],
+            2024: ["Santa Cruz AWD", "Santa Cruz FWD"],
+            2025: ["Santa Cruz AWD", "Santa Cruz FWD", "Santa Cruz XRT AWD"],
+        },
+    ),
 }
 
 ARGS = [a for a in sys.argv[1:] if not a.startswith("--")]
