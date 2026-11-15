@@ -6,7 +6,59 @@ source pattern in `KYR_OEM_Manual_Source_Map.md` (Hyundai section). **Host:** `o
 glovebox-manual (free, no auth, citable manufacturer source). **This is the HMG foundation — it pre-characterizes
 Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the Sonata (shared platform + Theta II/Smartstream engines).**
 
-> **Hyundai status (2026-11-14, after the Venue 2022–2025 slice): 51 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 5/5** · **Santa Fe ✅ 9/13** · **Palisade 6/7 verified (the 2023 row was added 2026-11-14 with government data only, curated specs still to read)** · **Venue ✅ 7/7** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz ✅ 1/1** · **Accent ⛔ 0/8 (deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. **⚠ Label audit 2026-11-14: a second-host year label is NOT automatically the model year — three labels hold the next year's book and four are unproved; see the LABEL AUDIT section. Row corrections deployed as `2026-11-14-hyundai-label-audit`; the Kona 2022 / Elantra 2022 intervals lost to false print conflicts were restored as `2026-11-14-hyundai-restore-2022`.** DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. Every Hyundai vehicle row that has a manufacturer book is now written; what remains is deferred for lack of a book, electrified, or has no vehicle row (Venue 2022–2025, Santa Cruz 2022–2025, Accent 2005+, Palisade 2023, Kona 2018 / 2019 / 2023 / 2025).
+> **Hyundai status (2026-11-14, after the Palisade 2023 slice): 52 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 5/5** · **Santa Fe ✅ 9/13** · **Palisade ✅ 7/7** · **Venue ✅ 7/7** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz ✅ 1/1** · **Accent ⛔ 0/8 (deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. **⚠ Label audit 2026-11-14: a second-host year label is NOT automatically the model year — three labels hold the next year's book and four are unproved; see the LABEL AUDIT section. Row corrections deployed as `2026-11-14-hyundai-label-audit`; the Kona 2022 / Elantra 2022 intervals lost to false print conflicts were restored as `2026-11-14-hyundai-restore-2022`.** DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. Every Hyundai vehicle row that has a manufacturer book is now written; what remains is deferred for lack of a book, electrified, or has no vehicle row (Venue 2022–2025, Santa Cruz 2022–2025, Accent 2005+, Palisade 2023, Kona 2018 / 2019 / 2023 / 2025).
+
+## ✅ PALISADE 2023 — 1/1, Palisade now 7/7 — `2026-11-14-hyundai-palisade-2023`, commit f4ab2817 — TWELFTH HYUNDAI SLICE (missing-year step B)
+**What this is:** the curated specs for the 2023 row added in step A (section below), read from the 2023 book. Tally **328 verified / 42 nameplates / 11 makes; Hyundai 52 rows.** Script `_write_hyundai_palisade_2023.py`; backup `wrench_vehicles.db.bak_palisade_2023_20261114_182110`. Confirmed live 2026-11-14 18:27:55 local: the site serves version 2026-11-14-hyundai-palisade-2023 and data.003559e7.js, whose md5 003559e7babc09a0678df164ecf746d1 equals the local file. Verifier PASS 58 before staging; CI green.
+
+**The two prints of the 2023 book** (identified by the Palisade facelift body on the exterior overview p.2-2, 3.8 GDI 3,778 cc as the only engine p.2-8, wheelbase 114.17 in, length 196.65 in):
+
+| Print | File | Copyright | PDF created | Pages |
+|---|---|---|---|---|
+| first print | portal `2023-Palisade-Owners-Manual.pdf`, PDF title "2023 Palisade Owner's Manual" | 2022 | 2022-05-24 | 661 |
+| later print | second host `LX2/2023` | 2023 | 2023-04-04 | 660 |
+| (2024 book, for comparison) | second host `LX2/2024` | 2023 | 2023-10-23 | 630 |
+
+**`LX2/2023` is a later print of the 2023 book, not the 2024 book.** It was created six months before the 2024 book, keeps the 2023 page count, and uses none of the wording that only the 2024 book has: the 2024 book says "two-wheeler" 25 times and "methods" 104 times; neither 2023 print uses either word.
+
+**Tool lesson:** the two hosts typeset the same book differently. Whole-page identity and sentence matching therefore favour whichever book shares the layout, and both put `LX2/2023` wrongly beside the 2024 book. Word counts do not depend on layout. The vocabulary test (`word3way.py`) was checked on three controls first: Venue `QX/2022` (known to hold the next year's book: 0 of 23 same-year words, 24 of 25 next-year words), Palisade `LX2/2022` (known same year: 255 of 282 and 2 of 95), and the titled 2023 book against the 2024 / 2025 books (template effect only: 1 word each way).
+
+**⚠ EDITION CONFLICT — the automatic transmission fluid:**
+
+| Print | Page | Fluid | Quantity |
+|---|---|---|---|
+| first print | 2-12 | MICHANG ATF SP-IV, SK ATF SP-IV, NOCA ATF SP-IV, HYUNDAI genuine ATF SP-IV | 7.39 US qt (7.0 L) |
+| later print | 2-13 | SK ATF SP4M-1, MICHANG ATF SP4M-1, S-OIL ATF SP4M-1, Hyundai Genuine ATF SP4M-1 | 7.39 US qt (7.0 L) |
+
+The 2020–2022 books print SP-IV; the 2024 and 2025 books print SP4M-1. **Ruling (Robert, 2026-11-14, "Go, as recommended"): the standing edition rule applies — the fluid type is not written; the quantity both prints state is written in the capacity column.** This is the first verified row with an empty transmission fluid type.
+
+**Read log — both prints agree** (capacities p.2-12, viscosity chart p.2-13 from a page render, tires and wheel nuts p.2-10; schedule p.9-8 / 9-9 / 9-10 from upright renders; the later print's pages were rendered too):
+
+| Item | Value |
+|---|---|
+| Oil | 5W-30 only (one bar across the chart); 6.86 qt / 6.5 L; ACEA A5 or above; API latest (or ILSAC latest) or ACEA A5/B5 full synthetic required |
+| Coolant | phosphate-based ethylene glycol; 12.44 qt / 11.79 L without trailer, 12.65 qt / 11.98 L with trailer |
+| Brake fluid | SAE J1704 DOT-4 LV, FMVSS 116 DOT-4, ISO 4925 Class 6; quantity "as required" (the first print misprints "DOT0-4LV") |
+| Rear differential | hypoid gear oil API GL-5 SAE 75W/85, 0.73 qt / 0.7 L (printed "HYPIO GEAR OIL") |
+| Transfer case (AWD) | same oil, 0.73 qt / 0.7 L |
+| Fuel tank | 18.75 gal / 71 L |
+| Tires | 245/60R18 or 245/50R20, 35 psi front and rear; compact spare T155/90R18 at 60 psi |
+| Wheel nuts | 79–94 lb-ft (107–127 N·m, 11–13 kgf·m) |
+| Engine oil and filter | 8,000 mi / 12 mo |
+| Spark plugs | 96,000 mi (no months printed) |
+| Air cleaner filter | 24,000 mi / 36 mo |
+| Tire rotation | 8,000 mi / 12 mo |
+| Cabin air filter | 16,000 mi / 24 mo |
+| Coolant | 120,000 mi / 120 mo, then 24,000 mi / 24 mo |
+| Brake fluid | replace 48,000 mi / 48 mo |
+
+**Not carried:** inspect-only schedule rows. The later print changes several of them — it puts inspection marks on the automatic transmission fluid row where the first print says "No check, No service required", and shifts the inspection grid of five other rows.
+
+**Gates:** 12V battery (p.9-29 is only the capacity-label illustration AGM80L-DIN, captioned "the actual battery label in the vehicle may differ from the illustration"); spark-plug part number and gap are not published; MDPS has no fluid.
+
+**Checks:** dry run 1 vehicle / 7 schedule rows / 7 unit pairs converted; the id held no curated rows; government rows untouched; bare rows 424; a guard keeps both disputed fluid names out of every shipped column; the rebuilt data differs from the previous deployed data in exactly this one object; verifier PASS 58.
+
+---
 
 ## ➕ PALISADE 2023 — MISSING MODEL-YEAR ROW ADDED (government data only) — `2026-11-14-hyundai-palisade-2023-row`, commit cdcc454c — MISSING-YEAR STEP A
 **What this is:** the fleet had Palisade rows for 2020, 2021, 2022, 2024, 2025 and 2026. This row fills 2023. It carries EPA fuel economy and NHTSA recalls, safety ratings and complaints, and **no curated specification yet**. Not counted as verified (tally stays 327 / 42 / 11). Confirmed live 2026-11-14 18:09:20 local: the site serves version 2026-11-14-hyundai-palisade-2023-row and data.952c82fe.js, whose md5 952c82fefd88674d95cf548157a78ca1 equals the local file. Verifier PASS 58 before staging; CI green.
@@ -29,7 +81,7 @@ The 2023 EPA figures were checked against the neighbours: 2022, 2024 and 2025 ar
 
 **Method:** script `_add_hyundai_rows.py palisade-2023` — the reusable successor of the Venue script: one batch per run from a table, several EPA model names per nameplate (an unexpected name stops the run), every rated variant fetched, engine layout from the book or else a vPIC decode. Applied plan `e3bb48f664c59a2d20eae1386669d0e66ae10a7b460088817a8ac1bd7f36d175`; backup `wrench_vehicles.db.bak_rows_palisade_2023_20261114_180127`. Rows: vehicles 1, fuel_economy 2, recalls 5, safety_ratings 1, complaints 412, pull_log 4. Fleet 3,671 → 3,672; bare rows 424; the rebuilt data differs from the previous deployed data by exactly this one object; all 15 requests answered HTTP 200.
 
-**Open after this step:** step B, the curated specs from the titled 2023 portal book. The second-host print `LX2/2023` (Copyright 2023, 660 pp) is not yet classified and must be tested against the titled 2023 book and the 2024 book before it is used as a cross-check.
+**Open after this step:** ~~step B, the curated specs~~ **done 2026-11-14**, see the section above (`2026-11-14-hyundai-palisade-2023`); `LX2/2023` is classified there.
 
 ---
 
@@ -390,7 +442,7 @@ Common: wheel nut **79–94 lb-ft** · EPS / MDPS · full synthetic oil required
 ## ✅ PALISADE — 6/6 (2020/2021/2022 LX2 + 2024/2025 LX2 facelift + 2026 LX3) — `2026-11-14-hyundai-palisade`, commit 8f0eb6b4 — SIXTH HYUNDAI
 Recon, reads, write and deploy all 2026-11-14 (live-confirmed 12:41 CST: kyr-version 2026-11-14-hyundai-palisade, live blob data.26a62823.js md5 = local, previous blob 404). Write script `_write_hyundai_palisade.py` (dry-run default; asserts the six target ids are exactly the Palisade rows; quart/litre, gallon/litre and quart/millilitre checks on every shipped pair, plus a guard against any US unit shipping without a paired metric figure). Backup `wrench_vehicles.db.bak_palisade_20261114_123105`. Three book families, every year read on its own pages; the 2026 Hybrid has its own manual and is not written. The vehicles table has no 2023 Palisade row.
 
-**Identity (ruling 2026-11-14, "Accept, go read"):** for this nameplate the second host's year label IS the model year. Labels 2021, 2022 and 2023 each match the US-portal book whose PDF Title names that year (2022: every page, zero strays; 2021 and 2023: later prints of the titled book). Labels 2024 (Copyright 2023, PDF created 2023-10-23) and 2025 (Copyright 2025, created 2025-04-24) have no titled portal book and are accepted on that proven sequence plus the book header `LX2_PE_en_US` and body / engine self-ID. 2026 is LX3; its PDF keywords name 2026.
+**Identity (ruling 2026-11-14, "Accept, go read"):** for this nameplate the second host's year label IS the model year. Labels 2021, 2022 and 2023 each match the US-portal book whose PDF Title names that year (2022: every page, zero strays; 2021 and 2023: later prints of the titled book). Labels 2024 (Copyright 2023, PDF created 2023-10-23) and 2025 (Copyright 2025, created 2025-04-24) have no titled portal book and are accepted on that proven sequence plus the book header `LX2_PE_en_US` and body / engine self-ID. 2026 is LX3; its PDF keywords name 2026. **Note added 2026-11-14:** the statement about label 2023 was made without a test against the 2024 book; it is now proved (PDF created 2023-04-04, before the 2024 book; none of the 2024 book's new wording), and the same check found that this later print names a different transmission fluid than the titled first print — see the PALISADE 2023 section.
 
 | Row | Engine | Oil (drain and refill) | Visc | Coolant | Trans |
 |---|---|---|---|---|---|
