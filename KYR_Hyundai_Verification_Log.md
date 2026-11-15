@@ -6,7 +6,56 @@ source pattern in `KYR_OEM_Manual_Source_Map.md` (Hyundai section). **Host:** `o
 glovebox-manual (free, no auth, citable manufacturer source). **This is the HMG foundation — it pre-characterizes
 Kia (~80 rows / 12 nameplates), and specifically Optima/K5 as a near-twin of the Sonata (shared platform + Theta II/Smartstream engines).**
 
-> **Hyundai status (2026-11-14, after the Palisade 2023 slice): 52 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona ✅ 5/5** · **Santa Fe ✅ 9/13** · **Palisade ✅ 7/7** · **Venue ✅ 7/7** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz ✅ 1/1** · **Accent ⛔ 0/8 (deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. **⚠ Label audit 2026-11-14: a second-host year label is NOT automatically the model year — three labels hold the next year's book and four are unproved; see the LABEL AUDIT section. Row corrections deployed as `2026-11-14-hyundai-label-audit`; the Kona 2022 / Elantra 2022 intervals lost to false print conflicts were restored as `2026-11-14-hyundai-restore-2022`.** DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. Every Hyundai vehicle row that has a manufacturer book is now written; what remains is deferred for lack of a book, electrified, or has no vehicle row (Venue 2022–2025, Santa Cruz 2022–2025, Accent 2005+, Palisade 2023, Kona 2018 / 2019 / 2023 / 2025).
+> **Hyundai status (2026-11-14, after the Palisade 2023 slice): 52 rows, all at the current standard.** **Sonata 6/14** · **Elantra ✅ 7/13** · **Tucson ✅ 8/10** · **Kona 5/9 verified (2020 / 2021 / 2022 / 2024 / 2026; the 2018, 2019, 2023 and 2025 rows were added 2026-11-14 with government data only, curated specs still to read)** · **Santa Fe ✅ 9/13** · **Palisade ✅ 7/7** · **Venue ✅ 7/7** · **Veloster ✅ 2/3 (2020 deferred)** · **Santa Cruz ✅ 1/1** · **Accent ⛔ 0/8 (deferred, no manufacturer manual before 2005)**. Two manufacturer hosts are in use (US portal = first print, `ownersmanual.hyundai.com` = later print); the second host also carries plant-specific books (a bare code and the same code + `a`). Values two prints contradict, values a book contradicts internally, and capacities whose units do not convert are not written; a maintenance row whose interval two prints dispute is left out whole; a value two plant books give differently ships with both figures, unattributed; an engine only a later print carries is written from that print. **⚠ Label audit 2026-11-14: a second-host year label is NOT automatically the model year — three labels hold the next year's book and four are unproved; see the LABEL AUDIT section. Row corrections deployed as `2026-11-14-hyundai-label-audit`; the Kona 2022 / Elantra 2022 intervals lost to false print conflicts were restored as `2026-11-14-hyundai-restore-2022`.** DB also has Tiburon (1997–2002, not probed; the portal floor has been 2005 for every nameplate checked) and Ioniq (EV) — pending. **Kia does NOT cheaply unlock** (source boundary — full OMs behind a JS viewer; queued viewer-spike). **Next Hyundai:** nothing queued. Every Hyundai vehicle row that has a manufacturer book is now written; what remains is deferred for lack of a book, electrified, or has no vehicle row (Venue 2022–2025, Santa Cruz 2022–2025, Accent 2005+, Palisade 2023, Kona 2018 / 2019 / 2023 / 2025).
+
+## ➕ KONA 2018 / 2019 / 2023 / 2025 — FOUR MISSING MODEL-YEAR ROWS ADDED + KONA FUEL-ECONOMY REPAIR — `2026-11-14-hyundai-kona-rows`, commit 4e936655 — MISSING-YEAR STEP A
+**What this is:** four Kona model-year rows the fleet lacked, with EPA fuel economy and NHTSA recalls, safety ratings and complaints, and **no curated specification yet**. In the same change the fuel economy of the four existing Kona rows was repaired. Tally stays 328 / 42 / 11 (Hyundai 52 verified rows). Confirmed live 2026-11-14 19:01:49 local: the site serves version 2026-11-14-hyundai-kona-rows and data.f6179460.js, whose md5 f61794600900c3b11fc457772dc462e1 equals the local file. Verifier PASS 58 before staging; CI green.
+
+**Book basis per year (rulings, Robert 2026-11-14, "Accept, start dry run"):**
+
+| Year | id | Book | Basis |
+|---|---|---|---|
+| 2018 | 38723 | portal folder 2018, `2018 Kona Owners Manual.pdf`, 463 pp | Copyright 2017, PDF created 2017-12-01; 2018 is the Kona's first US model year. No PDF title names the year |
+| 2019 | 38724 | portal folder 2019, `2019 Kona OM.pdf`, 485 pp | Copyright 2018, PDF created 2018-09-26; its own edition between the 2018 book and the titled 2020 book. No PDF title names the year |
+| 2023 | 38725 | portal folder 2023, `2023-Kona-OM.pdf`, PDF title "2023 Kona Owner's Manual", 602 pp | the title names the year; Copyright 2022, created 2022-07-14 |
+| 2025 | 38726 | second host `SX2/2025`, 713 pp | PDF keywords `en_US,hyundai,SX2,2025,engine,1.3` name the year; Copyright 2024; first posted 2024-10-14 (the portal serves nothing for 2024 or later) |
+
+vPIC lists the Kona for all four years.
+
+**Second-host files classified by vocabulary** (word counts are layout-proof; controls run): `OS/2018` (Copyright 2018, 463 pp) is a later print of 2018 — it uses none of the three words only the 2019 book has. `OS/2019` (Copyright 2019, 503 pp) is a later print of 2019 — it keeps "multimedia" 11 times and never says "infotainment", which the 2020 book uses 11 times. `OS/2022` and `OS/2023` are NOT on the US menu but are served; both hold the 2023 book (13 of 13 words only the 2023 book has, 0 of 6 only the 2022 book has). `SX2/2025` is its own edition between the 2024 and 2026 files.
+
+**Government data written:**
+
+| Year | EPA entries (city / hwy / comb) | Recalls | Safety | Complaints | Engine label |
+|---|---|---|---|---|---|
+| 2018 | 1.6T AWD 26 / 29 / 27; 2.0 AWD 25 / 30 / 27; 1.6T FWD 28 / 32 / 30; 2.0 FWD 27 / 33 / 30 | none | listed, not rated — no row | 75 | 1.6L I4 / 2.0L I4 |
+| 2019 | same four figures | 21V301000 (ENGINE) | overall 5, rollover 4 | 198 | 1.6L I4 / 2.0L I4 |
+| 2023 | 1.6T AWD 27 / 32 / 29; 2.0 AWD 28 / 33 / 30; 1.6T FWD 29 / 35 / 32; 2.0 FWD 30 / 35 / 32 | 23V526000 (transmission oil pump) | overall 5, rollover 4 | 67 | 1.6L I4 / 2.0L I4 |
+| 2025 | six entries (2.0 AWD 26 / 29 / 27 and 27 / 29 / 28; 1.6T AWD 24 / 29 / 26; 2.0 FWD 28 / 35 / 31 and 29 / 34 / 31; 1.6T FWD 26 / 32 / 28) | 26V452000 (rear seat belt buckle) | overall 4, rollover 4 | 29 | empty |
+
+- **EPA names:** EPA lists the nameplate as "Kona AWD" and "Kona FWD", and also lists "Kona Electric" (several names) and "Kona N". Ruling: the gasoline Kona row takes AWD and FWD only; the others are different vehicles with their own manuals.
+- **Engine label:** the 2018, 2019 and 2023 books print "In-line 4 cylinder" for both engines (p.8-2, p.8-2, p.2-9), so the label is sourced. The 2025 book (p.25) prints "No. of cylinders 4" with no layout and vPIC states none, so the 2025 label is empty.
+- **Safety:** NHTSA rates AWD and FWD separately. The stars agree and are stored; rollover risk differs (AWD / FWD: 2019 13.6% / 14.1%; 2023 13.6% / 14.1%; 2025 15.9% / 15.1%) and is left empty. For 2018 NHTSA lists both variants and rates neither, so no safety row is written and the app says no ratings are on file.
+- **2018 recalls:** the "no results" answer is NHTSA's HTTP 400 with a count-0 body; the other three years supply the positive control.
+
+**⚠ KONA FUEL-ECONOMY REPAIR (ruling "Go, write both"):** the May pull matched EPA model names loosely and folded "Kona Electric" into the gasoline Kona.
+
+| Kona row | Stored before | Stored now |
+|---|---|---|
+| 2020 (id 673) | 4 gasoline entries typed "Electric" with the combined figure in the MPGe column and no city / highway / combined, plus the Kona Electric entry (120 MPGe) | 4 gasoline entries: 26 / 29 / 27, 26 / 30 / 28, 28 / 32 / 30, 27 / 33 / 30 |
+| 2021 (id 2166) | same pattern | 4 gasoline entries: 26 / 29 / 27, 25 / 30 / 27, 28 / 32 / 30, 27 / 33 / 30 |
+| 2022 (id 3694) | only the Kona Electric entry (120 MPGe) | 4 gasoline entries: 27 / 32 / 29, 28 / 33 / 30, 29 / 35 / 32, 30 / 35 / 32 |
+| 2024 (id 6787) | only two Kona Electric entries (116 and 118 MPGe) | 6 gasoline entries, 26 to 31 combined |
+
+13 rows out, 18 rows in. Only fuel economy on those four rows changed (the rebuilt data differs from the previous deployed data, for them, in the fuel-economy key alone).
+
+**The same defect exists on other nameplates and is NOT repaired here** (reported to Robert 2026-11-14): rows typed "Electric" that carry a gasoline displacement — Genesis G80 2023–2026, Genesis GV70 2024–2026, Fiat 500 2018–2019, Porsche Macan 2024–2025, Dodge Charger 2026, Ford Mustang 2025, Kia Soul 2020, MINI Countryman 2026, Volvo XC40 2024; and vehicles that hold only an electric sibling's entries — Chevrolet Blazer 2024 and 2026, Dodge Charger 2024, Ford Explorer 2002.
+
+**Method:** `_add_hyundai_rows.py kona-missing-years` (extended in this commit: EPA names to ignore, several engines per book, the optional fuel-economy repair guarded by a snapshot of the rows it replaces, no row for an unrated safety listing). Applied plan `b9a7f6552697f3209f735e20c27d3db22b4698e3e2ff4f184952b7fc718c5f9e`; backup `wrench_vehicles.db.bak_rows_kona_missing_years_20261114_185414`. New rows: vehicles 4, fuel_economy 18, recalls 3, safety_ratings 3, complaints 369, pull_log 16. Fleet 3,672 → 3,676; bare rows 424; 100 requests, one non-200 answer (the 2018 recalls reply); verifier PASS 58.
+
+**Open after this step:** step B, the curated specs for the four years (2018 / 2019 pre-facelift OS books, 2023 facelift book, 2025 SX2 book), each with its second print where one exists.
+
+---
 
 ## ✅ PALISADE 2023 — 1/1, Palisade now 7/7 — `2026-11-14-hyundai-palisade-2023`, commit f4ab2817 — TWELFTH HYUNDAI SLICE (missing-year step B)
 **What this is:** the curated specs for the 2023 row added in step A (section below), read from the 2023 book. Tally **328 verified / 42 nameplates / 11 makes; Hyundai 52 rows.** Script `_write_hyundai_palisade_2023.py`; backup `wrench_vehicles.db.bak_palisade_2023_20261114_182110`. Confirmed live 2026-11-14 18:27:55 local: the site serves version 2026-11-14-hyundai-palisade-2023 and data.003559e7.js, whose md5 003559e7babc09a0678df164ecf746d1 equals the local file. Verifier PASS 58 before staging; CI green.
