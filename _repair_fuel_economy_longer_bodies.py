@@ -1,7 +1,11 @@
 """Fuel-economy repair, part 5: lines of a longer-body version stored on the standard vehicle's row.
 
-Found by the name sweep of 2026-11-15. The pulls of May 2026 (and part of the 2026-06-21 batch) took every EPA model
-name that starts with the nameplate. So the Yukon row collected the Yukon XL's lines, the Grand Cherokee row the
+Found by the name sweep of 2026-11-15. The fuel-economy lines of May 2026 came through a third-party vehicle API, not
+from EPA directly (see part 4, `_repair_fuel_economy_other_vehicles.py`); the API chose the records for each row and
+matched names loosely. Part of the 2026-06-21 batch matched loosely too.
+(Corrected 2026-11-19: this docstring first said the pulls took every EPA name starting with the nameplate. That was
+an inference, made before the pull scripts were read, and wrong about the mechanism.)
+So the Yukon row collected the Yukon XL's lines, the Grand Cherokee row the
 Grand Cherokee L's and the RX 350 row the RX 350 L's. The fleet keeps long-body versions as vehicles of their own
 (Escalade ESV, Navigator L), so these lines belong to another vehicle. Where the long body has the same figures as the
 standard one, the row stored each line twice and the page repeated rows.

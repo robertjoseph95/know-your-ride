@@ -1,8 +1,13 @@
 """Fuel-economy repair, part 4: lines that belong to another vehicle, found by the name sweep of 2026-11-15.
 
-The pulls of May 2026 (and part of the 2026-06-21 batch) took every EPA model name that starts with the nameplate.
-So a row could collect the lines of a different vehicle whose name merely begins the same way: Outlander Sport lines on
-the Outlander, Rogue Sport lines on the Rogue, Santa Fe XL lines on the Santa Fe. The name sweep matched every stored
+The fuel-economy lines of May 2026 did not come from EPA directly. They came through a third-party vehicle API
+(`Python Script/wrench_bulk_pull.py`, endpoint 'fuel-economy'), which chose the records for each row and matched names
+loosely; their figures equal EPA's, their assignment to rows does not. Part of the 2026-06-21 batch, pulled from EPA by
+`_pull_epa_mpg.py`, matched loosely too: it took every EPA model name that contains the nameplate, is contained in it,
+or starts with its first word. Either way a row could collect the lines of a different vehicle with a similar name:
+Outlander Sport lines on the Outlander, Rogue Sport lines on the Rogue, Santa Fe XL lines on the Santa Fe.
+(Corrected 2026-11-19: this docstring first said the pulls took every EPA name starting with the nameplate. That was
+an inference, made before the pull scripts were read, and wrong about the mechanism.) The name sweep matched every stored
 gasoline-type line of the fleet to EPA's records and listed these lines (`_fe_name_sweep_2026-11-15.md`, local only).
 
 Scope of this script (Robert, 2026-11-15: "Yes, start dry run", then "Go, write" for the plan as shown, with the
