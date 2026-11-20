@@ -60,7 +60,9 @@ QTOKEN = "quarantine-applicability-ic01"
 QTABLES = ("oil_change", "parts", "fluids", "torque_specs", "maintenance")
 QIDS = (12372, 12511, 12777, 12847, 12912)
 BARE_ROW_COUNT = 424
-BARE_ROW_SHA256 = "ca156c69ed4cc8df34ff1244a612d497494a725ec3efcdd7d502f2aa179c8980"
+# Nov 13, 2026 ruling: note-only wording changes in 14 grandfathered parts rows.
+# The 424-row cohort, spec values, and source tokens were unchanged.
+BARE_ROW_SHA256 = "82ded42209a31b69532c971b14aed8cfdc52e9846d916bdf87111aeaffdd97f5"
 
 ORPHAN_VID = 999999999           # never a real vehicles.id
 UNKNOWN_TOKEN = "ic02-forced-unknown-token"
