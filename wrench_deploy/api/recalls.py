@@ -21,6 +21,22 @@ UA = "Mozilla/5.0 (compatible; KnowYourRide/1.0; +https://knowyourride.net)"
 RECALLS_CACHE_TTL = 60 * 60 * 24  # 24h — recalls change rarely
 
 
+def _recall_items(data, *keys):
+    """Accept explicit recall lists only; missing or malformed is not empty."""
+    if not isinstance(data, dict) or "error" in data:
+        raise ValueError("Invalid recall response")
+    for key in keys:
+        if key in data:
+            items = data[key]
+            if isinstance(items, list) and all(isinstance(item, dict) for item in items):
+                for count_key in ("Count", "count"):
+                    if count_key in data and (type(data[count_key]) is not int or data[count_key] != len(items)):
+                        raise ValueError("Invalid recall count")
+                return items
+            break
+    raise ValueError("Invalid recall list")
+
+
 def _redis():
     if Redis is None:
         return None
@@ -43,20 +59,21 @@ class handler(BaseHTTPRequestHandler):
         if not (make and model and year):
             return self._send(400, {"error": "make, model and year are required", "recalls": []})
         rc = _redis()
-        cache_key = f"recalls:{make}|{model}|{year}".lower()
+        cache_key = f"recalls:v2:{make}|{model}|{year}".lower()
         if rc:
             try:
                 cached = rc.get(cache_key)
                 if cached:
-                    return self._send(200, {**json.loads(cached), "cached": True})
+                    items = _recall_items(json.loads(cached), "recalls")
+                    return self._send(200, {"count": len(items), "recalls": items, "cached": True})
             except Exception:
                 pass
         try:
             url = NHTSA + "?" + urllib.parse.urlencode({"make": make, "model": model, "modelYear": year})
             req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
             with urllib.request.urlopen(req, timeout=15) as resp:
-                data = json.loads(resp.read().decode("utf-8", "ignore"))
-            items = data.get("results") or data.get("Results") or []
+                data = json.loads(resp.read().decode("utf-8"))
+            items = _recall_items(data, "results", "Results")
             payload = {"count": len(items), "recalls": items}
             if rc:
                 try:

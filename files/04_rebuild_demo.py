@@ -696,26 +696,31 @@ VIN_BAR = """<div class="vin-bar">
 
 VIN_JS = r"""/*WRENCH_VIN*/
 function titleCase(s){return String(s||'').toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase();});}
-function decodeVIN(){
+var vinDecodeRequestId=0;
+function decodeVIN(){/* B4b 2026-07-05: VIN decode is unlimited-free (the free acquisition hook) - gate + free-counter removed. proUnlock/kyrFreeUsed machinery stays intact for the 3 real Pro features. */
   var el=document.getElementById('vin-input'), out=document.getElementById('vin-result');
+  var requestId=++vinDecodeRequestId;
   var vin=(el.value||'').trim().toUpperCase();
   if(vin.length!==17){out.className='vin-result err';out.innerHTML='VIN must be exactly 17 characters (got '+vin.length+').';return;}
-  out.className='vin-result';out.innerHTML='Decoding '+vin+'…';
+  out.className='vin-result';out.textContent='Decoding '+vin+'...';
   fetch('/api/vin/'+encodeURIComponent(vin)).then(function(r){
     if(!r.ok)throw new Error('HTTP '+r.status);return r.json();
   }).then(function(d){
-    if(!d||!d.make){out.className='vin-result err';out.innerHTML='No decode result for that VIN.';return;}
-    var disp=titleCase(d.make)+' '+d.model;
+    if(requestId!==vinDecodeRequestId)return;
+    if(!d||!d.make){out.className='vin-result err';out.innerHTML='No decode result for that VIN.'+recallVinLink();return;}
+    var disp=recallEsc(titleCase(d.make)+' '+d.model);
     var match=DB.v.find(function(v){return v.year==d.year && v.make.toLowerCase()===String(d.make||'').toLowerCase() && v.model.toLowerCase()===String(d.model||'').toLowerCase();});
-    if(match){out.className='vin-result ok';out.innerHTML='✓ '+d.year+' '+disp+' — opening full specs…';openModal(match.id);}
+    if(match){out.className='vin-result ok';out.innerHTML=' '+recallEsc(d.year)+' '+disp+' - opening full specs...';openModal(match.id);}
     else{
-      var eng=(d.displacement_liters?d.displacement_liters+'L ':'')+(d.engine||'')+(d.cylinders?' · '+d.cylinders+'-cyl':'')+(d.fuel_type?' · '+d.fuel_type:'');
+      var eng=recallEsc((d.displacement_liters?d.displacement_liters+'L ':'')+(d.engine||'')+(d.cylinders?' - '+d.cylinders+'-cyl':'')+(d.fuel_type?' - '+d.fuel_type:''));
       out.className='vin-result warn';
-      out.innerHTML='Decoded: <strong>'+d.year+' '+disp+(d.trim?' '+d.trim:'')+'</strong>'+(eng.trim()?'<br><span style="color:var(--dim)">'+eng+'</span>':'')+'<br>Not in our database yet — <em>full specs coming soon.</em>';
+      out.innerHTML='Decoded: <strong>'+recallEsc(d.year)+' '+disp+(d.trim?' '+recallEsc(d.trim):'')+'</strong>'+(eng.trim()?'<br><span style="color:var(--dim)">'+eng+'</span>':'')+'<br>Not in our database yet - <em>full specs coming soon.</em>';
     }
+    loadRecalls(d,out,requestId);
   }).catch(function(e){
+    if(requestId!==vinDecodeRequestId)return;
     out.className='vin-result err';
-    out.innerHTML='Could not reach the decode service. VIN decode needs the local server — run <code>python wrench_serve.py</code> and open <code>http://localhost:8000/</code>.';
+    out.innerHTML='Could not reach the VIN decode service.'+recallVinLink();
   });
 }
 """
@@ -1574,13 +1579,6 @@ def inject_paywall(html):
     html = html.replace(
         "'<a class=\"yt-card\" href=\"https://www.youtube.com/watch?v='+encodeURIComponent(vd.id)+'\" target=\"_blank\" rel=\"noopener\">'",
         "'<a class=\"yt-card'+(kyrPro()?'':' pro-locked')+'\" href=\"'+(kyrPro()?('https://www.youtube.com/watch?v='+encodeURIComponent(vd.id)):'javascript:void(0)')+'\"'+(kyrPro()?' target=\"_blank\" rel=\"noopener\"':' onclick=\"openPricing();return false;\"')+'>'", 1)
-    # gate 3: VIN decode -> one free, then Pro
-    html = html.replace(
-        "function decodeVIN(){",
-        "function decodeVIN(){if(!kyrPro()&&kyrFreeUsed('vin')>=1){var _o=document.getElementById('vin-result');if(_o){_o.className='vin-result';_o.innerHTML=proUnlock('VIN decode is a Pro feature','You have used your free VIN decode.');}return;}", 1)
-    html = html.replace(
-        "var disp=titleCase(d.make)+' '+d.model;",
-        "if(!kyrPro())kyrUseFree('vin');var disp=titleCase(d.make)+' '+d.model;", 1)
     # gate 4: Know Your Part -> one free scan, then Pro
     html = html.replace(
         "function kypScan(){",
@@ -1725,63 +1723,85 @@ def inject_pwa(html):
     return html
 
 
-# ── VIN-based recall status (free NHTSA API) shown inside the VIN decode flow ─
+# ── Model-year NHTSA campaigns shown inside the VIN decode flow ─
 RECALL_STYLE = """<style>
-.rcl-panel{margin-top:12px;border-top:1px solid var(--border);padding-top:12px}
+.rcl-panel{margin-top:12px;border-top:1px solid var(--border);padding-top:12px;color:var(--text)}
 .rcl-head{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:10px;flex-wrap:wrap}
-.rcl-head.ok{color:var(--green)}
-.rcl-head.warn{color:var(--amber,#e0a23b)}
-.rcl-head.park{color:var(--red)}
-.rcl-ic{font-size:16px}
-.rcl-parkit{background:var(--red);color:#fff;font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:5px;margin-left:4px}
+.rcl-parkit{background:var(--red);color:#fff;font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:5px;margin:0 4px 6px 0;display:inline-block}
 .rcl-item{background:var(--p2,#111);border:1px solid var(--border);border-left:3px solid var(--amber,#e0a23b);border-radius:8px;padding:11px 13px;margin-bottom:8px}
 .rcl-camp{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);letter-spacing:.08em;margin-bottom:3px}
 .rcl-comp{font-weight:700;font-size:13px;margin-bottom:5px}
 .rcl-sum{font-size:12px;color:var(--dim);line-height:1.5;margin-bottom:5px}
 .rcl-rem{font-size:12px;color:var(--text);line-height:1.5}
-.rcl-status{font-size:11px;color:var(--accent);margin-top:5px}
 </style>
 """
 
 RECALL_JS = r"""/*WRENCH_RECALL*/
-function rclEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function loadRecalls(dec){
-  var out=document.getElementById('vin-result'); if(!out||!dec||!dec.make)return;
-  var qs='make='+encodeURIComponent(dec.make)+'&model='+encodeURIComponent(dec.model||'')+'&year='+encodeURIComponent(dec.year||'');
-  fetch('/api/recalls?'+qs).then(function(r){return r.json();}).then(function(d){
-    var recs=(d&&(d.recalls||d.results||d.Results))||[];
-    var n=recs.length, h='<div class="rcl-panel">';
-    if(!n){h+='<div class="rcl-head ok"><span class="rcl-ic">&#10004;</span> Your Recall Status: <strong>No open recalls</strong></div>';}
-    else{
-      var park=recs.some(function(x){return x.ParkIt||x.parkIt||x.park||x.ParkOutSide||x.parkOutSide;});
-      h+='<div class="rcl-head '+(park?'park':'warn')+'"><span class="rcl-ic">&#9888;</span> Your Recall Status: <strong>'+n+' open recall'+(n>1?'s':'')+'</strong>'+(park?'<span class="rcl-parkit">PARK IT</span>':'')+'</div>';
-      h+=recs.map(function(x){
-        var camp=x.NHTSACampaignNumber||x.campaignNumber||x.Campaign||x.campaign||'';
-        var comp=x.Component||x.component||'';
-        var sum=x.Summary||x.summary||x.Consequence||x.consequence||'';
-        var rem=x.Remedy||x.remedy||'';
-        var done=x.completion||x.Completion||x.recallStatus||x.status||'';
-        return '<div class="rcl-item">'+(camp?'<div class="rcl-camp">CAMPAIGN '+rclEsc(camp)+'</div>':'')+(comp?'<div class="rcl-comp">'+rclEsc(comp)+'</div>':'')+(sum?'<div class="rcl-sum">'+rclEsc(sum)+'</div>':'')+(rem?'<div class="rcl-rem"><strong>Remedy:</strong> '+rclEsc(rem)+'</div>':'')+(done?'<div class="rcl-status">Status: '+rclEsc(done)+'</div>':'')+'</div>';
-      }).join('');
-    }
-    out.innerHTML+=h+'</div>';
-  }).catch(function(){});
+function recallVinLink(){
+  return '<a class="cc-vin" href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener">Check VIN at NHTSA.gov &rarr;</a>';
+}
+function recallCampaignId(x){
+  return x.NHTSACampaignNumber||x.campaignNumber||x.Campaign||x.campaign||'';
+}
+function renderVinRecallPanel(recs){
+  var h='<div class="rcl-head">NHTSA recall campaigns for this model year</div>';
+  h+='<p class="empty-note">These results do not tell you whether a recall applies to this VIN or has already been repaired.</p>';
+  h+=recallVinLink();
+  if(recs===undefined)h+='<p>Checking model-year campaigns&hellip;</p>';
+  else if(recs===null)h+='<p><strong>Recall lookup unavailable.</strong></p>';
+  else if(!recs.length)h+='<p>No campaigns returned for this model year.</p>';
+  else{
+    h+='<p><strong>'+recs.length+' model-year campaign'+(recs.length===1?'':'s')+' found</strong></p>';
+    h+=recs.map(function(x){
+      var camp=recallCampaignId(x);
+      var comp=x.Component||x.component||'';
+      var sum=x.Summary||x.summary||x.Consequence||x.consequence||'';
+      var rem=x.Remedy||x.remedy||'';
+      var hasFlag=function(flag){return flag===true||flag===1||/^(true|yes|1)$/i.test(String(flag).trim());};
+      var park=[x.ParkIt,x.parkIt,x.park].some(hasFlag);
+      var outside=[x.ParkOutSide,x.parkOutSide].some(hasFlag);
+      return '<div class="rcl-item"><div class="rcl-camp">CAMPAIGN '+recallEsc(camp)+'</div>'
+        +(park?'<div class="rcl-parkit">DO NOT DRIVE AFFECTED VEHICLES</div>':'')
+        +(outside?'<div class="rcl-parkit">PARK AFFECTED VEHICLES OUTSIDE</div>':'')
+        +(comp?'<div class="rcl-comp">'+recallEsc(comp)+'</div>':'')
+        +(sum?'<div class="rcl-sum">'+recallEsc(sum)+'</div>':'')
+        +(rem?'<div class="rcl-rem"><strong>Remedy:</strong> '+recallEsc(rem)+'</div>':'')+'</div>';
+    }).join('');
+  }
+  return h;
+}
+function recallEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function loadRecalls(dec,out,requestId){
+  var panel=document.createElement('div');
+  panel.className='rcl-panel';
+  out.appendChild(panel);
+  function show(recs){
+    if(requestId===vinDecodeRequestId)panel.innerHTML=renderVinRecallPanel(recs);
+  }
+  if(!dec.make||!dec.model||!dec.year){show(null);return;}
+  show(undefined);
+  var qs='make='+encodeURIComponent(dec.make)+'&model='+encodeURIComponent(dec.model)+'&year='+encodeURIComponent(dec.year);
+  return fetch('/api/recalls?'+qs).then(function(r){
+    if(!r.ok)throw new Error('Recall lookup failed');
+    return r.json();
+  }).then(function(d){
+    if(!d||Object.hasOwn(d,'error')||!Array.isArray(d.recalls)
+      ||(Object.hasOwn(d,'count')&&d.count!==d.recalls.length)||!d.recalls.every(function(x){
+      return x&&!Array.isArray(x)&&typeof x==='object'&&typeof recallCampaignId(x)==='string'&&recallCampaignId(x).trim();
+    }))throw new Error('Invalid recall response');
+    show(d.recalls);
+  }).catch(function(){show(null);});
 }
 """
 
 
 def inject_recall(html):
-    """During VIN decode, also fetch NHTSA recalls-by-VIN and render a 'Your Recall
-    Status' panel (green=clear, orange=open recalls, red PARK IT). Runs after
-    inject_paywall (which adds the free-VIN line we anchor on). Idempotent."""
+    """Add the model-year campaign panel and official VIN link (idempotent)."""
     if "/*WRENCH_RECALL*/" in html:
         return html
     if "</head>" in html:
         html = html.replace("</head>", RECALL_STYLE + "</head>", 1)
     html = html.replace("function switchTab(name){", RECALL_JS + "\nfunction switchTab(name){", 1)
-    html = html.replace(
-        "if(!kyrPro())kyrUseFree('vin');var disp=titleCase(d.make)+' '+d.model;",
-        "if(!kyrPro())kyrUseFree('vin');loadRecalls(d);var disp=titleCase(d.make)+' '+d.model;", 1)
     return html
 
 

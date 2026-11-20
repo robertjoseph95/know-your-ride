@@ -329,7 +329,7 @@ def sample_markup(extra_selector=""):
     return """
     <div id="kyr-sample"><div>2020 Nissan Sentra</div>
       <div>&#128738; 0W-20</div><div>&#128167; 4.4 qt</div>
-      <div>4 Open Recalls</div><button onclick="openModal(467)">Open</button>
+      <div>4 Model-Year Recall Campaigns</div><button onclick="openModal(467)">Open</button>
     </div>
     <script>function kyrHsDefaultPlacard(){var s=kyrPlSlot();if(!s)return;var v=%s;if(v)s.innerHTML=renderPlacard(v);}
     function kyrHsShowTrims(){return true;}</script>
@@ -402,7 +402,7 @@ class Ic01VerifierTests(unittest.TestCase):
 
     def test_sample_check_requires_every_blob_derived_card_value(self):
         check = self.require_check("s9_3_ic01_sample_pin")
-        for value in ("0W-20", "4.4 qt", "4 Open Recalls"):
+        for value in ("0W-20", "4.4 qt", "4 Model-Year Recall Campaigns"):
             artifact = self.artifact()
             artifact.index = artifact.index.replace(value, "")
             artifact.demo_markup = artifact.demo_markup.replace(value, "")
@@ -436,7 +436,7 @@ class Ic01VerifierTests(unittest.TestCase):
             text = text.replace("2020 Nissan Sentra", "2021 Nissan Sentra")
             text = text.replace("0W-20", "5W-30")
             text = text.replace("4.4 qt", "9.9 qt")
-            text = text.replace("4 Open Recalls", "3 Open Recalls")
+            text = text.replace("4 Model-Year Recall Campaigns", "3 Model-Year Recall Campaigns")
             setattr(artifact, surface, text)
         self.assertTrue(check(artifact))
 
