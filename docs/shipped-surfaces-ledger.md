@@ -27,7 +27,8 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
   The same script stores `fuel_economy.epa_plain` (never shipped); the build ships each vehicle's
   `mpg` lines in `files/fe_labels.SHIP_ORDER` (plain lines first), so `mpg[0]`, which the search
   card shows, is the plain car. Which versions a row holds follows ruling (c) (2026-11-20,
-  `_repair_fuel_economy_versions.py`): every version EPA lists under the nameplate, labelled.
+  `_repair_fuel_economy_versions.py`; versions a row never stored were added by
+  `_repair_fuel_economy_versions_fill.py`): every version EPA lists under the nameplate, labelled.
 - **Current guards:** build-time `_assert_gate_sources` + `_strip_unverified`/`enforce_ver0`
   + 3 `PAYLOAD GUARD` aborts; commit-time `_deploy_check.py` content scan + index↔blob
   desync check.
