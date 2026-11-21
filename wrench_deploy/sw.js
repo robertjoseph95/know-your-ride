@@ -2,7 +2,7 @@
 // CACHE name is bumped on every deploy that changes HTML behavior. The activate
 // handler deletes any cache that isn't the current name, so users get a clean
 // slate on the next browser-controlled SW activation.
-const CACHE = 'kyr-v4';
+const CACHE = 'kyr-v5';
 const CORE = ['/manifest.json', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', function (e) {

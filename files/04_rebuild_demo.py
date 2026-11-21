@@ -709,7 +709,7 @@ VIN_STYLE = """<style>
 """
 
 VIN_BAR = """<div class="vin-bar">
-  <div class="vin-label">// Decode by VIN</div>
+  <div class="vin-label">// Free VIN lookup</div>
   <div class="vin-row">
     <input type="text" id="vin-input" maxlength="17" placeholder="Enter 17-character VIN…" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')decodeVIN()">
     <button id="vin-btn" onclick="decodeVIN()">Decode VIN</button>
@@ -734,11 +734,11 @@ function decodeVIN(){/* B4b 2026-07-05: VIN decode is unlimited-free (the free a
     if(!d||!d.make){out.className='vin-result err';out.innerHTML='No decode result for that VIN.'+recallVinLink();return;}
     var disp=recallEsc(titleCase(d.make)+' '+d.model);
     var match=DB.v.find(function(v){return v.year==d.year && v.make.toLowerCase()===String(d.make||'').toLowerCase() && v.model.toLowerCase()===String(d.model||'').toLowerCase();});
-    if(match){out.className='vin-result ok';out.innerHTML=' '+recallEsc(d.year)+' '+disp+' - opening full specs...';openModal(match.id);}
+    if(match){out.className='vin-result ok';out.innerHTML=' '+recallEsc(d.year)+' '+disp+' &middot; Opening available vehicle details...';openModal(match.id);}
     else{
       var eng=recallEsc((d.displacement_liters?d.displacement_liters+'L ':'')+(d.engine||'')+(d.cylinders?' - '+d.cylinders+'-cyl':'')+(d.fuel_type?' - '+d.fuel_type:''));
       out.className='vin-result warn';
-      out.innerHTML='Decoded: <strong>'+recallEsc(d.year)+' '+disp+(d.trim?' '+recallEsc(d.trim):'')+'</strong>'+(eng.trim()?'<br><span style="color:var(--dim)">'+eng+'</span>':'')+'<br>Not in our database yet - <em>full specs coming soon.</em>';
+      out.innerHTML='Decoded: <strong>'+recallEsc(d.year)+' '+disp+(d.trim?' '+recallEsc(d.trim):'')+'</strong>'+(eng.trim()?'<br><span style="color:var(--dim)">'+eng+'</span>':'')+'<br>VIN decoded, but this model is not in our specs database. Pro does not add missing specs.';
     }
     loadRecalls(d,out,requestId);
   }).catch(function(e){
