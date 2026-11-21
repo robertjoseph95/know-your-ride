@@ -21,6 +21,9 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
   were stripped 2026-07-14 on provenance grounds — quarantined in the DB, absent here.
 - **Generator:** `files/04_rebuild_demo.py` (splices into `wrench_demo.html`) →
   `_deploy_sync_specs.py` (externalizes to `data.<hash>.js`, stamps `index.html`).
+  The fuel-economy version label `mpg[].lbl` ships from `fuel_economy.epa_label`, which only
+  `_label_fuel_economy.py` writes, from EPA's complete file (`vehicles.csv.zip`, hash pinned),
+  with the text built by `files/fe_labels.py` and the names chosen by `files/epa_name_rules.py`.
 - **Current guards:** build-time `_assert_gate_sources` + `_strip_unverified`/`enforce_ver0`
   + 3 `PAYLOAD GUARD` aborts; commit-time `_deploy_check.py` content scan + index↔blob
   desync check.
@@ -67,9 +70,25 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
      Colorado/Canyon differential JSON. `_fix_gated_jargon.py` rewrote the process clause to plain
      consumer wording with the verified facts verbatim; values that were nothing but a gate note
      became NULL (4 + 11).)*
+  6e. [CI][FAIL] **Fuel-economy entry shape (S1.13):** every `mpg` entry's keys lie in
+     `city, hwy, comb, cost, eng, trans, drive, range, mpge, lbl`; `lbl`, where present, is a
+     non-empty string of at most 400 characters (S1.12 already scans it for process jargon). The
+     EPA record ids behind a label (`fuel_economy.epa_ids`) are provenance and never ship.
+     *(2026-11-20: version labels — EPA model name plus fuel and turbo / supercharger tags — so
+     cards that share engine size, transmission and drive can be told apart.)*
   7. [DB][FAIL] Verified-value equivalence: rebuilding the data JSON from the canonical DB
      reproduces the committed blob (requires a `--check` mode on the rebuild; see design).
   8. [DB][FAIL] `_assert_gate_sources` over the live DB: no blacklisted source computes `ver=1`.
+  8b. [DB][FAIL] **Label provenance (S1.14):** no `fuel_economy` row carries a non-empty
+     `epa_label` without the EPA record ids behind it in `epa_ids`, and every vehicle's shipped
+     `mpg[].lbl` equals the database's labels line by line (fails between a label write and the
+     next rebuild + sync, like any DB-to-blob check).
+  8c. [DB][WARN] **Unmatched lines (S1.15):** rows with `epa_ids` NULL were written, or had a
+     matched-on field edited, after the last label run, and ship without a label until
+     `_label_fuel_economy.py` runs again. Two triggers created by that script clear a line's label
+     when its figures, engine, transmission, drive, fuel type, MPGe or range change, or when its
+     vehicle's year, make or model change. Rows matched against EPA with no record carry
+     `epa_ids = ''` and are not counted.
 
 ## S2. SEO vehicle pages — `wrench_deploy/vehicles/*/index.html` (3,540) + `sitemap.xml` + `robots.txt`
 - **Ships:** static per-vehicle pages (meta, JSON-LD, prose, quick-spec table), currently

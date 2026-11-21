@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-11-20-every-record">
+<meta name="kyr-version" content="2026-11-20-fe-labels">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -138,6 +138,7 @@ body{background:var(--bg)}
 .mpg-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .mpg-eng{font-size:12px;font-weight:700}
 .mpg-dr{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim)}
+.mpg-ver{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);margin-top:2px;overflow-wrap:anywhere}
 .mpg-nums{display:flex;gap:18px}
 .mpg-n{text-align:center}
 .mpg-val{font-family:'Saira Condensed',sans-serif;font-weight:700;font-size:20px;color:var(--accent)}
@@ -812,7 +813,7 @@ body{background:var(--bg)}
   </div>
 </div>
 
-<script src="/data.cf95fb96.js"></script>
+<script src="/data.6d32e37e.js"></script>
 <script>
 
 const DB=__D__;
@@ -1443,7 +1444,7 @@ function renderPerf(v){
     v.mpg.forEach(function(m){
       var rangeStr=m.range?'<span style="color:var(--purple);font-weight:700">'+m.range+' mi range</span> ':''
       var mpgeStr=m.mpge?'<span style="color:var(--purple)"> / '+m.mpge+' MPGe</span>':''
-      h+='<div class="mpg-row"><div class="mpg-top"><div><div class="mpg-eng">'+(m.eng?m.eng+'L':'')+(m.trans?' &middot; '+m.trans:'')+'</div><div class="mpg-dr">'+(m.drive||'')+'</div></div>'+(m.cost?'<div class="mpg-fc">~$'+m.cost.toLocaleString()+'/yr</div>':'')+'</div>';
+      h+='<div class="mpg-row"><div class="mpg-top"><div><div class="mpg-eng">'+(m.eng?m.eng+'L':'')+(m.trans?' &middot; '+m.trans:'')+'</div><div class="mpg-dr">'+(m.drive||'')+'</div>'+(m.lbl?'<div class="mpg-ver">'+htmlEsc(m.lbl)+'</div>':'')+'</div>'+(m.cost?'<div class="mpg-fc">~$'+m.cost.toLocaleString()+'/yr</div>':'')+'</div>';
       if(m.range||m.mpge){h+='<div style="margin-bottom:10px">'+rangeStr+mpgeStr+'</div>';}
       h+='<div class="mpg-nums"><div class="mpg-n"><div class="mpg-val">'+(m.city||'&mdash;')+'</div><div class="mpg-lbl">City</div></div><div class="mpg-n"><div class="mpg-val">'+(m.hwy||'&mdash;')+'</div><div class="mpg-lbl">Hwy</div></div><div class="mpg-n"><div class="mpg-val">'+(m.comb||'&mdash;')+'</div><div class="mpg-lbl">Comb</div></div></div></div>';
     });

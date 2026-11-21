@@ -261,6 +261,27 @@ def s1_12_no_process_jargon(a):
         out.append("... %d jargon-bearing shipped strings in total" % n_hits)
     return out
 
+# S1.13 (2026-11-20): the fuel-economy entry shape. New surface => new allowlist entry, deliberately:
+# `lbl` is the EPA version label (files/fe_labels.py via _label_fuel_economy.py -> fuel_economy.epa_label);
+# the EPA record ids behind it (fuel_economy.epa_ids) are provenance and never ship. The S1.12 jargon
+# scan already walks every mpg string, labels included.
+MPG_ENTRY_KEYS = {"city", "hwy", "comb", "cost", "eng", "trans", "drive", "range", "mpge", "lbl"}
+MPG_LABEL_MAX = 400
+
+def s1_13_mpg_entry_shape(a):
+    out = []
+    for v in a.D["v"]:
+        for i, m in enumerate(v.get("mpg") or []):
+            extra = set(m) - MPG_ENTRY_KEYS
+            if extra:
+                out.append("vehicle %s mpg[%d] ships non-allowlisted key(s) %s" % (v.get("id"), i, sorted(extra)))
+            if "lbl" in m and not (isinstance(m["lbl"], str) and 0 < len(m["lbl"]) <= MPG_LABEL_MAX):
+                out.append("vehicle %s mpg[%d] lbl is not a non-empty string of at most %d characters: %r"
+                           % (v.get("id"), i, MPG_LABEL_MAX, str(m["lbl"])[:60]))
+            if len(out) >= 5:
+                return out
+    return out
+
 def s1_5_hash_and_reference(a):
     out = []
     if len(a.blob_paths) != 1:
@@ -800,6 +821,52 @@ def _db(a):
     con = sqlite3.connect("file:%s?mode=ro" % a.db_path.replace("\\", "/"), uri=True)
     con.row_factory = sqlite3.Row
     return con
+
+
+def _fe_label_columns(con):
+    cols = {r[1] for r in con.execute("PRAGMA table_info(fuel_economy)").fetchall()}
+    return {"epa_ids", "epa_label"} <= cols
+
+
+def s1_14_label_provenance(a):
+    """[DB] Every non-empty fuel_economy.epa_label names the EPA records behind it (epa_ids), and the
+    shipped mpg[].lbl of every vehicle equals the database's labels line by line (row order = ship order)."""
+    con = _db(a)
+    try:
+        if not _fe_label_columns(con):
+            return []
+        n = con.execute("SELECT COUNT(*) FROM fuel_economy WHERE COALESCE(epa_label,'') != '' "
+                        "AND COALESCE(epa_ids,'') = ''").fetchone()[0]
+        db_labels = {}
+        for vid, label in con.execute("SELECT vehicle_id, epa_label FROM fuel_economy ORDER BY id"):
+            db_labels.setdefault(vid, []).append(label or None)
+    finally:
+        con.close()
+    out = ["%d fuel-economy line(s) carry a version label without the EPA record ids behind it" % n] if n else []
+    blob = getattr(a, "D", None)
+    if blob is not None:
+        bad = []
+        for v in blob["v"]:
+            shipped = [m.get("lbl") for m in (v.get("mpg") or [])]
+            if shipped != db_labels.get(v.get("id"), []):
+                bad.append(v.get("id"))
+        if bad:
+            out.append("%d vehicle(s) ship fuel-economy labels that differ from the database, e.g. %s "
+                       "(rebuild and sync after a label write)" % (len(bad), bad[:5]))
+    return out
+
+
+def s1_15_unassessed_lines(a):
+    """[DB][WARN] Lines never matched against EPA (epa_ids NULL): written after the last label run.
+    Lines matched with no EPA record carry epa_ids = '' and are not counted."""
+    con = _db(a)
+    try:
+        if not _fe_label_columns(con):
+            return []
+        n = con.execute("SELECT COUNT(*) FROM fuel_economy WHERE epa_ids IS NULL").fetchone()[0]
+    finally:
+        con.close()
+    return ["%d fuel-economy line(s) not yet matched against EPA: re-run _label_fuel_economy.py" % n] if n else []
 
 
 def s9_6_ic01_source_scope(a):
@@ -1740,6 +1807,7 @@ CHECKS = [
     ("S1.10-field-allowlist",    "FAIL", "CI", s1_10_vehicle_field_allowlist),
     ("S1.11-diff-shape",         "FAIL", "CI", s1_11_diff_shape),
     ("S1.12-no-process-jargon",  "FAIL", "CI", s1_12_no_process_jargon),
+    ("S1.13-mpg-entry-shape",    "FAIL", "CI", s1_13_mpg_entry_shape),
     ("S1.5-hash-and-reference",  "FAIL", "CI", s1_5_hash_and_reference),
     ("S1.6-size-budget",         "WARN", "CI", s1_6_size_budget),
     ("S2.1-noindex",             "FAIL", "CI", s2_1_noindex),
@@ -1783,6 +1851,8 @@ CHECKS = [
     ("S5.9-guidance-count-db",   "FAIL", "DB", s5_9_guidance_count),
     ("S5.11-comps-agg-db",       "FAIL", "DB", s5_11_comps_agg_db),
     ("S8.3-count-reconciliation","WARN", "DB", s8_3_count_reconciliation),
+    ("S1.14-label-provenance",   "FAIL", "DB", s1_14_label_provenance),
+    ("S1.15-unassessed-lines",   "WARN", "DB", s1_15_unassessed_lines),
     ("S10.1-registry-contract",  "FAIL", "CI", s10_1_registry_contract),
     ("S10.2-registry-mapping-pin","FAIL", "CI", s10_2_registry_mapping_pin),
     ("S10.3-generator-wiring",   "FAIL", "CI", s10_3_generator_wiring),

@@ -158,6 +158,25 @@ _DIFF_JS_NEW = (
     ".join('')+'</tbody></table>';"
 )
 
+# Renderer migration (fuel-economy version labels, 2026-11-20): each fuel-economy card shows the
+# line's EPA version label (`lbl`, from fuel_economy.epa_label) as a small third line under the drive,
+# escaped with the page's htmlEsc. The new style text contains the old rule, so the style is added only
+# while `.mpg-ver{` is absent. Applied as an idempotent template migration in main() + asserted.
+_MPG_CARD_OLD = "<div class=\"mpg-dr\">'+(m.drive||'')+'</div></div>'"
+_MPG_CARD_NEW = ("<div class=\"mpg-dr\">'+(m.drive||'')+'</div>'"
+                 "+(m.lbl?'<div class=\"mpg-ver\">'+htmlEsc(m.lbl)+'</div>':'')+'</div>'")
+_MPG_CSS_OLD = ".mpg-dr{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim)}"
+_MPG_CSS_NEW = (_MPG_CSS_OLD + "\n.mpg-ver{font-family:'JetBrains Mono',monospace;font-size:10px;"
+                "color:var(--dim);margin-top:2px;overflow-wrap:anywhere}")
+
+
+def migrate_mpg_label(html):
+    """Show the fuel-economy version label on the card (idempotent)."""
+    html = html.replace(_MPG_CARD_OLD, _MPG_CARD_NEW, 1)
+    if ".mpg-ver{" not in html:
+        html = html.replace(_MPG_CSS_OLD, _MPG_CSS_NEW, 1)
+    return html
+
 
 def date_key(s):
     """MM/DD/YYYY -> (Y, M, D) for sorting; bad/empty -> zeros."""
@@ -508,6 +527,8 @@ def build_data(cur):
             e["range"] = r["range_miles"]
         if "mpge" in fe_cols:
             e["mpge"] = r["mpge"]
+        if "epa_label" in fe_cols and r["epa_label"]:
+            e["lbl"] = r["epa_label"]          # EPA version label (_label_fuel_economy.py); absent when none
         veh[r["vehicle_id"]].setdefault("mpg", []).append(e)
 
     each("safety_ratings", lambda d, r: d.update(safety={
@@ -2027,6 +2048,8 @@ def main():
                         "AI-generated guide - always verify specs against your owner manual or the factory service manual before use.")
     # Differential Fluids renderer: 3-col -> 2-col (S1.11, 2026-11-10). Idempotent migration.
     html = html.replace(_DIFF_JS_OLD, _DIFF_JS_NEW, 1)
+    # Fuel-economy version label on each card (2026-11-20). Idempotent migration.
+    html = migrate_mpg_label(html)
     html = fix_js_quotes(html)
 
     # Build-integrity guards: a .replace(old, new, 1) silently no-ops if `old` ever drifts,
@@ -2036,6 +2059,8 @@ def main():
     assert "/*WRENCH_SELFHOST_FONTS*/" in html, "self-hosted @font-face block missing"
     assert "always verify specs against your owner manual" in html, "AI-guide banner migration did not apply"
     assert _DIFF_JS_OLD not in html and html.count(_DIFF_JS_NEW) == 1, "Differential Fluids renderer migration did not apply (S1.11)"
+    assert (_MPG_CARD_OLD not in html and html.count(_MPG_CARD_NEW) == 1 and html.count(".mpg-ver{") == 1), \
+        "fuel-economy version-label migration did not apply (S1.13)"
 
     # 3) refresh the badge (lead with the verified number, not the fleet total: verified =
     #    vehicles carrying owner's-manual-verified curated specs, oil.ver==1 as the anchor.

@@ -15,7 +15,9 @@ flex-fuel (80; gasoline figures only, as on every flex-fuel line since part 2) a
 records with the same six fields, the first in its file is taken (30 such lines pair a plain and a flex-fuel record).
 NOT ADDED (HELD), each a kind that is not ruled; the rules are in HOLD below:
     58 hybrid or plug-in records sold under a plain own name (38 rows): hybrid versions (item c). On 18 of those rows
-       the nameplate is a hybrid itself (Prius and similar).
+       every own record of that year is typed Hybrid: 5 are hybrid-only models (Prius 2020-2022 and 2026, RAV4 2026)
+       and 13 are 48-volt mild hybrids (BMW 330i / 430i / 530i / X3 / X5 / X7, RAM 1500 2024). (Corrected 2026-11-20:
+       this line first called all 18 nameplates that are hybrids themselves.)
     60 chassis-cab records of the Silverado 1500 / Sierra 1500 (20 rows, all verified).
     28 records under performance-leaning names (21 rows): BMW M35i / M40i / M50i, Mustang Bullitt / HO /
        Performance Package / Dark Horse SC, Camry TRD, Tacoma TRD, RAM 1500 HO, 911 Turbo S.
