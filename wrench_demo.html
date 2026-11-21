@@ -443,19 +443,14 @@ body{background:var(--bg)}
 .m-back:hover{opacity:.9}
 </style>
 <style>
-.rcl-panel{margin-top:12px;border-top:1px solid var(--border);padding-top:12px}
+.rcl-panel{margin-top:12px;border-top:1px solid var(--border);padding-top:12px;color:var(--text)}
 .rcl-head{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:10px;flex-wrap:wrap}
-.rcl-head.ok{color:var(--green)}
-.rcl-head.warn{color:var(--amber,#e0a23b)}
-.rcl-head.park{color:var(--red)}
-.rcl-ic{font-size:16px}
-.rcl-parkit{background:var(--red);color:#fff;font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:5px;margin-left:4px}
+.rcl-parkit{background:var(--red);color:#fff;font-size:10px;font-weight:800;letter-spacing:.06em;padding:2px 8px;border-radius:5px;margin:0 4px 6px 0;display:inline-block}
 .rcl-item{background:var(--p2,#111);border:1px solid var(--border);border-left:3px solid var(--amber,#e0a23b);border-radius:8px;padding:11px 13px;margin-bottom:8px}
 .rcl-camp{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);letter-spacing:.08em;margin-bottom:3px}
 .rcl-comp{font-weight:700;font-size:13px;margin-bottom:5px}
 .rcl-sum{font-size:12px;color:var(--dim);line-height:1.5;margin-bottom:5px}
 .rcl-rem{font-size:12px;color:var(--text);line-height:1.5}
-.rcl-status{font-size:11px;color:var(--accent);margin-top:5px}
 </style>
 <script>/*WRENCH_STRIPE_SCRUB*/
 /* P0 (2026-07-15): Stripe returns to /?success=true&session_id=cs_... The gtag config
@@ -677,7 +672,7 @@ body{background:var(--bg)}
     </select>
     <div class="g-count" id="g-count">- VEHICLES</div>
   </div>
-  <div id="kyr-sample" style="max-width:880px;margin:0 0 16px;background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:13px 16px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px"><div style="font-weight:700;font-size:15px;color:var(--text)">2020 Nissan Sentra</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);background:var(--p2,#1c1c1c);border:1px solid var(--border);padding:3px 9px;border-radius:100px">Verified</div></div><div style="display:flex;gap:12px;margin-bottom:13px"><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#128738; 0W-20</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Oil Viscosity</div></div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#128167; 4.4 qt</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Oil Capacity</div></div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#9888;&#65039; 4 Open Recalls</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Recall Status</div></div></div><button onclick="openModal(467)" style="width:100%;background:var(--accent);color:#000;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:13px;cursor:pointer">See Full Specs for This Car &#8594;</button></div>
+  <div id="kyr-sample" style="max-width:880px;margin:0 0 16px;background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:13px 16px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:11px"><div style="font-weight:700;font-size:15px;color:var(--text)">2020 Nissan Sentra</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);background:var(--p2,#1c1c1c);border:1px solid var(--border);padding:3px 9px;border-radius:100px">Verified</div></div><div style="display:flex;gap:12px;margin-bottom:13px"><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#128738; 0W-20</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Oil Viscosity</div></div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">&#128167; 4.4 qt</div><div style="font-size:11px;color:var(--faint);margin-top:2px">Oil Capacity</div></div><div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700;color:var(--text)">4 Model-Year Recall Campaigns</div><div style="font-size:11px;color:var(--faint);margin-top:2px"><a href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener" style="color:var(--accent)">Check VIN at NHTSA.gov &rarr;</a></div></div></div><button onclick="openModal(467)" style="width:100%;background:var(--accent);color:#000;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:13px;cursor:pointer">See Full Specs for This Car &#8594;</button></div>
   <div class="vgrid" id="vgrid"></div>
 </div>
 
@@ -737,7 +732,7 @@ body{background:var(--bg)}
     <div class="feat"><h3>FUEL ECONOMY</h3><p>EPA city/hwy/combined MPG, annual fuel cost, and EV range/MPGe per drivetrain config.</p></div>
     <div class="feat"><h3>SAFETY RATINGS</h3><p>NHTSA 5-star ratings across 6 crash categories plus rollover risk percentage.</p></div>
     <div class="feat"><h3>CONSUMER REPORTS</h3><p>NHTSA complaint aggregates: top components, plus crash, fire, and injury totals with the incident date range.</p></div>
-    <div class="feat"><h3>RECALL DATABASE</h3><p>1,657 vehicles with active NHTSA recall data, remedy text, and park-it flags.</p></div>
+    <div class="feat"><h3>RECALL DATABASE</h3><p>1,657 vehicles with NHTSA model-year campaign data, remedy text, and park-it flags.</p></div>
     <div class="feat"><h3>DTC CODE LOOKUP</h3><p>12,196 OBD-II codes searchable by full code or prefix across all 4 systems.</p></div>
     <div class="feat"><h3>49 MAKES &middot; 45 YEARS</h3><p>1981-2026 coverage across mainstream, luxury, performance, and discontinued brands.</p></div>
   </div>
@@ -862,23 +857,26 @@ function renderComplaints(v){
   // Lane 3 -- related safety recall (separate provenance state; never proof of a complaint's cause)
   var rc=(v.recalls||[]).length;
   h+='<div class="cc-lane cc-lane-recall"><div class="cc-lane-h">Related safety recalls</div>';
-  h+='<div class="cc-note">'+(rc?(rc+' NHTSA recall'+(rc>1?'s':'')+' on record for this model year (listed under Recalls). A recall is a separate official action and does not explain any specific complaint.'):'No NHTSA recalls on record for this model year.')+'</div>';
+  h+='<div class="cc-note">'+(rc?(rc+' NHTSA recall'+(rc>1?'s':'')+' on record for this model year (listed under Recalls). A recall is a separate official action and does not explain any specific complaint.'):'No recall campaigns for this model year in our data.')+'</div>';
   h+='<a class="cc-vin" href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener">Check your VIN for recalls at NHTSA.gov &rarr;</a></div>';
   return h+ccDisclaimer()+ccSources(v);
 }
 
 /*WRENCH_VIN*/
 function titleCase(s){return String(s||'').toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase();});}
+var vinDecodeRequestId=0;
 function decodeVIN(){/* B4b 2026-07-05: VIN decode is unlimited-free (the free acquisition hook) - gate + free-counter removed. proUnlock/kyrFreeUsed machinery stays intact for the 3 real Pro features. */
   var el=document.getElementById('vin-input'), out=document.getElementById('vin-result');
+  var requestId=++vinDecodeRequestId;
   var vin=(el.value||'').trim().toUpperCase();
   if(vin.length!==17){out.className='vin-result err';out.innerHTML='VIN must be exactly 17 characters (got '+vin.length+').';return;}
-  out.className='vin-result';out.innerHTML='Decoding '+vin+'...';
+  out.className='vin-result';out.textContent='Decoding '+vin+'...';
   fetch('/api/vin/'+encodeURIComponent(vin)).then(function(r){
     if(!r.ok)throw new Error('HTTP '+r.status);return r.json();
   }).then(function(d){
-    if(!d||!d.make){out.className='vin-result err';out.innerHTML='No decode result for that VIN.';return;}
-    loadRecalls(d);var disp=htmlEsc(titleCase(d.make)+' '+d.model);
+    if(requestId!==vinDecodeRequestId)return;
+    if(!d||!d.make){out.className='vin-result err';out.innerHTML='No decode result for that VIN.'+recallVinLink();return;}
+    var disp=htmlEsc(titleCase(d.make)+' '+d.model);
     var match=DB.v.find(function(v){return v.year==d.year && v.make.toLowerCase()===String(d.make||'').toLowerCase() && v.model.toLowerCase()===String(d.model||'').toLowerCase();});
     if(match){out.className='vin-result ok';out.innerHTML=' '+htmlEsc(d.year)+' '+disp+' - opening full specs...';openModal(match.id);}
     else{
@@ -886,9 +884,11 @@ function decodeVIN(){/* B4b 2026-07-05: VIN decode is unlimited-free (the free a
       out.className='vin-result warn';
       out.innerHTML='Decoded: <strong>'+htmlEsc(d.year)+' '+disp+(d.trim?' '+htmlEsc(d.trim):'')+'</strong>'+(eng.trim()?'<br><span style="color:var(--dim)">'+eng+'</span>':'')+'<br>Not in our database yet - <em>full specs coming soon.</em>';
     }
+    loadRecalls(d,out,requestId);
   }).catch(function(e){
+    if(requestId!==vinDecodeRequestId)return;
     out.className='vin-result err';
-    out.innerHTML='Could not reach the decode service. VIN decode needs the local server - run <code>python wrench_serve.py</code> and open <code>http://localhost:8000/</code>.';
+    out.innerHTML='Could not reach the VIN decode service.'+recallVinLink();
   });
 }
 
@@ -1185,27 +1185,60 @@ function gResetSelector(){var s=document.getElementById('g-search');if(s)s.value
 function backToSearch(){if(typeof closeModal==='function')closeModal();if(typeof switchTab==='function')switchTab('garage');gResetSelector();window.scrollTo(0,0);}
 
 /*WRENCH_RECALL*/
-function loadRecalls(dec){
-  var out=document.getElementById('vin-result'); if(!out||!dec||!dec.make)return;
-  var qs='make='+encodeURIComponent(dec.make)+'&model='+encodeURIComponent(dec.model||'')+'&year='+encodeURIComponent(dec.year||'');
-  fetch('/api/recalls?'+qs).then(function(r){return r.json();}).then(function(d){
-    var recs=(d&&(d.recalls||d.results||d.Results))||[];
-    var n=recs.length, h='<div class="rcl-panel">';
-    if(!n){h+='<div class="rcl-head ok"><span class="rcl-ic">&#10004;</span> Your Recall Status: <strong>No open recalls</strong></div>';}
-    else{
-      var park=recs.some(function(x){return x.ParkIt||x.parkIt||x.park||x.ParkOutSide||x.parkOutSide;});
-      h+='<div class="rcl-head '+(park?'park':'warn')+'"><span class="rcl-ic">&#9888;</span> Your Recall Status: <strong>'+n+' open recall'+(n>1?'s':'')+'</strong>'+(park?'<span class="rcl-parkit">PARK IT</span>':'')+'</div>';
-      h+=recs.map(function(x){
-        var camp=x.NHTSACampaignNumber||x.campaignNumber||x.Campaign||x.campaign||'';
-        var comp=x.Component||x.component||'';
-        var sum=x.Summary||x.summary||x.Consequence||x.consequence||'';
-        var rem=x.Remedy||x.remedy||'';
-        var done=x.completion||x.Completion||x.recallStatus||x.status||'';
-        return '<div class="rcl-item">'+(camp?'<div class="rcl-camp">CAMPAIGN '+htmlEsc(camp)+'</div>':'')+(comp?'<div class="rcl-comp">'+htmlEsc(comp)+'</div>':'')+(sum?'<div class="rcl-sum">'+htmlEsc(sum)+'</div>':'')+(rem?'<div class="rcl-rem"><strong>Remedy:</strong> '+htmlEsc(rem)+'</div>':'')+(done?'<div class="rcl-status">Status: '+htmlEsc(done)+'</div>':'')+'</div>';
-      }).join('');
-    }
-    out.innerHTML+=h+'</div>';
-  }).catch(function(){});
+function recallVinLink(){
+  return '<a class="cc-vin" href="https://www.nhtsa.gov/recalls" target="_blank" rel="noopener">Check VIN at NHTSA.gov &rarr;</a>';
+}
+function recallCampaignId(x){
+  return x.NHTSACampaignNumber||x.campaignNumber||x.Campaign||x.campaign||'';
+}
+function renderVinRecallPanel(recs){
+  var h='<div class="rcl-head">NHTSA recall campaigns for this model year</div>';
+  h+='<p class="empty-note">These results do not tell you whether a recall applies to this VIN or has already been repaired.</p>';
+  h+=recallVinLink();
+  if(recs===undefined)h+='<p>Checking model-year campaigns&hellip;</p>';
+  else if(recs===null)h+='<p><strong>Recall lookup unavailable.</strong></p>';
+  else if(!recs.length)h+='<p>No campaigns returned for this model year.</p>';
+  else{
+    h+='<p><strong>'+recs.length+' model-year campaign'+(recs.length===1?'':'s')+' found</strong></p>';
+    h+=recs.map(function(x){
+      var camp=recallCampaignId(x);
+      var comp=x.Component||x.component||'';
+      var sum=x.Summary||x.summary||x.Consequence||x.consequence||'';
+      var rem=x.Remedy||x.remedy||'';
+      var hasFlag=function(flag){return flag===true||flag===1||/^(true|yes|1)$/i.test(String(flag).trim());};
+      var park=[x.ParkIt,x.parkIt,x.park].some(hasFlag);
+      var outside=[x.ParkOutSide,x.parkOutSide].some(hasFlag);
+      return '<div class="rcl-item"><div class="rcl-camp">CAMPAIGN '+recallEsc(camp)+'</div>'
+        +(park?'<div class="rcl-parkit">DO NOT DRIVE AFFECTED VEHICLES</div>':'')
+        +(outside?'<div class="rcl-parkit">PARK AFFECTED VEHICLES OUTSIDE</div>':'')
+        +(comp?'<div class="rcl-comp">'+recallEsc(comp)+'</div>':'')
+        +(sum?'<div class="rcl-sum">'+recallEsc(sum)+'</div>':'')
+        +(rem?'<div class="rcl-rem"><strong>Remedy:</strong> '+recallEsc(rem)+'</div>':'')+'</div>';
+    }).join('');
+  }
+  return h;
+}
+function recallEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function loadRecalls(dec,out,requestId){
+  var panel=document.createElement('div');
+  panel.className='rcl-panel';
+  out.appendChild(panel);
+  function show(recs){
+    if(requestId===vinDecodeRequestId)panel.innerHTML=renderVinRecallPanel(recs);
+  }
+  if(!dec.make||!dec.model||!dec.year){show(null);return;}
+  show(undefined);
+  var qs='make='+encodeURIComponent(dec.make)+'&model='+encodeURIComponent(dec.model)+'&year='+encodeURIComponent(dec.year);
+  return fetch('/api/recalls?'+qs).then(function(r){
+    if(!r.ok)throw new Error('Recall lookup failed');
+    return r.json();
+  }).then(function(d){
+    if(!d||Object.hasOwn(d,'error')||!Array.isArray(d.recalls)
+      ||(Object.hasOwn(d,'count')&&d.count!==d.recalls.length)||!d.recalls.every(function(x){
+      return x&&!Array.isArray(x)&&typeof x==='object'&&typeof recallCampaignId(x)==='string'&&recallCampaignId(x).trim();
+    }))throw new Error('Invalid recall response');
+    show(d.recalls);
+  }).catch(function(){show(null);});
 }
 
 function switchTab(name){
@@ -1256,11 +1289,11 @@ function renderPlacard(v){
     rows+=plRow('ENGINE OIL',(o.visc||'See manual')+(o.cap_w?'  &middot;  '+o.cap_w+(/qt/i.test(o.cap_w)?'':' qt'):''));
     rows+=plRow('DRAIN PLUG',(d.socket_size_mm?d.socket_size_mm+'mm':(o.visc?'See manual':'&mdash;'))+(d.thread_size?'  &middot;  '+d.thread_size:''));
   }
-  rows+=plRow('OPEN RECALLS',rc>0?'<span style="color:#a3380f">'+rc+' &mdash; check now</span>':'<span style="color:#1f6b3a">None on record</span>');
+  rows+=plRow('MODEL-YEAR RECALLS',rc>0?rc+' on record':'None in our data');
   return '<div class="kyr-pl">'
     +'<span class="kyr-pl-rivet" style="left:9px"></span><span class="kyr-pl-rivet" style="right:9px"></span>'
     +'<div class="kyr-pl-hd"><span class="t">VEHICLE&nbsp;SPECIFICATION</span><span class="v">'+v.year+' '+v.make+' '+v.model+'</span></div>'
-    +'<div class="kyr-pl-body">'+rows
+    +'<div class="kyr-pl-body">'+rows+'<div style="margin:0 0 8px;text-align:right">'+recallVinLink()+'</div>'
     +'<button class="kyr-pl-cta" onclick="openModal('+v.id+')">Open full manual &rarr;</button>'
     +'</div></div>';
 }
@@ -1306,9 +1339,9 @@ function renderGarage(){
     if(isEV)bdg.push('<span class="bdg bdg-ev">EV</span>');
     if(p&&p.tire)bdg.push('<span class="bdg bdg-t">'+p.tire+'</span>');
     if(s&&s.overall)bdg.push('<span class="bdg bdg-s">&#9733;'+s.overall+'</span>');
-    if(rc>0)bdg.push('<span class="bdg bdg-r">'+rc+' RECALL'+(rc>1?'S':'')+'</span>');
+    if(rc>0)bdg.push('<span class="bdg bdg-r">'+rc+' MODEL-YEAR RECALL'+(rc>1?'S':'')+'</span>');
     if(v.maint&&v.maint.length)bdg.push('<span class="bdg bdg-m">'+v.maint.length+' SCHEDULES</span>');
-    return '<div class="vcard" tabindex="0" role="button" aria-label="'+v.year+' '+v.make+' '+v.model+'" onclick="openModal('+v.id+')"><div class="vc-head"><div><div class="vc-name">'+v.year+' '+v.make+' '+v.model+'</div><div class="vc-sub">'+(v.engine||v.trim||'&mdash;')+'</div>'+'</div></div><div class="vc-badges">'+bdg.join('')+'</div><div class="vc-stats"><div><div class="vcs-l">OIL</div><div class="vcs-v">'+(o&&o.visc||'&mdash;')+'</div></div><div><div class="vcs-l">RECALLS</div><div class="vcs-v">'+(rc||'&mdash;')+'</div></div><div><div class="vcs-l">MPG COMB</div><div class="vcs-v">'+(m&&m.comb||'&mdash;')+'</div></div></div></div>';
+    return '<div class="vcard" tabindex="0" role="button" aria-label="'+v.year+' '+v.make+' '+v.model+'" onclick="openModal('+v.id+')"><div class="vc-head"><div><div class="vc-name">'+v.year+' '+v.make+' '+v.model+'</div><div class="vc-sub">'+(v.engine||v.trim||'&mdash;')+'</div>'+'</div></div><div class="vc-badges">'+bdg.join('')+'</div><div class="vc-stats"><div><div class="vcs-l">OIL</div><div class="vcs-v">'+(o&&o.visc||'&mdash;')+'</div></div><div><div class="vcs-l">MODEL-YEAR RECALLS</div><div class="vcs-v">'+(rc||'&mdash;')+'</div></div><div><div class="vcs-l">MPG COMB</div><div class="vcs-v">'+(m&&m.comb||'&mdash;')+'</div></div></div></div>';
   }).join('');
 }
 
@@ -1453,9 +1486,10 @@ function renderWarranty(v){
      aggregator pull (vehicle-finder API) with no provenance -- fails THE LAW. The payload no
      longer ships v.warranty; this renders recalls only, pending an OEM-verified rebuild. */
   var h='',recs=v.recalls||[];
-  h+='<div class="sec-head" style="margin-top:20px">Recalls ('+recs.length+')</div>';
-  if(!recs.length)h+='<p class="empty-note">No recalls on record.</p>';
-  else h+=recs.map(function(r){return '<div class="recall-card '+(r.park?'park':'')+'">'+( r.camp?'<div class="rc-camp">Campaign: '+htmlEsc(r.camp)+'</div>':'')+( r.park?'<div class="rc-park">&#9888; DO NOT DRIVE</div>':'')+( r.comp?'<div class="rc-comp">'+htmlEsc(r.comp)+'</div>':'')+( r.sum?'<div class="rc-text" style="margin-bottom:8px">'+htmlEsc(r.sum)+'</div>':'')+( r.remedy?'<div class="rc-text"><strong style="color:var(--text)">Remedy:</strong> '+htmlEsc(r.remedy)+'</div>':'')+'</div>';}).join('');
+  h+='<div class="sec-head" style="margin-top:20px">NHTSA Model-Year Recall Campaigns ('+recs.length+')</div>'+recallVinLink();
+  h+='<p class="empty-note">From our model-year data, not a VIN check. These records do not say whether a campaign applies to your VIN or has already been repaired.</p>';
+  if(!recs.length)h+='<p class="empty-note">No campaigns for this model year in our data.</p>';
+  else h+=recs.map(function(r){return '<div class="recall-card '+(r.park?'park':'')+'">'+( r.camp?'<div class="rc-camp">Campaign: '+htmlEsc(r.camp)+'</div>':'')+( r.park?'<div class="rc-park">&#9888; DO NOT DRIVE AFFECTED VEHICLES</div>':'')+( r.comp?'<div class="rc-comp">'+htmlEsc(r.comp)+'</div>':'')+( r.sum?'<div class="rc-text" style="margin-bottom:8px">'+htmlEsc(r.sum)+'</div>':'')+( r.remedy?'<div class="rc-text"><strong style="color:var(--text)">Remedy:</strong> '+htmlEsc(r.remedy)+'</div>':'')+'</div>';}).join('');
   return h;
 }
 

@@ -360,7 +360,7 @@ def s3_2_sample_values_match(a):
             capv = next(x for x in cap if x)
             if capv not in (oil.get("cap_w") or ""):
                 out.append("%s: card capacity %s not in blob oil.cap_w %r" % (name, capv, oil.get("cap_w")))
-        mr = re.search(r"(\d+) Open Recalls", card)
+        mr = re.search(r"(\d+) Model-Year Recall Campaigns", card)
         if mr and int(mr.group(1)) != len(rec.get("recalls") or []):
             out.append("%s: card says %s recalls, blob has %d" % (name, mr.group(1), len(rec.get("recalls") or [])))
     return out
@@ -736,7 +736,7 @@ def s9_3_ic01_sample_pin(a):
         expected_values = (
             ("viscosity", expected["oil_visc"]),
             ("capacity", expected["oil_cap_w"]),
-            ("recall count", "%d Open Recalls" % expected["recall_count"]),
+            ("recall count", "%d Model-Year Recall Campaigns" % expected["recall_count"]),
         )
         for field, value in expected_values:
             if not value or str(value) not in card_html:

@@ -703,8 +703,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 {"make": make, "model": model, "modelYear": year})
             req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (compatible; KnowYourRide/1.0)", "Accept": "application/json"})
             with urllib.request.urlopen(req, timeout=15) as r:
-                data = json.loads(r.read().decode("utf-8", "ignore"))
-            items = data.get("results") or data.get("Results") or data.get("recalls") or []
+                data = json.loads(r.read().decode("utf-8"))
+            if not isinstance(data, dict) or "error" in data:
+                raise ValueError("Invalid recall response")
+            items = next((data[key] for key in ("results", "Results", "recalls") if key in data), None)
+            if not isinstance(items, list) or not all(isinstance(item, dict) for item in items):
+                raise ValueError("Invalid recall list")
+            for count_key in ("Count", "count"):
+                if count_key in data and (type(data[count_key]) is not int or data[count_key] != len(items)):
+                    raise ValueError("Invalid recall count")
             return self._json(200, {"count": len(items), "recalls": items})
         except Exception as e:
             return self._json(502, {"error": f"recall lookup failed: {e}", "recalls": []})
