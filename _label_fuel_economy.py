@@ -11,6 +11,11 @@ The label is EPA's model name plus tags, built only from EPA's own record fields
 dropped unless nothing else matches. A line that matches no EPA record is marked assessed (epa_ids = '')
 and gets no label. Re-runnable: a later run labels lines written since and changes nothing else.
 
+Since ruling (c) (Robert, 2026-11-20, "Accept the rule" / "Approve approach"), every version EPA lists under
+the nameplate stays on the row, labelled, and the script also stores fuel_economy.epa_plain (1 = a record
+behind the line is the plain car, files/fe_labels.plain_flag; never shipped). The build ships a row's plain
+lines first (fe_labels.SHIP_ORDER), so the search card, which shows the first line, shows the plain car.
+
 Matching (the rule every fuel-economy repair since 2026-11-15 uses):
     gasoline-type line  EPA records of the same make and model year with equal city, highway, combined,
                         engine size, transmission and drive
@@ -129,42 +134,64 @@ def match_line(line, recs):
 
 
 # ---------------------------------------------------------------- the database
-def _has_label_columns(cur):
+# The three per-line columns this script writes: the EPA record ids behind the line (never shipped), its label
+# (shipped as mpg[].lbl) and, since ruling (c) of 2026-11-20, whether the line is the plain car (epa_plain,
+# files/fe_labels.plain_flag; never shipped: the build ships a row's plain lines first, fe_labels.SHIP_ORDER).
+LABEL_COLS = (("epa_ids", "TEXT"), ("epa_label", "TEXT"), ("epa_plain", "INTEGER"))
+
+
+def _label_columns(cur):
     cols = {r[1] for r in cur.execute("PRAGMA table_info(fuel_economy)").fetchall()}
-    return {"epa_ids", "epa_label"} <= cols
+    return [c for c, _ in LABEL_COLS if c in cols]
+
+
+def _has_label_columns(cur):
+    return {"epa_ids", "epa_label"} <= set(_label_columns(cur))
 
 
 # A label describes the line it was built for. When a script later edits what the line was matched on
 # (its figures, engine, transmission, drive, fuel type, MPGe or range) or the vehicle's year, make or
-# model, the label no longer holds: these triggers clear it, the card then shows no label and the
-# verifier's S1.15 warns until this script runs again (the spec's rule for lines written later).
+# model, the label no longer holds: these triggers clear it (and the plain flag), the card then shows no
+# label and the verifier's S1.15 warns until this script runs again (the spec's rule for lines written later).
 _TRIGGERS = (
     "CREATE TRIGGER IF NOT EXISTS fe_label_reset_on_line_change AFTER UPDATE OF %s ON fuel_economy WHEN %s "
-    "BEGIN UPDATE fuel_economy SET epa_ids = NULL, epa_label = NULL WHERE id = NEW.id; END"
+    "BEGIN UPDATE fuel_economy SET epa_ids = NULL, epa_label = NULL, epa_plain = NULL WHERE id = NEW.id; END"
     % (", ".join(LINE_COLS), " OR ".join("OLD.%s IS NOT NEW.%s" % (c, c) for c in LINE_COLS)),
     "CREATE TRIGGER IF NOT EXISTS fe_label_reset_on_vehicle_change AFTER UPDATE OF year, make, model ON vehicles "
     "WHEN OLD.year IS NOT NEW.year OR OLD.make IS NOT NEW.make OR OLD.model IS NOT NEW.model "
-    "BEGIN UPDATE fuel_economy SET epa_ids = NULL, epa_label = NULL WHERE vehicle_id = NEW.id; END",
+    "BEGIN UPDATE fuel_economy SET epa_ids = NULL, epa_label = NULL, epa_plain = NULL WHERE vehicle_id = NEW.id; END",
 )
+_TRIGGER_NAMES = ("fe_label_reset_on_line_change", "fe_label_reset_on_vehicle_change")
 
 
 def ensure_columns(cur):
-    """Add the two label columns when absent (returns the names added) and the two reset triggers."""
-    cols = {r[1] for r in cur.execute("PRAGMA table_info(fuel_economy)").fetchall()}
+    """Add the label columns that are absent (returns the names added) and (re)create the two reset triggers,
+    so a database the first label write left with two-column triggers gets the ones that also clear epa_plain."""
+    present = set(_label_columns(cur))
     added = []
-    for name in ("epa_ids", "epa_label"):
-        if name not in cols:
-            cur.execute("ALTER TABLE fuel_economy ADD COLUMN %s TEXT" % name)
+    for name, kind in LABEL_COLS:
+        if name not in present:
+            cur.execute("ALTER TABLE fuel_economy ADD COLUMN %s %s" % (name, kind))
             added.append(name)
-    for sql in _TRIGGERS:
+    for name, sql in zip(_TRIGGER_NAMES, _TRIGGERS):
+        cur.execute("DROP TRIGGER IF EXISTS %s" % name)
         cur.execute(sql)
     return added
 
 
+def ship_order(cur):
+    """{vehicle id: [line ids in the order the build ships them]}: fe_labels.SHIP_ORDER once epa_plain exists."""
+    order_sql = fe_labels.SHIP_ORDER if "epa_plain" in _label_columns(cur) else "id"
+    out = collections.defaultdict(list)
+    for fid, vid in cur.execute("SELECT id, vehicle_id FROM fuel_economy ORDER BY " + order_sql).fetchall():
+        out[vid].append(fid)
+    return dict(out)
+
+
 def assess_lines(cur, epa, plates):
-    """Every stored line with the records behind it and the label they give (in vehicle, then row order)."""
-    labelled = _has_label_columns(cur)
-    extra = ", epa_ids, epa_label" if labelled else ", NULL, NULL"
+    """Every stored line with the records behind it, the label they give and the plain flag (in vehicle, then row order)."""
+    present = set(_label_columns(cur))
+    extra = "".join(", %s" % c if c in present else ", NULL" for c, _ in LABEL_COLS)
     lines = collections.defaultdict(list)
     for row in cur.execute("SELECT id, vehicle_id, %s%s FROM fuel_economy ORDER BY id" % (", ".join(LINE_COLS), extra)):
         lines[row[1]].append(row)
@@ -178,9 +205,10 @@ def assess_lines(cur, epa, plates):
             line = dict(zip(LINE_COLS, row[2:2 + len(LINE_COLS)]))
             hit = match_line(line, recs)
             kept = fe_labels.kept_records(hit, classes) if hit else []
-            new = [fe_labels.ids_text(kept), fe_labels.label_text(kept)] if kept else ["", None]
+            new = ([fe_labels.ids_text(kept), fe_labels.label_text(kept), fe_labels.plain_flag(make, model, kept, classes)]
+                   if kept else ["", None, 0])
             out.append({"fe_id": row[0], "vehicle_id": vid, "year": year, "make": make, "model": model, "line": line,
-                        "hit": hit, "kept": kept, "old": [row[-2], row[-1]], "new": new})
+                        "hit": hit, "kept": kept, "old": list(row[-3:]), "new": new})
     return out
 
 
@@ -205,9 +233,10 @@ def apply(cur, plan):
             seen[vid] = list(row) if row else None
         if seen[vid] != p["vehicle"]:
             raise RuntimeError("vehicle %d is %r, the dry run saw %r" % (vid, seen[vid], p["vehicle"]))
-        cur.execute("UPDATE fuel_economy SET epa_ids=?, epa_label=? WHERE id=? AND vehicle_id=? AND epa_ids IS ? "
-                    "AND epa_label IS ? AND " + " AND ".join("%s IS ?" % c for c in LINE_COLS),
-                    [p["new"][0], p["new"][1], p["fe_id"], vid, p["old"][0], p["old"][1]] + list(p["line"]))
+        cur.execute("UPDATE fuel_economy SET epa_ids=?, epa_label=?, epa_plain=? WHERE id=? AND vehicle_id=? AND epa_ids IS ? "
+                    "AND epa_label IS ? AND epa_plain IS ? AND " + " AND ".join("%s IS ?" % c for c in LINE_COLS),
+                    [p["new"][0], p["new"][1], p["new"][2], p["fe_id"], vid, p["old"][0], p["old"][1], p["old"][2]]
+                    + list(p["line"]))
         if cur.rowcount != 1:
             raise RuntimeError("line fe#%d of vehicle %d no longer holds what the dry run saw" % (p["fe_id"], vid))
 
@@ -350,25 +379,33 @@ def label_change_ok(before, after, fid, planned):
     return after.get("lbl") == want
 
 
+def shipped_lines_ok(before, after, order0, order1, planned):
+    """One vehicle's shipped lines before vs after the plan, matched by line id whatever their order (the plain
+    flag may move a line up): the same lines, each differing only as label_change_ok allows."""
+    if len(before) != len(order0) or len(after) != len(order1) or sorted(order0) != sorted(order1):
+        return False
+    b, a = dict(zip(order0, before)), dict(zip(order1, after))
+    return all(label_change_ok(b[f], a[f], f, planned) for f in order0)
+
+
 def rehearse(plan):
     say("")
     say("REHEARSAL -- the real build on two in-memory copies of the database (untouched, and with the plan applied)")
     try:
         m0 = _mem_copy()
+        order0 = ship_order(m0.cursor())
         before, dtc0, fix0 = _build(m0)
         m0.close()
         m1 = _mem_copy()
         c1 = m1.cursor()
         n0 = c1.execute("SELECT COUNT(*) FROM fuel_economy").fetchone()[0]
-        order = collections.defaultdict(list)
-        for fid, vid in c1.execute("SELECT id, vehicle_id FROM fuel_economy ORDER BY id"):
-            order[vid].append(fid)
         ensure_columns(c1)
         apply(c1, plan)
         m1.commit()
         if c1.execute("SELECT COUNT(*) FROM fuel_economy").fetchone()[0] != n0 or bare_count(c1) != BARE_FROZEN:
             say("  REHEARSAL FAILED: the line count or the bare rows moved")
             return False
+        order1 = ship_order(c1)
         after, dtc1, fix1 = _build(m1)
         m1.close()
     except (SystemExit, AssertionError, RuntimeError) as e:
@@ -378,7 +415,7 @@ def rehearse(plan):
         say("  REHEARSAL FAILED: the vehicle list, the code list or the fix list changed")
         return False
     label = {p["fe_id"]: p["new"][1] for p in plan}
-    bad, changed = 0, 0
+    bad, changed, reordered, card = 0, 0, 0, 0
     for vid, a in before.items():
         b = after[vid]
         if a == b:
@@ -389,14 +426,13 @@ def rehearse(plan):
             bad += 1
             continue
         ma, mb = a.get("mpg") or [], b.get("mpg") or []
-        if len(ma) != len(mb) or len(mb) != len(order[vid]):
-            say("  UNEXPECTED: id %d ships a different number of lines" % vid)
+        o0, o1 = order0.get(vid, []), order1.get(vid, [])
+        if not shipped_lines_ok(ma, mb, o0, o1, label):
+            say("  UNEXPECTED: id %d ships lines other than the planned labels allow (lines %s -> %s)" % (vid, o0, o1))
             bad += 1
             continue
-        for fid, ea, eb in zip(order[vid], ma, mb):
-            if not label_change_ok(ea, eb, fid, label):
-                say("  UNEXPECTED: id %d line fe#%d ships %r, planned label %r" % (vid, fid, eb, label.get(fid)))
-                bad += 1
+        reordered += o0 != o1
+        card += bool(ma) and o0[:1] != o1[:1]
     if bad:
         return False
     n_ver0 = sum(1 for v in before.values() if isinstance(v.get("oil"), dict) and v["oil"].get("ver") == 1)
@@ -406,8 +442,11 @@ def rehearse(plan):
         return False
     shipped = sum(1 for v in after.values() for m in (v.get("mpg") or []) if "lbl" in m)
     say("  build gates passed on both copies; vehicles %d -> %d; owner's-manual-verified %d (unchanged)" % (len(before), len(after), n_ver1))
-    say("  %d vehicles differ, each only by fuel-economy labels; all other %d vehicles identical" % (changed, len(after) - changed))
+    say("  %d vehicles differ, each only by fuel-economy labels or line order; all other %d vehicles identical" % (
+        changed, len(after) - changed))
     say("  lines %d (unchanged); labels shipped %d; bare owner-manual rows %d" % (n0, shipped, BARE_FROZEN))
+    say("  plain lines first: %d vehicles ship their lines in a new order; on %d the search card's line changes" % (
+        reordered, card))
     return True
 
 
@@ -506,7 +545,7 @@ def write(want):
         if cur.execute("SELECT COUNT(*) FROM fuel_economy").fetchone()[0] != n0 or \
                 cur.execute("SELECT COUNT(*) FROM vehicles").fetchone()[0] != fleet or bare_count(cur) != BARE_FROZEN:
             raise RuntimeError("line count, fleet count or bare rows moved")
-        unassessed = cur.execute("SELECT COUNT(*) FROM fuel_economy WHERE epa_ids IS NULL").fetchone()[0]
+        unassessed = cur.execute("SELECT COUNT(*) FROM fuel_economy WHERE epa_ids IS NULL OR epa_plain IS NULL").fetchone()[0]
         if unassessed:
             raise RuntimeError("%d lines are still unassessed after the write" % unassessed)
         cur.execute("COMMIT")

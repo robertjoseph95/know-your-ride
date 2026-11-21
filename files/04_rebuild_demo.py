@@ -32,6 +32,7 @@ import glob
 import shutil
 import datetime
 
+from fe_labels import SHIP_ORDER as FE_SHIP_ORDER
 from ic01_quarantine import projection_problems
 from source_registry import (
     GATED_TABLES,
@@ -516,7 +517,9 @@ def build_data(cur):
     # fuel economy (range_miles/mpge added by script 02)
     cur.execute("PRAGMA table_info(fuel_economy)")
     fe_cols = [c[1] for c in cur.fetchall()]
-    cur.execute("SELECT * FROM fuel_economy")
+    # Ship order (ruling (c), 2026-11-20): a row's plain lines first (fuel_economy.epa_plain, written by
+    # _label_fuel_economy.py), so the search card -- which shows mpg[0] -- shows the plain car; else stored order.
+    cur.execute("SELECT * FROM fuel_economy ORDER BY " + (FE_SHIP_ORDER if "epa_plain" in fe_cols else "id"))
     for r in cur.fetchall():
         if r["vehicle_id"] not in veh:
             continue

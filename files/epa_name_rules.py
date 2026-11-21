@@ -4,7 +4,12 @@ one of its versions, and which belong to another vehicle.
 Copied verbatim from the full comparison (`_compare_fuel_economy_epa.py`, the two rule parts: from the
 `name rules` marker to the `EPA's file` marker, and `name_classes`) with one change: `name_classes`
 takes the fleet's nameplates as a parameter instead of a module global, and no longer takes the unused
-vehicle id. tests/test_fe_labels.py proves the two agree on the whole fleet.
+vehicle id. tests/test_fe_labels.py proves the two agree on the whole fleet, except for the one deliberate
+difference below.
+
+Changed 2026-11-20 (ruling (c), Robert: "Accept the rule", then "Approve approach"): on the F-150, the word
+`XL` in `F150 Pickup 4WD XL/XLT` names the XL / XLT trims, not a longer body (TRIM_NOT_BODY). Every other
+body word in the fleet's EPA names was read and is a longer body or a body style.
 No file or database is touched at import.
 """
 import re
@@ -32,6 +37,7 @@ ANOTHER = {("Nissan", "Rogue"): {"sport", "select"}, ("Nissan", "Pathfinder"): {
            ("Cadillac", "Escalade"): {"ext"}}
 SPECIAL = set("police usps hearse limo incomplete".split())
 BODY = set("l xl max ext ewb extended unlimited allroad maxx lwb xc sportwagen alltrack".split())
+TRIM_NOT_BODY = {("Ford", "F-150"): {"xl"}}       # body words that name a trim on that nameplate (2026-11-20)
 PERF = set("m v srt srt-8 srt-4 trackhawk type-s si nismo raptor trx rho z06 zr1 zr1x gli trofeo svr viggen ts 707 727 speed gt2 gt3 cs csl".split())
 RULED_IN = {("Ford", "Mustang"): {"dark", "gtd"}, ("Fiat", "500"): {"abarth"}, ("MINI", "Countryman"): {"s", "jcw", "john"}}
 # Names EPA uses for a fleet nameplate although they do not start with it (added after reading the first run's unrelated-name list).
@@ -131,7 +137,7 @@ def bucket(make, model, rel, extra, atvs, only_fuel):
         return "performance version"
     if make == "BMW" and len(model) > 1 and model[0] == "M" and model[1].isdigit():
         return "own (trim or engine name)"
-    if any(t in BODY for t in w):
+    if any(t in BODY and t not in TRIM_NOT_BODY.get((make, model), ()) for t in w):
         return "longer or different body"
     if any(t in PERF for t in w) or (w[:2] == ["red", "sport"]) or (w[:2] == ["black", "badge"]):
         return "performance version"

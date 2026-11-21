@@ -32,6 +32,51 @@ def kept_records(recs, classes):
     return kept if kept else list(recs)
 
 
+# ---------------------------------------------------------------- the plain car first (ruling (c), 2026-11-20)
+# A row keeps every version EPA lists under its nameplate, labelled. So that the search card (which shows the
+# row's first line) and the top of the card list show the plain car, a row ships its plain lines first:
+# fuel_economy.epa_plain = 1 when a record behind the line is the vehicle's own name, is not typed hybrid or
+# plug-in hybrid by EPA, and is not one of the trim kinds ruled on 2026-11-20 below.
+NOT_PLAIN_ATV = ("Hybrid", "Plug-in Hybrid")
+# The every-own-record fill's HOLD list, with TRD and chassis cab on any nameplate:
+# (make or None, model or None, full-match pattern on EPA's model name, engine size or None)
+VERSION_NAMES = (
+    ("Chrysler", "300", r"300C?/SRT-8", 6.1),
+    ("Jeep", "Wrangler", r"Wrangler .*4dr.*", None),
+    (None, None, r".*Cab Chassis.*", None),
+    ("BMW", None, r".* M\d\di( .*)?", None),
+    ("Ford", "Mustang", r"Mustang (Bullitt|HO .*|Performance Package|Dark Horse SC)( .*)?", None),
+    (None, None, r".*\bTRD\b.*", None),
+    ("RAM", "1500", r"1500 HO .*", None),
+    ("Porsche", "911", r"911 Turbo S.*", None),
+)
+# The order the build ships a row's lines in (and the verifier checks): plain lines first, then the rest, each in
+# stored order. Unassessed lines (epa_plain NULL) count as not plain.
+SHIP_ORDER = "vehicle_id, CASE WHEN epa_plain = 1 THEN 0 ELSE 1 END, id"
+
+
+def _size(x):
+    try:
+        return float(x) if x not in (None, "") else None
+    except (TypeError, ValueError):
+        return None
+
+
+def version_name(make, model, rec):
+    """True when the record's EPA name is one of the trim kinds that is not the plain car."""
+    for mk, md, rx, size in VERSION_NAMES:
+        if (mk is None or mk == make) and (md is None or md == model) and re.fullmatch(rx, rec["name"]) \
+                and (size is None or _size(rec.get("displ")) == size):
+            return True
+    return False
+
+
+def plain_flag(make, model, kept, classes):
+    """1 when any record behind the line is the plain car (see above), else 0."""
+    return 1 if any(classes.get(r["name"]) == "own" and (r.get("atv") or "") not in NOT_PLAIN_ATV
+                    and not version_name(make, model, r) for r in kept) else 0
+
+
 def _says(name, tag):
     """True when the tag's full text stands in the name as whole words, ignoring case."""
     return re.search(r"(?<![0-9A-Za-z])" + re.escape(tag) + r"(?![0-9A-Za-z])", name, re.I) is not None

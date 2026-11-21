@@ -24,6 +24,10 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
   The fuel-economy version label `mpg[].lbl` ships from `fuel_economy.epa_label`, which only
   `_label_fuel_economy.py` writes, from EPA's complete file (`vehicles.csv.zip`, hash pinned),
   with the text built by `files/fe_labels.py` and the names chosen by `files/epa_name_rules.py`.
+  The same script stores `fuel_economy.epa_plain` (never shipped); the build ships each vehicle's
+  `mpg` lines in `files/fe_labels.SHIP_ORDER` (plain lines first), so `mpg[0]`, which the search
+  card shows, is the plain car. Which versions a row holds follows ruling (c) (2026-11-20,
+  `_repair_fuel_economy_versions.py`): every version EPA lists under the nameplate, labelled.
 - **Current guards:** build-time `_assert_gate_sources` + `_strip_unverified`/`enforce_ver0`
   + 3 `PAYLOAD GUARD` aborts; commit-time `_deploy_check.py` content scan + index↔blob
   desync check.
@@ -81,14 +85,19 @@ Invariant tags: **[CI]** = checkable from tracked files alone (runs in GitHub Ac
   8. [DB][FAIL] `_assert_gate_sources` over the live DB: no blacklisted source computes `ver=1`.
   8b. [DB][FAIL] **Label provenance (S1.14):** no `fuel_economy` row carries a non-empty
      `epa_label` without the EPA record ids behind it in `epa_ids`, and every vehicle's shipped
-     `mpg[].lbl` equals the database's labels line by line (fails between a label write and the
-     next rebuild + sync, like any DB-to-blob check).
-  8c. [DB][WARN] **Unmatched lines (S1.15):** rows with `epa_ids` NULL were written, or had a
-     matched-on field edited, after the last label run, and ship without a label until
-     `_label_fuel_economy.py` runs again. Two triggers created by that script clear a line's label
-     when its figures, engine, transmission, drive, fuel type, MPGe or range change, or when its
-     vehicle's year, make or model change. Rows matched against EPA with no record carry
-     `epa_ids = ''` and are not counted.
+     `mpg[].lbl` equals the database's labels line by line in ship order (fails between a label
+     write and the next rebuild + sync, like any DB-to-blob check).
+  8c. [DB][WARN] **Unmatched lines (S1.15):** rows with `epa_ids` NULL (or `epa_plain` NULL once
+     that column exists) were written, or had a matched-on field edited, after the last label run,
+     and ship without a label until `_label_fuel_economy.py` runs again. Two triggers created by
+     that script clear a line's label and plain flag when its figures, engine, transmission, drive,
+     fuel type, MPGe or range change, or when its vehicle's year, make or model change. Rows
+     matched against EPA with no record carry `epa_ids = ''` and are not counted.
+  8d. [DB][FAIL] **Ship order (S1.16):** every vehicle ships its `mpg` lines in the database's
+     ship order (`files/fe_labels.SHIP_ORDER`: `epa_plain = 1` lines first, then the rest, each in
+     stored order), compared on city, highway, combined, yearly cost and label line by line. The
+     search card shows `mpg[0]`; without this a row could lead with a hybrid or performance
+     version's figure. *(2026-11-20, ruling (c): 88 rows (16 verified) led with a version line.)*
 
 ## S2. SEO vehicle pages — `wrench_deploy/vehicles/*/index.html` (3,540) + `sitemap.xml` + `robots.txt`
 - **Ships:** static per-vehicle pages (meta, JSON-LD, prose, quick-spec table), currently

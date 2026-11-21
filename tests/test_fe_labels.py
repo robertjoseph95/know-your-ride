@@ -51,6 +51,14 @@ class TestNameRules(unittest.TestCase):
         self.assertEqual(_classes("Hyundai", "Kona", [("Kona FWD", ""), ("Kona N", "")], {"Hyundai": {"Kona"}})["Kona N"],
                          "performance model (N, already ruled out)")
 
+    def test_f150_xl_is_a_trim(self):
+        names = [("F150 Pickup 4WD", ""), ("F150 Pickup 4WD XL/XLT", "")]
+        self.assertEqual(_classes("Ford", "F-150", names, {"Ford": {"F-150"}})["F150 Pickup 4WD XL/XLT"], "own")
+
+    def test_xl_is_still_a_longer_body_elsewhere(self):
+        names = [("Envoy 2WD", ""), ("Envoy XL 2WD", "")]
+        self.assertEqual(_classes("GMC", "Envoy", names, {"GMC": {"Envoy"}})["Envoy XL 2WD"], "longer or different body")
+
     @unittest.skipUnless(os.path.exists(DB) and EPA_ZIP and os.path.exists(EPA_ZIP) and os.path.exists(COMPARE),
                          "needs wrench_vehicles.db, KYR_EPA_ZIP and _compare_fuel_economy_epa.py (local only)")
     def test_rules_equal_comparison_script(self):
@@ -73,16 +81,23 @@ class TestNameRules(unittest.TestCase):
         finally:
             con.close()
         g["plates"] = collections.defaultdict(set, plates)
-        checked = 0
+        checked, deliberate = 0, 0
         for vid, yr, mk, md in vehicles:
             rr = recs.get((yr, mk.lower()))
             if not rr:
                 continue
             want = g["name_classes"](vid, yr, mk, md, rr)
             got = epa_name_rules.name_classes(yr, mk, md, rr, plates)
-            self.assertEqual(got, want, "%d %s %s %s" % (vid, yr, mk, md))
+            if got != want:
+                # The one deliberate difference (ruling (c), 2026-11-20): on the F-150, XL / XLT is a trim, not a longer body.
+                diff = {n: (want[0].get(n), got[0].get(n)) for n in set(want[0]) | set(got[0]) if want[0].get(n) != got[0].get(n)}
+                self.assertEqual(((mk, md), set(diff), set(diff.values()), got[1]),
+                                 (("Ford", "F-150"), {"F150 Pickup 4WD XL/XLT"}, {("longer or different body", "own")}, want[1]),
+                                 "%d %s %s %s" % (vid, yr, mk, md))
+                deliberate += 1
             checked += 1
         self.assertGreater(checked, 3000)
+        self.assertEqual(deliberate, 3)
 
 
 def R(i, n, atv="", t="", s=""):
@@ -124,6 +139,59 @@ class TestLabelText(unittest.TestCase):
         self.assertEqual(self.fl.kept_records(recs, {"4Runner Hybrid 4WD": "another vehicle"}), recs)
 
 
+def P(i, n, atv="", displ=None):
+    return {"id": i, "name": n, "atv": atv, "displ": displ, "tcharger": "", "scharger": ""}
+
+
+class TestPlainFlag(unittest.TestCase):
+    """Ruling (c), 2026-11-20: a row ships its plain lines first, so the search card shows the plain car."""
+
+    def setUp(self):
+        import fe_labels
+        self.fl = fe_labels
+
+    def test_own_gasoline_record_is_plain(self):
+        self.assertEqual(self.fl.plain_flag("Toyota", "Camry", [P(1, "Camry")], {"Camry": "own"}), 1)
+
+    def test_own_electric_record_is_plain(self):
+        self.assertEqual(self.fl.plain_flag("Tesla", "Model 3", [P(1, "Model 3 Long Range AWD", "EV")],
+                                            {"Model 3 Long Range AWD": "own"}), 1)
+
+    def test_hybrid_typed_own_record_is_not_plain(self):
+        self.assertEqual(self.fl.plain_flag("BMW", "330i", [P(1, "330i xDrive Sedan", "Hybrid")], {"330i xDrive Sedan": "own"}), 0)
+        self.assertEqual(self.fl.plain_flag("Bentley", "Bentayga", [P(2, "Bentayga", "Plug-in Hybrid")], {"Bentayga": "own"}), 0)
+
+    def test_version_class_is_not_plain(self):
+        self.assertEqual(self.fl.plain_flag("Toyota", "Camry", [P(1, "Camry Hybrid LE", "Hybrid")],
+                                            {"Camry Hybrid LE": "hybrid or alternative fuel"}), 0)
+        self.assertEqual(self.fl.plain_flag("Cadillac", "Escalade", [P(2, "Escalade V AWD")], {"Escalade V AWD": "performance version"}), 0)
+
+    def test_trim_names_ruled_on_are_not_plain(self):
+        for mk, md, n in (("BMW", "X3", "X3 M40i"), ("Ford", "Mustang", "Mustang Bullitt"), ("Ford", "Mustang", "Mustang HO Coupe"),
+                          ("Toyota", "RAV4", "RAV4 AWD TRD OFFROAD"), ("Toyota", "Tacoma", "Tacoma 4WD D-CAB MT TRD-ORP/PRO"),
+                          ("Jeep", "Wrangler", "Wrangler 4dr 4WD"), ("Chevrolet", "Colorado", "Colorado Cab Chassis inc 2WD"),
+                          ("RAM", "1500", "1500 HO 4WD"), ("Porsche", "911", "911 Turbo S")):
+            self.assertEqual(self.fl.plain_flag(mk, md, [P(1, n)], {n: "own"}), 0, n)
+
+    def test_srt8_only_by_its_engine(self):
+        self.assertEqual(self.fl.plain_flag("Chrysler", "300", [P(1, "300/SRT-8", displ=6.1)], {"300/SRT-8": "own"}), 0)
+        self.assertEqual(self.fl.plain_flag("Chrysler", "300", [P(2, "300/SRT-8", displ=3.5)], {"300/SRT-8": "own"}), 1)
+
+    def test_one_plain_record_makes_the_line_plain(self):
+        recs = [P(1, "Silverado C15 2WD"), P(2, "Silverado C15 Cab Chassis 2WD")]
+        self.assertEqual(self.fl.plain_flag("Chevrolet", "Silverado 1500", recs, {r["name"]: "own" for r in recs}), 1)
+
+    def test_no_record_is_not_plain(self):
+        self.assertEqual(self.fl.plain_flag("Toyota", "Camry", [], {}), 0)
+
+    def test_ship_order_puts_plain_lines_first(self):
+        con = sqlite3.connect(":memory:")
+        con.execute("CREATE TABLE fuel_economy (id INTEGER PRIMARY KEY, vehicle_id INTEGER, epa_plain INTEGER)")
+        con.executemany("INSERT INTO fuel_economy VALUES (?,?,?)", [(1, 7, 0), (2, 7, 1), (3, 7, None), (4, 7, 1), (5, 6, 0)])
+        got = [r[0] for r in con.execute("SELECT id FROM fuel_economy ORDER BY " + self.fl.SHIP_ORDER)]
+        self.assertEqual(got, [5, 2, 4, 1, 3])
+
+
 def _load_build():
     import importlib.util
     spec = importlib.util.spec_from_file_location("kyr_build_04_test", os.path.join(FILES_DIR, "04_rebuild_demo.py"))
@@ -163,22 +231,28 @@ class TestBuildLabel(unittest.TestCase):
     LABEL = "X · Turbo"
 
     @classmethod
-    def _build(cls, columns, label_line=None):
+    def _build(cls, columns, label_line=None, plain=None, name_all=False):
         src = sqlite3.connect("file:%s?mode=ro" % DB.replace("\\", "/"), uri=True)
         mem = sqlite3.connect(":memory:")
         src.backup(mem)
         src.close()
         # Start every variant from the pre-label schema, whatever the canonical database holds today.
-        if {r[1] for r in mem.execute("PRAGMA table_info(fuel_economy)")} >= {"epa_ids", "epa_label"}:
-            for (trigger,) in mem.execute("SELECT name FROM sqlite_master WHERE type='trigger' AND name LIKE 'fe_label_%'").fetchall():
-                mem.execute('DROP TRIGGER "%s"' % trigger)
-            mem.execute("ALTER TABLE fuel_economy DROP COLUMN epa_label")
-            mem.execute("ALTER TABLE fuel_economy DROP COLUMN epa_ids")
+        for (trigger,) in mem.execute("SELECT name FROM sqlite_master WHERE type='trigger' AND name LIKE 'fe_label_%'").fetchall():
+            mem.execute('DROP TRIGGER "%s"' % trigger)
+        have = {r[1] for r in mem.execute("PRAGMA table_info(fuel_economy)")}
+        for col in ("epa_plain", "epa_label", "epa_ids"):
+            if col in have:
+                mem.execute("ALTER TABLE fuel_economy DROP COLUMN %s" % col)
         if columns:
             mem.execute("ALTER TABLE fuel_economy ADD COLUMN epa_ids TEXT")
             mem.execute("ALTER TABLE fuel_economy ADD COLUMN epa_label TEXT")
         if label_line:
             mem.execute("UPDATE fuel_economy SET epa_ids='1', epa_label=? WHERE id=?", (cls.LABEL, label_line))
+        if name_all:                                   # every line of the vehicle labelled with its own id, to read the order
+            mem.execute("UPDATE fuel_economy SET epa_ids='1', epa_label='L' || id WHERE vehicle_id=?", (cls.VID,))
+        if plain is not None:
+            mem.execute("ALTER TABLE fuel_economy ADD COLUMN epa_plain INTEGER")
+            mem.executemany("UPDATE fuel_economy SET epa_plain=? WHERE id=?", [(f, i) for i, f in plain.items()])
         mem.row_factory = sqlite3.Row
         import contextlib
         with contextlib.redirect_stdout(io.StringIO()):
@@ -209,6 +283,15 @@ class TestBuildLabel(unittest.TestCase):
         self.assertEqual(len(mpg), len(self.lines))
         self.assertEqual([m.get("lbl") for m in mpg], [self.LABEL if i == self.target else None for i in self.lines])
 
+    def test_build_ships_plain_lines_first(self):
+        last = self.lines[-1]
+        data = self._build(True, plain={i: int(i == last) for i in self.lines}, name_all=True)
+        self.assertEqual([m["lbl"] for m in data[self.VID]["mpg"]], ["L%d" % i for i in [last] + self.lines[:-1]])
+
+    def test_build_keeps_stored_order_without_the_flag(self):
+        data = self._build(True, name_all=True)
+        self.assertEqual([m["lbl"] for m in data[self.VID]["mpg"]], ["L%d" % i for i in self.lines])
+
 
 def _verifier():
     import _verify_shipped
@@ -221,6 +304,16 @@ def _fe_db(path, columns, rows):
                 % (", epa_ids TEXT, epa_label TEXT" if columns else ""))
     for r in rows:
         con.execute("INSERT INTO fuel_economy VALUES (%s)" % ",".join("?" * len(r)), r)
+    con.commit()
+    con.close()
+
+
+def _fe_full_db(path, rows):
+    """Rows: (id, vehicle_id, city, hwy, comb, cost, epa_ids, epa_label, epa_plain)."""
+    con = sqlite3.connect(path)
+    con.execute("CREATE TABLE fuel_economy (id INTEGER PRIMARY KEY, vehicle_id INTEGER, city_mpg INTEGER, highway_mpg INTEGER, "
+                "combined_mpg INTEGER, annual_fuel_cost INTEGER, epa_ids TEXT, epa_label TEXT, epa_plain INTEGER)")
+    con.executemany("INSERT INTO fuel_economy VALUES (?,?,?,?,?,?,?,?,?)", rows)
     con.commit()
     con.close()
 
@@ -267,6 +360,27 @@ class TestVerifierChecks(unittest.TestCase):
         self.assertEqual(tiers["S1.15-unassessed-lines"], "WARN")
         self.assertEqual(tiers["S1.13-mpg-entry-shape"], "FAIL")
         self.assertEqual(tiers["S1.14-label-provenance"], "FAIL")
+
+    def test_shipped_order_matches_the_database(self):
+        path = os.path.join(self.tmp, "order.db")
+        _fe_full_db(path, [(1, 1, 20, 27, 23, 2000, "5", "A", 0), (2, 1, 18, 25, 21, 2100, "6", "B", 1)])
+        ent = lambda c, h, m, cost, lbl: {"city": c, "hwy": h, "comb": m, "cost": cost, "lbl": lbl}
+        good = self.ns(db_path=path, D={"v": [{"id": 1, "mpg": [ent(18, 25, 21, 2100, "B"), ent(20, 27, 23, 2000, "A")]}]})
+        stale = self.ns(db_path=path, D={"v": [{"id": 1, "mpg": [ent(20, 27, 23, 2000, "A"), ent(18, 25, 21, 2100, "B")]}]})
+        self.assertEqual(self.vs.s1_16_ship_order(good), [])
+        self.assertEqual(len(self.vs.s1_16_ship_order(stale)), 1)
+        self.assertEqual(self.vs.s1_16_ship_order(self.ns(db_path=path)), [])          # no blob: nothing to compare
+        self.assertEqual(self.vs.s1_14_label_provenance(good), [])
+        self.assertEqual(len(self.vs.s1_14_label_provenance(stale)), 1)
+        tiers = {cid: tier for cid, tier, _venue, _fn in self.vs.CHECKS}
+        self.assertEqual(tiers["S1.16-ship-order"], "FAIL")
+
+    def test_unassessed_counts_a_missing_plain_flag(self):
+        path = os.path.join(self.tmp, "plainwarn.db")
+        _fe_full_db(path, [(1, 1, 20, 27, 23, 2000, "5", "A", None), (2, 1, 18, 25, 21, 2100, "6", "B", 1)])
+        out = self.vs.s1_15_unassessed_lines(self.ns(db_path=path))
+        self.assertEqual(len(out), 1)
+        self.assertIn("1 fuel-economy line", out[0])
 
 
 def E(i, name, city, hwy, comb, displ, trans, drive, atv="", rng=None, t="", s=""):
@@ -332,24 +446,53 @@ class TestLabelScript(unittest.TestCase):
         con = self._fleet()
         plan = self.lf.plan_labels(con.cursor(), self.EPA, self.PLATES)
         self.assertEqual([(p["fe_id"], p["old"], p["new"]) for p in plan],
-                         [(1, [None, None], ["101", "XC90 AWD · Turbo"]),
-                          (2, [None, None], ["102", "XC90 AWD · Turbo, Supercharged"]),
-                          (3, [None, None], ["", None]),
-                          (4, [None, None], ["201", "Model 3 Long Range AWD"])])
+                         [(1, [None, None, None], ["101", "XC90 AWD · Turbo", 1]),
+                          (2, [None, None, None], ["102", "XC90 AWD · Turbo, Supercharged", 1]),
+                          (3, [None, None, None], ["", None, 0]),
+                          (4, [None, None, None], ["201", "Model 3 Long Range AWD", 1])])
 
     def test_unmatched_line_marked_assessed(self):
         con = self._fleet()
         plan = {p["fe_id"]: p for p in self.lf.plan_labels(con.cursor(), self.EPA, self.PLATES)}
-        self.assertEqual(plan[3]["new"], ["", None])
+        self.assertEqual(plan[3]["new"], ["", None, 0])
 
     def test_plan_is_empty_after_apply(self):
         con = self._fleet()
         cur = con.cursor()
-        self.assertEqual(self.lf.ensure_columns(cur), ["epa_ids", "epa_label"])
+        self.assertEqual(self.lf.ensure_columns(cur), ["epa_ids", "epa_label", "epa_plain"])
         self.lf.apply(cur, self.lf.plan_labels(cur, self.EPA, self.PLATES))
         self.assertEqual(self.lf.plan_labels(cur, self.EPA, self.PLATES), [])
         self.assertEqual(self.lf.ensure_columns(cur), [])
-        self.assertEqual(cur.execute("SELECT COUNT(*) FROM fuel_economy WHERE epa_ids IS NULL").fetchone()[0], 0)
+        self.assertEqual(cur.execute("SELECT COUNT(*) FROM fuel_economy WHERE epa_ids IS NULL OR epa_plain IS NULL").fetchone()[0], 0)
+
+    def test_ensure_columns_upgrades_the_first_triggers(self):
+        con = self._fleet()
+        cur = con.cursor()
+        for name in ("epa_ids", "epa_label"):                                   # the database as the first label write left it
+            cur.execute("ALTER TABLE fuel_economy ADD COLUMN %s TEXT" % name)
+        for sql in self.lf._TRIGGERS:
+            cur.execute(sql.replace(", epa_plain = NULL", ""))
+        self.assertEqual(self.lf.ensure_columns(cur), ["epa_plain"])
+        self.lf.apply(cur, self.lf.plan_labels(cur, self.EPA, self.PLATES))
+        cur.execute("UPDATE fuel_economy SET combined_mpg=24 WHERE id=1")
+        self.assertEqual(cur.execute("SELECT epa_ids, epa_label, epa_plain FROM fuel_economy WHERE id=1").fetchone(), (None, None, None))
+        self.assertEqual(cur.execute("SELECT COUNT(*) FROM sqlite_master WHERE type='trigger'").fetchone()[0], 2)
+
+    def test_ship_order_follows_the_plain_flag(self):
+        con = self._fleet()
+        cur = con.cursor()
+        self.assertEqual(self.lf.ship_order(cur), {1: [1, 2, 3], 2: [4]})              # no flag yet: stored order
+        self.lf.ensure_columns(cur)
+        self.lf.apply(cur, self.lf.plan_labels(cur, self.EPA, self.PLATES))
+        cur.execute("UPDATE fuel_economy SET epa_plain=0 WHERE id=1")
+        self.assertEqual(self.lf.ship_order(cur), {1: [2, 1, 3], 2: [4]})
+
+    def test_shipped_lines_compare_by_line_not_position(self):
+        ok = self.lf.shipped_lines_ok
+        a, b = {"comb": 23, "cost": 2000}, {"comb": 21, "cost": 2100}
+        self.assertTrue(ok([a, b], [dict(b, lbl="B"), dict(a, lbl="A")], [1, 2], [2, 1], {1: "A", 2: "B"}))   # reordered, labelled
+        self.assertFalse(ok([a, b], [dict(b, lbl="B"), dict(a, comb=24, lbl="A")], [1, 2], [2, 1], {1: "A", 2: "B"}))
+        self.assertFalse(ok([a, b], [dict(a, lbl="A")], [1, 2], [1], {1: "A"}))                               # a line lost
 
     def test_rehearsal_accepts_a_rerun(self):
         ok = self.lf.label_change_ok
@@ -417,16 +560,16 @@ class TestLabelScript(unittest.TestCase):
         cur = con.cursor()
         self.lf.ensure_columns(cur)
         self.lf.apply(cur, self.lf.plan_labels(cur, self.EPA, self.PLATES))
-        lab = lambda i: cur.execute("SELECT epa_ids, epa_label FROM fuel_economy WHERE id=?", (i,)).fetchone()
+        lab = lambda i: cur.execute("SELECT epa_ids, epa_label, epa_plain FROM fuel_economy WHERE id=?", (i,)).fetchone()
         cur.execute("UPDATE fuel_economy SET annual_fuel_cost=2500 WHERE id=1")            # cost is not matched on
-        self.assertEqual(lab(1), ("101", "XC90 AWD · Turbo"))
+        self.assertEqual(lab(1), ("101", "XC90 AWD · Turbo", 1))
         cur.execute("UPDATE fuel_economy SET combined_mpg=24 WHERE id=1")
-        self.assertEqual(lab(1), (None, None))
-        self.assertEqual(lab(2), ("102", "XC90 AWD · Turbo, Supercharged"))
+        self.assertEqual(lab(1), (None, None, None))
+        self.assertEqual(lab(2), ("102", "XC90 AWD · Turbo, Supercharged", 1))
         cur.execute("UPDATE fuel_economy SET mpge=NULL WHERE id=4")                       # electric figure cleared
-        self.assertEqual(lab(4), (None, None))
+        self.assertEqual(lab(4), (None, None, None))
         cur.execute("UPDATE vehicles SET model='XC60' WHERE id=1")
-        self.assertEqual(lab(2), (None, None))
+        self.assertEqual(lab(2), (None, None, None))
 
     def test_write_is_one_transaction(self):
         import tempfile

@@ -18,6 +18,7 @@ import os
 import re
 import sys
 
+from files.fe_labels import SHIP_ORDER as FE_SHIP_ORDER
 from files.ic01_quarantine import (
     EXPECTED_DB_ROWS,
     EXPECTED_HOMEPAGE_SAMPLE,
@@ -828,9 +829,15 @@ def _fe_label_columns(con):
     return {"epa_ids", "epa_label"} <= cols
 
 
+def _fe_ship_order(con):
+    """The ORDER BY the build ships fuel-economy lines in (files/fe_labels.SHIP_ORDER once epa_plain exists)."""
+    cols = {r[1] for r in con.execute("PRAGMA table_info(fuel_economy)").fetchall()}
+    return FE_SHIP_ORDER if "epa_plain" in cols else "id"
+
+
 def s1_14_label_provenance(a):
     """[DB] Every non-empty fuel_economy.epa_label names the EPA records behind it (epa_ids), and the
-    shipped mpg[].lbl of every vehicle equals the database's labels line by line (row order = ship order)."""
+    shipped mpg[].lbl of every vehicle equals the database's labels line by line, in ship order."""
     con = _db(a)
     try:
         if not _fe_label_columns(con):
@@ -838,7 +845,7 @@ def s1_14_label_provenance(a):
         n = con.execute("SELECT COUNT(*) FROM fuel_economy WHERE COALESCE(epa_label,'') != '' "
                         "AND COALESCE(epa_ids,'') = ''").fetchone()[0]
         db_labels = {}
-        for vid, label in con.execute("SELECT vehicle_id, epa_label FROM fuel_economy ORDER BY id"):
+        for vid, label in con.execute("SELECT vehicle_id, epa_label FROM fuel_economy ORDER BY " + _fe_ship_order(con)):
             db_labels.setdefault(vid, []).append(label or None)
     finally:
         con.close()
@@ -857,16 +864,42 @@ def s1_14_label_provenance(a):
 
 
 def s1_15_unassessed_lines(a):
-    """[DB][WARN] Lines never matched against EPA (epa_ids NULL): written after the last label run.
-    Lines matched with no EPA record carry epa_ids = '' and are not counted."""
+    """[DB][WARN] Lines never matched against EPA (epa_ids NULL, or epa_plain NULL once that column exists):
+    written after the last label run. Lines matched with no EPA record carry epa_ids = '' and are not counted."""
     con = _db(a)
     try:
         if not _fe_label_columns(con):
             return []
-        n = con.execute("SELECT COUNT(*) FROM fuel_economy WHERE epa_ids IS NULL").fetchone()[0]
+        plain = " OR epa_plain IS NULL" if _fe_ship_order(con) != "id" else ""
+        n = con.execute("SELECT COUNT(*) FROM fuel_economy WHERE epa_ids IS NULL" + plain).fetchone()[0]
     finally:
         con.close()
     return ["%d fuel-economy line(s) not yet matched against EPA: re-run _label_fuel_economy.py" % n] if n else []
+
+
+def s1_16_ship_order(a):
+    """[DB] Each vehicle ships its fuel-economy lines in the database's ship order (ruling (c), 2026-11-20:
+    plain lines first, files/fe_labels.SHIP_ORDER): city, highway, combined, yearly cost and label, line by line.
+    The search card shows mpg[0], so this is what keeps it on the plain car."""
+    blob = getattr(a, "D", None)
+    if blob is None:
+        return []
+    con = _db(a)
+    try:
+        if not _fe_label_columns(con):
+            return []
+        db_lines = {}
+        for vid, city, hwy, comb, cost, label in con.execute(
+                "SELECT vehicle_id, city_mpg, highway_mpg, combined_mpg, annual_fuel_cost, epa_label FROM fuel_economy "
+                "ORDER BY " + _fe_ship_order(con)):
+            db_lines.setdefault(vid, []).append((city, hwy, comb, cost, label or None))
+    finally:
+        con.close()
+    bad = [v.get("id") for v in blob["v"]
+           if [(m.get("city"), m.get("hwy"), m.get("comb"), m.get("cost"), m.get("lbl")) for m in (v.get("mpg") or [])]
+           != db_lines.get(v.get("id"), [])]
+    return (["%d vehicle(s) ship fuel-economy lines in an order or with figures other than the database's ship order, "
+             "e.g. %s (rebuild and sync after a fuel-economy write)" % (len(bad), bad[:5])] if bad else [])
 
 
 def s9_6_ic01_source_scope(a):
@@ -1853,6 +1886,7 @@ CHECKS = [
     ("S8.3-count-reconciliation","WARN", "DB", s8_3_count_reconciliation),
     ("S1.14-label-provenance",   "FAIL", "DB", s1_14_label_provenance),
     ("S1.15-unassessed-lines",   "WARN", "DB", s1_15_unassessed_lines),
+    ("S1.16-ship-order",         "FAIL", "DB", s1_16_ship_order),
     ("S10.1-registry-contract",  "FAIL", "CI", s10_1_registry_contract),
     ("S10.2-registry-mapping-pin","FAIL", "CI", s10_2_registry_mapping_pin),
     ("S10.3-generator-wiring",   "FAIL", "CI", s10_3_generator_wiring),
