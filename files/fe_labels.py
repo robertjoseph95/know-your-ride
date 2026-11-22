@@ -45,7 +45,7 @@ VERSION_NAMES = (
     ("Jeep", "Wrangler", r"Wrangler .*4dr.*", None),
     (None, None, r".*Cab Chassis.*", None),
     ("BMW", None, r".* M\d\di( .*)?", None),
-    ("Ford", "Mustang", r"Mustang (Bullitt|HO .*|Performance Package|Dark Horse SC)( .*)?", None),
+    ("Ford", "Mustang", r"Mustang (Bullitt|HO .*|Performance Package|Dark Horse|GTD|Mach 1)( .*)?", None),  # +Dark Horse, GTD, Mach 1 (2026-11-22)
     (None, None, r".*\bTRD\b.*", None),
     ("RAM", "1500", r"1500 HO .*", None),
     ("Porsche", "911", r"911 Turbo S.*", None),

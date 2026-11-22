@@ -173,6 +173,18 @@ class TestPlainFlag(unittest.TestCase):
                           ("RAM", "1500", "1500 HO 4WD"), ("Porsche", "911", "911 Turbo S")):
             self.assertEqual(self.fl.plain_flag(mk, md, [P(1, n)], {n: "own"}), 0, n)
 
+    def test_mustang_performance_trims_are_not_plain(self):
+        # Robert, 2026-11-22 ("Mustang card first"): Dark Horse and GTD led or sat among the plain lines of the
+        # 2025 / 2026 rows; Mach 1 is the same kind of named trim as Bullitt (2021 / 2022).
+        for n in ("Mustang Dark Horse", "Mustang GTD", "Mustang Mach 1"):
+            self.assertEqual(self.fl.plain_flag("Ford", "Mustang", [P(1, n)], {n: "own"}), 0, n)
+
+    def test_mustang_plain_names_stay_plain(self):
+        for n in ("Mustang", "Mustang Convertible"):
+            self.assertEqual(self.fl.plain_flag("Ford", "Mustang", [P(1, n)], {n: "own"}), 1, n)
+        recs = [P(1, "Mustang Convertible"), P(2, "Mustang Mach 1")]          # one EPA line, two names
+        self.assertEqual(self.fl.plain_flag("Ford", "Mustang", recs, {r["name"]: "own" for r in recs}), 1)
+
     def test_srt8_only_by_its_engine(self):
         self.assertEqual(self.fl.plain_flag("Chrysler", "300", [P(1, "300/SRT-8", displ=6.1)], {"300/SRT-8": "own"}), 0)
         self.assertEqual(self.fl.plain_flag("Chrysler", "300", [P(2, "300/SRT-8", displ=3.5)], {"300/SRT-8": "own"}), 1)
