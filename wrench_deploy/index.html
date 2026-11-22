@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="kyr-version" content="2026-11-20-fe-versions-fill">
+<meta name="kyr-version" content="2026-11-21-cancel-help">
 <title>Know Your Ride - Vehicle Maintenance Reference</title>
 <script>
 /* One-shot self-heal: any browser still controlled by the old kyr-v1 service worker
@@ -769,9 +769,10 @@ body{background:var(--bg)}
 <p class="about-sub" style="margin:0 0 10px">Permanently delete your Know Your Ride account and all saved vehicles, mileage, and service logs. This cannot be undone.</p>
 <button onclick="kyrShowDelete()" style="background:transparent;border:1px solid var(--red);color:var(--red);font-size:13px;font-weight:600;padding:9px 16px;border-radius:8px;cursor:pointer">Delete My Account</button>
 <div id="kyr-del-form" style="display:none;margin-top:14px;max-width:360px">
+<p id="kyr-del-warning" class="about-sub" style="margin:0 0 10px"><strong>Account deletion does not cancel Pro billing.</strong> <a style="color:var(--accent)" href="mailto:hello@knowyourride.net?subject=Cancel%20KYR%20Pro">Email to cancel Pro renewal</a> instead if you only want to stop future charges.</p>
 <input id="kyr-del-email" name="email" type="email" placeholder="Account email" autocomplete="email" style="width:100%;background:var(--p2,#111);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;margin-bottom:8px;font-size:13px">
 <input id="kyr-del-pw" name="password" type="password" placeholder="Password" autocomplete="current-password" style="width:100%;background:var(--p2,#111);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;margin-bottom:8px;font-size:13px">
-<button onclick="kyrDeleteAccount()" style="width:100%;background:var(--red);color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:13px;cursor:pointer">Permanently Delete My Account</button>
+<button aria-describedby="kyr-del-warning" onclick="kyrDeleteAccount()" style="width:100%;background:var(--red);color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:13px;cursor:pointer">Permanently Delete My Account</button>
 <div id="kyr-del-note" style="font-size:12px;color:var(--faint);margin-top:8px;line-height:1.5"></div>
 </div>
 </div>
@@ -1776,6 +1777,7 @@ document.addEventListener('DOMContentLoaded',function(){
     <div class="pp-note" id="pp-promo-note"></div>
     <div class="pp-reassure">&#128274; Secure checkout by Stripe &middot; Cancel anytime &middot; No card data touches our servers</div>
     <div class="pp-restore">Already subscribed? <input id="pp-restore-email" type="email" placeholder="you@email.com"> <a onclick="restorePro()">Restore access</a></div>
+    <p class="pp-restore" style="line-height:1.5;color:var(--dim)"><strong>Cancel Pro renewal:</strong> <a href="mailto:hello@knowyourride.net?subject=Cancel%20KYR%20Pro">hello@knowyourride.net</a><br>Include the email used to subscribe. Do not send your password or card details.</p>
     <div class="pp-note" id="pp-note"></div>
   </div>
 </div>
@@ -1816,7 +1818,7 @@ var em=(document.getElementById('kyr-del-email').value||'').trim();
 var pw=(document.getElementById('kyr-del-pw').value||'');
 var note=document.getElementById('kyr-del-note');
 if(!em||!pw){note.style.color='var(--red)';note.textContent='Enter your account email and password.';return;}
-if(!confirm('Permanently delete your account and all saved data? This cannot be undone.'))return;
+if(!confirm('Permanently delete your account and all saved data? This cannot be undone. This does not cancel Pro billing.'))return;
 note.style.color='';note.textContent='Deleting your account...';
 fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',email:em,password:pw})}).then(function(r){return r.json();}).then(function(d){
 if(!d||!d.ok||!d.token){note.style.color='var(--red)';note.textContent=(d&&d.error)||'Could not verify your credentials.';return;}
@@ -1905,6 +1907,11 @@ if(document.readyState!=='loading')show();else document.addEventListener('DOMCon
     <p class="kyr-auth-sub">Signed in to Know Your Ride.</p>
     <div class="kyr-acct-row"><span>Email</span><span class="v" id="acct-email">&mdash;</span></div>
     <div class="kyr-acct-row"><span>Plan</span><span class="v" id="acct-plan">Free</span></div>
+    <div style="margin-top:14px;font-size:13px;line-height:1.5;color:var(--dim)">
+      <div><strong>Pro billing</strong></div>
+      <div>To cancel Pro renewal, email <a style="color:var(--accent)" href="mailto:hello@knowyourride.net?subject=Cancel%20KYR%20Pro">hello@knowyourride.net</a>. Include the email used to subscribe. Do not send your password or card details.</div>
+      <div>Canceling renewal does not delete your account or saved data.</div>
+    </div>
     <button type="button" class="kyr-auth-submit" style="margin-top:18px" onclick="kyrLogout()">Sign Out</button>
   </div>
 </div>

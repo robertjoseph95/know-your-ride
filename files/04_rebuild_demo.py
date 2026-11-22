@@ -1575,6 +1575,7 @@ PRICING_HTML = """
     <div class="pp-note" id="pp-promo-note"></div>
     <div class="pp-reassure">&#128274; Secure checkout by Stripe &middot; Cancel anytime &middot; No card data touches our servers</div>
     <div class="pp-restore">Already subscribed? <input id="pp-restore-email" type="email" placeholder="you@email.com"> <a onclick="restorePro()">Restore access</a></div>
+    <p class="pp-restore" style="line-height:1.5;color:var(--dim)"><strong>Cancel Pro renewal:</strong> <a href="mailto:hello@knowyourride.net?subject=Cancel%20KYR%20Pro">hello@knowyourride.net</a><br>Include the email used to subscribe. Do not send your password or card details.</p>
     <div class="pp-note" id="pp-note"></div>
   </div>
 </div>
