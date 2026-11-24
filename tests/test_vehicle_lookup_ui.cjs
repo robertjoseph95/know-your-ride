@@ -79,7 +79,7 @@ for (const file of files) {
   test(file + ': free lookup copy is explicit and avoids promising missing specs', () => {
     assert.match(html, /Free VIN lookup/);
     assert.match(html, /see available specs for free/);
-    assert.match(html, /this model is not in our specs database\. Pro does not add missing specs/);
+    assert.match(html, /has not verified which specs apply to this VIN/);
     assert.doesNotMatch(html, /opening full specs|full specs coming soon/);
   });
 }

@@ -15,7 +15,7 @@ Coverage: **347 vehicles with owner's-manual-verified specifications** (and grow
 ## Features
 
 - **Garage specs** — oil viscosity/type/capacity, drain bolt torque & socket, spark plugs & gap, filters, tires & pressures, batteries, fluids, and a full torque-spec table per vehicle.
-- **VIN decode** — paste a 17-character VIN to jump straight to the matching vehicle (NHTSA vPIC).
+- **VIN decode** — paste a 17-character VIN for free NHTSA vPIC decoding and model-year recall campaigns, then browse vehicle specifications separately.
 - **DTC code lookup** — search any P/B/C/U trouble code and get its plain-language definition (SAE/generic + manufacturer-specific taxonomy).
 - **AI repair guides** — concise, spec-grounded DIY walkthroughs (Claude) that use only verified figures from the database and refuse to guess safety-critical torque values.
 - **YouTube DIY videos** — relevant how-to videos surfaced per vehicle + service.

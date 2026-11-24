@@ -864,29 +864,39 @@ function renderComplaints(v){
 }
 
 /*WRENCH_VIN*/
-function titleCase(s){return String(s||'').toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase();});}
 var vinDecodeRequestId=0;
-function decodeVIN(){/* B4b 2026-07-05: VIN decode is unlimited-free (the free acquisition hook) - gate + free-counter removed. proUnlock/kyrFreeUsed machinery stays intact for the 3 real Pro features. */
-  var el=document.getElementById('vin-input'), out=document.getElementById('vin-result');
+function vinDecodeText(v){return typeof v==='string'?v.trim():'';}
+function vinDecodeNumber(v,pattern){
+  var s=typeof v==='number'?String(v):vinDecodeText(v);
+  return pattern.test(s)?s:'';
+}
+function decodeVIN(){
+  var el=document.getElementById('vin-input'),out=document.getElementById('vin-result');
   var requestId=++vinDecodeRequestId;
   var vin=(el.value||'').trim().toUpperCase();
-  if(vin.length!==17){out.className='vin-result err';out.innerHTML='VIN must be exactly 17 characters (got '+vin.length+').';return;}
-  out.className='vin-result';out.textContent='Decoding '+vin+'...';
+  if(vin.length!==17){out.className='vin-result err';out.textContent='VIN must be exactly 17 characters (got '+vin.length+').';return;}
+  out.className='vin-result';out.textContent='Decoding VIN...';
   fetch('/api/vin/'+encodeURIComponent(vin)).then(function(r){
-    if(!r.ok)throw new Error('HTTP '+r.status);return r.json();
+    if(!r.ok)throw new Error('VIN lookup failed');
+    return r.json();
   }).then(function(d){
     if(requestId!==vinDecodeRequestId)return;
-    if(!d||!d.make){out.className='vin-result err';out.innerHTML='No decode result for that VIN.'+recallVinLink();return;}
-    var disp=htmlEsc(titleCase(d.make)+' '+d.model);
-    var match=DB.v.find(function(v){return v.year==d.year && v.make.toLowerCase()===String(d.make||'').toLowerCase() && v.model.toLowerCase()===String(d.model||'').toLowerCase();});
-    if(match){out.className='vin-result ok';out.innerHTML=' '+htmlEsc(d.year)+' '+disp+' &middot; Opening available vehicle details...';openModal(match.id);}
-    else{
-      var eng=htmlEsc((d.displacement_liters?d.displacement_liters+'L ':'')+(d.engine||'')+(d.cylinders?' - '+d.cylinders+'-cyl':'')+(d.fuel_type?' - '+d.fuel_type:''));
-      out.className='vin-result warn';
-      out.innerHTML='Decoded: <strong>'+htmlEsc(d.year)+' '+disp+(d.trim?' '+htmlEsc(d.trim):'')+'</strong>'+(eng.trim()?'<br><span style="color:var(--dim)">'+eng+'</span>':'')+'<br>VIN decoded, but this model is not in our specs database. Pro does not add missing specs.';
-    }
-    loadRecalls(d,out,requestId);
-  }).catch(function(e){
+    var make=d&&!Array.isArray(d)&&!d.error?vinDecodeText(d.make):'';
+    if(!make){out.className='vin-result err';out.innerHTML='No decode result for that VIN.'+recallVinLink();return;}
+    var model=vinDecodeText(d.model),year=vinDecodeNumber(d.year,/^[0-9]{4}$/),trim=vinDecodeText(d.trim);
+    var engine=vinDecodeText(d.engine),liters=vinDecodeNumber(d.displacement_liters,/^[0-9]+(?:\.[0-9]+)?$/);
+    var cylinders=vinDecodeNumber(d.cylinders,/^[1-9][0-9]*$/),fuel=vinDecodeText(d.fuel_type);
+    var identity=[year,make,model,trim].filter(Boolean).join(' ');
+    var powertrain=[liters?liters+'L':'',engine,cylinders?cylinders+' cylinders':'',fuel].filter(Boolean).join(' / ');
+    // vPIC identification and a model-year catalog row are not enough to
+    // verify exact factory-spec applicability. Never auto-open a catalog card.
+    out.className='vin-result warn';
+    out.innerHTML='Decoded: <strong>'+recallEsc(identity)+'</strong>'
+      +(powertrain?'<br><span style="color:var(--dim)">'+recallEsc(powertrain)+'</span>':'')
+      +(!model||!year?'<br>Some vehicle details could not be decoded.':'')
+      +'<br>Know Your Ride has not verified which specs apply to this VIN. Use the vehicle search below to browse available specs and confirm the exact configuration before relying on them.';
+    loadRecalls({make:make,model:model,year:year},out,requestId);
+  }).catch(function(){
     if(requestId!==vinDecodeRequestId)return;
     out.className='vin-result err';
     out.innerHTML='Could not reach the VIN decode service.'+recallVinLink();
